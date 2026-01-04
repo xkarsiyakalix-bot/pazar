@@ -5877,6 +5877,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
 
   // const { isReserved, isSold, isTop, isNew, isHighlight, isUrgenty } = getListingBadges(listing); // This line was not in the original snippet, but was in the instruction. I'll add it.
   const navigate = useNavigate();
+  const [imageLoaded, setImageLoaded] = React.useState(false);
   const favorite = isFavorite ? isFavorite(listing.id) : false;
 
   // Get first image from images array, fallback to placeholder
@@ -5898,13 +5899,21 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   return (
     <div className={`listing-card rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group relative hover:-translate-y-1 ${listing.is_gallery || listing.is_top ? 'bg-purple-50' : 'bg-white'} ${listing.is_highlighted ? 'border-2 border-yellow-400 ring-4 ring-yellow-100' : listing.is_top ? 'border border-purple-200' : ''}`} onClick={() => navigate(`/product/${listing.id}`)}>
       <div className="relative overflow-hidden rounded-t-xl bg-gray-100 h-32">
+        {!imageLoaded && !isMiniJob && (
+          <div className="absolute inset-0 animate-pulse bg-gray-200 flex items-center justify-center">
+            <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
         <img
           src={displayImage}
           alt={listing.title}
           width="300"
           height="200"
           loading="lazy"
-          className={imageClasses}
+          onLoad={() => setImageLoaded(true)}
+          className={`${imageClasses} ${!isMiniJob ? (imageLoaded ? 'opacity-100' : 'opacity-0') : 'opacity-100'} transition-opacity duration-300`}
         />
         {/* RESERVIERT Badge - highest priority */}
         {isReserved && (
@@ -6054,9 +6063,17 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
 
   if (loading && isLatest) {
     return (
-      <div className="text-center py-12">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
-        <p className="mt-2 text-gray-500">Son ilanlar yükleniyor...</p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="animate-pulse bg-white rounded-xl shadow-md h-64 overflow-hidden border border-gray-100">
+            <div className="bg-gray-200 h-32 w-full"></div>
+            <div className="p-3 space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

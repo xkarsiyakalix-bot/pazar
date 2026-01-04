@@ -77,9 +77,50 @@ function MessagesPage() {
                 filter: `receiver_id=eq.${user.id}`
             }, (payload) => {
                 console.log('New message received:', payload);
-                // Reload conversations to update list and unread counts
-                // In a more complex app, we would optimistically update the state
-                loadConversations();
+                const newMessage = payload.new;
+
+                // Optimistically update the conversations list without a full reload
+                setConversations(prev => {
+                    const existingIdx = prev.findIndex(c =>
+                        (c.user.id === newMessage.sender_id && c.listing?.id === newMessage.listing_id) ||
+                        (c.user.id === newMessage.receiver_id && c.listing?.id === newMessage.listing_id)
+                    );
+
+                    if (existingIdx > -1) {
+                        const updated = [...prev];
+                        const conv = { ...updated[existingIdx] };
+
+                        // Add message if it's for the selected conversation or we want it in history
+                        if (!conv.messages.find(m => m.id === newMessage.id)) {
+                            conv.messages = [...conv.messages, newMessage];
+                            conv.lastMessage = newMessage;
+                            if (newMessage.receiver_id === user.id && !newMessage.read) {
+                                conv.unreadCount++;
+                            }
+                        }
+
+                        updated[existingIdx] = conv;
+
+                        // Ensure selected conversation also updates if it's the active one
+                        setSelectedConversation(current => {
+                            if (current &&
+                                ((current.user.id === newMessage.sender_id && current.listing?.id === newMessage.listing_id) ||
+                                    (current.user.id === newMessage.receiver_id && current.listing?.id === newMessage.listing_id))) {
+                                return conv;
+                            }
+                            return current;
+                        });
+
+                        // Move to top
+                        return [updated[existingIdx], ...updated.filter((_, i) => i !== existingIdx)];
+                    } else {
+                        // For completely new conversation, we might still need a partial reload or ignore 
+                        // until user refreshes, but ideally we'd fetch the user profile here.
+                        // For now, let's trigger a reload only for new conversations to keep it simple.
+                        loadConversations();
+                        return prev;
+                    }
+                });
             })
             .subscribe();
 
