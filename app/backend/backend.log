@@ -1,0 +1,73 @@
+INFO:     Started server process [7352]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+✅ Connected to Supabase: https://ynleaatvkftkafiyqufv.supabase.co
+INFO:     127.0.0.1:50588 - "HEAD / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:50627 - "GET / HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52455 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52466 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52499 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52538 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52607 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52639 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52658 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52696 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52747 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:52980 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:53104 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:53180 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:53198 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:53535 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:53567 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:53762 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:53790 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54003 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54035 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54072 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54086 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54164 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54242 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54391 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54453 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54477 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54496 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54510 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54531 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54567 - "GET /api/listings HTTP/1.1" 200 OK
+✅ Fetched 149 listings (Category: None)
+INFO:     127.0.0.1:54672 - "GET /api/listings HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [7352]

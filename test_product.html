@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Product Page</title>
+</head>
+
+<body>
+    <h1>Testing Product ID: 65b9a467-b9e3-4970-b645-e1dfe23dfd2e</h1>
+    <div id="result"></div>
+
+    <script>
+        // Test if the API endpoint works
+        fetch('http://localhost:5000/api/listings/65b9a467-b9e3-4970-b645-e1dfe23dfd2e')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            });
+    </script>
+</body>
+
+</html>

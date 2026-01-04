@@ -1,0 +1,44 @@
+=== ALL CATEGORY/SUBCATEGORY COMBINATIONS IN DATABASE ===
+
+
+Biletler:
+  - Hediye Çekleri
+  - Komedi & Kabare
+  - Tren & Toplu Taşıma
+  - Çocuk Etkinlikleri
+
+Evcil Hayvanlar:
+  - Kediler
+
+Eğitim & Kurslar:
+  - Bilgisayar Kursları
+  - Dans Kursları
+  - Dil Kursları
+  - Diğer Eğitim & Kurslar
+  - Ezoterizm & Spiritüalizm
+  - Müzik & Şan
+  - Sanat & Tasarım
+  - Spor Kursları
+  - Sürekli Eğitim
+  - Yemek & Pastacılık
+  - Özel Ders
+
+Hizmetler:
+  - Babysitter & Çocuk Bakımı
+  - Diğer Hizmetler
+  - Elektronik
+  - Ev & Bahçe Hizmetleri
+  - Evcil Hayvan Bakımı & Eğitim
+  - Nakliye & Taşıma
+  - Otomobil, Bisiklet & Tekne
+  - Sanatçılar & Müzisyenler
+  - Seyahat & Etkinlik Hizmetleri
+  - Yaşlı Bakımı
+
+Komşu Yardımı:
+  - Komşu Yardımı
+
+Ücretsiz & Takas:
+  - Kiralama
+  - Takas
+  - Ücretsiz

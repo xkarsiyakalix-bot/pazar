@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""
+Update all Haus & Garten subcategory pages to include standardized three-level navigation
+Note: HeimtextilienPage.js already has navigation, so we'll skip it
+"""
+
+import os
+import re
+
+# Define all Haus & Garten subcategories (excluding HeimtextilienPage which already has navigation)
+subcategories = [
+    ('BadezimmerPage.js', 'Badezimmer', '/Haus-Garten/Badezimmer'),
+    ('BueroPage.js', 'Büro', '/Haus-Garten/Büro'),
+    ('DekorationPage.js', 'Dekoration', '/Haus-Garten/Dekoration'),
+    ('DienstleistungenHausGartenPage.js', 'Dienstleistungen Haus & Garten', '/Haus-Garten/Dienstleistungen-Haus-Garten'),
+    ('GartenzubehoerPflanzenPage.js', 'Gartenzubehör & Pflanzen', '/Haus-Garten/Gartenzubehör-Pflanzen'),
+    ('HeimwerkenPage.js', 'Heimwerken', '/Haus-Garten/Heimwerken'),
+    ('KuecheEsszimmerPage.js', 'Küche & Esszimmer', '/Haus-Garten/Küche-Esszimmer'),
+    ('LampenLichtPage.js', 'Lampen & Licht', '/Haus-Garten/Lampen-Licht'),
+    ('SchlafzimmerPage.js', 'Schlafzimmer', '/Haus-Garten/Schlafzimmer'),
+    ('WohnzimmerPage.js', 'Wohnzimmer', '/Haus-Garten/Wohnzimmer'),
+    ('WeiteresHausGartenPage.js', 'Weiteres Haus & Garten', '/Haus-Garten/Weiteres-Haus-Garten'),
+]
+
+base_path = '/Volumes/Kerem Aydin/Projeler/Kleinanzegen/24.11.2025/app/frontend/src'
+
+for filename, subcategory_name, route in subcategories:
+    filepath = os.path.join(base_path, filename)
+    
+    if not os.path.exists(filepath):
+        print(f"❌ File not found: {filename}")
+        continue
+    
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # Check if navigation already exists
+    if 'Alle Kategorien' in content and 'Haus & Garten' in content and subcategory_name in content:
+        print(f"ℹ️  {filename} already has navigation, skipping")
+        continue
+    
+    # Update sidebar width from w-80 to w-96 if needed
+    content = re.sub(
+        r'<aside className="w-80 flex-shrink-0',
+        '<aside className="w-96 flex-shrink-0',
+        content
+    )
+    
+    navigation_html = f'''                <div className="mb-6 pb-6 border-b border-gray-200">
+                    <h3 className="font-bold text-gray-900 mb-3 text-base">Kategorien</h3>
+                    <button onClick={{() => navigate('/Alle-Kategorien')}} className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group">
+                        <span>Alle Kategorien</span>
+                        <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={{2}} d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                    <div className="space-y-2 mt-3">
+                        <button onClick={{() => navigate('/Haus-Garten')}} className="text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group ml-4" style={{{{ width: 'calc(100% - 1rem)' }}}}>
+                            <span>Haus & Garten</span>
+                            <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={{2}} d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                        <button className="text-left px-3 py-2 rounded-lg text-sm transition-all bg-red-600 text-white shadow-md flex items-center justify-between ml-8" style={{{{ width: 'calc(100% - 2rem)' }}}}>
+                            <span>{subcategory_name}</span>
+                            <button onClick={{(e) => {{ e.stopPropagation(); navigate('/Haus-Garten'); }}}} className="text-white hover:text-red-200 transition-colors" title="Kategorie schließen">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={{2}} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </button>
+                    </div>
+                </div>
+'''
+    
+    # Find and replace the Filter section header to add navigation before it
+    filter_pattern = r'(\s+<div className="flex items-center justify-between mb-6"><h3 className="font-bold text-gray-900 text-lg">Filter</h3>)'
+    
+    if re.search(filter_pattern, content):
+        content = re.sub(
+            filter_pattern,
+            navigation_html + r'\1',
+            content
+        )
+    else:
+        print(f"⚠️  Could not find Filter section in {filename}")
+        continue
+    
+    # Write the updated content back
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(content)
+    
+    print(f"✅ Updated {filename}")
+
+print(f"\n🎉 Successfully updated Haus & Garten subcategory pages!")
