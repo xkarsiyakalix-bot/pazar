@@ -5893,8 +5893,8 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   const isMiniJob = listing.sub_category === 'Yarı Zamanlı & Ek İşler' || listing.sub_category === 'Staj';
   const displayImage = isMiniJob ? '/favicon.png' : imageUrl;
   const imageClasses = isMiniJob
-    ? "w-full h-32 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-    : "w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500";
+    ? "w-full h-32 object-contain p-4 group-hover:scale-105 transition-transform duration-500 rounded-t-xl"
+    : "w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-xl";
 
   return (
     <div className={`listing-card rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group relative hover:-translate-y-1 ${listing.is_gallery || listing.is_top ? 'bg-purple-50' : 'bg-white'} ${listing.is_highlighted ? 'border-2 border-yellow-400 ring-4 ring-yellow-100' : listing.is_top ? 'border border-purple-200' : ''}`} onClick={() => navigate(`/product/${listing.id}`)}>
