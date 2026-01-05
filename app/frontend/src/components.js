@@ -5906,7 +5906,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   } else if (listing.is_gallery) {
     cardClasses += "border-2 border-purple-400 ring-4 ring-purple-50/50 bg-purple-50/10 ";
   } else if (listing.is_highlighted) {
-    cardClasses += "border border-yellow-200 bg-yellow-50/5 ";
+    cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 shadow-yellow-100 ";
   }
 
   return (
