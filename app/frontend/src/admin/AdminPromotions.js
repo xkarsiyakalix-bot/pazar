@@ -145,6 +145,7 @@ const AdminPromotions = () => {
                                 <th className="px-6 py-4">Paket</th>
                                 <th className="px-6 py-4">Fiyat</th>
                                 <th className="px-6 py-4">Ödeme Yöntemi</th>
+                                <th className="px-6 py-4">Kalan Süre</th>
                                 <th className="px-6 py-4">Durum</th>
                                 <th className="px-6 py-4 text-right">Fatura</th>
                             </tr>
@@ -185,6 +186,28 @@ const AdminPromotions = () => {
                                             <span className="text-lg">💳</span>
                                             <span className="font-medium">Kredi Kartı</span>
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        {promo.status === 'active' ? (
+                                            (() => {
+                                                const diff = new Date(promo.end_date) - new Date();
+                                                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                                                if (days > 0) {
+                                                    return (
+                                                        <div className="flex flex-col">
+                                                            <span className={`text-sm font-bold ${days <= 2 ? 'text-red-500 animate-pulse' : 'text-green-600'}`}>
+                                                                {days} Gün
+                                                            </span>
+                                                            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-tighter">Kalan</span>
+                                                        </div>
+                                                    );
+                                                } else {
+                                                    return <span className="text-xs text-red-500 font-bold uppercase">Süresi Doluyor</span>;
+                                                }
+                                            })()
+                                        ) : (
+                                            <span className="text-sm text-gray-400 italic">Bitti</span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${promo.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
