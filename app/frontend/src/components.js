@@ -5946,7 +5946,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         {/* Highlighted Badge */}
         {listing.is_highlighted && !listing.is_top && (
           <div className={`absolute ${isReserved ? 'top-14' : 'top-3'} left-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg z-10`}>
-            ✨ Öne Çıkar
+            ✨ Öne Çıkan
           </div>
         )}
         {/* Commercial/PRO Badge */}
@@ -9369,7 +9369,7 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
 
   const promotionPackages = [
     { id: 'bump', name: 'Yukarı Çıkar', price: '4,99', duration: 1, effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
-    { id: 'highlight', name: 'Öne Çıkar', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
+    { id: 'highlight', name: 'Öne Çıkan', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
     { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '16,99', duration: 7, effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
     { id: 'top', name: 'En Üst İlan', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
     { id: 'galerie', name: 'Galeri', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
@@ -9450,7 +9450,7 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
                 <thead className="bg-gray-50 border-b-2 border-gray-100">
                   <tr className="text-[10px] font-black uppercase tracking-widest text-gray-500">
                     <th className="px-6 py-4 w-16">Seç</th>
-                    <th className="px-6 py-4">İlanı Öne Çıkar</th>
+                    <th className="px-6 py-4">İlanı Öne Çıkan</th>
                     <th className="px-6 py-4">Etki</th>
                     <th className="px-6 py-4">Süre</th>
                     <th className="px-6 py-4 text-right w-32">Fiyat</th>
@@ -10320,7 +10320,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
   const promotionPackages = [
     { id: 'bump', name: 'Yukarı Çıkar', price: '4,99', duration: 1, effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
-    { id: 'highlight', name: 'Öne Çıkar', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
+    { id: 'highlight', name: 'Öne Çıkan', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
     { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '16,99', duration: 7, effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
     { id: 'top', name: 'En Üst İlan', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
     { id: 'galerie', name: 'Galeri', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
@@ -11246,10 +11246,22 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                       {/* TOP Badge */}
                       {listing?.is_top && (
-                        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
+                        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center animate-pulse">
                           <span>⭐ TOP</span>
                           {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
                             <span className="text-[10px] opacity-90 mt-0.5">
+                              {Math.ceil((new Date(listing.promotion_expiry) - new Date()) / (1000 * 60 * 60 * 24))} {t.productDetail.ownerDashboard.daysRemaining}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Öne Çıkan Badge */}
+                      {listing?.is_highlighted && !listing?.is_top && (
+                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
+                          <span>✨ Öne Çıkan</span>
+                          {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
+                            <span className="text-[10px] opacity-90 mt-0.5 italic">
                               {Math.ceil((new Date(listing.promotion_expiry) - new Date()) / (1000 * 60 * 60 * 24))} {t.productDetail.ownerDashboard.daysRemaining}
                             </span>
                           )}
