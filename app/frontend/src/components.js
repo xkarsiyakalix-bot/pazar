@@ -10975,6 +10975,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.wishlist}</div>
                     </div>
                     <div className="w-px h-10 bg-gray-700 hidden sm:block" />
+                    {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
+                      <div className="text-center">
+                        <ListingCountdown
+                          expiryDate={new Date(listing.promotion_expiry)}
+                          onExpire={() => {
+                            // Optional: refresh or handle expiry
+                          }}
+                        />
+                        <div className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.activePromotion}</div>
+                      </div>
+                    )}
+                    {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
+                      <div className="w-px h-10 bg-gray-700 hidden sm:block" />
+                    )}
                     <div className="text-center">
                       <ListingCountdown
                         expiryDate={listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 90 * 24 * 60 * 60 * 1000)}
@@ -10982,7 +10996,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           // Optional: refresh or handle expiry
                         }}
                       />
-                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.endsOn}</div>
+                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.adExpiry}</div>
                     </div>
                   </div>
                 </div>
@@ -11187,8 +11201,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                       {/* TOP Badge */}
                       {listing?.is_top && (
-                        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg">
-                          ⭐ TOP
+                        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
+                          <span>⭐ TOP</span>
+                          {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
+                            <span className="text-[10px] opacity-90 mt-0.5">
+                              {Math.ceil((new Date(listing.promotion_expiry) - new Date()) / (1000 * 60 * 60 * 24))} {t.productDetail.ownerDashboard.daysRemaining}
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
