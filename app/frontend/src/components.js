@@ -5896,8 +5896,21 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
     ? "w-full h-32 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
     : "w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500";
 
+  // Determine card styles based on promotion Type
+  let cardClasses = "listing-card rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group relative hover:-translate-y-1 bg-white ";
+
+  if (listing.is_top) {
+    cardClasses += "border-2 border-red-500 ring-4 ring-red-50/50 bg-red-50/10 ";
+  } else if (listing.is_multi_bump) {
+    cardClasses += "border-2 border-yellow-400 ring-4 ring-yellow-50/50 bg-yellow-50/10 ";
+  } else if (listing.is_gallery) {
+    cardClasses += "border-2 border-purple-400 ring-4 ring-purple-50/50 bg-purple-50/10 ";
+  } else if (listing.is_highlighted) {
+    cardClasses += "border border-yellow-200 bg-yellow-50/5 ";
+  }
+
   return (
-    <div className={`listing-card rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group relative hover:-translate-y-1 ${listing.is_gallery || listing.is_top ? 'bg-purple-50' : 'bg-white'} ${listing.is_highlighted ? 'border-2 border-yellow-400 ring-4 ring-yellow-100' : listing.is_top ? 'border border-purple-200' : ''}`} onClick={() => navigate(`/product/${listing.id}`)}>
+    <div className={cardClasses} onClick={() => navigate(`/product/${listing.id}`)}>
       <div className="relative overflow-hidden rounded-t-xl bg-gray-100 h-32" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
         {!imageLoaded && !isMiniJob && (
           <div className="absolute inset-0 animate-pulse bg-gray-200 flex items-center justify-center">
@@ -5926,8 +5939,14 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         )}
         {/* TOP Badge - positioned below RESERVIERT if it exists */}
         {listing.is_top && (
-          <div className={`absolute ${isReserved ? 'top-14' : 'top-3'} left-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg z-10`}>
+          <div className={`absolute ${isReserved ? 'top-14' : 'top-3'} left-3 bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg z-10 animate-pulse`}>
             ⭐ TOP
+          </div>
+        )}
+        {/* Highlighted Badge */}
+        {listing.is_highlighted && !listing.is_top && (
+          <div className={`absolute ${isReserved ? 'top-14' : 'top-3'} left-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg z-10`}>
+            ✨ Öne Çıkar
           </div>
         )}
         {/* Commercial/PRO Badge */}
@@ -6058,8 +6077,34 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
     return matchesCategory && matchesSearch;
   });
 
-  // Trust the API's sorting (Promotion priority + Created at)
-  const displayListings = isLatest ? filtered.slice(0, 30) : filtered.slice(0, 5);
+  // Trust the API's sorting, but interleave Gallery items every 15 items
+  const displayListings = (() => {
+    const totalListings = isLatest ? filtered.slice(0, 50) : filtered.slice(0, 10);
+
+    // Separate gallery items
+    const galleryItems = totalListings.filter(l => l.is_gallery);
+    const regularItems = totalListings.filter(l => !l.is_gallery);
+
+    const interleaved = [];
+    let galleryIndex = 0;
+
+    for (let i = 0; i < regularItems.length; i++) {
+      // Every 15 items (at index 0, 15, 30...), insert a gallery item if available
+      if (i % 15 === 0 && galleryIndex < galleryItems.length) {
+        interleaved.push(galleryItems[galleryIndex]);
+        galleryIndex++;
+      }
+      interleaved.push(regularItems[i]);
+    }
+
+    // Append remaining gallery items if any
+    while (galleryIndex < galleryItems.length) {
+      interleaved.push(galleryItems[galleryIndex]);
+      galleryIndex++;
+    }
+
+    return interleaved;
+  })();
 
   if (loading && isLatest) {
     return (

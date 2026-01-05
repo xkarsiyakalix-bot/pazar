@@ -50,6 +50,8 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
         query = query
             .order('is_top', { ascending: false })
             .order('is_multi_bump', { ascending: false })
+            .order('is_gallery', { ascending: false })
+            .order('is_highlighted', { ascending: false })
             .order('created_at', { ascending: false });
     }
 

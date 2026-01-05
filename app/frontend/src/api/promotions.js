@@ -50,11 +50,11 @@ export const purchasePromotion = async (listingId, packageDetails, userId, listi
             updates.created_at = new Date().toISOString();
         }
 
-        if (packageDetails.id === 'highlight' || packageDetails.id === 'galerie' || packageDetails.id === 'premium') {
+        if (packageDetails.id === 'highlight' || packageDetails.id === 'premium') {
             updates.is_highlighted = true;
         }
 
-        if (packageDetails.id === 'top' || packageDetails.id === 'galerie' || packageDetails.id === 'premium') {
+        if (packageDetails.id === 'top' || packageDetails.id === 'premium') {
             updates.is_top = true;
         }
 
