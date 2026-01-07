@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -18,7 +18,22 @@ const StorePage = () => {
     const [isFollowingSeller, setIsFollowingSeller] = useState(false);
     const [followersCount, setFollowersCount] = useState(0);
     const [showMessageModal, setShowMessageModal] = useState(false);
+
     const [currentTime, setCurrentTime] = useState(new Date());
+    const hoursDropdownRef = useRef(null);
+
+    // Handle click outside to close working hours dropdown
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (hoursDropdownRef.current && !hoursDropdownRef.current.contains(event.target)) {
+                setShowHours(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [hoursDropdownRef]);
 
     async function handleSendMessage(data) {
         if (!user) {
@@ -297,13 +312,13 @@ const StorePage = () => {
                             )}
                         </div>
 
-                        <div className="flex items-center gap-3 group relative">
-                            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all shadow-sm group-hover:scale-105 duration-300 cursor-help">
+                        <div className="flex items-center gap-3 group relative" ref={hoursDropdownRef}>
+                            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all shadow-sm group-hover:scale-105 duration-300 cursor-pointer">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <div className="cursor-help" onClick={() => setShowHours(!showHours)}>
+                            <div className="cursor-pointer" onClick={() => setShowHours(!showHours)}>
                                 <div className="flex items-center justify-between mb-0.5">
                                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Çalışma Saatleri</p>
                                     <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-tighter ${isOpen ? 'bg-green-100 text-green-600 shadow-sm shadow-green-200/50' : 'bg-red-100 text-red-600 shadow-sm shadow-red-200/50'}`}>
