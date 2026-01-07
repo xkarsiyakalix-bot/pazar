@@ -11248,11 +11248,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing?.is_top && (
                         <div className="bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center animate-pulse">
                           <span>⭐ TOP</span>
-                          {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
-                            <span className="text-[10px] opacity-90 mt-0.5">
-                              {Math.ceil((new Date(listing.promotion_expiry) - new Date()) / (1000 * 60 * 60 * 24))} {t.productDetail.ownerDashboard.daysRemaining}
-                            </span>
-                          )}
+
                         </div>
                       )}
 
@@ -11260,11 +11256,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing?.is_highlighted && !listing?.is_top && (
                         <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
                           <span>✨ Öne Çıkan</span>
-                          {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
-                            <span className="text-[10px] opacity-90 mt-0.5 italic">
-                              {Math.ceil((new Date(listing.promotion_expiry) - new Date()) / (1000 * 60 * 60 * 24))} {t.productDetail.ownerDashboard.daysRemaining}
-                            </span>
-                          )}
+
                         </div>
                       )}
                     </div>
