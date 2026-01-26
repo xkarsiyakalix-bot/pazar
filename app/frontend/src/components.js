@@ -2595,8 +2595,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
   return (
     <section className="bg-gradient-to-r from-red-500 to-rose-600 py-4 sm:py-8 relative overflow-visible z-40">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30"></div>
-      <div className="max-w-[1400px] mx-auto px-4 relative z-20">
-        <div className="flex flex-col gap-2 sm:gap-3 lg:flex-row lg:items-stretch">
+      <div className="max-w-[1400px] mx-auto px-2 sm:px-4 relative z-20">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -2743,7 +2743,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               )}
             </div>
 
-            {/* Category Dropdown - Hidden on mobile, shown on tablet+ */}
+            {/* Category Dropdown - Now visible in a different way on mobile? */}
+            {/* On mobile, we might want to show this in the bottom row to save space in the main search bar */}
             <div className="relative hidden md:block" ref={categoryDropdownRef}>
               <button
                 type="button"
@@ -2757,7 +2758,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 </svg>
               </button>
               {showCategoryDropdown && (
-                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 flex min-w-[600px] max-h-[500px] overflow-hidden">
+                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[100] flex min-w-[600px] max-h-[500px] overflow-hidden">
                   {/* Main Categories */}
                   <div className="w-1/2 py-2 border-r border-gray-100 overflow-y-auto">
                     {categories.map((category) => (
@@ -2793,7 +2794,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                             setSelectedCategory(sub.name);
                             setShowCategoryDropdown(false);
                           }}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-md focus:outline-none"
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md focus:outline-none"
                         >
                           {sub.name}
                           {sub.count > 0 && <span className="text-xs text-gray-400 ml-1">({sub.count})</span>}
@@ -2859,8 +2860,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               )}
             </div>
 
-            {/* Distance Filter */}
-            <div className="relative" ref={distanceDropdownRef}>
+            {/* Distance Filter - Hidden on very small screens, visible on sm+ */}
+            <div className="relative hidden sm:block" ref={distanceDropdownRef}>
               <button
                 type="button"
                 onClick={() => setShowDistanceDropdown(!showDistanceDropdown)}
@@ -2889,7 +2890,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               )}
             </div>
 
-            {/* Search Button */}
+            {/* Search Button / Icon */}
             <button
               onClick={() => {
                 const params = new URLSearchParams();
@@ -2897,144 +2898,207 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 if (selectedCategory && selectedCategory !== 'Tüm Kategoriler') params.append('category', selectedCategory);
                 if (location && location !== 'Türkiye') params.append('location', location);
                 if (selectedDistance) params.append('distance', selectedDistance);
-                if (selectedDistance) params.append('distance', selectedDistance);
 
                 console.log('Submitting form with data:', Object.fromEntries(params));
-                // Navigate to search results
                 navigate(`/search?${params.toString()}`);
               }}
-              className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-medium focus:outline-none"
+              className="px-4 sm:px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-medium focus:outline-none flex items-center justify-center"
             >
-              Ara
+              <span className="hidden sm:inline">Ara</span>
+              <svg className="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </button>
           </form>
 
-          {/* Anzeige aufgeben Button */}
-          <button
-            onClick={() => navigate('/add-listing')}
-            className="flex flex-col items-center justify-center text-white transition-all duration-300 font-semibold px-4 py-2 rounded-xl hover:bg-white/10 transform hover:-translate-y-0.5 group"
-          >
-            <svg className="w-8 h-8 mb-0.5 transform group-hover:scale-110 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <circle cx="12" cy="12" r="10" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8m-4-4h8" />
-            </svg>
-            <span className="text-sm">İlan Ver</span>
-          </button>
+          {/* Mobile Action Bar - NEW compact row for mobile */}
+          <div className="flex lg:hidden items-center justify-between gap-1 overflow-x-auto no-scrollbar py-1">
+            {/* Category Button (Mobile) */}
+            <div className="relative flex-1" ref={categoryDropdownRef}>
+              <button
+                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                className="w-full flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <span className="text-[10px] whitespace-nowrap font-medium">{selectedCategory === 'Tüm Kategoriler' ? 'Kategori' : selectedCategory}</span>
+              </button>
+            </div>
 
-          {/* Meins Dropdown */}
-          <div className="relative z-[10000]" ref={meinsDropdownRef}>
+            {/* Distance Button (Mobile) */}
+            <div className="relative flex-1" ref={distanceDropdownRef}>
+              <button
+                onClick={() => setShowDistanceDropdown(!showDistanceDropdown)}
+                className="w-full flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                </svg>
+                <span className="text-[10px] whitespace-nowrap font-medium">{selectedDistance}</span>
+              </button>
+            </div>
+
+            {/* Add Listing Button (Mobile) */}
             <button
-              onClick={() => setShowMeinsDropdown(!showMeinsDropdown)}
-              className="flex flex-col items-center justify-center text-white hover:text-red-50 transition-all duration-300 font-medium px-3 py-2 relative rounded-xl hover:bg-white/10 transform hover:-translate-y-0.5 group"
+              onClick={() => navigate('/add-listing')}
+              className="flex-1 flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors group"
             >
-              <svg className="w-8 h-8 mb-0.5 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="9" r="3" />
-                <path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.834 2.855" strokeLinecap="round" />
+              <svg className="w-5 h-5 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="text-sm">Hesabım</span>
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
-                  {unreadCount}
-                </span>
-              )}
+              <span className="text-[10px] whitespace-nowrap font-medium">İlan Ver</span>
             </button>
 
-            {showMeinsDropdown && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
-                <div className="border-b border-gray-100 pb-2">
-                  <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">HESABIM</div>
+            {/* Account Button (Mobile) */}
+            <div className="relative flex-1">
+              <button
+                onClick={() => setShowMeinsDropdown(!showMeinsDropdown)}
+                className="w-full flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors relative"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span className="text-[10px] whitespace-nowrap font-medium">Hesabım</span>
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-2 bg-white text-red-600 text-[8px] font-bold h-3 w-3 flex items-center justify-center rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
 
-                  <button onClick={() => { navigate('/profile'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    {t.nav.myProfile}
-                  </button>
-                  <button onClick={() => { navigate('/messages'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                    <span className="flex-1">{t.nav.messages}</span>
-                    {unreadCount > 0 && (
-                      <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                        {unreadCount}
-                      </span>
-                    )}
-                  </button>
-                  <button onClick={() => { navigate('/my-listings'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    {t.nav.myListings}
-                  </button>
-                  <button onClick={() => { navigate('/settings'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {t.nav.settings}
-                  </button>
+          {/* Desktop Actions (Hidden on Mobile) */}
+          <div className="hidden lg:flex items-stretch gap-3">
+            <button
+              onClick={() => navigate('/add-listing')}
+              className="flex flex-col items-center justify-center text-white transition-all duration-300 font-semibold px-4 py-2 rounded-xl hover:bg-white/10 transform hover:-translate-y-0.5 group"
+            >
+              <svg className="w-8 h-8 mb-0.5 transform group-hover:scale-110 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <circle cx="12" cy="12" r="10" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8m-4-4h8" />
+              </svg>
+              <span className="text-sm">İlan Ver</span>
+            </button>
 
-                  {/* Unternehmensseite PRO */}
-                  <button
-                    onClick={() => { navigate('/packages'); setShowMeinsDropdown(false); }}
-                    className="block w-full text-left px-3 py-2.5 mx-2 my-2 rounded-lg bg-gradient-premium text-white font-semibold transition-all hover:shadow-premium-lg transform hover:-translate-y-0.5 flex items-center gap-2"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    {t.nav.proPage}
-                  </button>
-                </div>
-                <div className="border-t border-gray-100 py-2">
-                  <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.nav.favorites.toUpperCase()}</div>
-
-                  <button
-                    onClick={() => { navigate('/favorites'); setShowMeinsDropdown(false); }}
-                    className={`block w-full text-left px-4 py-2.5 flex justify-between items-center transition-colors ${isFavoritesListingsActive
-                      ? 'bg-primary-50 text-primary-600 font-medium'
-                      : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
-                      }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      {t.nav.favorites}
-                    </div>
-                    {favorites.length > 0 && (
-                      <span className="badge-premium">
-                        {favorites.length}
-                      </span>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => { navigate('/following'); setShowMeinsDropdown(false); }}
-                    className={`block w-full text-left px-4 py-2.5 flex justify-between items-center transition-colors ${isFavoritesUsersActive
-                      ? 'bg-primary-50 text-primary-600 font-medium'
-                      : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
-                      }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
-                      {t.nav.following}
-                    </div>
-                    {followedSellers.length > 0 && (
-                      <span className="badge-premium">
-                        {followedSellers.length}
-                      </span>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
+            <div className="relative flex items-center">
+              <button
+                onClick={() => setShowMeinsDropdown(!showMeinsDropdown)}
+                className="flex flex-col items-center justify-center text-white hover:text-red-50 transition-all duration-300 font-medium px-3 py-2 relative rounded-xl hover:bg-white/10 transform hover:-translate-y-0.5 group"
+              >
+                <svg className="w-8 h-8 mb-0.5 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="9" r="3" />
+                  <path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.834 2.855" strokeLinecap="round" />
+                </svg>
+                <span className="text-sm">Hesabım</span>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
         </div>
+
+        {showMeinsDropdown && (
+          <div
+            className="absolute right-4 sm:right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-[10000]"
+            ref={meinsDropdownRef}
+          >
+            <div className="border-b border-gray-100 pb-2">
+              <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">HESABIM</div>
+
+              <button onClick={() => { navigate('/profile'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                {t.nav.myProfile}
+              </button>
+              <button onClick={() => { navigate('/messages'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <span className="flex-1">{t.nav.messages}</span>
+                {unreadCount > 0 && (
+                  <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              <button onClick={() => { navigate('/my-listings'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {t.nav.myListings}
+              </button>
+              <button onClick={() => { navigate('/settings'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {t.nav.settings}
+              </button>
+
+              {/* Unternehmensseite PRO */}
+              <button
+                onClick={() => { navigate('/packages'); setShowMeinsDropdown(false); }}
+                className="block w-full text-left px-3 py-2.5 mx-2 my-2 rounded-lg bg-gradient-premium text-white font-semibold transition-all hover:shadow-premium-lg transform hover:-translate-y-0.5 flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                {t.nav.proPage}
+              </button>
+            </div>
+            <div className="border-t border-gray-100 py-2">
+              <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.nav.favorites.toUpperCase()}</div>
+
+              <button
+                onClick={() => { navigate('/favorites'); setShowMeinsDropdown(false); }}
+                className={`block w-full text-left px-4 py-2.5 flex justify-between items-center transition-colors ${isFavoritesListingsActive
+                  ? 'bg-primary-50 text-primary-600 font-medium'
+                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  {t.nav.favorites}
+                </div>
+                {favorites.length > 0 && (
+                  <span className="badge-premium">
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => { navigate('/following'); setShowMeinsDropdown(false); }}
+                className={`block w-full text-left px-4 py-2.5 flex justify-between items-center transition-colors ${isFavoritesUsersActive
+                  ? 'bg-primary-50 text-primary-600 font-medium'
+                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  {t.nav.following}
+                </div>
+                {followedSellers.length > 0 && (
+                  <span className="badge-premium">
+                    {followedSellers.length}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section >
   );
