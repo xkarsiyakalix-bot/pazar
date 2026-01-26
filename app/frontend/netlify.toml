@@ -1,12 +1,7 @@
 # Netlify Configuration for React App
 [build]
-  # Build command
-  command = "npm run build"
-  
-  # Directory with the build output
+  command = "CI= npm run build"
   publish = "build"
-  
-  # Base directory (if your frontend is in a subdirectory)
   base = ""
 
 # Redirect all requests to index.html for client-side routing
