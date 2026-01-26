@@ -2911,64 +2911,6 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
             </button>
           </form>
 
-          {/* Mobile Action Bar - NEW compact row for mobile */}
-          <div className="flex lg:hidden items-center justify-between gap-1 overflow-x-auto no-scrollbar py-1">
-            {/* Category Button (Mobile) */}
-            <div className="relative flex-1" ref={categoryDropdownRef}>
-              <button
-                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                className="w-full flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-                <span className="text-[10px] whitespace-nowrap font-medium">{selectedCategory === 'Tüm Kategoriler' ? 'Kategori' : selectedCategory}</span>
-              </button>
-            </div>
-
-            {/* Distance Button (Mobile) */}
-            <div className="relative flex-1" ref={distanceDropdownRef}>
-              <button
-                onClick={() => setShowDistanceDropdown(!showDistanceDropdown)}
-                className="w-full flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                </svg>
-                <span className="text-[10px] whitespace-nowrap font-medium">{selectedDistance}</span>
-              </button>
-            </div>
-
-            {/* Add Listing Button (Mobile) */}
-            <button
-              onClick={() => navigate('/add-listing')}
-              className="flex-1 flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors group"
-            >
-              <svg className="w-5 h-5 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-[10px] whitespace-nowrap font-medium">İlan Ver</span>
-            </button>
-
-            {/* Account Button (Mobile) */}
-            <div className="relative flex-1">
-              <button
-                onClick={() => setShowMeinsDropdown(!showMeinsDropdown)}
-                className="w-full flex flex-col items-center justify-center gap-1 p-2 text-white/90 hover:text-white transition-colors relative"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span className="text-[10px] whitespace-nowrap font-medium">Hesabım</span>
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-2 bg-white text-red-600 text-[8px] font-bold h-3 w-3 flex items-center justify-center rounded-full">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-
           {/* Desktop Actions (Hidden on Mobile) */}
           <div className="hidden lg:flex items-stretch gap-3">
             <button
