@@ -655,19 +655,6 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
             )}
           </div>
 
-          {/* Mobile Icons */}
-          <div className="flex lg:hidden items-center gap-2">
-            <button
-              onClick={() => window.location.href = '/messages'}
-              className="p-2 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all relative"
-              title={t.nav.messages}
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-          </div>
         </div>
 
         {/* Mobile Menu Drawer */}
@@ -3995,7 +3982,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
             {galleryItems.map((item) => (
               <div
                 key={item.id}
-                className={`gallery-item flex-shrink-0 snap-start ${isMobile ? 'w-[280px]' : 'w-[calc(20%-12.8px)]'}`}
+                className={`gallery-item flex-shrink-0 snap-start ${isMobile ? 'w-[150px]' : 'w-[calc(20%-12.8px)]'}`}
               >
                 <ListingCard
                   listing={item}
