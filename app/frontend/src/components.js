@@ -3807,6 +3807,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
   const itemsPerView = 5;
   const [showInfoModal, setShowInfoModal] = useState(false);
   const { user } = useAuth();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchTopListings = async () => {
@@ -3927,28 +3928,30 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
           >
             İlanınızı burada yayınlayın
           </button>
-          <div className="flex gap-2">
-            <button
-              onClick={prevSlide}
-              disabled={currentIndex === 0}
-              className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
-              aria-label="Previous items"
-            >
-              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={nextSlide}
-              disabled={currentIndex >= maxIndex}
-              className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
-              aria-label="Next items"
-            >
-              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+          {!isMobile && (
+            <div className="flex gap-2">
+              <button
+                onClick={prevSlide}
+                disabled={currentIndex === 0}
+                className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
+                aria-label="Previous items"
+              >
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={nextSlide}
+                disabled={currentIndex >= maxIndex}
+                className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
+                aria-label="Next items"
+              >
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -3986,11 +3989,14 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
           </div>
         ) : (
           <div
-            className="flex transition-transform duration-300 ease-in-out gap-3"
-            style={{ transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)` }}
+            className={`flex gap-4 ${isMobile ? 'overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4' : 'transition-transform duration-300 ease-in-out'}`}
+            style={!isMobile ? { transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)` } : {}}
           >
             {galleryItems.map((item) => (
-              <div key={item.id} className="gallery-item w-[calc(20%-9.6px)] flex-shrink-0">
+              <div
+                key={item.id}
+                className={`gallery-item flex-shrink-0 snap-start ${isMobile ? 'w-[280px]' : 'w-[calc(20%-12.8px)]'}`}
+              >
                 <ListingCard
                   listing={item}
                   toggleFavorite={toggleFavorite}
