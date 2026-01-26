@@ -20,7 +20,7 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
         art: {
             label: 'Tür',
-            type: 'radio',
+            type: 'multiselect',
             options: [
                 { value: 'Alkoven', label: 'Alkoven' },
                 { value: 'Entegre', label: 'Tam Entegre' },
@@ -33,7 +33,7 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
         },
         marke: {
             label: 'Marka',
-            type: 'radio',
+            type: 'multiselect',
             options: [
                 'Adria', 'Bürstner', 'Carado', 'Carthago', 'Chausson', 'Dethleffs',
                 'Eura Mobil', 'Fendt', 'Fiat', 'Ford', 'Globecar', 'Hobby',
@@ -60,7 +60,7 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
         },
         offerType: {
             label: 'İlan Tipi',
-            type: 'radio',
+            type: 'multiselect',
             options: [
                 { value: 'Angebote', label: 'Satılık' },
                 { value: 'Gesuche', label: 'Aranıyor' }
@@ -69,7 +69,7 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
         },
         providerType: {
             label: 'Satıcı',
-            type: 'radio',
+            type: 'multiselect',
             options: [
                 { value: 'Privatnutzer', label: 'Bireysel' },
                 { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
@@ -78,7 +78,7 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
         },
         federalState: {
             label: 'Konum',
-            type: 'radio',
+            type: 'multiselect',
             options: getTurkishCities(),
             field: 'federal_state'
         }

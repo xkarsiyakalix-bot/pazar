@@ -88,6 +88,16 @@ export const getUserStats = async (userId) => {
             .eq('user_id', userId)
             .eq('status', 'active');
 
+        // Listings created in the last 30 days (for limit calculation)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const { count: monthlyListings } = await supabase
+            .from('listings')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .neq('status', 'deleted')
+            .gte('created_at', thirtyDaysAgo.toISOString());
+
         // Total views
         const { data: listings } = await supabase
             .from('listings')
@@ -112,6 +122,7 @@ export const getUserStats = async (userId) => {
         return {
             totalListings: totalListings || 0,
             activeListings: activeListings || 0,
+            monthlyListings: monthlyListings || 0,
             totalViews,
             totalFavorites: receivedFavorites || 0, // This is technically "received" favorites
             watchlistCount: watchlistCount || 0   // This is the "given" favorites (Merkliste)
@@ -121,8 +132,85 @@ export const getUserStats = async (userId) => {
         return {
             totalListings: 0,
             activeListings: 0,
+            monthlyListings: 0,
             totalViews: 0,
             totalFavorites: 0
         };
     }
+};
+
+/**
+ * Fetch total number of registered users
+ * @returns {Promise<number>} Total user count
+ */
+export const fetchTotalUserCount = async () => {
+    try {
+        const { count, error } = await supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) throw error;
+        return count;
+    } catch (error) {
+        console.error('Error fetching total user count:', error);
+        return 0;
+    }
+};
+
+/**
+ * Delete user profile (soft delete or status update)
+ * Note: Real Auth deletion should be done via Edge Functions for security,
+ * here we mark the profile as 'deleted' so the user can no longer log in.
+ * @param {string} userId - User ID
+ */
+export const deleteUserProfile = async (userId) => {
+    // 1. Mark profile as deleted
+    const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+            status: 'deleted',
+            full_name: 'Silinmiş Hesap',
+            phone: null,
+            bio: null,
+            avatar_url: null,
+            store_slug: null
+        })
+        .eq('id', userId);
+
+    if (profileError) throw profileError;
+
+    // 2. Deactivate all listings
+    const { error: listingsError } = await supabase
+        .from('listings')
+        .update({ status: 'deleted' })
+        .eq('user_id', userId);
+
+    if (listingsError) console.warn('Error deleting user listings:', listingsError);
+
+    // 3. Sign out the user
+    await supabase.auth.signOut();
+
+    return true;
+};
+
+/**
+ * Cancel user subscription
+ * @param {string} userId - User ID
+ */
+export const cancelSubscription = async (userId) => {
+    const { data, error } = await supabase
+        .from('profiles')
+        .update({
+            subscription_tier: 'free',
+            subscription_expiry: null,
+            is_pro: false,
+            seller_type: 'Privatnutzer', // Revert to private
+            is_commercial: false
+        })
+        .eq('id', userId)
+        .select()
+        .single();
+
+    if (error) throw error;
+    return data;
 };

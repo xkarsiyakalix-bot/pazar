@@ -101,7 +101,7 @@ export const getConversations = async () => {
     // Fetch profiles for all users
     const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url')
+        .select('id, full_name, avatar_url, store_logo')
         .in('id', Array.from(userIds));
 
     // Create a map of profiles
@@ -211,7 +211,7 @@ export const getConversation = async (userId) => {
     // Fetch profiles for both users
     const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url')
+        .select('id, full_name, avatar_url, store_logo')
         .in('id', [user.id, userId]);
 
     // Create profile map

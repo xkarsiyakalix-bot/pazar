@@ -25,7 +25,7 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
         },
         versand: {
             label: 'Kargo',
-            type: 'radio',
+            type: 'multiselect',
             options: [
                 { value: 'Versand möglich', label: 'Kargo Mümkün' },
                 { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
@@ -34,7 +34,7 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
         },
         offerType: {
             label: 'İlan Tipi',
-            type: 'radio',
+            type: 'multiselect',
             options: [
                 { value: 'Angebote', label: 'Satılık' },
                 { value: 'Gesuche', label: 'Aranıyor' }
@@ -43,7 +43,7 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
         },
         providerType: {
             label: 'Satıcı',
-            type: 'radio',
+            type: 'multiselect',
             options: [
                 { value: 'Privatnutzer', label: 'Bireysel' },
                 { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
@@ -52,7 +52,7 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
         },
         federalState: {
             label: 'Konum',
-            type: 'radio',
+            type: 'multiselect',
             options: getTurkishCities(),
             field: 'federal_state'
         }

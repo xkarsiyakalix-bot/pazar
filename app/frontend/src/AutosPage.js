@@ -6,11 +6,19 @@ import { getTurkishCities, isValidTurkishCity, t, getCategoryTranslation } from 
 import { carBrands } from './data/carBrands';
 import { fetchCategoryStats } from './api/listings';
 import { CategoryGallery, getCategoryPath } from './components';
+import LoadingSpinner from './components/LoadingSpinner';
 import { CategorySEO } from './SEO';
 import { LazyImage } from './LazyLoad';
 
 
 
+
+
+const formatPrice = (val) => {
+    if (!val) return '';
+    const numeric = val.toString().replace(/\D/g, '');
+    return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
 
 function AutosPage() {
     const navigate = useNavigate();
@@ -557,9 +565,12 @@ function AutosPage() {
         if (!transValue) return '-';
         const map = {
             'Automatik': t.autos?.transmission?.automatic || 'Otomatik',
+            'Otomatik': t.autos?.transmission?.automatic || 'Otomatik',
             'Manuell': t.autos?.transmission?.manual || 'Manuel',
+            'Manuel': t.autos?.transmission?.manual || 'Manuel',
             'Schaltgetriebe': t.autos?.transmission?.manual || 'Manuel', // Common alias
             'Halbautomatik': 'Yarı Otomatik',
+            'Yarı Otomatik': 'Yarı Otomatik',
             'Andere': t.common.others || 'Diğer'
         };
         return map[transValue] || transValue;
@@ -577,8 +588,10 @@ function AutosPage() {
     }, [priceFrom, priceTo]);
 
     const handleApplyPrice = () => {
-        setPriceFrom(inputPriceFrom);
-        setPriceTo(inputPriceTo);
+        const cleanFrom = inputPriceFrom.toString().replace(/\./g, '');
+        const cleanTo = inputPriceTo.toString().replace(/\./g, '');
+        setPriceFrom(cleanFrom);
+        setPriceTo(cleanTo);
     };
 
     // Save filters to localStorage whenever they change
@@ -646,60 +659,7 @@ function AutosPage() {
     const { listings, loading, hasMore, loadMore, page, setListings } = useListings('Otomobil, Bisiklet & Tekne', 'Otomobiller', 1, 15);
 
 
-    // Mock listings for testing
-    const mockListings = [
-        {
-            id: 'mock-bmw-1',
-            listingType: 'selling',
-            title: 'BMW 320d Limousine - Gepflegter Zustand',
-            description: 'Verkaufe meinen gut gepflegten BMW 320d. Das Fahrzeug ist in einem sehr guten Zustand, regelmäßig gewartet und scheckheftgepflegt. Nichtraucherfahrzeug.',
-            price: 18500,
-            category: 'Auto, Rad & Boot',
-            subCategory: 'Otomobiller',
-            condition: 'used',
-            priceType: 'fixed',
-            city: 'München',
-            postalCode: '80331',
-            carBrand: 'BMW',
-            carModel: '3er',
-            created_at: new Date().toISOString(),
-            images: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80']
-        },
-        {
-            id: 'mock-audi-1',
-            listingType: 'selling',
-            title: 'Audi A4 Avant - Top Zustand',
-            description: 'Gepflegter Audi A4 Avant mit Vollausstattung. Scheckheftgepflegt, Nichtraucher, unfallfrei.',
-            price: 22900,
-            category: 'Auto, Rad & Boot',
-            subCategory: 'Otomobiller',
-            condition: 'used',
-            priceType: 'negotiable',
-            city: 'Berlin',
-            postalCode: '10115',
-            carBrand: 'Audi',
-            carModel: 'A4',
-            created_at: new Date(Date.now() - 86400000).toISOString(),
-            images: ['https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80']
-        },
-        {
-            id: 'mock-mercedes-1',
-            listingType: 'selling',
-            title: 'Mercedes-Benz C-Klasse - Wie neu',
-            description: 'Mercedes C 200 in bestem Zustand. Erstzulassung 2020, nur 35.000 km gelaufen.',
-            price: 28500,
-            category: 'Auto, Rad & Boot',
-            subCategory: 'Otomobiller',
-            condition: 'used',
-            priceType: 'fixed',
-            city: 'Hamburg',
-            postalCode: '20095',
-            carBrand: 'Mercedes Benz',
-            carModel: 'C-Klasse',
-            created_at: new Date(Date.now() - 172800000).toISOString(),
-            images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80']
-        }
-    ];
+
 
 
     const toggleFavorite = (listingId) => {
@@ -755,9 +715,9 @@ function AutosPage() {
 
         // Transmission (Getriebe)
         if (automaticTransmission || manualTransmission) {
-            const showAuto = automaticTransmission && listing.getriebe === 'Automatik';
-            const showManual = manualTransmission && listing.getriebe === 'Manuell';
-            // Note: AddListing needs to save 'Automatik'/'Manuell' strictly
+            const showAuto = automaticTransmission && (listing.getriebe === 'Automatik' || listing.getriebe === 'Otomatik');
+            const showManual = manualTransmission && (listing.getriebe === 'Manuell' || listing.getriebe === 'Manuel');
+            // Note: AddListing now saves 'Otomatik'/'Manuel'
             if (!showAuto && !showManual && listing.getriebe) return false;
         }
 
@@ -906,6 +866,25 @@ function AutosPage() {
         return true;
     });
 
+    // Sort listings: Premium (z_premium) first, then z_multi_bump, then is_top, then highlighted, then newest
+    const sortedListings = [...filteredListings].sort((a, b) => {
+        // Priority: z_premium > z_multi_bump > other is_top > highlighted > basic
+        const getPriority = (l) => {
+            const type = l.package_type?.toLowerCase();
+            if (type === 'z_premium' || type === 'premium') return 100;
+            if (type === 'z_multi_bump' || type === 'multi-bump') return 80;
+            if (l.is_top) return 50;
+            if (l.is_highlighted || type === 'highlight' || type === 'budget') return 10;
+            return 0;
+        };
+
+        const prioA = getPriority(a);
+        const prioB = getPriority(b);
+
+        if (prioA !== prioB) return prioB - prioA;
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+
     return (
         <div className="min-h-screen bg-gray-50">
             <CategorySEO category="Otomobil, Bisiklet & Tekne" subCategory="Otomobiller" itemCount={statsListings.length} />
@@ -917,7 +896,7 @@ function AutosPage() {
                         <div className="mb-6 pb-6 border-b border-gray-200">
                             <h3 className="font-bold text-gray-900 mb-3 text-base">{t.filters.categories}</h3>
                             <button
-                                onClick={() => navigate('/Alle-Kategorien')}
+                                onClick={() => navigate('/search')}
                                 className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
                             >
                                 <span>{t.filters.allCategories}</span>
@@ -1010,7 +989,7 @@ function AutosPage() {
                         )}
                         {loading && page > 1 && (
                             <div className="mt-8 flex justify-center">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                                <LoadingSpinner size="small" />
                             </div>
                         )}
 
@@ -1450,22 +1429,22 @@ function AutosPage() {
                                     <div className="flex-1">
                                         <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (₺)</label>
                                         <input
-                                            type="number"
-                                            value={inputPriceFrom}
-                                            onChange={(e) => setInputPriceFrom(e.target.value)}
+                                            type="text"
+                                            value={formatPrice(inputPriceFrom)}
+                                            onChange={(e) => setInputPriceFrom(e.target.value.replace(/\D/g, ''))}
                                             onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
-                                            placeholder={`${t.common.example || 'örn.'} 5000`}
+                                            placeholder={`${t.common.example || 'örn.'} 5.000`}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
                                         />
                                     </div>
                                     <div className="flex-1">
                                         <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (₺)</label>
                                         <input
-                                            type="number"
-                                            value={inputPriceTo}
-                                            onChange={(e) => setInputPriceTo(e.target.value)}
+                                            type="text"
+                                            value={formatPrice(inputPriceTo)}
+                                            onChange={(e) => setInputPriceTo(e.target.value.replace(/\D/g, ''))}
                                             onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
-                                            placeholder={`${t.common.example || 'örn.'} 50000`}
+                                            placeholder={`${t.common.example || 'örn.'} 50.000`}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
                                         />
                                     </div>
@@ -1748,7 +1727,9 @@ function AutosPage() {
 
                         <div style={{ maxWidth: '960px' }}>
                             <CategoryGallery
-                                listings={filteredListings.filter(l => l.is_top)}
+                                listings={filteredListings.filter(l =>
+                                    l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase())
+                                )}
                                 toggleFavorite={() => { }}
                                 isFavorite={() => false}
                             />
@@ -1765,7 +1746,7 @@ function AutosPage() {
 
                                 {loading ? (
                                     <div className="text-center py-12">
-                                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                                        <LoadingSpinner size="medium" />
                                         <p className="mt-4 text-gray-600">{t.autos?.loadingAds || 'İlanlar yükleniyor...'}</p>
                                     </div>
                                 ) : filteredListings.length === 0 ? (
@@ -1778,25 +1759,50 @@ function AutosPage() {
                                     </div>
                                 ) : (
                                     <div className="space-y-6">
-                                        {filteredListings.map((listing) => (
+                                        {sortedListings.map((listing) => (
                                             <div
                                                 key={listing.id}
-                                                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                                                className={`${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'bg-purple-50' : 'bg-white'} border ${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'border-purple-200' : 'border-gray-200'} rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer`}
                                                 onClick={() => navigate(`/product/${listing.id}`)}
                                             >
                                                 <div className="flex flex-col md:flex-row">
-                                                    {/* Image Section - Narrower */}
-                                                    <div className="md:w-56 h-40 md:h-48 relative group flex-shrink-0 bg-gray-100">
+                                                    {/* Image Section - Balanced Size */}
+                                                    <div className="md:w-64 h-44 md:h-48 relative group flex-shrink-0 bg-gray-100">
                                                         <LazyImage
                                                             src={listing.images && listing.images.length > 0 ? listing.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}
                                                             alt={listing.title}
                                                             className="w-full h-full object-cover transition-transform duration-300"
                                                         />
                                                         {listing?.reserved_by && (
-                                                            <div className="absolute top-3 left-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                                                            <div className="absolute top-3 left-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg z-20">
                                                                 {t.autos?.reserved || 'RESERVIERT'}
                                                             </div>
                                                         )}
+                                                        {/* TOP Badge removed */}
+                                                        {/* Vitrin Badge - Inclusive check */}
+                                                        {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) && (
+                                                            <div className={`absolute ${listing?.reserved_by ? 'top-12' : 'top-3'} left-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow-md border border-white/20 z-10 flex items-center gap-1`}>
+                                                                <span>⭐ VİTRİN</span>
+                                                            </div>
+                                                        )}
+                                                        {/* Package Badge */}
+                                                        {listing?.package_type &&
+                                                            listing.package_type.toLowerCase() !== 'basic' &&
+                                                            listing.package_type.toLowerCase() !== 'top' && // Suppress redundant TOP package badge
+                                                            listing.package_type.toLowerCase() !== 'galerie' &&
+                                                            listing.package_type.toLowerCase() !== 'verlängerung' &&
+                                                            listing.package_type.toLowerCase() !== 'extension' && (
+                                                                <div className={`absolute ${listing?.reserved_by ? ((listing?.is_top && listing?.package_type?.toLowerCase() !== 'multi-bump' && listing?.package_type?.toLowerCase() !== 'z_multi_bump' && listing?.package_type?.toLowerCase() !== 'premium' && listing?.package_type?.toLowerCase() !== 'z_premium') ? 'top-[4.5rem]' : 'top-12') : ((listing?.is_top && listing?.package_type?.toLowerCase() !== 'multi-bump' && listing?.package_type?.toLowerCase() !== 'z_multi_bump' && listing?.package_type?.toLowerCase() !== 'premium' && listing?.package_type?.toLowerCase() !== 'z_premium') ? 'top-12' : 'top-3')} left-3 px-3 py-1.5 rounded-md text-[10px] font-bold shadow-md border border-white/20 z-10 uppercase tracking-wider ${listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? 'bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' :
+                                                                    listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-200' :
+                                                                        listing.package_type.toLowerCase() === 'plus' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
+                                                                            'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-200' // Budget/Standard -> Yellow
+                                                                    }`}>
+                                                                    {listing.package_type.toLowerCase() === 'budget' || listing.package_type.toLowerCase() === 'highlight' ? 'ÖNE ÇIKAN' :
+                                                                        listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? '⚡ GÜNLÜK YUKARI' :
+                                                                            listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? '👑 PREMIUM' :
+                                                                                listing.package_type}
+                                                                </div>
+                                                            )}
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                                         <button
                                                             onClick={(e) => {

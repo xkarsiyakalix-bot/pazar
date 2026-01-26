@@ -43,26 +43,36 @@ export const purchasePromotion = async (listingId, packageDetails, userId, listi
         // 3. Update listing status based on package type
         const updates = {
             promotion_expiry: endDate.toISOString(),
+            package_type: packageDetails.id, // Ensure the new field is set
             ...listingUpdates
         };
 
-        if (packageDetails.id === 'bump') {
+        if (packageDetails.id === 'bump' || packageDetails.id === 'multi-bump' || packageDetails.id === 'top') {
             updates.created_at = new Date().toISOString();
         }
 
-        if (packageDetails.id === 'highlight' || packageDetails.id === 'premium') {
+        if (packageDetails.id === 'highlight') {
             updates.is_highlighted = true;
         }
 
-        if (packageDetails.id === 'top' || packageDetails.id === 'premium') {
+        if (packageDetails.id === 'top') {
             updates.is_top = true;
+            updates.is_multi_bump = false;
         }
 
-        if (packageDetails.id === 'multi-bump' || packageDetails.id === 'premium') {
+        if (packageDetails.id === 'multi-bump') {
             updates.is_multi_bump = true;
+            updates.is_top = true;
+            updates.package_type = 'z_multi_bump';
         }
 
-        if (packageDetails.id === 'galerie' || packageDetails.id === 'premium') {
+        if (packageDetails.id === 'premium' || packageDetails.id === 'z_premium') {
+            updates.is_top = true;
+            updates.is_multi_bump = false;
+            // We use package_type 'z_premium' to distinguish for absolute top sorting
+        }
+
+        if (['galerie', 'gallery', 'galeri', 'vitrin'].includes(packageDetails.id?.toLowerCase())) {
             updates.is_gallery = true;
         }
 

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CategoryGallery, mockListings, HorizontalListingCard, getCategoryPath } from './components';
-import { getTurkishCities } from './translations';
+import { CategoryGallery, HorizontalListingCard, getCategoryPath } from './components';
+import { getTurkishCities, getCategoryTranslation } from './translations';
+import { fetchListings } from './api/listings';
+import { Breadcrumb } from './components/Breadcrumb';
+import LoadingSpinner from './components/LoadingSpinner';
 
 const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     const navigate = useNavigate();
@@ -9,45 +12,102 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
+    const [selectedSubCategory, setSelectedSubCategory] = useState('');
     const [selectedLocations, setSelectedLocations] = useState([]);
     const [priceFrom, setPriceFrom] = useState('');
     const [priceTo, setPriceTo] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
     const categories = [
-        { name: 'Tüm Kategoriler', icon: '🏪', count: 0 },
-        { name: 'Otomobil, Bisiklet & Tekne', icon: '🚗', count: 0 },
-        { name: 'Emlak', icon: '🏠', count: 0 },
-        { name: 'Ev & Bahçe', icon: '🏡', count: 0 },
-        { name: 'Moda & Güzellik', icon: '👗', count: 0 },
-        { name: 'Elektronik', icon: '📱', count: 0 },
-        { name: 'Evcil Hayvanlar', icon: '🐾', count: 0 },
-        { name: 'Aile, Çocuk & Bebek', icon: '👶', count: 0 },
-        { name: 'İş İlanları', icon: '💼', count: 0 },
-        { name: 'Eğlence, Hobi & Mahalle', icon: '⚽', count: 0 },
-        { name: 'Müzik, Film & Kitap', icon: '🎵', count: 0 },
-        { name: 'Biletler', icon: '🎫', count: 0 },
-        { name: 'Hizmetler', icon: '🔧', count: 0 },
-        { name: 'Ücretsiz & Takas', icon: '🎁', count: 0 },
-        { name: 'Eğitim & Kurslar', icon: '📚', count: 0 },
-        { name: 'Komşu Yardımı', icon: '🤝', count: 0 }
+        { name: 'Tüm Kategoriler', icon: '🏪', count: 0, subcategories: [] },
+        {
+            name: 'Otomobil, Bisiklet & Tekne', icon: '🚗', count: 0,
+            subcategories: [
+                'Otomobiller', 'Oto Parça & Lastik', 'Tekne & Tekne Malzemeleri',
+                'Bisiklet & Aksesuarlar', 'Motosiklet & Scooter', 'Motosiklet Parça & Aksesuarlar',
+                'Ticari Araçlar & Römorklar', 'Tamir & Servis', 'Karavan & Motokaravan', 'Diğer Otomobil, Bisiklet & Tekne'
+            ]
+        },
+        {
+            name: 'Emlak', icon: '🏠', count: 0,
+            subcategories: [
+                'Geçici Konaklama & Paylaşımlı Ev', 'Konteyner', 'Satılık Daire', 'Satılık Yazlık',
+                'Tatil Evi & Yurt Dışı Emlak', 'Garaj & Otopark', 'Ticari Emlak', 'Arsa & Bahçe',
+                'Satılık Müstakil Ev', 'Kiralık Müstakil Ev', 'Kiralık Daire', 'Yeni Projeler',
+                'Taşımacılık & Nakliye', 'Diğer Emlak'
+            ]
+        },
+        {
+            name: 'Ev & Bahçe', icon: '🏡', count: 0,
+            subcategories: ['Banyo', 'Ofis', 'Dekorasyon', 'Ev Hizmetleri', 'Bahçe Malzemeleri & Bitkiler', 'Ev Tekstili', 'Ev Tadilatı', 'Mutfak & Yemek Odası', 'Lamba & Aydınlatma', 'Yatak Odası', 'Oturma Odası', 'Diğer Ev & Bahçe']
+        },
+        {
+            name: 'Moda & Güzellik', icon: '👗', count: 0,
+            subcategories: ['Güzellik & Sağlık', 'Kadın Giyimi', 'Kadın Ayakkabıları', 'Erkek Giyimi', 'Erkek Ayakkabıları', 'Çanta & Aksesuarlar', 'Saat & Takı', 'Diğer Moda & Güzellik']
+        },
+        {
+            name: 'Elektronik', icon: '📱', count: 0,
+            subcategories: ['Ses & Hifi', 'Elektronik Hizmetler', 'Fotoğraf & Kamera', 'Cep Telefonu & Telefon', 'Ev Aletleri', 'Konsollar', 'Dizüstü Bilgisayarlar', 'Bilgisayarlar', 'Bilgisayar Aksesuarları & Yazılım', 'Tabletler & E-Okuyucular', 'TV & Video', 'Video Oyunları', 'Diğer Elektronik']
+        },
+        {
+            name: 'Evcil Hayvanlar', icon: '🐾', count: 0,
+            subcategories: ['Balıklar', 'Köpekler', 'Kediler', 'Küçük Hayvanlar', 'Çiftlik Hayvanları', 'Atlar', 'Hayvan Bakımı & Eğitim', 'Kayıp Hayvanlar', 'Kuşlar', 'Aksesuarlar']
+        },
+        {
+            name: 'Aile, Çocuk & Bebek', icon: '👶', count: 0,
+            subcategories: ['Yaşlı Bakımı', 'Bebek & Çocuk Giyimi', 'Bebek & Çocuk Ayakkabıları', 'Bebek Ekipmanları', 'Bebek Koltuğu & Oto Koltukları', 'Babysitter & Çocuk Bakımı', 'Bebek Arabaları & Pusetler', 'Bebek Odası Mobilyaları', 'Oyuncaklar', 'Diğer Aile, Çocuk & Bebek']
+        },
+        {
+            name: 'İş İlanları', icon: '💼', count: 0,
+            subcategories: ['Mesleki Eğitim', 'İnşaat, El Sanatları & Üretim', 'Büro İşleri & Yönetim', 'Gastronomi & Turizm', 'Müşteri Hizmetleri & Çağrı Merkezi', 'Ek İşler', 'Staj', 'Sosyal Sektör & Bakım', 'Taşımacılık & Lojistik', 'Satış & Pazarlama', 'Diğer İş İlanları']
+        },
+        {
+            name: 'Eğlence, Hobi & Mahalle', icon: '⚽', count: 0,
+            subcategories: ['Ezoterizm & Spiritüalizm', 'Yiyecek & İçecek', 'Boş Zaman Aktiviteleri', 'El Sanatları & Hobi', 'Sanat & Antikalar', 'Sanatçılar & Müzisyenler', 'Model Yapımı', 'Seyahat & Etkinlik Hizmetleri', 'Koleksiyon', 'Spor & Camping', 'Bit Pazarı', 'Kayıp & Buluntu', 'Diğer Eğlence, Hobi & Mahalle']
+        },
+        {
+            name: 'Müzik, Film & Kitap', icon: '🎵', count: 0,
+            subcategories: ['Kitap & Dergi', 'Kırtasiye', 'Çizgi Romanlar', 'Ders Kitapları, Okul & Eğitim', 'Film & DVD', "Müzik & CD'ler", 'Müzik Enstrümanları', 'Diğer Müzik, Film & Kitap']
+        },
+        {
+            name: 'Biletler', icon: '🎫', count: 0,
+            subcategories: ['Tren & Toplu Taşıma', 'Komedi & Kabare', 'Hediye Çekleri', 'Çocuk Etkinlikleri', 'Konserler', 'Spor', 'Tiyatro & Müzikal', 'Diğer Biletler']
+        },
+        {
+            name: 'Hizmetler', icon: '🔧', count: 0,
+            subcategories: ['Yaşlı Bakımı', 'Otomobil, Bisiklet & Tekne', 'Babysitter & Çocuk Bakımı', 'Elektronik', 'Ev & Bahçe', 'Sanatçılar & Müzisyenler', 'Seyahat & Etkinlik', 'Hayvan Bakımı & Eğitim', 'Taşımacılık & Nakliye', 'Diğer Hizmetler']
+        },
+        {
+            name: 'Ücretsiz & Takas', icon: '🎁', count: 0,
+            subcategories: ['Takas', 'Kiralama', 'Ücretsiz']
+        },
+        {
+            name: 'Eğitim & Kurslar', icon: '📚', count: 0,
+            subcategories: ['Bilgisayar Kursları', 'Ezoterizm & Spiritüalizm', 'Yemek & Pastacılık', 'Sanat & Tasarım', 'Müzik & Şan', 'Özel Ders', 'Spor Kursları', 'Dil Kursları', 'Dans Kursları', 'Sürekli Eğitim', 'Diğer Eğitim & Kurslar']
+        },
+        {
+            name: 'Komşu Yardımı', icon: '🤝', count: 0,
+            subcategories: ['Komşu Yardımı']
+        }
     ];
 
     const federalStates = getTurkishCities();
 
-    // Read URL parameters on mount
+    // Read URL parameters on mount and when they change
     useEffect(() => {
-        const search = searchParams.get('search');
-        const category = searchParams.get('category');
-        const loc = searchParams.get('location');
-        const priceFromParam = searchParams.get('priceFrom');
-        const priceToParam = searchParams.get('priceTo');
+        const search = searchParams.get('search') || '';
+        const category = searchParams.get('category') || 'Tüm Kategoriler';
+        const subCategory = searchParams.get('subCategory') || '';
+        const loc = searchParams.get('location') || '';
+        const priceFromParam = searchParams.get('priceFrom') || '';
+        const priceToParam = searchParams.get('priceTo') || '';
 
-        if (search) setSearchTerm(search);
-        if (category) setSelectedCategory(category);
-        if (loc) setSelectedLocations(loc.split(','));
-        if (priceFromParam) setPriceFrom(priceFromParam);
-        if (priceToParam) setPriceTo(priceToParam);
+        setSearchTerm(search);
+        setSelectedCategory(category);
+        setSelectedSubCategory(subCategory);
+        setSelectedLocations(loc ? loc.split(',') : []);
+        setPriceFrom(priceFromParam);
+        setPriceTo(priceToParam);
     }, [searchParams]);
 
     // Update URL when filters change
@@ -65,48 +125,96 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
             if (newFilters.priceTo) params.set('priceTo', newFilters.priceTo);
             else params.delete('priceTo');
         }
+        if (newFilters.category !== undefined) {
+            if (newFilters.category && newFilters.category !== 'Tüm Kategoriler') params.set('category', newFilters.category);
+            else params.delete('category');
+        }
+        if (newFilters.subCategory !== undefined) {
+            if (newFilters.subCategory) params.set('subCategory', newFilters.subCategory);
+            else params.delete('subCategory');
+        }
         navigate(`?${params.toString()}`);
     };
 
+
+
     // Fetch listings from Supabase
     useEffect(() => {
+        let isMounted = true;
+
         const fetchListingsFromSupabase = async () => {
+            // Safety timeout to prevent infinite spinner
+            const safetyTimeout = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 5000));
+
             try {
                 setLoading(true);
-                // Import fetchListings from api/listings
-                const { fetchListings } = await import('./api/listings');
-                const data = await fetchListings({});
-                console.log('AlleKategorien - Fetched listings from Supabase:', data);
-                console.log('AlleKategorien - Number of listings:', data.length);
-                setListings(data);
+
+                // Race between fetch and 5s timeout
+                const result = await Promise.race([
+                    fetchListings({}),
+                    safetyTimeout
+                ]);
+
+                if (result === 'TIMEOUT') {
+                    console.warn('AlleKategorien - Fetch timed out, using mock data');
+                    if (isMounted) setListings([]);
+                } else {
+                    console.log('AlleKategorien - Fetched listings:', result?.length);
+                    if (isMounted) setListings(result || []);
+                }
             } catch (error) {
                 console.error('AlleKategorien - Error fetching listings:', error);
-                setListings([]);
+                if (isMounted) setListings([]);
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
+
         fetchListingsFromSupabase();
+
+        return () => { isMounted = false; };
     }, []);
 
-    // Calculate category counts
-    const categoriesWithCounts = categories.map(cat => {
-        if (cat.name === 'Tüm Kategoriler') {
-            return { ...cat, count: listings.length };
-        }
+    // Calculate category counts based on current filters (except category)
+    const categoriesWithCounts = React.useMemo(() => {
+        return categories.map(cat => {
+            let count = 0;
+            if (cat.name === 'Tüm Kategoriler') {
+                count = listings.filter(listing => {
+                    if (searchTerm && listing.title) {
+                        const searchLower = searchTerm.toLowerCase();
+                        if (!listing.title.toLowerCase().includes(searchLower) && !listing.description?.toLowerCase().includes(searchLower)) return false;
+                    }
+                    if (priceFrom && listing.price < parseFloat(priceFrom)) return false;
+                    if (priceTo && listing.price > parseFloat(priceTo)) return false;
+                    if (selectedLocations.length > 0 && !selectedLocations.includes(listing.federal_state)) return false;
+                    return true;
+                }).length;
+                return { ...cat, count };
+            }
 
-        let count = 0;
-        if (cat.name === 'Müzik, Film & Kitap') {
-            count = listings.filter(listing =>
-                listing.category === 'Müzik, Film & Kitap' ||
-                listing.category === 'Müzik, Filme & Bücher'
-            ).length;
-        } else {
-            count = listings.filter(listing => listing.category === cat.name).length;
-        }
+            count = listings.filter(listing => {
+                // Search term
+                if (searchTerm && listing.title) {
+                    const searchLower = searchTerm.toLowerCase();
+                    if (!listing.title.toLowerCase().includes(searchLower) && !listing.description?.toLowerCase().includes(searchLower)) return false;
+                }
+                // Price
+                if (priceFrom && listing.price < parseFloat(priceFrom)) return false;
+                if (priceTo && listing.price > parseFloat(priceTo)) return false;
+                // Location
+                if (selectedLocations.length > 0 && !selectedLocations.includes(listing.federal_state)) return false;
 
-        return { ...cat, count };
-    });
+                // Category match
+                if (cat.name === 'Müzik, Film & Kitap') {
+                    return listing.category === 'Müzik, Film & Kitap' || listing.category === 'Müzik, Filme & Bücher';
+                }
+                return listing.category === cat.name;
+            }).length;
+
+            return { ...cat, count };
+        }).filter(cat => cat.count > 0 || cat.name === 'Tüm Kategoriler' || cat.name === selectedCategory);
+    }, [listings, searchTerm, selectedLocations, priceFrom, priceTo, selectedCategory]);
 
     // Filter listings
     const filteredListings = listings.filter(listing => {
@@ -120,6 +228,11 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
         // Category filter
         if (selectedCategory !== 'Tüm Kategoriler' && listing.category !== selectedCategory) {
+            return false;
+        }
+
+        // Subcategory filter
+        if (selectedSubCategory && listing.sub_category !== selectedSubCategory) {
             return false;
         }
 
@@ -137,19 +250,74 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
         return listings.filter(l => l.federal_state === state).length;
     };
 
+    const handleCategoryClick = (categoryName) => {
+        if (selectedCategory === categoryName) {
+            setSelectedCategory('Tüm Kategoriler');
+            setSelectedSubCategory('');
+            updateFilters({ category: 'Tüm Kategoriler', subCategory: '' });
+        } else {
+            setSelectedCategory(categoryName);
+            setSelectedSubCategory('');
+            updateFilters({ category: categoryName, subCategory: '' });
+        }
+    };
+
+    const handleSubCategoryClick = (subName, e) => {
+        e.stopPropagation();
+        if (selectedSubCategory === subName) {
+            setSelectedSubCategory('');
+            updateFilters({ subCategory: '' });
+        } else {
+            setSelectedSubCategory(subName);
+            updateFilters({ subCategory: subName });
+        }
+    };
+
     console.log('AlleKategorien - Filtered listings:', filteredListings.length);
     console.log('AlleKategorien - Selected category:', selectedCategory);
 
-    const handleCategoryClick = (categoryName) => {
-        const route = getCategoryPath(categoryName);
-        if (route) {
-            navigate(route);
+    // Sort listings: Premium (z_premium) first, then is_top, then highlighted, then newest
+    const sortedListings = [...filteredListings].sort((a, b) => {
+        // Priority: z_premium > multi-bump > other is_top > highlighted > basic
+        const getPriority = (l) => {
+            const type = l.package_type?.toLowerCase();
+            if (type === 'z_premium' || type === 'premium') return 100;
+            if (type === 'multi-bump' || type === 'z_multi_bump') return 80;
+            if (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type)) return 60;
+            if (l.is_top) return 50;
+            if (l.is_highlighted || type === 'highlight' || type === 'budget') return 10;
+            return 0;
+        };
+
+        const prioA = getPriority(a);
+        const prioB = getPriority(b);
+
+        if (prioA !== prioB) return prioB - prioA;
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    // Generate breadcrumb items
+    const breadcrumbItems = [
+        { label: 'Ana Sayfa', path: '/' }
+    ];
+
+    if (searchTerm) {
+        breadcrumbItems.push({ label: `"${searchTerm}" Arama Sonuçları`, isActive: true });
+    } else if (selectedCategory && selectedCategory !== 'Tüm Kategoriler') {
+        breadcrumbItems.push({ label: selectedCategory, isActive: !selectedSubCategory });
+        if (selectedSubCategory) {
+            breadcrumbItems.push({ label: selectedSubCategory, isActive: true });
         }
-    };
+    } else {
+        breadcrumbItems.push({ label: 'Tüm Kategoriler', isActive: true });
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-[1400px] mx-auto px-4 py-6">
+                {/* Breadcrumb */}
+                <Breadcrumb items={breadcrumbItems} />
+
                 <div className="flex gap-6">
                     {/* Left Sidebar - Categories & Filters */}
                     <aside className="w-96 flex-shrink-0 bg-white rounded-2xl shadow-lg p-6 h-fit sticky top-6">
@@ -158,42 +326,67 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                             <h3 className="font-bold text-gray-900 text-lg mb-4">Kategoriler</h3>
                             <div className="space-y-1">
                                 {categoriesWithCounts.map((category) => (
-                                    <button
-                                        key={category.name}
-                                        onClick={() => handleCategoryClick(category.name)}
-                                        className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === category.name
-                                            ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
-                                            : 'hover:bg-gray-50 text-gray-700'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <span className={`text-sm font-medium ${selectedCategory === category.name
-                                                ? 'text-white'
-                                                : 'group-hover:text-red-600'
-                                                }`}>
-                                                {category.name}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-xs ${selectedCategory === category.name
-                                                ? 'text-white/80'
-                                                : 'text-gray-400'
-                                                }`}>
-                                                ({category.count.toLocaleString('de-DE')})
-                                            </span>
-                                            <svg
-                                                className={`w-4 h-4 ${selectedCategory === category.name
+                                    <div key={category.name} className="mb-1">
+                                        <button
+                                            onClick={() => handleCategoryClick(category.name)}
+                                            className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === category.name
+                                                ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
+                                                : 'hover:bg-gray-50 text-gray-700'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <span className={`text-sm font-medium ${selectedCategory === category.name
                                                     ? 'text-white'
-                                                    : 'text-gray-400 group-hover:text-red-600'
-                                                    } transition-colors`}
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </div>
-                                    </button>
+                                                    : 'group-hover:text-red-600'
+                                                    }`}>
+                                                    {getCategoryTranslation(category.name)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {category.name !== 'Tüm Kategoriler' && (
+                                                    <span className={`text-xs ${selectedCategory === category.name
+                                                        ? 'text-white/80'
+                                                        : 'text-gray-400'
+                                                        }`}>
+                                                        ({category.count.toLocaleString('tr-TR')})
+                                                    </span>
+                                                )}
+                                                <svg
+                                                    className={`w-4 h-4 ${selectedCategory === category.name
+                                                        ? 'text-white rotate-90'
+                                                        : 'text-gray-400 group-hover:text-red-600'
+                                                        } transition-all duration-200`}
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </div>
+                                        </button>
+
+                                        {/* Subcategories */}
+                                        {selectedCategory === category.name && category.subcategories && category.subcategories.length > 0 && (
+                                            <div className="ml-4 pl-4 border-l-2 border-gray-100 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                                                {category.subcategories.map(sub => {
+                                                    const subCount = listings.filter(l => l.category === category.name && l.sub_category === sub).length;
+                                                    return (
+                                                        <button
+                                                            key={sub}
+                                                            onClick={(e) => handleSubCategoryClick(sub, e)}
+                                                            className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors flex justify-between items-center ${selectedSubCategory === sub
+                                                                ? 'bg-red-50 text-red-600 font-medium'
+                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                                }`}
+                                                        >
+                                                            <span>{getCategoryTranslation(sub)}</span>
+                                                            <span className="text-xs text-gray-400">({subCount})</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -203,11 +396,12 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                             <h3 className="font-bold text-gray-900 text-lg">Filtreler</h3>
                             <button
                                 onClick={() => {
-                                    setSearchTerm('');
-                                    setPriceFrom('');
-                                    setPriceTo('');
-                                    setSelectedLocations([]);
-                                    updateFilters({ priceFrom: '', priceTo: '', locations: [] });
+                                    updateFilters({
+                                        priceFrom: '',
+                                        priceTo: '',
+                                        locations: [],
+                                        category: 'Tüm Kategoriler'
+                                    });
                                 }}
                                 className="text-sm text-red-600 hover:text-red-700 font-medium"
                             >
@@ -323,7 +517,9 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
                         <div style={{ maxWidth: '960px' }}>
                             <CategoryGallery
-                                listings={filteredListings.filter(l => l.is_top)}
+                                listings={filteredListings.filter(l =>
+                                    l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase())
+                                )}
                                 toggleFavorite={toggleFavorite}
                                 isFavorite={isFavorite}
                             />
@@ -332,12 +528,12 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                         {/* Listings */}
                         <div className="bg-white rounded-lg shadow-sm p-6">
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                {filteredListings.length} Anzeigen
+                                {filteredListings.length} İlan
                             </h2>
 
                             {loading ? (
                                 <div className="flex justify-center items-center py-12">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                                    <LoadingSpinner size="medium" />
                                 </div>
                             ) : filteredListings.length === 0 ? (
                                 <div className="text-center py-12">
@@ -345,7 +541,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                 </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {filteredListings.map((listing) => (
+                                    {sortedListings.map((listing) => (
                                         <HorizontalListingCard
                                             key={listing.id}
                                             listing={listing}

@@ -212,9 +212,9 @@ export const VehicleFields = ({
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
-                                <option value="Automatik">{t.addListing.vehicles.types.automatic}</option>
-                                <option value="Manuell">{t.addListing.vehicles.types.manual}</option>
-                                <option value="Halbautomatik">{t.addListing.vehicles.types.semiAutomatic}</option>
+                                <option value="Otomatik">{t.addListing.vehicles.types.automatic}</option>
+                                <option value="Manuel">{t.addListing.vehicles.types.manual}</option>
+                                <option value="Yarı Otomatik">{t.addListing.vehicles.types.semiAutomatic}</option>
                             </select>
                         </div>
                     </div>
@@ -519,8 +519,8 @@ export const VehicleFields = ({
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
-                                <option value="Manuell">{t.addListing.vehicles.types.manual}</option>
-                                <option value="Automatik">{t.addListing.vehicles.types.automatic}</option>
+                                <option value="Manuel">{t.addListing.vehicles.types.manual}</option>
+                                <option value="Otomatik">{t.addListing.vehicles.types.automatic}</option>
                             </select>
                         </div>
                         <div>

@@ -91,7 +91,7 @@ export const emailNotifications = {
 
     console.log('📧 INVOICE NOTIFICATION EMAIL');
     console.log('To:', invoiceData.email);
-    console.log('Subject: Ihre Rechnung von Kleinbazaar', invoiceData.invoiceNumber);
+    console.log('Subject: Ihre Rechnung von ExVitrin', invoiceData.invoiceNumber);
     console.log('Total:', invoiceData.amount, '₺');
 
     showNotification('Rechnung erfolgreich per E-Mail versendet!', 'success');
@@ -116,7 +116,7 @@ export const emailNotifications = {
 const showNotification = (message, type = 'info') => {
   // Tarayıcı bildirimi
   if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('Kleinbazaar', {
+    new Notification('ExVitrin', {
       body: message,
       icon: '/logo192.png'
     });
@@ -167,7 +167,7 @@ export const emailTemplates = {
           <a href="#" class="button">Bestellung ansehen</a>
         </div>
         <div class="footer">
-          <p>© 2024 Kleinbazaar. Alle Rechte vorbehalten.</p>
+          <p>© 2024 ExVitrin. Alle Rechte vorbehalten.</p>
         </div>
       </div>
     </body>
@@ -224,12 +224,12 @@ export const emailTemplates = {
     <body>
       <div class="container">
         <div class="header">
-          <div class="logo">KLEINBAZAAR</div>
+          <div class="logo">EXVITRIN</div>
         </div>
         <div class="content">
           <h1>Ihre Rechnung ist da</h1>
           <p>Hallo ${invoiceData.customerName},</p>
-          <p>vielen Dank für Ihren Einkauf bei Kleinbazaar. Hier ist Ihre Rechnung für das gebuchte Promotion-Paket.</p>
+          <p>vielen Dank für Ihren Einkauf bei ExVitrin. Hier ist Ihre Rechnung für das gebuchte Promotion-Paket.</p>
           
           <div class="invoice-card">
             <div class="invoice-id">${invoiceData.invoiceNumber}</div>
@@ -243,7 +243,7 @@ export const emailTemplates = {
           </p>
         </div>
         <div class="footer">
-          <p>© 2025 Kleinbazaar GmbH | Berlin, Deutschland</p>
+          <p>© 2025 ExVitrin | Berlin, Deutschland</p>
           <p>Sie erhalten diese E-Mail, da Sie eine kostenpflichtige Promotion auf unserer Plattform gebucht haben.</p>
         </div>
       </div>

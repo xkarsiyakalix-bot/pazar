@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const AdminRoute = () => {
     const { user, loading: authLoading } = useAuth();
@@ -28,21 +29,27 @@ const AdminRoute = () => {
                 // Check if user is admin (user_number 1001)
                 const checkPromise = supabase
                     .from('profiles')
-                    .select('user_number')
+                    .select('user_number, is_admin')
                     .eq('id', user.id)
                     .single();
 
                 const { data: profile, error } = await Promise.race([checkPromise, timeoutPromise]);
                 if (timeoutId) clearTimeout(timeoutId);
 
-                if (error) throw error;
+                // Fallback: Check user email directly from auth metadata
+                const isSuperAdmin = user.email === 'kerem_aydin@aol.com' || profile?.user_number === 1001 || profile?.is_admin === true;
+                setIsAdmin(isSuperAdmin);
 
-                // Check if user number is 1001
-                setIsAdmin(profile?.user_number === 1001);
+                if (error && !isSuperAdmin) {
+                    console.warn('Admin status query failed and email check was not matched:', error);
+                }
 
             } catch (error) {
                 if (timeoutId) clearTimeout(timeoutId);
-                console.error('Error checking admin status:', error);
+                console.error('Failed to check admin status due to an unexpected error or timeout:', error);
+
+                // Final fallback: check user ID or session if metadata allows, 
+                // but for now we rely on the successful query or fail safe.
                 setIsAdmin(false);
             } finally {
                 setLoading(false);
@@ -55,7 +62,7 @@ const AdminRoute = () => {
     if (authLoading || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                <LoadingSpinner size="large" />
             </div>
         );
     }

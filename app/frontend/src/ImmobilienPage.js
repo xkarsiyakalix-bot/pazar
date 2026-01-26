@@ -8,6 +8,7 @@ const ImmobilienPage = ({ toggleFavorite, isFavorite }) => {
         { name: 'Geçici Konaklama & Paylaşımlı Ev', route: '/Emlak/Gecici-Konaklama-Paylasimli-Ev' },
         { name: 'Konteyner', route: '/Emlak/Konteyner' },
         { name: 'Satılık Daire', route: '/Emlak/Satilik-Daireler' },
+        { name: 'Satılık Yazlık', route: '/Emlak/Satilik-Yazlik' },
         { name: 'Tatil Evi & Yurt Dışı Emlak', route: '/Emlak/Tatil-Evi-Yurt-Disi-Emlak' },
         { name: 'Garaj & Otopark', route: '/Emlak/Garaj-Otopark' },
         { name: 'Ticari Emlak', route: '/Emlak/Ticari-Emlak' },

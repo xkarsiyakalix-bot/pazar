@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { CategoryGallery, HorizontalListingCard, getCategoryPath } from '../components.js';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { LazyImage } from '../LazyLoad';
 import { CategorySEO } from '../SEO';
 import { fetchCategoryStats } from '../api/listings';
 import { useListings } from '../hooks/useListings';
 import { t, getCategoryTranslation, getGenericTranslation } from '../translations';
+import { checkIfSearchIsSaved, createSavedSearch, deleteSavedSearchByUrl } from '../api/savedSearches';
+
+const formatPriceDisplay = (val) => {
+    if (!val) return '';
+    const numeric = val.toString().replace(/\D/g, '');
+    return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
 
 const GenericCategoryPage = ({
     category,
@@ -23,9 +31,12 @@ const GenericCategoryPage = ({
     renderCustomFields
 }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
     const [statsListings, setStatsListings] = useState([]);
     const [isSaved, setIsSaved] = useState(false);
+    const [savedSearchId, setSavedSearchId] = useState(null);
+    const [savingSearch, setSavingSearch] = useState(false);
 
     // 1. Derive active filters directly from URL
     const getActiveFiltersFromURL = () => {
@@ -121,6 +132,26 @@ const GenericCategoryPage = ({
         };
         loadStats();
     }, [category, subCategory]);
+
+    // Check if current search is saved
+    useEffect(() => {
+        const checkSavedStatus = async () => {
+            try {
+                const currentUrl = location.pathname + location.search;
+                const savedSearch = await checkIfSearchIsSaved(currentUrl);
+                if (savedSearch) {
+                    setIsSaved(true);
+                    setSavedSearchId(savedSearch.id);
+                } else {
+                    setIsSaved(false);
+                    setSavedSearchId(null);
+                }
+            } catch (error) {
+                console.error('Error checking saved search:', error);
+            }
+        };
+        checkSavedStatus();
+    }, [location.pathname, location.search]);
 
     // Helper to update URL params
     const updateURL = (newParams) => {
@@ -447,6 +478,26 @@ const GenericCategoryPage = ({
         return true;
     });
 
+    // Sort listings: Premium (z_premium) first, then z_multi_bump, then is_top, then highlighted, then newest
+    // Explicit sorting logic fixed to ensure initialization order
+    const sortedListings = [...filteredListings].sort((a, b) => {
+        // Priority: z_premium > z_multi_bump > other is_top > highlighted > basic
+        const getPriority = (l) => {
+            const type = l.package_type?.toLowerCase();
+            if (type === 'z_premium' || type === 'premium') return 100;
+            if (type === 'z_multi_bump' || type === 'multi-bump') return 80;
+            if (l.is_top) return 50;
+            if (l.is_highlighted || type === 'highlight' || type === 'budget') return 10;
+            return 0;
+        };
+
+        const prioA = getPriority(a);
+        const prioB = getPriority(b);
+
+        if (prioA !== prioB) return prioB - prioA;
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+
     // Subcategory Count Helper
     const getSubcategoryCount = (subName) => {
         const source = statsListings.length > 0 ? statsListings : listings;
@@ -627,7 +678,7 @@ const GenericCategoryPage = ({
                         <div className="mb-6 pb-6 border-b border-gray-200">
                             <h3 className="font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent mb-3 text-base">{t.filters.categories}</h3>
                             <button
-                                onClick={() => navigate('/Alle-Kategorien')}
+                                onClick={() => navigate('/Butun-Kategoriler')}
                                 className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
                             >
                                 <span>{t.filters.allCategories}</span>
@@ -771,7 +822,7 @@ const GenericCategoryPage = ({
                                                             value={optionValue}
                                                             checked={isSelected}
                                                             onChange={() => handleFilterChange(key, optionValue)}
-                                                            className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                                                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
                                                         />
                                                         <span className={`text-sm group-hover:text-red-600 transition-colors ${isSelected ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
                                                             {option.displayLabel || getGenericTranslation(optionLabel)}
@@ -788,15 +839,18 @@ const GenericCategoryPage = ({
                                             <div>
                                                 <input
                                                     type="text"
-                                                    value={localFilters[`${key}From`] || ''}
-                                                    onChange={(e) => handleRangeChange(`${key}From`, e.target.value)}
+                                                    value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}From`]) : (localFilters[`${key}From`] || '')}
+                                                    onChange={(e) => {
+                                                        const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
+                                                        handleRangeChange(`${key}From`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
+                                                    }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter') {
                                                             const from = localFilters[`${key}From`];
                                                             const to = localFilters[`${key}To`];
                                                             updateURL({
-                                                                [`${key}From`]: from ? from.replace(',', '.') : '',
-                                                                [`${key}To`]: to ? to.replace(',', '.') : ''
+                                                                [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                                                [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
                                                             });
                                                         }
                                                     }}
@@ -807,15 +861,18 @@ const GenericCategoryPage = ({
                                             <div>
                                                 <input
                                                     type="text"
-                                                    value={localFilters[`${key}To`] || ''}
-                                                    onChange={(e) => handleRangeChange(`${key}To`, e.target.value)}
+                                                    value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}To`]) : (localFilters[`${key}To`] || '')}
+                                                    onChange={(e) => {
+                                                        const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
+                                                        handleRangeChange(`${key}To`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
+                                                    }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter') {
                                                             const from = localFilters[`${key}From`];
                                                             const to = localFilters[`${key}To`];
                                                             updateURL({
-                                                                [`${key}From`]: from ? from.replace(',', '.') : '',
-                                                                [`${key}To`]: to ? to.replace(',', '.') : ''
+                                                                [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                                                [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
                                                             });
                                                         }
                                                     }}
@@ -829,8 +886,8 @@ const GenericCategoryPage = ({
                                                 const from = localFilters[`${key}From`];
                                                 const to = localFilters[`${key}To`];
                                                 updateURL({
-                                                    [`${key}From`]: from ? from.replace(',', '.') : '',
-                                                    [`${key}To`]: to ? to.replace(',', '.') : ''
+                                                    [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                                    [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
                                                 });
                                             }}
                                             className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[38px] w-[38px] flex items-center justify-center border border-gray-200"
@@ -848,7 +905,7 @@ const GenericCategoryPage = ({
                                                 type="checkbox"
                                                 checked={activeFilters[key]}
                                                 onChange={(e) => handleFilterChange(key, e.target.checked)}
-                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500 rounded"
+                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
                                             />
                                             <span className="text-sm text-gray-700 group-hover:text-red-600 font-medium">Aktif</span>
                                         </div>
@@ -958,7 +1015,9 @@ const GenericCategoryPage = ({
 
                         <div style={{ maxWidth: '960px' }}>
                             <CategoryGallery
-                                listings={filteredListings.filter(l => l.is_top)}
+                                listings={filteredListings.filter(l =>
+                                    l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase())
+                                )}
                                 toggleFavorite={toggleFavorite}
                                 isFavorite={isFavorite}
                                 hidePrice={hidePrice}
@@ -972,7 +1031,37 @@ const GenericCategoryPage = ({
                                     {getTotalCount()} {t.common?.listingsCount || 'İlan'}
                                 </h2>
                                 <button
-                                    onClick={() => setIsSaved(!isSaved)}
+                                    onClick={async () => {
+                                        if (savingSearch) return;
+
+                                        setSavingSearch(true);
+                                        try {
+                                            if (isSaved) {
+                                                // Unsave
+                                                await deleteSavedSearchByUrl(location.pathname + location.search);
+                                                setIsSaved(false);
+                                                setSavedSearchId(null);
+                                            } else {
+                                                // Save
+                                                const searchData = {
+                                                    searchName: `${category}${subCategory ? ' - ' + subCategory : ''}`,
+                                                    category: category,
+                                                    subcategory: subCategory || null,
+                                                    filters: getActiveFiltersFromURL(),
+                                                    searchUrl: location.pathname + location.search
+                                                };
+                                                const result = await createSavedSearch(searchData);
+                                                setIsSaved(true);
+                                                setSavedSearchId(result.id);
+                                            }
+                                        } catch (error) {
+                                            console.error('Error saving/unsaving search:', error);
+                                            alert('Arama kaydedilirken bir hata oluştu.');
+                                        } finally {
+                                            setSavingSearch(false);
+                                        }
+                                    }}
+                                    disabled={savingSearch}
                                     className={`group flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSaved
                                         ? 'border-yellow-400 bg-yellow-50 text-yellow-700'
                                         : 'border-gray-200 hover:border-yellow-400 hover:bg-yellow-50 text-gray-500 hover:text-yellow-700'
@@ -1000,7 +1089,7 @@ const GenericCategoryPage = ({
 
                             {loading ? (
                                 <div className="flex justify-center items-center py-12">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                                    <LoadingSpinner size="medium" />
                                 </div>
                             ) : filteredListings.length === 0 ? (
                                 <div className="text-center py-12">
@@ -1008,7 +1097,7 @@ const GenericCategoryPage = ({
                                 </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {filteredListings.map((listing) => (
+                                    {sortedListings.map((listing) => (
                                         <HorizontalListingCard
                                             key={listing.id}
                                             listing={listing}
@@ -1035,7 +1124,7 @@ const GenericCategoryPage = ({
                             )}
                             {loading && listings.length > 0 && (
                                 <div className="mt-8 flex justify-center">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                                    <LoadingSpinner size="small" />
                                 </div>
                             )}
                         </div>

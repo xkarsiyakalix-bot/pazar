@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { getFollowers } from './api/follows';
 import ProfileLayout from './ProfileLayout';
+import LoadingSpinner from './components/LoadingSpinner';
 
 const FollowersPage = () => {
     const { user, loading: authLoading } = useAuth();
@@ -34,7 +35,7 @@ const FollowersPage = () => {
     if (loading || authLoading) {
         return (
             <div className="min-h-screen bg-gray-50 pt-20 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="large" />
             </div>
         );
     }
@@ -61,14 +62,20 @@ const FollowersPage = () => {
                     {followers.map(follower => (
                         <div
                             key={follower.id}
-                            onClick={() => navigate(`/seller/${follower.user_number}`)}
+                            onClick={() => {
+                                if (follower.is_pro || follower.is_commercial || (follower.subscription_tier && follower.subscription_tier !== 'free')) {
+                                    navigate(`/store/${follower.id}`);
+                                } else {
+                                    navigate(`/seller/${follower.user_number}`);
+                                }
+                            }}
                             className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
                         >
                             <div className="p-6">
                                 {/* Profile Picture at Top */}
                                 <div className="flex justify-center mb-4">
                                     <img
-                                        src={follower.avatar_url || 'https://via.placeholder.com/150?text=User'}
+                                        src={follower.store_logo || follower.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(follower.full_name || 'U')}&background=random&color=fff`}
                                         alt={follower.full_name}
                                         className="w-24 h-24 rounded-full object-cover border-4 border-gray-100"
                                     />
@@ -81,13 +88,9 @@ const FollowersPage = () => {
                                     </h3>
                                     {follower.city && (
                                         <p className="text-sm text-gray-500 flex items-center justify-center gap-1 mb-1">
-                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                <circle cx="12" cy="12" r="8" />
-                                                <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
-                                                <line x1="12" y1="2" x2="12" y2="4" />
-                                                <line x1="12" y1="20" x2="12" y2="22" />
-                                                <line x1="2" y1="12" x2="4" y2="12" />
-                                                <line x1="20" y1="12" x2="22" y2="12" />
+                                            <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                                <circle cx="12" cy="10" r="3" />
                                             </svg>
                                             {follower.city}
                                         </p>

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ListingCard } from './components';
+import LoadingSpinner from './components/LoadingSpinner';
 import { useAuth } from './contexts/AuthContext';
+import { fetchListings } from './api/listings';
 
 export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
     const [displayedListings, setDisplayedListings] = useState([]);
@@ -9,6 +11,7 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
     const [loading, setLoading] = useState(true);
     const [allListings, setAllListings] = useState([]);
     const { user } = useAuth();
+    const loaderRef = useRef(null);
 
     // Fetch all listings from Supabase
     useEffect(() => {
@@ -16,11 +19,8 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
             try {
                 // Fetch listings from Supabase, skip count for speed
                 console.log('SmartRecommendations: Fetching listings from Supabase...');
-                const { fetchListings } = await import('./api/listings');
                 const data = await fetchListings({}, { count: false });
                 console.log(`SmartRecommendations: Fetched ${data?.length || 0} listings`);
-                console.log('SmartRecommendations: First listing:', data[0]);
-                console.log('SmartRecommendations: First listing price:', data[0]?.price);
                 setAllListings(data);
             } catch (error) {
                 console.error('SmartRecommendations: Error fetching listings:', error);
@@ -29,6 +29,20 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
         };
         loadListings();
     }, []);
+
+    const generateRecommendations = useCallback((userHistory) => {
+        const isNewUser = userHistory.viewedCategories.length === 0 &&
+            userHistory.searchHistory.length === 0 &&
+            userHistory.viewedListings.length === 0;
+
+        if (isNewUser) {
+            // For new users: Show diverse listings from different categories
+            return getDiverseListings();
+        } else {
+            // For returning users: Personalized recommendations
+            return getPersonalizedListings(userHistory);
+        }
+    }, [allListings]);
 
     useEffect(() => {
         if (allListings.length === 0) {
@@ -45,42 +59,73 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
         };
 
         // Generate personalized recommendations
-        const recommendations = generateRecommendations(userHistory);
+        let recommendations = generateRecommendations(userHistory);
+
+        // RELAUNCH: Ensure Vitrin (galerie) listings appear twice, distributed far apart
+        const vitrinListings = recommendations.filter(l => l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase()));
+        if (vitrinListings.length > 0) {
+            // Keep the first 10
+            const firstPart = recommendations.slice(0, 10);
+            const remainingPart = recommendations.slice(10);
+
+            const distributedListings = [...remainingPart];
+            vitrinListings.forEach(l => {
+                // Insert duplicates way down in the list (e.g., after 40th position)
+                const minPos = Math.min(distributedListings.length, 30);
+                const insertPos = minPos + Math.floor(Math.random() * (distributedListings.length - minPos));
+                distributedListings.splice(insertPos, 0, l);
+            });
+
+            recommendations = [...firstPart, ...distributedListings];
+        }
+
         setAllRecommendations(recommendations);
         setDisplayedListings(recommendations.slice(0, 30));
         setLoading(false);
-    }, [allListings]);
-
-    const generateRecommendations = (userHistory) => {
-        const isNewUser = userHistory.viewedCategories.length === 0 &&
-            userHistory.searchHistory.length === 0 &&
-            userHistory.viewedListings.length === 0;
-
-        if (isNewUser) {
-            // For new users: Show diverse listings from different categories
-            return getDiverseListings();
-        } else {
-            // For returning users: Personalized recommendations
-            return getPersonalizedListings(userHistory);
-        }
-    };
+    }, [allListings, generateRecommendations]);
 
     const getDiverseListings = () => {
+        // Helper to get priority score
+        const getPromoPriority = (l) => {
+            const type = l.package_type?.toLowerCase();
+            // RELAUNCH: Lower base scores to allow mixing with regular items
+            let score = 0;
+            if (type === 'z_premium' || type === 'premium') score = 40;
+            else if (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type)) score = 35;
+            else if (type === 'z_multi_bump' || type === 'multi-bump') score = 30;
+            else if (l.is_top) score = 25;
+            else if (l.is_highlighted || type === 'highlight' || type === 'budget') score = 20;
+
+            // Add high randomness so they spread across the whole list
+            return score + (Math.random() * 150);
+        };
+
         // Get unique categories
         const categories = [...new Set(allListings.map(l => l.category))];
         const diverseListings = [];
 
-        // Get 2-3 listings from each category
+        // Get 2-3 listings from each category, prioritizing promoted ones
         categories.forEach(category => {
             const categoryListings = allListings
                 .filter(l => l.category === category)
-                .sort(() => 0.5 - Math.random())
+                .sort((a, b) => {
+                    const prioA = getPromoPriority(a);
+                    const prioB = getPromoPriority(b);
+                    if (prioA !== prioB) return prioB - prioA;
+                    return 0.5 - Math.random(); // Random within same priority
+                })
                 .slice(0, 3);
             diverseListings.push(...categoryListings);
         });
 
-        // Shuffle and return
-        return diverseListings.sort(() => 0.5 - Math.random());
+        // Final sort: Promoted items should be mixed together at the top
+        return diverseListings.sort((a, b) => {
+            const prioA = getPromoPriority(a);
+            const prioB = getPromoPriority(b);
+            // Since we added randomness in getPromoPriority, we just sort by that
+            if (prioA !== prioB) return prioB - prioA;
+            return 0.5 - Math.random();
+        });
     };
 
     const getPersonalizedListings = (userHistory) => {
@@ -97,7 +142,7 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
 
             // Boost score based on search history
             userHistory.searchHistory.forEach(searchTerm => {
-                if (listing.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+                if (listing.title && listing.title.toLowerCase().includes(searchTerm.toLowerCase())) {
                     score += 40;
                 }
                 if (listing.description && listing.description.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -115,10 +160,19 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
                 });
             }
 
-            // Boost for top listings
-            if (listing.isTop) {
-                score += 10;
-            }
+            // RELAUNCH: Lower boosts + higher random factor to mix with regular listings
+            const type = listing.package_type?.toLowerCase();
+            let promoBoost = 0;
+            if (type === 'z_premium' || type === 'premium') promoBoost = 60;
+            else if (listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type)) promoBoost = 55;
+            else if (type === 'z_multi_bump' || type === 'multi-bump') promoBoost = 50;
+            else if (listing.is_top) promoBoost = 45;
+            else if (listing.is_highlighted || type === 'highlight' || type === 'budget') promoBoost = 40;
+
+            score += promoBoost;
+
+            // Add HUGE randomness (0-200) to ensure items are scattered across the whole list
+            score += Math.random() * 200;
 
             // Penalize already viewed listings
             if (userHistory.viewedListings.includes(listing.id)) {
@@ -137,18 +191,42 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
             .map(({ score, ...listing }) => listing);
     };
 
-    const loadMore = () => {
+    const loadMore = useCallback(() => {
+        if (currentCount >= allRecommendations.length) return;
+
         const newCount = currentCount + 30;
         setDisplayedListings(allRecommendations.slice(0, newCount));
         setCurrentCount(newCount);
-    };
+    }, [currentCount, allRecommendations]);
 
     const hasMore = currentCount < allRecommendations.length;
+
+    // Infinite Scroll Intersection Observer
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loading) {
+                    loadMore();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (loaderRef.current) {
+            observer.observe(loaderRef.current);
+        }
+
+        return () => {
+            if (loaderRef.current) {
+                observer.unobserve(loaderRef.current);
+            }
+        };
+    }, [loadMore, hasMore, loading]);
 
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="medium" />
             </div>
         );
     }
@@ -156,10 +234,10 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
     return (
         <div>
             {/* Listings Grid */}
-            <div className="grid grid-cols-5 gap-3">
-                {displayedListings.map((listing) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {displayedListings.map((listing, index) => (
                     <ListingCard
-                        key={listing.id}
+                        key={`${listing.id}-${index}`}
                         listing={listing}
                         toggleFavorite={toggleFavorite}
                         isFavorite={isFavorite}
@@ -168,15 +246,10 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
                 ))}
             </div>
 
-            {/* Load More Button */}
+            {/* Loading Sentinel */}
             {hasMore && (
-                <div className="flex justify-center mt-8">
-                    <button
-                        onClick={loadMore}
-                        className="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-md hover:shadow-lg"
-                    >
-                        Daha Fazla İlan Yükle
-                    </button>
+                <div ref={loaderRef} className="flex justify-center py-8">
+                    <LoadingSpinner size="small" />
                 </div>
             )}
 

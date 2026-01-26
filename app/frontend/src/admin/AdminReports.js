@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllReports, updateReportStatus, deleteReport } from '../api/reports';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const AdminReports = () => {
     const [reports, setReports] = useState([]);
@@ -92,7 +93,7 @@ const AdminReports = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="medium" />
             </div>
         );
     }

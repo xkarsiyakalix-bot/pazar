@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchListings } from '../api/listings';
 import { supabase } from '../lib/supabase';
 import { generateListingNumber } from '../components';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
@@ -38,6 +40,7 @@ const AdminDashboard = () => {
                 .select('*', { count: 'exact', head: true });
 
             // Fetch online users (active in last 15 minutes)
+            // Note: profiles must have 'last_seen' column updated regularly
             const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
             const { count: onlineCount } = await supabase
                 .from('profiles')
@@ -76,7 +79,19 @@ const AdminDashboard = () => {
 
             if (listingsError) throw listingsError;
 
-            // Fetch recent promotions
+            // Fetch all promotions for accurate revenue calculation (filtering by status)
+            const { data: allPromotions, error: allPromotionsError } = await supabase
+                .from('promotions')
+                .select('price, status');
+
+            if (!allPromotionsError && allPromotions) {
+                const total = allPromotions
+                    .filter(p => p.status === 'active' || p.status === 'paid')
+                    .reduce((acc, p) => acc + (parseFloat(p.price) || 0), 0);
+                setTotalRevenue(total);
+            }
+
+            // Fetch recent promotions for display
             const { data: promotions, error: promotionsError } = await supabase
                 .from('promotions')
                 .select(`
@@ -88,19 +103,9 @@ const AdminDashboard = () => {
                 .limit(5);
 
             if (promotionsError) {
-                console.warn('Promotions table might not exist yet:', promotionsError);
+                console.warn('Promotions error:', promotionsError);
             } else {
                 setRecentPromotions(promotions || []);
-
-                // Calculate total revenue from all promotions
-                const { data: allPromotions, error: allPromotionsError } = await supabase
-                    .from('promotions')
-                    .select('price');
-
-                if (!allPromotionsError) {
-                    const total = allPromotions?.reduce((acc, p) => acc + (parseFloat(p.price) || 0), 0) || 0;
-                    setTotalRevenue(total);
-                }
             }
 
             // Manually fetch profiles for these listings
@@ -130,11 +135,16 @@ const AdminDashboard = () => {
     useEffect(() => {
         loadDashboardData();
 
-        // Real-time subscriptions
+        // 1. Polling Fallback to 60 seconds
+        const intervalId = setInterval(() => {
+            console.log('Auto-refreshing dashboard...');
+            loadDashboardData();
+        }, 60000);
+
+        // 2. Real-time subscriptions (Instant updates)
         const listingsSubscription = supabase
             .channel('admin_listings_changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'listings' }, () => {
-                console.log('Listings changed, reloading dashboard...');
                 loadDashboardData();
             })
             .subscribe();
@@ -142,7 +152,6 @@ const AdminDashboard = () => {
         const profilesSubscription = supabase
             .channel('admin_profiles_changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-                console.log('Profiles changed, reloading dashboard...');
                 loadDashboardData();
             })
             .subscribe();
@@ -156,6 +165,7 @@ const AdminDashboard = () => {
             .subscribe();
 
         return () => {
+            clearInterval(intervalId);
             listingsSubscription.unsubscribe();
             profilesSubscription.unsubscribe();
             promotionsSubscription.unsubscribe();
@@ -165,7 +175,7 @@ const AdminDashboard = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="large" />
             </div>
         );
     }
@@ -192,12 +202,14 @@ const AdminDashboard = () => {
                     icon="✅"
                     color="bg-green-500"
                 />
-                <StatsCard
-                    title="Toplam Gelir"
-                    value={`${totalRevenue.toLocaleString('tr-TR')} ₺`}
-                    icon="💰"
-                    color="bg-yellow-500"
-                />
+                <Link to="/admin/sales-reports" className="block">
+                    <StatsCard
+                        title="Toplam Gelir"
+                        value={`${totalRevenue.toLocaleString('tr-TR')} ₺`}
+                        icon="💰"
+                        color="bg-yellow-500"
+                    />
+                </Link>
                 <StatsCard
                     title="Çevrimiçi Satıcılar"
                     value={stats.onlineUsers}
@@ -211,6 +223,9 @@ const AdminDashboard = () => {
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-gray-900">Ödemeler & Promosyonlar</h3>
+                        <Link to="/admin/sales-reports" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                            Raporları Gör 📊
+                        </Link>
                     </div>
                     <div className="space-y-4">
                         {recentPromotions.map(promo => (
@@ -220,9 +235,23 @@ const AdminDashboard = () => {
                                     <div className="text-red-600 font-bold">{promo.price?.toLocaleString('de-DE')} ₺</div>
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
-                                    <span className="bg-white px-2 py-1 rounded border border-gray-200 uppercase font-bold text-gray-500">
-                                        {promo.package_type}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`px-2 py-1 rounded border uppercase font-bold ${promo.status === 'cancelled'
+                                            ? 'bg-red-50 text-red-500 border-red-100'
+                                            : 'bg-white text-gray-500 border-gray-200'
+                                            }`}>
+                                            {promo.package_type === 'highlight' ? 'Öne Çıkarılan' :
+                                                ['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase()) ? 'Vitrin' :
+                                                    promo.package_type === 'top' ? 'Top' :
+                                                        promo.package_type === 'budget' ? 'Budget' :
+                                                            promo.package_type === 'premium' ? 'Premium' :
+                                                                promo.package_type === 'plus' ? 'Plus' :
+                                                                    promo.package_type}
+                                        </span>
+                                        {promo.status === 'cancelled' && (
+                                            <span className="text-[10px] font-black text-red-600 uppercase tracking-tighter italic">İPTAL</span>
+                                        )}
+                                    </div>
                                     <span className="text-gray-400">
                                         {new Date(promo.created_at).toLocaleDateString('de-DE')}
                                     </span>
@@ -272,18 +301,18 @@ const AdminDashboard = () => {
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Hızlı Erişim</h3>
                     <div className="grid grid-cols-2 gap-4">
-                        <button className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 text-left transition-colors">
-                            <span className="block text-2xl mb-2">📢</span>
+                        <Link to="/admin/promotions" className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 text-left transition-colors">
+                            <span className="block text-2xl mb-2">🚀</span>
                             <span className="font-semibold text-gray-900">Öne Çıkar</span>
-                        </button>
-                        <button className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 text-left transition-colors">
+                        </Link>
+                        <Link to="/admin/users" className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 text-left transition-colors">
                             <span className="block text-2xl mb-2">🚫</span>
                             <span className="font-semibold text-gray-900">Engelle</span>
-                        </button>
-                        <button className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 text-left transition-colors">
+                        </Link>
+                        <Link to="/admin/settings" className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 text-left transition-colors">
                             <span className="block text-2xl mb-2">⚙️</span>
                             <span className="font-semibold text-gray-900">Sistem</span>
-                        </button>
+                        </Link>
                         <button className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 text-left transition-colors">
                             <span className="block text-2xl mb-2">✉️</span>
                             <span className="font-semibold text-gray-900">Bülten</span>

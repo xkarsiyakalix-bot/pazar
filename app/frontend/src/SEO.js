@@ -1,29 +1,30 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({
-    title = 'LokalPazar - Ücretsiz İlanlar',
-    description = 'LokalPazar Türkiye\'nin en büyük ilan pazaryeridir. Araba, emlak, elektronik, moda ve çok daha fazlasını keşfedin.',
-    keywords = 'ilan, ücretsiz ilan, alım satım, araba, emlak, elektronik, moda, mobilya, iş ilanları, türkiye',
-    image = '/logo512.png',
-    url = typeof window !== 'undefined' ? window.location.href : '',
-    type = 'website',
-    children
-}) => {
-    const siteName = 'LokalPazar';
-    const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
+const SEO = ({ title, description, image, url, type = 'website', children }) => {
+    const siteTitle = 'ExVitrin';
+    const titleTemplate = `%s | ${siteTitle}`;
+    const defaultTitle = `${siteTitle} - Ücretsiz İlanlar`;
+    const defaultDescription = "Türkiye'nin en büyük ilan pazaryeri ExVitrin. İkinci el ve sıfır araba, emlak, elektronik, moda, mobilya ve çocuk eşyalarını güvenle alın ve satın.";
+
+    const metaDescription = description || defaultDescription;
+    const metaUrl = url || 'https://exvitrin.com/';
+
+    const siteName = 'ExVitrin';
 
     // Structured Data for Organization
-    const organizationSchema = {
+    const metaImage = image || '/logo_exvitrin_2026.png';
+
+    const schemaData = {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": siteName,
-        "url": "https://lokalpazar.com",
-        "logo": "https://lokalpazar.com/logo512.png",
+        "name": "ExVitrin",
+        "url": "https://exvitrin.com",
+        "logo": "https://exvitrin.com/logo_exvitrin_2026.png",
         "sameAs": [
-            "https://www.facebook.com/lokalpazar",
-            "https://www.twitter.com/lokalpazar",
-            "https://www.instagram.com/lokalpazar"
+            "https://www.facebook.com/exvitrin",
+            "https://www.twitter.com/exvitrin",
+            "https://www.instagram.com/exvitrin"
         ],
         "contactPoint": {
             "@type": "ContactPoint",
@@ -35,38 +36,27 @@ const SEO = ({
     };
 
     return (
-        <Helmet>
-            {/* Basic Meta Tags */}
-            <title>{fullTitle}</title>
-            <meta name="description" content={description} />
-            <meta name="keywords" content={keywords} />
-            <meta name="author" content={siteName} />
-            <meta name="robots" content="index, follow" />
-            <meta name="googlebot" content="index, follow" />
-            <meta name="language" content="Turkish" />
-
-            {/* Open Graph / Facebook */}
+        <Helmet
+            title={title}
+            titleTemplate={titleTemplate}
+            defaultTitle={defaultTitle}
+        >
+            <meta name="description" content={metaDescription} />
             <meta property="og:type" content={type} />
-            <meta property="og:url" content={url} />
-            <meta property="og:title" content={fullTitle} />
-            <meta property="og:description" content={description} />
-            <meta property="og:image" content={image} />
+            <meta property="og:url" content={metaUrl} />
+            <meta property="og:title" content={title ? `${title} | ${siteTitle}` : defaultTitle} />
+            <meta property="og:description" content={metaDescription} />
+            <meta property="og:image" content={metaImage} />
             <meta property="og:site_name" content={siteName} />
-            <meta property="og:locale" content="tr_TR" />
 
-            {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:url" content={url} />
-            <meta name="twitter:title" content={fullTitle} />
-            <meta name="twitter:description" content={description} />
-            <meta name="twitter:image" content={image} />
+            <meta name="twitter:creator" content="@ExVitrin" />
+            <meta name="twitter:title" content={title ? `${title} | ${siteTitle}` : defaultTitle} />
+            <meta name="twitter:description" content={metaDescription} />
+            <meta name="twitter:image" content={metaImage} />
 
-            {/* Canonical URL */}
-            <link rel="canonical" href={url} />
-
-            {/* Structured Data */}
             <script type="application/ld+json">
-                {JSON.stringify(organizationSchema)}
+                {JSON.stringify(schemaData)}
             </script>
 
             {children}
@@ -88,6 +78,7 @@ export const ProductSEO = ({ product }) => {
             "@type": "Offer",
             "price": String(product.price || '0').replace('₺', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.'),
             "priceCurrency": "TRY",
+            "itemCondition": product.condition === 'Yeni' ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
             "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             "seller": {
                 "@type": "Person",
@@ -97,11 +88,16 @@ export const ProductSEO = ({ product }) => {
         "category": product.category
     };
 
+    // Use only product title for SEO
+    const pageTitle = product.title;
+    console.log('ProductSEO - product.title:', product.title);
+    console.log('ProductSEO - pageTitle:', pageTitle);
+
     return (
         <SEO
-            title={product.title}
-            description={product.description || `${product.title} - ${product.price} - Hemen LokalPazar'da keşfedin!`}
-            keywords={`${product.category}, ${product.title}, satın al, ${product.location}, ilan`}
+            title={pageTitle}
+            description={`${product.title} - ${product.price} - Hemen ExVitrin'de keşfedin! ${product.description ? product.description.substring(0, 100) : ''}...`}
+            keywords={`${product.category}, ${product.title}, ikinci el, sıfır, satın al, ${product.location}, ilan`}
             image={product.image}
             type="product"
         >
@@ -116,7 +112,7 @@ export const ProductSEO = ({ product }) => {
 export const SearchSEO = ({ query, resultsCount }) => (
     <SEO
         title={`"${query}" için arama sonuçları`}
-        description={`"${query}" için ${resultsCount} sonuç bulundu. LokalPazar'daki en iyi teklifleri keşfedin.`}
+        description={`"${query}" için ${resultsCount} sonuç bulundu. ExVitrin'deki en iyi teklifleri keşfedin.`}
         keywords={`${query}, ilanlar, ara, satın al`}
     />
 );
@@ -125,7 +121,7 @@ export const SearchSEO = ({ query, resultsCount }) => (
 export const CategorySEO = ({ category, itemCount }) => (
     <SEO
         title={`${category} İlanları`}
-        description={`LokalPazar'da ${itemCount} adet ${category} ilanı bulundu. ${category} ürünlerini kolayca ve uygun fiyata alın veya satın.`}
+        description={`ExVitrin'de ${itemCount} adet ${category} ilanı bulundu. ${category} ürünlerini kolayca ve uygun fiyata alın veya satın.`}
         keywords={`${category}, ilanlar, satın al, satış, uygun fiyat`}
     />
 );

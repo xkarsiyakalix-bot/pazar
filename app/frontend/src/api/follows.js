@@ -125,12 +125,17 @@ export const getFollowing = async () => {
                 user_number,
                 full_name,
                 avatar_url,
+                store_logo,
                 city,
                 postal_code,
                 bio,
                 created_at,
                 phone,
-                email
+                email,
+                is_pro,
+                is_commercial,
+                subscription_tier,
+                seller_type
             )
         `)
         .eq('follower_id', user.id);
@@ -203,12 +208,17 @@ export const getFollowers = async () => {
                 user_number,
                 full_name,
                 avatar_url,
+                store_logo,
                 city,
                 postal_code,
                 bio,
                 created_at,
                 phone,
-                email
+                email,
+                is_pro,
+                is_commercial,
+                subscription_tier,
+                seller_type
             )
         `)
         .eq('following_id', user.id);

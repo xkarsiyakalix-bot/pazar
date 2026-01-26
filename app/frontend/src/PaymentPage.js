@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import { updateUserProfile } from './api/profile';
+import LoadingSpinner from './components/LoadingSpinner';
 
 const PaymentPage = () => {
     const location = useLocation();
@@ -184,7 +185,7 @@ const PaymentPage = () => {
                         >
                             {loading ? (
                                 <>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <LoadingSpinner size="small" />
                                     <span>Ödeme İşleniyor...</span>
                                 </>
                             ) : (

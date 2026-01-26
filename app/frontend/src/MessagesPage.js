@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { getConversations, sendMessage, markConversationAsRead } from './api/messages';
 import { supabase } from './lib/supabase';
+import { checkRatingEligibility, hasUserRated } from './api/ratings';
+import RatingModal from './components/RatingModal';
+import LoadingSpinner from './components/LoadingSpinner';
 
 import ProfileLayout from './ProfileLayout';
-import TransactionConfirmCard from './components/TransactionConfirmCard';
-import RatingModal from './components/RatingModal';
 
 function MessagesPage() {
     const { user } = useAuth();
@@ -17,8 +18,9 @@ function MessagesPage() {
     const [messageText, setMessageText] = useState('');
     const [loading, setLoading] = useState(true);
     const [userProfile, setUserProfile] = useState(null);
-    const [showRatingModal, setShowRatingModal] = useState(false);
-    const [ratingTransaction, setRatingTransaction] = useState(null);
+    const [canRateUser, setCanRateUser] = useState(false);
+    const [hasRated, setHasRated] = useState(false);  // [NEW] Track if already rated
+    const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
     const messagesEndRef = useRef(null);
 
     // Load user profile for phone number
@@ -155,7 +157,8 @@ function MessagesPage() {
                         user: {
                             id: profile.id,
                             full_name: profile.full_name,
-                            avatar_url: profile.avatar_url
+                            avatar_url: profile.avatar_url,
+                            store_logo: profile.store_logo
                         },
                         messages: [],
                         lastMessage: { content: '', created_at: new Date().toISOString() },
@@ -191,6 +194,25 @@ function MessagesPage() {
             // Call API
             markConversationAsRead(partnerId);
         }
+    }, [selectedConversation, user]);
+
+    // Check rating eligibility when conversation changes
+    useEffect(() => {
+        const checkEligibility = async () => {
+            if (selectedConversation && user) {
+                const [eligible, rated] = await Promise.all([
+                    checkRatingEligibility(selectedConversation.user.id),
+                    hasUserRated(selectedConversation.user.id)
+                ]);
+                // Enforce at least 5 messages in the current conversation
+                setCanRateUser(eligible && selectedConversation.messages.length >= 5);
+                setHasRated(rated);
+            } else {
+                setCanRateUser(false);
+                setHasRated(false);
+            }
+        };
+        checkEligibility();
     }, [selectedConversation, user]);
 
     const handleSendMessage = async (e) => {
@@ -274,31 +296,12 @@ function MessagesPage() {
         }
     };
 
-    // Handle transaction completion
-    const handleTransactionComplete = (transaction) => {
-        console.log('Transaction completed:', transaction);
-        // Reload conversations to update UI
-        loadConversations();
-    };
 
-    // Handle rating request
-    const handleRatingRequest = (transaction) => {
-        setRatingTransaction(transaction);
-        setShowRatingModal(true);
-    };
-
-    // Handle rating success
-    const handleRatingSuccess = () => {
-        setShowRatingModal(false);
-        setRatingTransaction(null);
-        // Reload conversations
-        loadConversations();
-    };
 
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 pt-20 flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="large" />
             </div>
         );
     }
@@ -347,7 +350,7 @@ function MessagesPage() {
                                         <div className="flex gap-3">
                                             <div className="relative flex-shrink-0">
                                                 <img
-                                                    src={conv.user.avatar_url || 'https://via.placeholder.com/150?text=User'}
+                                                    src={conv.user.store_logo || conv.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.user.full_name || 'U')}&background=ef4444&color=fff`}
                                                     alt={conv.user.full_name}
                                                     className="w-14 h-14 rounded-full object-cover ring-2 ring-white shadow-sm"
                                                 />
@@ -409,7 +412,7 @@ function MessagesPage() {
                                         <div className="flex items-center gap-3">
                                             <div className="relative">
                                                 <img
-                                                    src={selectedConversation.user.avatar_url || 'https://via.placeholder.com/150?text=User'}
+                                                    src={selectedConversation.user.store_logo || selectedConversation.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedConversation.user.full_name || 'U')}&background=ef4444&color=fff`}
                                                     alt={selectedConversation.user.full_name}
                                                     className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
                                                 />
@@ -422,17 +425,31 @@ function MessagesPage() {
                                                 <p className="text-xs text-gray-500">Çevrimiçi</p>
                                             </div>
                                         </div>
-                                        {selectedConversation.listing && (
-                                            <button
-                                                onClick={() => navigate(`/product/${selectedConversation.listing.id}`)}
-                                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-all duration-200 shadow-sm hover:shadow-md"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg>
-                                                İlanı Görüntüle
-                                            </button>
-                                        )}
+                                        <div className="flex gap-2">
+                                            {canRateUser && !hasRated && (
+                                                <button
+                                                    onClick={() => setIsRatingModalOpen(true)}
+                                                    className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 rounded-lg font-bold text-sm flex items-center gap-1 transition-all shadow-sm hover:shadow-md"
+                                                    title="Kullanıcıyı Değerlendir"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                                    </svg>
+                                                    <span className="hidden sm:inline">Puan Ver</span>
+                                                </button>
+                                            )}
+                                            {selectedConversation.listing && (
+                                                <button
+                                                    onClick={() => navigate(`/product/${selectedConversation.listing.id}`)}
+                                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-all duration-200 shadow-sm hover:shadow-md"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                    </svg>
+                                                    İlanı Görüntüle
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                     {/* Listing Preview */}
                                     {selectedConversation.listing && (
@@ -454,18 +471,6 @@ function MessagesPage() {
                                         </div>
                                     )}
 
-                                    {/* Transaction Confirmation Card */}
-                                    {selectedConversation.listing && (
-                                        <div className="mt-4">
-                                            <TransactionConfirmCard
-                                                listingId={selectedConversation.listing.id}
-                                                sellerId={selectedConversation.listing.user_id}
-                                                buyerId={user.id}
-                                                onTransactionComplete={handleTransactionComplete}
-                                                onRatingRequest={handleRatingRequest}
-                                            />
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* Messages */}
@@ -527,6 +532,17 @@ function MessagesPage() {
                                         </button>
                                     </div>
                                 </form>
+                                {/* Rating Modal */}
+                                <RatingModal
+                                    isOpen={isRatingModalOpen}
+                                    onClose={() => setIsRatingModalOpen(false)}
+                                    ratedUserId={selectedConversation.user.id}
+                                    onSuccess={() => {
+                                        alert('Değerlendirmeniz başarıyla gönderildi!');
+                                        setCanRateUser(false); // Disable until refresh or logic change
+                                        setHasRated(true); // Hide button immediately
+                                    }}
+                                />
                             </>
                         ) : (
                             <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
@@ -547,16 +563,6 @@ function MessagesPage() {
                 </div>
             </div>
 
-            {/* Rating Modal */}
-            {showRatingModal && ratingTransaction && (
-                <RatingModal
-                    isOpen={showRatingModal}
-                    onClose={() => setShowRatingModal(false)}
-                    transaction={ratingTransaction}
-                    sellerName={selectedConversation?.user?.full_name || 'Satıcı'}
-                    onSuccess={handleRatingSuccess}
-                />
-            )}
         </ProfileLayout>
     );
 }

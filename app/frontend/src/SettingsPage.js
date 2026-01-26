@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import { fetchUserProfile, updateUserProfile, getUserStats } from './api/profile';
+import { fetchUserProfile, updateUserProfile, getUserStats, cancelSubscription, deleteUserProfile } from './api/profile';
 import { t } from './translations';
+import LoadingSpinner from './components/LoadingSpinner';
 
 import ProfileLayout from './ProfileLayout';
 
@@ -21,7 +22,8 @@ const SettingsPage = () => {
         city: '',
         website: '',
         legal_info: '',
-        seller_type: ''
+        seller_type: '',
+        store_slug: ''
     });
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
@@ -42,8 +44,9 @@ const SettingsPage = () => {
         wed: { open: '09:00', close: '18:00', active: true },
         thu: { open: '09:00', close: '18:00', active: true },
         fri: { open: '09:00', close: '18:00', active: true },
-        sat: { open: '10:00', close: '16:00', active: true },
-        sun: { open: '09:00', close: '18:00', active: false }
+        sat: { id: 'sat', name: 'Cumartesi', open: '10:00', close: '16:00', active: true },
+        sun: { open: '09:00', close: '18:00', active: false },
+        isAlwaysOpen: false
     });
 
     // Subscription & Stats
@@ -75,40 +78,50 @@ const SettingsPage = () => {
             navigate('/login');
             return;
         }
-        loadProfile();
-    }, [user, authLoading, navigate]);
+        // Only load if not already loaded OR if user changed
+        if (!profile || profile.id !== user.id) {
+            loadProfile();
+        }
+    }, [user?.id, authLoading, navigate]); // Use user.id for stability
 
-    const loadProfile = async () => {
+    const loadProfile = async (isRefresh = false) => {
+        if (loading && !isRefresh && profile) return; // Prevent double loading
+
         try {
-            setLoading(true);
-            const data = await fetchUserProfile(user.id);
-            const stats = await getUserStats(user.id);
+            if (!isRefresh) setLoading(true);
+            const [data, stats] = await Promise.all([
+                fetchUserProfile(user.id),
+                getUserStats(user.id).catch(() => null)
+            ]);
 
-            setProfile(data);
-            setUserStats(stats);
+            if (data) {
+                setProfile(data);
+                setUserStats(stats);
 
-            setFormData({
-                full_name: data.full_name || '',
-                phone: data.phone || '',
-                bio: data.bio || '',
-                street: data.street || '',
-                postal_code: data.postal_code || '',
-                city: data.city || '',
-                website: data.website || '',
-                legal_info: data.legal_info || '',
-                seller_type: data.seller_type || ''
-            });
-            setStoreName(data.store_name || '');
-            setStoreDescription(data.store_description || '');
-            setStoreLogo(data.store_logo || '');
-            setStoreBanner(data.store_banner || '');
-            setIsPro(data.is_pro || false);
-            if (data.working_hours) {
-                console.log('Loaded working hours:', data.working_hours);
-                setWorkingHours(data.working_hours);
+                setFormData({
+                    full_name: data.full_name || '',
+                    phone: data.phone || '',
+                    bio: data.bio || '',
+                    street: data.street || '',
+                    postal_code: data.postal_code || '',
+                    city: data.city || '',
+                    website: data.website || '',
+                    legal_info: data.legal_info || '',
+                    seller_type: data.seller_type || '',
+                    store_slug: data.store_slug || ''
+                });
+                setStoreName(data.store_name || '');
+                setStoreDescription(data.store_description || '');
+                setStoreLogo(data.store_logo || '');
+                setStoreBanner(data.store_banner || '');
+                setIsPro(data.is_pro || false);
+                if (data.working_hours) {
+                    setWorkingHours(data.working_hours);
+                }
             }
         } catch (error) {
             console.error('Error loading profile:', error);
+            setMessage('Profil bilgileri yüklenirken bir hata oluştu.');
         } finally {
             setLoading(false);
         }
@@ -261,8 +274,10 @@ const SettingsPage = () => {
             };
 
             await updateUserProfile(profile.id, finalUpdates);
-            setMessage('Profil ve mağaza bilgileri başarıyla güncellendi!');
-            loadProfile();
+            setMessage('✅ Değişiklikler Kaydedildi!');
+            loadProfile(true);
+            // Clear message after 5 seconds
+            setTimeout(() => setMessage(''), 5000);
         } catch (error) {
             console.error('Error saving profile:', error);
             setMessage(`Kaydedilirken hata oluştu: ${error.message || JSON.stringify(error)}`);
@@ -339,6 +354,47 @@ const SettingsPage = () => {
         }
     };
 
+    const handleCancelSubscription = async () => {
+        if (!window.confirm('Kurumsal aboneliğinizi iptal etmek istediğinize emin misiniz? Bu işlem sonucunda ilan limitleriniz standart seviyeye düşecek ve mağaza özellikleriniz devre dışı kalacaktır.')) {
+            return;
+        }
+
+        try {
+            setSaving(true);
+            await cancelSubscription(user.id);
+            setMessage('✅ Aboneliğiniz başarıyla iptal edildi ve hesabınız bireye dönüştürüldü.');
+            loadProfile(true);
+        } catch (error) {
+            console.error('Error cancelling subscription:', error);
+            setMessage(`Hata: ${error.message}`);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        const confirm1 = window.confirm('HESABINIZI KAPATMAK ÜZERESİNİZ. Tüm ilanlarınız, mesajlarınız ve profil bilgileriniz silinecektir. Devam etmek istiyor musunuz?');
+        if (!confirm1) return;
+
+        const confirm2 = window.prompt('Onaylamak için lütfen "HESABIMI SİL" yazın:');
+        if (confirm2 !== 'HESABIMI SİL') {
+            alert('Yanlış kelime girdiniz, işlem iptal edildi.');
+            return;
+        }
+
+        try {
+            setSaving(true);
+            await deleteUserProfile(user.id);
+            alert('Hesabınız başarıyla kapatıldı. Aramızdan ayrıldığınız için üzgünüz.');
+            navigate('/');
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            setMessage(`Hesap silinirken hata oluştu: ${error.message}`);
+            setSaving(false);
+        }
+    };
+
+
     // Helper to calculate limits
     const getPackageLimit = (tier) => {
         switch (tier) {
@@ -388,7 +444,7 @@ const SettingsPage = () => {
     if (loading || authLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="large" />
             </div>
         );
     }
@@ -397,7 +453,8 @@ const SettingsPage = () => {
     const extraLimit = profile?.extra_paid_listings || 0;
     const totalLimit = packageLimit === Infinity ? Infinity : packageLimit + extraLimit;
     const activeListings = userStats?.activeListings || 0;
-    const remainingLimit = totalLimit === Infinity ? 'Sınırsız' : Math.max(0, totalLimit - activeListings);
+    const monthlyListings = userStats?.monthlyListings || 0;
+    const remainingLimit = totalLimit === Infinity ? 'Sınırsız' : Math.max(0, totalLimit - monthlyListings);
 
     // Check if user is on free tier
     const isFreeTier = !profile?.subscription_tier || profile.subscription_tier === 'free';
@@ -578,7 +635,13 @@ const SettingsPage = () => {
                                     <h2 className="text-xl font-bold text-gray-900">{t.store.title}</h2>
                                     <button
                                         type="button"
-                                        onClick={() => navigate(`/store/${profile.id}`)}
+                                        onClick={() => {
+                                            if (formData.store_slug && profile?.subscription_tier === 'unlimited') {
+                                                window.open(`/${formData.store_slug}`, '_blank');
+                                            } else {
+                                                window.open(`/store/${profile.id}`, '_blank');
+                                            }
+                                        }}
                                         className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center gap-1"
                                     >
                                         {t.store.preview}
@@ -601,7 +664,7 @@ const SettingsPage = () => {
                                             </p>
 
                                             {/* Subscription Expiry Date Display */}
-                                            {profile?.subscription_expiry && (
+                                            {profile?.subscription_expiry ? (
                                                 <div className="mt-4 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
                                                     <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mb-1">
                                                         Bitiş Tarihi
@@ -614,6 +677,15 @@ const SettingsPage = () => {
                                                         })}
                                                     </p>
                                                 </div>
+                                            ) : (
+                                                <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
+                                                        Bitiş Tarihi
+                                                    </p>
+                                                    <p className="text-sm font-medium text-gray-400 italic">
+                                                        Süresiz / Belirtilmedi
+                                                    </p>
+                                                </div>
                                             )}
                                         </div>
                                         <div>
@@ -624,14 +696,18 @@ const SettingsPage = () => {
                                                     <span className="font-semibold">{totalLimit === Infinity ? 'Sınırsız' : totalLimit}</span>
                                                 </div>
                                                 <div className="flex justify-between text-sm">
-                                                    <span>Aktif İlanlar:</span>
-                                                    <span className="font-semibold text-blue-600">{activeListings}</span>
+                                                    <span>Bu Ayki İlanlar (Son 30 Gün):</span>
+                                                    <span className="font-semibold text-blue-600">{monthlyListings}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Toplam Aktif İlan:</span>
+                                                    <span className="text-gray-600">{activeListings}</span>
                                                 </div>
                                                 <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                                                     <div
                                                         className={`h-2 rounded-full ${remainingLimit === 0 ? 'bg-red-500' : 'bg-green-500'}`}
                                                         style={{
-                                                            width: totalLimit === Infinity ? '0%' : `${Math.min(100, (activeListings / totalLimit) * 100)}%`
+                                                            width: totalLimit === Infinity ? '0%' : `${Math.min(100, (monthlyListings / totalLimit) * 100)}%`
                                                         }}
                                                     ></div>
                                                 </div>
@@ -681,11 +757,20 @@ const SettingsPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end">
+                                    <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
+                                        {!isFreeTier && (
+                                            <button
+                                                type="button"
+                                                onClick={handleCancelSubscription}
+                                                className="text-xs font-bold text-red-500 hover:text-red-700 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 transition-colors"
+                                            >
+                                                Aboneliği İptal Et
+                                            </button>
+                                        )}
                                         <button
                                             type="button"
                                             onClick={() => navigate('/packages')}
-                                            className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors border border-indigo-100"
+                                            className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors border border-indigo-100 ml-auto"
                                         >
                                             Paket Yükselt / Süreyi Uzat
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -705,6 +790,72 @@ const SettingsPage = () => {
                                         placeholder="Mağaza adınızı girin"
                                     />
                                 </div>
+
+                                <div className="mb-6">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="block text-sm font-medium text-gray-700">Mağaza URL Uzantısı</label>
+                                        {profile?.subscription_tier !== 'unlimited' && (
+                                            <span className="text-[10px] text-amber-600 font-bold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                                                🔒 Sadece SINIRSIZ Paket
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center">
+                                        <div className="bg-gray-100 border border-r-0 border-gray-300 px-3 py-3 rounded-l-lg text-sm text-gray-500 font-medium">
+                                            exvitrin.com/
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={formData.store_slug}
+                                            onChange={(e) => {
+                                                const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                                                setFormData({ ...formData, store_slug: val });
+                                            }}
+                                            disabled={profile?.subscription_tier !== 'unlimited'}
+                                            className={`flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-red-400 focus:border-transparent ${profile?.subscription_tier !== 'unlimited' ? 'bg-gray-50 cursor-not-allowed opacity-60' : ''}`}
+                                            placeholder="magaza-adin"
+                                        />
+                                    </div>
+                                    <p className="text-[11px] text-gray-500 mt-2 italic px-1">
+                                        * Sadece küçük harf, rakam ve tire (-) içerebilir.
+                                    </p>
+                                    {formData.store_slug && profile?.subscription_tier === 'unlimited' && (
+                                        <div className="mt-4 p-4 bg-green-50 rounded-2xl border border-green-200 shadow-sm">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div>
+                                                    <p className="text-[10px] text-green-600 font-bold uppercase tracking-wider mb-1">Mağaza Adresiniz</p>
+                                                    <p className="text-sm font-black text-gray-900">exvitrin.com/{formData.store_slug}</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const url = `https://exvitrin.com/${formData.store_slug}`;
+                                                        navigator.clipboard.writeText(url).then(() => {
+                                                            alert('Link kopyalandı!');
+                                                        });
+                                                    }}
+                                                    className="p-2 hover:bg-green-100 rounded-lg transition-colors text-green-600"
+                                                    title="Linki Kopyala"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => window.open(`/${formData.store_slug}`, '_blank')}
+                                                className="w-full bg-green-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-green-700 transition-all flex items-center justify-center gap-2 shadow-md shadow-green-600/20"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                                Mağazaya Git
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
 
                                 {/* Store Media Preview */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -807,72 +958,98 @@ const SettingsPage = () => {
                                 </div>
 
                                 <div className="mt-8 pt-8 border-t border-gray-100">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <span className="text-xl">🕒</span> Çalışma Saatleri (Kurumsal)
-                                    </h3>
-                                    <div className="space-y-4">
-                                        {[
-                                            { id: 'mon', name: 'Pazartesi' },
-                                            { id: 'tue', name: 'Salı' },
-                                            { id: 'wed', name: 'Çarşamba' },
-                                            { id: 'thu', name: 'Perşembe' },
-                                            { id: 'fri', name: 'Cuma' },
-                                            { id: 'sat', name: 'Cumartesi' },
-                                            { id: 'sun', name: 'Pazar' }
-                                        ].map((day) => (
-                                            <div key={day.id} className="flex flex-wrap items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors gap-4">
-                                                <div className="flex items-center gap-4 min-w-[140px]">
-                                                    <label className="relative inline-flex items-center cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            className="sr-only peer"
-                                                            checked={workingHours[day.id]?.active}
-                                                            onChange={(e) => setWorkingHours({
-                                                                ...workingHours,
-                                                                [day.id]: { ...workingHours[day.id], active: e.target.checked }
-                                                            })}
-                                                        />
-                                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bottom-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                                                    </label>
-                                                    <span className={`text-sm font-bold ${workingHours[day.id]?.active ? 'text-gray-900' : 'text-gray-400'}`}>
-                                                        {day.name}
-                                                    </span>
-                                                </div>
-
-                                                {workingHours[day.id]?.active ? (
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Açılış</span>
-                                                            <input
-                                                                type="time"
-                                                                value={workingHours[day.id]?.open}
-                                                                onChange={(e) => setWorkingHours({
-                                                                    ...workingHours,
-                                                                    [day.id]: { ...workingHours[day.id], open: e.target.value }
-                                                                })}
-                                                                className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white"
-                                                            />
-                                                        </div>
-                                                        <span className="text-gray-300">/</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Kapanış</span>
-                                                            <input
-                                                                type="time"
-                                                                value={workingHours[day.id]?.close}
-                                                                onChange={(e) => setWorkingHours({
-                                                                    ...workingHours,
-                                                                    [day.id]: { ...workingHours[day.id], close: e.target.value }
-                                                                })}
-                                                                className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-xs font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">KAPALI</span>
-                                                )}
-                                            </div>
-                                        ))}
+                                    <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
+                                        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                            <span className="text-xl">🕒</span> Çalışma Saatleri (Kurumsal)
+                                        </h3>
+                                        <div className="flex items-center gap-3 bg-green-50 px-4 py-2 rounded-xl border border-green-100">
+                                            <span className="text-sm font-bold text-green-700">7/24 Sürekli Çevrimiçi</span>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only peer"
+                                                    checked={workingHours.isAlwaysOpen}
+                                                    onChange={(e) => setWorkingHours({
+                                                        ...workingHours,
+                                                        isAlwaysOpen: e.target.checked
+                                                    })}
+                                                />
+                                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bottom-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                            </label>
+                                        </div>
                                     </div>
+
+                                    {!workingHours.isAlwaysOpen ? (
+                                        <div className="space-y-4">
+                                            {[
+                                                { id: 'mon', name: 'Pazartesi' },
+                                                { id: 'tue', name: 'Salı' },
+                                                { id: 'wed', name: 'Çarşamba' },
+                                                { id: 'thu', name: 'Perşembe' },
+                                                { id: 'fri', name: 'Cuma' },
+                                                { id: 'sat', name: 'Cumartesi' },
+                                                { id: 'sun', name: 'Pazar' }
+                                            ].map((day) => (
+                                                <div key={day.id} className="flex flex-wrap items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors gap-4">
+                                                    <div className="flex items-center gap-4 min-w-[140px]">
+                                                        <label className="relative inline-flex items-center cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="sr-only peer"
+                                                                checked={workingHours[day.id]?.active}
+                                                                onChange={(e) => setWorkingHours({
+                                                                    ...workingHours,
+                                                                    [day.id]: { ...workingHours[day.id], active: e.target.checked }
+                                                                })}
+                                                            />
+                                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bottom-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                                        </label>
+                                                        <span className={`text-sm font-bold ${workingHours[day.id]?.active ? 'text-gray-900' : 'text-gray-400'}`}>
+                                                            {day.name}
+                                                        </span>
+                                                    </div>
+
+                                                    {workingHours[day.id]?.active ? (
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase">Açılış</span>
+                                                                <input
+                                                                    type="time"
+                                                                    value={workingHours[day.id]?.open}
+                                                                    onChange={(e) => setWorkingHours({
+                                                                        ...workingHours,
+                                                                        [day.id]: { ...workingHours[day.id], open: e.target.value }
+                                                                    })}
+                                                                    className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white"
+                                                                />
+                                                            </div>
+                                                            <span className="text-gray-300">/</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[10px] font-bold text-gray-400 uppercase">Kapanış</span>
+                                                                <input
+                                                                    type="time"
+                                                                    value={workingHours[day.id]?.close}
+                                                                    onChange={(e) => setWorkingHours({
+                                                                        ...workingHours,
+                                                                        [day.id]: { ...workingHours[day.id], close: e.target.value }
+                                                                    })}
+                                                                    className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-xs font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">KAPALI</span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="p-8 bg-green-50/50 rounded-2xl border-2 border-dashed border-green-200 text-center">
+                                            <div className="text-4xl mb-3">🌍</div>
+                                            <p className="text-green-800 font-bold text-lg mb-1">Mağazanız Sürekli Açık</p>
+                                            <p className="text-green-600 text-sm">Ziyaretçileriniz mağazanızı haftanın her günü, günün her saati "AÇIK" olarak görecektir.</p>
+                                        </div>
+                                    )}
                                     <p className="mt-3 text-[11px] text-gray-500 italic">
                                         * Çalışma saatleri mağaza sayfanızda otomatik olarak Open/Closed durumunu belirlemek için kullanılır.
                                     </p>
@@ -882,13 +1059,18 @@ const SettingsPage = () => {
                         )}
 
                         <div className="mt-8 pt-6 border-t border-gray-100">
+                            {message && (
+                                <div className={`mb-4 p-4 rounded-xl text-center font-bold animate-in fade-in slide-in-from-bottom-2 ${message.includes('Kaydedildi') ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+                                    {message}
+                                </div>
+                            )}
                             <button
                                 type="submit"
                                 disabled={saving}
                                 className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-black shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {saving ? (
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                    <LoadingSpinner size="small" />
                                 ) : (
                                     <>
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -923,6 +1105,25 @@ const SettingsPage = () => {
                             >
                                 Şifreyi değiştir
                             </button>
+                        </div>
+
+                        {/* Danger Zone */}
+                        <div className="mt-12 pt-8 border-t border-gray-200">
+                            <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+                                <h3 className="text-lg font-bold text-red-700 mb-2 flex items-center gap-2">
+                                    Hesabımı kapatmak istiyorum
+                                </h3>
+                                <p className="text-sm text-red-600 mb-6">
+                                    Hesabınızı kapattığınızda tüm verileriniz kalıcı olarak silinir. Bu işlem geri alınamaz.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteAccount}
+                                    className="px-6 py-2 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors shadow-sm"
+                                >
+                                    Hesabımı Kapat
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

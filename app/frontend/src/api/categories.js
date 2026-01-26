@@ -182,21 +182,21 @@ export const fetchCategoriesWithCounts = async () => {
 
         // Define category structure with real counts
         const categories = [
-            { name: 'Alle Kategorien', count: listings.length },
+            { name: 'Tüm Kategoriler', count: listings.length },
             {
-                name: 'Auto, Rad & Boot',
-                count: categoryCounts['Auto, Rad & Boot'] || 0,
+                name: 'Otomobil, Bisiklet & Tekne',
+                count: categoryCounts['Otomobil, Bisiklet & Tekne'] || categoryCounts['Auto, Rad & Boot'] || 0,
                 subcategories: [
-                    { name: 'Autos', count: subcategoryCounts['Auto, Rad & Boot|Autos'] || 0 },
-                    { name: 'Autoteile & Reifen', count: subcategoryCounts['Auto, Rad & Boot|Autoteile & Reifen'] || 0 },
-                    { name: 'Boote & Bootszubehör', count: subcategoryCounts['Auto, Rad & Boot|Boote & Bootszubehör'] || 0 },
-                    { name: 'Fahrräder & Zubehör', count: subcategoryCounts['Auto, Rad & Boot|Fahrräder & Zubehör'] || 0 },
-                    { name: 'Motorräder & Motorroller', count: subcategoryCounts['Auto, Rad & Boot|Motorräder & Motorroller'] || 0 },
-                    { name: 'Motorradteile & Zubehör', count: subcategoryCounts['Auto, Rad & Boot|Motorradteile & Zubehör'] || 0 },
-                    { name: 'Nutzfahrzeuge & Anhänger', count: subcategoryCounts['Auto, Rad & Boot|Nutzfahrzeuge & Anhänger'] || 0 },
-                    { name: 'Reparaturen & Dienstleistungen', count: subcategoryCounts['Auto, Rad & Boot|Reparaturen & Dienstleistungen'] || 0 },
-                    { name: 'Wohnwagen & Wohnmobile', count: subcategoryCounts['Auto, Rad & Boot|Wohnwagen & Wohnmobile'] || 0 },
-                    { name: 'Weiteres Auto, Rad & Boot', count: subcategoryCounts['Auto, Rad & Boot|Weiteres Auto, Rad & Boot'] || 0 },
+                    { name: 'Otomobiller', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Otomobiller'] || subcategoryCounts['Auto, Rad & Boot|Autos'] || 0 },
+                    { name: 'Oto Parça & Lastik', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Oto Parça & Lastik'] || subcategoryCounts['Auto, Rad & Boot|Autoteile & Reifen'] || 0 },
+                    { name: 'Tekne & Tekne Malzemeleri', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Tekne & Tekne Malzemeleri'] || subcategoryCounts['Auto, Rad & Boot|Boote & Bootszubehör'] || 0 },
+                    { name: 'Bisiklet & Aksesuarlar', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Bisiklet & Aksesuarlar'] || subcategoryCounts['Auto, Rad & Boot|Fahrräder & Zubehör'] || 0 },
+                    { name: 'Motosiklet & Scooter', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Motosiklet & Scooter'] || subcategoryCounts['Auto, Rad & Boot|Motorräder & Motorroller'] || 0 },
+                    { name: 'Motosiklet Parça & Aksesuarlar', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Motosiklet Parça & Aksesuarlar'] || subcategoryCounts['Auto, Rad & Boot|Motorradteile & Zubehör'] || 0 },
+                    { name: 'Ticari Araçlar & Römorklar', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Ticari Araçlar & Römorklar'] || subcategoryCounts['Auto, Rad & Boot|Nutzfahrzeuge & Anhänger'] || 0 },
+                    { name: 'Tamir & Servis', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Tamir & Servis'] || subcategoryCounts['Auto, Rad & Boot|Reparaturen & Dienstleistungen'] || 0 },
+                    { name: 'Karavan & Motokaravan', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Karavan & Motokaravan'] || subcategoryCounts['Auto, Rad & Boot|Wohnwagen & Wohnmobile'] || 0 },
+                    { name: 'Diğer Otomobil, Bisiklet & Tekne', count: subcategoryCounts['Otomobil, Bisiklet & Tekne|Diğer Otomobil, Bisiklet & Tekne'] || subcategoryCounts['Auto, Rad & Boot|Weiteres Auto, Rad & Boot'] || 0 },
                 ]
             },
             {
@@ -216,6 +216,7 @@ export const fetchCategoriesWithCounts = async () => {
                     { name: 'Yeni Projeler', count: subcategoryCounts['Emlak|Yeni Projeler'] || 0 },
                     { name: 'Taşımacılık & Nakliye', count: subcategoryCounts['Emlak|Taşımacılık & Nakliye'] || 0 },
                     { name: 'Diğer Emlak', count: subcategoryCounts['Emlak|Diğer Emlak'] || 0 },
+                    { name: 'Satılık Yazlık', count: subcategoryCounts['Emlak|Satılık Yazlık'] || 0 },
                 ]
             },
             {

@@ -1,9 +1,39 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { t } from './translations';
+import { fetchTotalActiveListingsCount } from './api/listings';
+import { fetchTotalUserCount } from './api/profile';
+import { supabase } from './lib/supabase';
+import { useState, useEffect } from 'react';
 
 function UberUnsPage() {
     const navigate = useNavigate();
+    const [listingCount, setListingCount] = useState(null);
+    const [userCount, setUserCount] = useState(null);
+
+    useEffect(() => {
+        const loadCounts = async () => {
+            const [lCount, uCount] = await Promise.all([
+                fetchTotalActiveListingsCount(),
+                fetchTotalUserCount()
+            ]);
+            setListingCount(lCount);
+            setUserCount(uCount);
+        };
+        loadCounts();
+
+        // Real-time subscription for listing updates
+        const subscription = supabase
+            .channel('public:listings')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'listings' }, () => {
+                fetchTotalActiveListingsCount().then(setListingCount);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -38,19 +68,19 @@ function UberUnsPage() {
 
                 {/* Facts & Figures */}
                 <div className="bg-gradient-to-br from-red-600 to-red-700 rounded-2xl shadow-lg p-8 md:p-12 mb-12 text-white">
-                    <h2 className="text-3xl font-bold mb-8">{t.aboutUs.facts.title}</h2>
-                    <div className="grid md:grid-cols-3 gap-8">
+
+                    <div className="grid md:grid-cols-3 gap-8 justify-center">
                         <div className="text-center">
-                            <div className="text-5xl font-bold mb-2">{t.aboutUs.facts.adsCount}</div>
+                            <div className="text-5xl font-bold mb-2">{listingCount !== null ? listingCount.toLocaleString('tr-TR') : '...'}</div>
                             <div className="text-lg opacity-90">{t.aboutUs.facts.adsLabel}</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-5xl font-bold mb-2">{t.aboutUs.facts.staffCount}</div>
-                            <div className="text-lg opacity-90">{t.aboutUs.facts.staffLabel}</div>
                         </div>
                         <div className="text-center">
                             <div className="text-5xl font-bold mb-2">{t.aboutUs.facts.locationCity}</div>
                             <div className="text-lg opacity-90">{t.aboutUs.facts.locationLabel}</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-5xl font-bold mb-2">{userCount !== null ? userCount.toLocaleString('tr-TR') : '...'}</div>
+                            <div className="text-lg opacity-90">Aktif Kayıtlı Kullanıcı</div>
                         </div>
                     </div>
                 </div>
@@ -71,14 +101,7 @@ function UberUnsPage() {
                     </div>
                 </div>
 
-                {/* Career CTA */}
-                <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-8 md:p-12 mb-12 text-white text-center">
-                    <h2 className="text-3xl font-bold mb-4">{t.aboutUs.career.title}</h2>
-                    <p className="text-lg mb-6 opacity-90">{t.aboutUs.career.subtitle}</p>
-                    <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
-                        {t.aboutUs.career.cta}
-                    </button>
-                </div>
+
 
                 {/* Contact Section */}
                 <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
@@ -87,7 +110,7 @@ function UberUnsPage() {
                         {t.aboutUs.contact.description}
                     </p>
                     <button
-                        onClick={() => navigate('/kontakt')}
+                        onClick={() => navigate('/iletisim')}
                         className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
                     >
                         {t.aboutUs.contact.cta}

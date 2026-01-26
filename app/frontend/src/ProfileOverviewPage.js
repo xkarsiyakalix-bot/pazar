@@ -4,6 +4,7 @@ import { useAuth } from './contexts/AuthContext';
 import { fetchUserProfile, getUserStats } from './api/profile';
 import { fetchUserListings } from './api/listings';
 import { HorizontalListingCard, formatLastSeen } from './components';
+import LoadingSpinner from './components/LoadingSpinner';
 
 import { getFollowersCount, getFollowingCount } from './api/follows';
 
@@ -54,7 +55,7 @@ const ProfileOverviewPage = () => {
     if (loading || authLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="large" />
             </div>
         );
     }
@@ -145,12 +146,8 @@ const ProfileOverviewPage = () => {
                                     onClick={() => navigate('/favorites')}
                                     className="group bg-gradient-to-br from-white to-gray-50 border-2 border-gray-100 rounded-2xl p-4 cursor-pointer hover:border-pink-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                                 >
-                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1 group-hover:text-pink-500 transition-colors">İzleme Listesi</div>
+                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1 group-hover:text-pink-500 transition-colors">Favoriler</div>
                                     <div className="text-3xl font-black text-gray-900 group-hover:text-gray-900">{stats?.watchlistCount || 0}</div>
-                                </div>
-                                <div className="group bg-gradient-to-br from-white to-gray-50 border-2 border-gray-100 rounded-2xl p-4 hover:border-amber-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1 group-hover:text-amber-500 transition-colors">Favoriler</div>
-                                    <div className="text-3xl font-black text-gray-900 group-hover:text-gray-900">{stats?.totalFavorites || 0}</div>
                                 </div>
                                 <div
                                     onClick={() => navigate('/messages')}

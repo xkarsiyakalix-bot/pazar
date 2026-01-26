@@ -12,9 +12,12 @@ const InvoiceModal = ({ promotion, onClose }) => {
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden font-sans animate-in fade-in zoom-in duration-200 print:shadow-none print:rounded-none print:max-w-none print:w-full print:m-0">
                 {/* Header */}
                 <div className="p-8 bg-gray-900 text-white flex justify-between items-start print:bg-white print:text-black print:border-b-2 print:border-gray-100 print:p-8">
-                    <div>
-                        <h2 className="text-3xl font-black italic tracking-tighter mb-1">KLEINBAZAAR</h2>
-                        <p className="text-gray-400 text-xs font-bold tracking-widest uppercase print:text-gray-500">Resmi Fatura</p>
+                    <div className="flex items-center gap-4">
+                        <img src="/logo_exvitrin_2026.png" alt="ExVitrin" className="h-12 w-auto" />
+                        <div>
+                            <h2 className="text-3xl font-black italic tracking-tighter mb-1">ExVitrin</h2>
+                            <p className="text-gray-400 text-xs font-bold tracking-widest uppercase print:text-gray-500">Resmi Fatura</p>
+                        </div>
                     </div>
                     <button onClick={onClose} className="text-white hover:text-gray-300 text-2xl font-light print:hidden">×</button>
                 </div>
@@ -59,7 +62,17 @@ const InvoiceModal = ({ promotion, onClose }) => {
                                         <div className="flex items-center gap-4">
                                             <div className="w-1.5 h-10 bg-red-600 rounded-full"></div>
                                             <div>
-                                                <p className="font-black text-gray-900 uppercase text-sm tracking-tight">Görünürlük Paketi: {promotion.package_type}</p>
+                                                <p className="font-black text-gray-900 uppercase text-sm tracking-tight">
+                                                    Görünürlük Paketi: {
+                                                        promotion.package_type === 'highlight' ? 'Öne Çıkarılan' :
+                                                            ['galerie', 'gallery', 'galeri', 'vitrin'].includes(promotion.package_type?.toLowerCase()) ? 'Vitrin' :
+                                                                promotion.package_type === 'top' ? 'Premium' :
+                                                                    promotion.package_type === 'budget' ? 'Budget' :
+                                                                        promotion.package_type === 'premium' ? 'Premium' :
+                                                                            promotion.package_type === 'plus' ? 'Plus' :
+                                                                                promotion.package_type
+                                                    }
+                                                </p>
                                                 <p className="text-xs text-gray-500 mt-1 font-medium italic">İlan: {promotion.listings?.title}</p>
                                                 <p className="text-[9px] text-gray-400 font-mono mt-2 bg-gray-50 px-1.5 py-0.5 rounded inline-block">ID: {generateListingNumber(promotion.listings || {})}</p>
                                             </div>
@@ -100,7 +113,7 @@ const InvoiceModal = ({ promotion, onClose }) => {
 
                 {/* Footer Actions */}
                 <div className="bg-gray-50 p-8 border-t border-gray-100 flex justify-between items-center print:hidden">
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">© 2025 Kleinbazaar GmbH | HRB 123456</p>
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">© 2025 ExVitrin GmbH</p>
                     <button
                         onClick={() => window.print()}
                         className="bg-gray-900 text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-black transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl flex items-center gap-3"

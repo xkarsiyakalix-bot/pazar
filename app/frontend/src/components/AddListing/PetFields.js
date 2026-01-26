@@ -117,7 +117,7 @@ export const PetFields = ({
                             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
-                            {['British Shorthair', 'Ev Kedisi', 'Maine Coon', 'Siyam', 'Diğer Kediler'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            {['British Shorthair', 'Scottish Fold', 'British Longhair', 'Maine Coon', 'İran Kedisi', 'Ragdoll Kedisi', 'Scottish Fold Longhair', 'Sfenks Kedisi', 'Munchkin Kedisi', 'Bengal Kedisi', 'Diğer Kediler'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         </select>
                     </div>
                     <div>

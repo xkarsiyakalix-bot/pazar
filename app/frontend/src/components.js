@@ -7,6 +7,7 @@ import { ReservationButton } from './ReservationButton';
 import { ProductSEO } from './SEO';
 import { getOptimizedImageUrl } from './utils/imageUtils';
 import RatingDisplay from './components/RatingDisplay';
+import RatingsList from './components/RatingsList';
 import { t, getCategoryTranslation } from './translations';
 import { FashionFields } from './components/AddListing/FashionFields';
 import { RealEstateFields } from './components/AddListing/RealEstateFields';
@@ -21,6 +22,10 @@ import { FamilyFields } from './components/AddListing/FamilyFields';
 import { PetFields } from './components/AddListing/PetFields';
 import PromotionModal from './components/Account/PromotionModal';
 import { useIsMobile } from './hooks/useIsMobile';
+import { getRatings, getUserAverageRating } from './api/ratings';
+import { Breadcrumb } from './components/Breadcrumb';
+import { searchApi } from './api/search';
+import LoadingSpinner from './components/LoadingSpinner';
 
 export const LazyImage = ({ src, alt, className, imgClassName, ...props }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -41,6 +46,9 @@ export const LazyImage = ({ src, alt, className, imgClassName, ...props }) => {
     </div>
   );
 };
+
+
+
 
 // Helper function to format "Last Seen" status
 export const formatLastSeen = (lastSeenDate) => {
@@ -89,6 +97,7 @@ const categories = [
       { name: 'Geçici Konaklama & Paylaşımlı Ev', count: 0 },
       { name: 'Konteyner', count: 0 },
       { name: 'Satılık Daire', count: 0 },
+      { name: 'Satılık Yazlık', count: 0 },
       { name: 'Tatil Evi & Yurt Dışı Emlak', count: 0 },
       { name: 'Garaj & Otopark', count: 0 },
       { name: 'Ticari Emlak', count: 0 },
@@ -311,125 +320,8 @@ export const generateListingNumber = (listing) => {
   return `${1000 + (parseInt(listing?.id?.substring(0, 8), 16) % 9000)}`;
 };
 
-export const mockListings = [
-  {
-    id: 1,
-    sellerId: 1,
-    listingNumber: 'KA-12345678',
-    title: 'Belini Unterschrank Küche 60 cm Breite. SDSZ...',
-    price: '189,00 ₺',
-    shipping: '+ 49,00 ₺ Kargo',
-    location: 'Preis von 7 Uhr',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 1247,
-    image: 'https://images.unsplash.com/photo-1586208958839-06c17cacdf08?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxraXRjaGVuJTIwY2FiaW5ldHxlbnwwfHx8fDE3NTMzNzc1MDZ8MA&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '20.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Küche & Esszimmer',
-    condition: 'İkinci El',
-    address: 'Musterstraße 123',
-    showFullAddress: true,
-    description: 'Hochwertiger Belini Unterschrank für Ihre Küche. Breite: 60 cm. Perfekt für moderne Kücheneinrichtungen. Der Schrank ist in sehr gutem Zustand und wurde nur wenig genutzt. Alle Türen und Schubladen funktionieren einwandfrei. Selbstabholung bevorzugt, Versand möglich gegen Aufpreis.'
-  },
-  {
-    id: 2,
-    sellerId: 1,
-    listingNumber: 'KA-23456789',
-    title: 'Belini Hängeschrank Küche SG2. Breite 60 cm...',
-    price: '104,90 ₺',
-    shipping: '+ 29,00 ₺ Kargo',
-    location: 'Preis von 7 Uhr',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1596552183299-000ef779e88d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwyfHxraXRjaGVuJTIwY2FiaW5ldHxlbnwwfHx8fDE3NTMzNzc1MDZ8MA&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '19.11.2025',
-    category: 'Ev & Bahçe',
-    subCategory: 'Mutfak & Yemek Odası',
-    condition: 'İkinci El',
-    showFullAddress: false,
-    description: 'Moderner Belini Hängeschrank für Ihre Küche. Breite: 60 cm. Ideal für zusätzlichen Stauraum. Der Schrank ist in sehr gutem Zustand, nur minimale Gebrauchsspuren. Alle Funktionen einwandfrei. Versand möglich oder Selbstabholung in Berlin.'
-  },
-  {
-    id: 3,
-    sellerId: 2,
-    listingNumber: 'KA-34567890',
-    title: 'Flex-Well Glashaengeschrank Küche - 60 cm breit...',
-    price: '119,00 ₺',
-    shipping: '+ 29,00 ₺ Kargo',
-    location: 'Preis von 7 Uhr',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 1534,
-    image: 'https://images.unsplash.com/photo-1672137233327-37b0c1049e77?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwyfHx3YXJkcm9iZXxlbnwwfHx8fDE3NTMzNzc1MTN8MA&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '18.11.2025',
-    category: 'Ev & Bahçe',
-    subCategory: 'Mutfak & Yemek Odası',
-    condition: 'İkinci El',
-    description: 'Eleganter Flex-Well Glashaengeschrank mit 60 cm Breite. Perfekt für moderne Küchen. Der Schrank verfügt über Glastüren ve bietet viel Stauraum. Sehr guter Zustand, kaum Gebrauchsspuren. Ideal für Küchenrenovierungen.'
-  },
-  {
-    id: 4,
-    sellerId: 2,
-    listingNumber: 'KA-45678901',
-    title: 'Flex-Well Kurzhängeschrank Küche - 50 cm breit...',
-    price: '53,90 ₺',
-    shipping: '+ 29,00 ₺ Kargo',
-    location: 'Preis von 7 Uhr',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwzfHx3YXJkcm9iZXxlbnwwfHx8fDE3NTMzNzc1MTN8MA&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '17.11.2025',
-    stock: 2,
-    category: 'Haus & Garten',
-    condition: 'Yeni',
-    description: 'Kompakter Flex-Well Kurzhängeschrank, 50 cm breit. Ideal für kleinere Küchen oder als Ergänzung. Der Schrank ist in gutem Zustand und funktioniert einwandfrei. Preiswert und praktisch.'
-  },
-  {
-    id: 5,
-    sellerId: 3,
-    listingNumber: 'KA-EL-001',
-    title: 'Samsung Galaxy S23 Ultra 256GB - Phantom Black',
-    price: '899,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1592890288564-76628a30a657?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxzbWFydHBob25lfGVufDB8fHx8MTc1MzM3NzUyMXww&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '16.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Handy & Telefon',
-    condition: 'Yeni Gibi',
-    description: 'Samsung Galaxy S23 Ultra in Phantom Black mit 256GB Speicher. Nur 2 Monate alt, in perfektem Zustand. Inkl. Originalverpackung, Ladegerät und Schutzhülle. Keine Kratzer oder Gebrauchsspuren. Ein absolutes Flaggschiff-Smartphone mit hervorragender Kamera und Performance!'
-  },
-  {
-    id: 6,
-    sellerId: 3,
-    listingNumber: 'KA-EL-002',
-    title: 'Apple iPhone 14 Pro 128GB - Space Black',
-    price: '799,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 321,
-    image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxzbWFydHBob25lfGVufDB8fHx8MTc1MzM3NzUyMXww&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '15.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Cep Telefonu & Telefon',
-    condition: 'İkinci El',
-    description: 'iPhone 14 Pro in Space Black, 128GB. Sehr guter Zustand, nur leichte Gebrauchsspuren. Display ohne Kratzer. Akku-Gesundheit bei 95%. Inkl. Originalverpackung und Lightning-Kabel. Perfekt für alle, die ein hochwertiges iPhone suchen!'
-  },
-];
+export const mockListings = [];
+
 
 // Local Job Mappings to ensure translation if import fails
 const localJobMappings = {
@@ -471,2521 +363,14 @@ const jobMap = (val) => {
   return (t.jobMappings && t.jobMappings[val]) || localJobMappings[val] || val;
 };
 
-export const mockListings2 = [
-  {
-    id: 7,
-    sellerId: 1,
-    title: 'Belini Unterschrank Küche 60 cm Breite. SDSZ...',
-    price: '219,90 ₺',
-    shipping: '+ 49,00 ₺ Kargo',
-    location: 'www.idealo.de',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 2103,
-    image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwyfHxjYXJ8ZW58MHx8fHwxNzUzMzc3NTI4fDA&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '14.11.2025',
-    category: 'Auto, Rad & Boot'
-  },
+export const mockListings2 = [];
 
-  {
-    id: 8,
-    sellerId: 2,
-    title: 'Belini Hängeschrank Küche SG. Breite 30 cm...',
-    price: '99,90 ₺',
-    shipping: '+ 29,00 ₺ Kargo',
-    location: 'www.idealo.de',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwzfHxjYXJ8ZW58MHx8fHwxNzUzMzc3NTI4fDA&ixlib=rb-4.1.0&q=85',
-    isTop: true,
-    date: '13.11.2025',
-    category: 'Otomobil, Bisiklet & Tekne'
-  },
-  {
-    id: 9,
-    sellerId: 3,
-    listingNumber: 'KA-56789012',
-    title: 'ETT EASY LINK Ventil 1 Grobgewinde (MT, MT C)',
-    price: '24,99 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 156,
-    image: '/product_dark_background.png',
-    isTop: true,
-    date: '30.11.2025',
-    stock: 12,
-    category: 'Oto Parça & Lastik',
-    subCategory: 'Diğer Otomobil, Bisiklet & Tekne',
-    condition: 'Yeni',
-    description: `🔧 Hochwertiges ETT EASY LINK Ventil mit Grobgewinde (MT, MT C)
+const galleryItems = [];
 
-Präzisionsgefertigtes Metallventil mit Federmechanismus für zuverlässige hydraulische und pneumatische Verbindungen. Ideal für professionelle Anwendungen und anspruchsvolle Projekte.
-
-✅ HIGHLIGHTS:
-• Material: Hochwertigeredelstahl - korrosionsbeständig und langlebig
-• Gewinde: MT / MT C (Grobgewinde) für universelle Kompatibilität
-• Integrierter Federmechanismus für sichere Verbindungen
-• Schraublösung - kein Spezialwerkzeug erforderlich
-• Einfache Montage einer EASY LINK Leitung an MT oder MT C Geber
-
-📦 LIEFERUMFANG:
-• 1x ETT EASY LINK Ventil 1 Grobgewinde
-• Originalverpackt
-
-📊 TECHNISCHE DATEN:
-• Gewicht (netto): 0.011 kg
-• Gewicht (brutto): 0.011 kg
-• Artikelnummer: 2702777
-• EAN: 4055184039625
-
-💎 ZUSTAND: Neuwertig, unbenutzt
-🚚 VERSAND: Schneller und sicherer Versand möglich
-
-Perfekt für Werkstätten, Hobbybastler und professionelle Anwendungen!`
-  },
-  {
-    id: 10,
-    sellerId: 1,
-    listingNumber: 'KA-67890123',
-    title: 'Gazelle Arroyo C7 E-Bike Damen 57cm 7gang Hollandrad',
-    price: '1.250,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Coesfeld / Lette',
-    postalCode: '48653',
-    city: 'Coesfeld',
-    address: 'Alter Kirchplatz 5',
-    showFullAddress: true,
-    viewCount: 45,
-    image: '/bike-vitrin.jpg',
-    images: [
-      '/bike-vitrin.jpg',
-      'https://images.unsplash.com/photo-1571068316344-75bc76f77890?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxlJTIwYmlrZXxlbnwwfHx8fDE3NTMzNzc1NDB8MA&ixlib=rb-4.1.0&q=85'
-    ],
-    isTop: true,
-    date: '25.11.2025',
-    category: 'Otomobil, Bisiklet & Tekne',
-    subCategory: 'Bisiklet & Aksesuarlar',
-    condition: 'İyi',
-    contactName: 'Max Mustermann',
-    phoneNumber: '0176 202 78 374',
-    showPhoneNumber: true,
-    description: 'Gut erhaltenes Gazelle Arroyo C7 E-Bike für Damen, Rahmengröße 57cm, 7 Gänge. Ideal für die Stadt und Touren. Das Fahrrad ist in gutem Zustand und wurde regelmäßig gewartet. Der Akku hält noch sehr gut und ermöglicht Fahrten bis zu 60 km. Perfekt für den täglichen Gebrauch oder längere Ausflüge. Nur Abholung möglich.'
-  },
-  {
-    id: 11,
-    sellerId: 2,
-    listingNumber: 'KA-HG-001',
-    title: 'Moderner Badezimmerschrank mit Spiegel - Weiß Hochglanz',
-    price: '89,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Banyo',
-    condition: 'İkinci El',
-    description: 'Verkaufe einen hochwertigen Badezimmerschrank in Weiß Hochglanz. Der Schrank verfügt über einen integrierten Spiegel und bietet viel Stauraum. Maße: 80cm x 60cm x 15cm. Sehr guter Zustand, nur minimale Gebrauchsspuren. Ideal für moderne Badezimmer. Selbstabholung bevorzugt.'
-  },
-  {
-    id: 12,
-    sellerId: 1,
-    listingNumber: 'KA-HG-002',
-    title: 'Schreibtisch Büro - Eiche massiv 140x70cm',
-    price: '245,00 ₺',
-    shipping: 'Gel Al',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Ofis',
-    condition: 'İkinci El',
-    description: 'Hochwertiger Schreibtisch aus massiver Eiche für Ihr Homeoffice oder Büro. Maße: 140cm x 70cm x 75cm. Der Tisch ist sehr stabil und bietet eine große Arbeitsfläche. Perfekt für produktives Arbeiten. Nur leichte Gebrauchsspuren, ansonsten in sehr gutem Zustand. Kann zerlegt werden für einfachen Transport.'
-  },
-  {
-    id: 13,
-    sellerId: 3,
-    listingNumber: 'KA-HG-003',
-    title: 'Wanddeko Set - 3 moderne Bilder mit Rahmen',
-    price: '45,00 ₺',
-    shipping: '+ 9,00 ₺ Kargo',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 189,
-    image: 'https://images.unsplash.com/photo-1582037928769-181f2644ecb7?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Dekorasyon',
-    condition: 'Yeni Gibi',
-    description: 'Schönes Wanddeko-Set bestehend aus 3 modernen Bildern mit hochwertigen Rahmen. Perfekt für Wohnzimmer oder Schlafzimmer. Die Bilder zeigen abstrakte Motive in Grau- und Goldtönen. Rahmengröße jeweils: 40cm x 60cm. Neuwertig, da nur kurz aufgehängt. Verleihen Sie Ihrem Zuhause einen eleganten Touch!'
-  },
-  {
-    id: 14,
-    sellerId: 2,
-    listingNumber: 'KA-HG-004',
-    title: 'Gartenpflege & Rasenmähen - Professioneller Service',
-    price: '35,00 ₺',
-    shipping: 'Yerinde Servis',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1558904541-efa843a96f01?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Ev Hizmetleri',
-    condition: 'Yeni',
-    description: 'Biete professionelle Gartenpflege und Rasenmähen an. Über 10 Jahre Erfahrung in der Gartenpflege. Leistungen umfassen: Rasenmähen, Heckenschneiden, Unkrautentfernung, Beetpflege und mehr. Zuverlässig, pünktlich und faire Preise. Regelmäßige Termine oder Einzeleinsätze möglich. Kostenlose Erstberatung! Kontaktieren Sie mich für ein unverbindliches Angebot.'
-  },
-  {
-    id: 15,
-    sellerId: 1,
-    listingNumber: 'KA-HG-005',
-    title: 'Gartenschlauch Set 30m mit Sprühpistole & Halterung',
-    price: '32,00 ₺',
-    shipping: '+ 6,90 ₺ Kargo',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 298,
-    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Bahçe Malzemeleri & Bitkiler',
-    condition: 'Yeni Gibi',
-    description: 'Komplettes Gartenschlauch-Set mit 30 Meter langem Schlauch, Sprühpistole mit 7 Funktionen und Wandhalterung. Der Schlauch ist flexibel, knickfest und UV-beständig. Perfekt für die Gartenbewässerung. Die Sprühpistole bietet verschiedene Strahlarten von Nebel bis Vollstrahl. Neuwertig, nur einmal benutzt. Ideal für die kommende Gartensaison!'
-  },
-  {
-    id: 16,
-    sellerId: 3,
-    listingNumber: 'KA-HG-006',
-    title: 'Vorhänge Blickdicht 2er Set - Grau 140x245cm',
-    price: '38,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 412,
-    image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Ev Tekstili',
-    condition: 'Yeni Gibi',
-    description: 'Elegante blickdichte Vorhänge im 2er Set in der Farbe Grau. Maße pro Vorhang: 140cm x 245cm. Die Vorhänge sind aus hochwertigem Stoff gefertigt und verdunkeln den Raum sehr gut. Perfekt für Schlafzimmer oder Wohnzimmer. Mit Ösen für einfache Montage. Nur einmal gewaschen, wie neu. Schaffen Sie eine gemütliche Atmosphäre in Ihrem Zuhause!'
-  },
-  {
-    id: 17,
-    sellerId: 2,
-    listingNumber: 'KA-HG-007',
-    title: 'Bosch Akkuschrauber PSR 18V mit 2 Akkus & Koffer',
-    price: '125,00 ₺',
-    shipping: '+ 9,90 ₺ Kargo',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Ev Tadilatı',
-    condition: 'İkinci El',
-    description: 'Verkaufe meinen Bosch Akkuschrauber PSR 18V inkl. 2 Akkus, Ladegerät und praktischem Transportkoffer. Der Schrauber ist sehr leistungsstark und eignet sich perfekt für Heimwerker-Projekte. LED-Licht für bessere Sicht beim Arbeiten. Alle Teile funktionieren einwandfrei. Gebraucht aber in sehr gutem Zustand. Ideal für Renovierungen und Möbelmontage!'
-  },
-  {
-    id: 18,
-    sellerId: 1,
-    listingNumber: 'KA-HG-008',
-    title: 'Esstisch ausziehbar Eiche 160-200cm mit 6 Stühlen',
-    price: '450,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 823,
-    image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Ev & Bahçe',
-    subCategory: 'Mutfak & Yemek Odası',
-    condition: 'İkinci El',
-    description: 'Wunderschöner ausziehbarer Esstisch aus Eiche mit 6 passenden Stühlen. Tischmaße: 160cm ausziehbar auf 200cm, Breite 90cm. Die Stühle sind gepolstert und sehr bequem. Perfekt für Familien oder wenn Sie gerne Gäste empfangen. Der Tisch ist sehr stabil und hochwertig verarbeitet. Leichte Gebrauchsspuren, ansonsten top Zustand. Ein echter Hingucker für Ihre Küche oder Esszimmer!'
-  },
-  {
-    id: 19,
-    sellerId: 3,
-    listingNumber: 'KA-HG-009',
-    title: 'Designer Stehlampe Modern - Schwarz/Gold 165cm',
-    price: '78,00 ₺',
-    shipping: '+ 12,90 ₺ Kargo',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Lamba & Aydınlatma',
-    condition: 'Yeni Gibi',
-    description: 'Moderne Designer-Stehlampe in Schwarz mit goldenen Akzenten. Höhe: 165cm. Die Lampe verfügt über einen Fußschalter und ist mit E27 Leuchtmitteln kompatibel. Perfekt für Wohnzimmer oder Leseecke. Sehr stilvolles Design, das jedem Raum das gewisse Etwas verleiht. Neuwertig, nur 3 Monate alt. Originalverpackung vorhanden. Ein absolutes Highlight für Ihr Zuhause!'
-  },
-  {
-    id: 20,
-    sellerId: 2,
-    listingNumber: 'KA-HG-010',
-    title: 'Boxspringbett 180x200cm Grau mit Matratze & Topper',
-    price: '650,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Essen',
-    postalCode: '45127',
-    city: 'Essen',
-    viewCount: 912,
-    image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Yatak Odası',
-    condition: 'İkinci El',
-    description: 'Hochwertiges Boxspringbett in Grau, Größe 180x200cm. Inkl. Matratze und Topper für maximalen Schlafkomfort. Das Bett ist sehr bequem und bietet optimale Unterstützung. Bezug ist abnehmbar und waschbar. Nur 1 Jahr alt, daher noch in sehr gutem Zustand. Perfekt für erholsame Nächte. Muss zerlegt abgeholt werden. Ein Traum für Ihr Schlafzimmer!'
-  },
-  {
-    id: 21,
-    sellerId: 1,
-    listingNumber: 'KA-HG-011',
-    title: 'Sofa 3-Sitzer Samt Blau mit Kissen - Skandinavisch',
-    price: '520,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 1045,
-    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Oturma Odası',
-    condition: 'Yeni Gibi',
-    description: 'Wunderschönes 3-Sitzer Sofa im skandinavischen Stil mit blauem Samtbezug. Maße: 210cm x 85cm x 80cm. Das Sofa ist sehr bequem und ein echter Hingucker. Inkl. 3 passenden Dekokissen. Die Füße sind aus hellem Holz. Perfekt für moderne Wohnzimmer. Nur 6 Monate alt, daher wie neu. Keine Flecken oder Beschädigungen. Verleihen Sie Ihrem Wohnzimmer einen stilvollen Look!'
-  },
-  {
-    id: 22,
-    sellerId: 3,
-    listingNumber: 'KA-HG-012',
-    title: 'Gartenbank Holz 150cm mit Auflagenbox - Akazie',
-    price: '95,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Dresden',
-    postalCode: '01067',
-    city: 'Dresden',
-    viewCount: 267,
-    image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb6?w=800&q=80',
-    isTop: true,
-    date: '26.11.2025',
-    category: 'Haus & Garten',
-    subCategory: 'Diğer Ev & Bahçe',
-    condition: 'İkinci El',
-    description: 'Schöne Gartenbank aus Akazienholz mit integrierter Auflagenbox. Länge: 150cm. Die Bank bietet bequeme Sitzgelegenheit für 2-3 Personen und praktischen Stauraum unter der Sitzfläche. Wetterfest behandelt und sehr stabil. Perfekt für Garten, Terrasse oder Balkon. Leichte Gebrauchsspuren durch Witterung, aber noch in gutem Zustand. Genießen Sie entspannte Stunden im Freien!'
-  },
-  {
-    id: 23,
-    sellerId: 1,
-    listingNumber: 'KA-MB-001',
-    title: 'Gesichtspflege Set - Naturkosmetik Bio Qualität',
-    price: '35,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 156,
-    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80',
-    isTop: false,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Güzellik & Sağlık',
-    condition: 'Yeni',
-    description: 'Hochwertiges Gesichtspflege-Set aus Bio-Naturkosmetik. Enthält Tagescreme, Nachtcreme und Serum. Alle Produkte sind vegan und tierversuchsfrei. Perfekt für empfindliche Haut. Originalverpackt und ungeöffnet. Ideal als Geschenk oder zum Ausprobieren natürlicher Hautpflege.'
-  },
-  {
-    id: 24,
-    sellerId: 2,
-    listingNumber: 'KA-MB-002',
-    title: 'Sommerkleid Blumenmuster Größe M - Neu mit Etikett',
-    price: '28,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 289,
-    image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Kadın Giyimi',
-    condition: 'Yeni',
-    description: 'Wunderschönes Sommerkleid mit Blumenmuster in Größe M. Noch nie getragen, mit Originaletiketten. Leichter, luftiger Stoff perfekt für warme Tage. Knielang mit elegantem Schnitt. Farben: Blau, Weiß, Rosa. Material: 100% Baumwolle. Ein echter Hingucker für den Sommer!'
-  },
-  {
-    id: 25,
-    sellerId: 3,
-    listingNumber: 'KA-MB-003',
-    title: 'Sneaker Damen Weiß Größe 39 - Wie Neu',
-    price: '45,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 412,
-    image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Kadın Ayakkabıları',
-    condition: 'Yeni Gibi',
-    description: 'Stylische weiße Damen-Sneaker in Größe 39. Nur 2x getragen, daher wie neu. Sehr bequem und vielseitig kombinierbar. Perfekt für Alltag und Freizeit. Keine Gebrauchsspuren, sauberer Zustand. Markenqualität zu fairem Preis. Ideal für den Frühling und Sommer!'
-  },
-  {
-    id: 26,
-    sellerId: 1,
-    listingNumber: 'KA-MB-004',
-    title: 'Herren Hemd Slim Fit Blau Größe L - Business',
-    price: '22,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 198,
-    image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Erkek Giyimi',
-    condition: 'İkinci El',
-    description: 'Elegantes Business-Hemd für Herren in Slim Fit, Größe L. Farbe: Hellblau. Material: Baumwoll-Mischgewebe, bügelleicht. Perfekt für Büro und formelle Anlässe. Sehr guter Zustand, nur wenige Male getragen. Professionelles Erscheinungsbild garantiert. Ein Must-have für jede Garderobe!'
-  },
-  {
-    id: 27,
-    sellerId: 2,
-    listingNumber: 'KA-MB-005',
-    title: 'Business Schuhe Herren Schwarz Größe 43 - Leder',
-    price: '65,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 334,
-    image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Erkek Ayakkabıları',
-    condition: 'İkinci El',
-    description: 'Hochwertige Business-Schuhe aus echtem Leder in Größe 43. Klassisches Design in Schwarz. Sehr bequem und langlebig. Ideal für Büro, Meetings und formelle Events. Leichte Gebrauchsspuren, aber noch in sehr gutem Zustand. Professioneller Look zu fairem Preis. Zeitloser Klassiker!'
-  },
-  {
-    id: 28,
-    sellerId: 3,
-    listingNumber: 'KA-MB-006',
-    title: 'Handtasche Leder Braun - Vintage Style',
-    price: '48,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 267,
-    image: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Çanta & Aksesuarlar',
-    condition: 'İkinci El',
-    description: 'Stilvolle Leder-Handtasche in Braun mit Vintage-Look. Geräumiges Hauptfach und mehrere Innentaschen. Perfekt für Alltag und Ausflüge. Echtes Leder, hochwertige Verarbeitung. Leichte Gebrauchsspuren verleihen authentischen Vintage-Charakter. Zeitloses Design, das nie aus der Mode kommt!'
-  },
-  {
-    id: 29,
-    sellerId: 1,
-    listingNumber: 'KA-MB-007',
-    title: 'Armbanduhr Herren Silber - Klassisches Design',
-    price: '85,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 445,
-    image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Saat & Takı',
-    condition: 'Yeni Gibi',
-    description: 'Elegante Herren-Armbanduhr in Silber mit klassischem Design. Quarzwerk, wasserdicht bis 50m. Edelstahlgehäuse und Lederarmband. Perfekt für Business und Freizeit. Nur 3 Monate alt, wie neu. Inkl. Originalverpackung und Garantiekarte. Zeitlose Eleganz am Handgelenk!'
-  },
-  {
-    id: 30,
-    sellerId: 2,
-    listingNumber: 'KA-MB-008',
-    title: 'Sonnenbrille Damen Schwarz - Designer Style',
-    price: '32,00 ₺',
-    shipping: '+ 3,90 ₺ Kargo',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 178,
-    image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Moda & Güzellik',
-    subCategory: 'Diğer Moda & Güzellik',
-    condition: 'Yeni Gibi',
-    description: 'Stylische Damen-Sonnenbrille in Schwarz mit Designer-Look. UV400 Schutz für optimalen Sonnenschutz. Leichter Rahmen, sehr bequem zu tragen. Perfekt für Sommer und Urlaub. Nur einmal getragen, daher wie neu. Inkl. Etui. Modisches Accessoire für jeden Anlass!'
-  },
-  {
-    id: 31,
-    sellerId: 1,
-    listingNumber: 'KA-EL-003',
-    title: 'Bose SoundLink Revolve+ Bluetooth Lautsprecher',
-    price: '189,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Ses & Hifi',
-    condition: 'Yeni Gibi',
-    description: 'Bose SoundLink Revolve+ Bluetooth Lautsprecher in perfektem Zustand. 360° Sound, wasserdicht (IPX4), bis zu 16 Stunden Akkulaufzeit. Nur 3 Monate alt, kaum benutzt. Inkl. Ladekabel und Originalverpackung. Hervorragender Klang für unterwegs!'
-  },
-  {
-    id: 32,
-    sellerId: 2,
-    listingNumber: 'KA-EL-004',
-    title: 'Reparatur Service für Smartphones & Tablets',
-    price: '39,00 ₺',
-    shipping: 'Yerinde Servis',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 156,
-    image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Elektronik Hizmetler',
-    condition: 'Yeni',
-    description: 'Professioneller Reparatur-Service für Smartphones, Tablets und Laptops. Display-Tausch, Akku-Wechsel, Wasserschaden-Reparatur. Schnelle Bearbeitung, faire Preise. Über 5 Jahre Erfahrung. Kostenlose Diagnose! Kontaktieren Sie uns für ein Angebot.'
-  },
-  {
-    id: 33,
-    sellerId: 3,
-    listingNumber: 'KA-EL-005',
-    title: 'Canon EOS 2000D Spiegelreflexkamera mit Objektiv',
-    price: '349,00 ₺',
-    shipping: '+ 6,90 ₺ Kargo',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 445,
-    image: 'https://images.unsplash.com/photo-1606980707986-683d8dc0ece6?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Fotoğraf & Kamera',
-    condition: 'İkinci El',
-    description: 'Canon EOS 2000D DSLR Kamera mit 18-55mm Objektiv. 24,1 Megapixel, Full HD Video, WiFi. Perfekt für Einsteiger. Sehr guter Zustand, nur wenig genutzt. Inkl. Akku, Ladegerät, Tragegurt und Tasche. Ideal für Fotografie-Enthusiasten!'
-  },
-  {
-    id: 34,
-    sellerId: 1,
-    listingNumber: 'KA-EL-006',
-    title: 'Bosch Serie 6 Waschmaschine 8kg A+++',
-    price: '389,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1626806819282-2c1dc01a5e0c?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Ev Aletleri',
-    condition: 'İkinci El',
-    description: 'Bosch Waschmaschine Serie 6, 8kg Fassungsvermögen, Energieklasse A+++. Sehr leise, viele Programme. 2 Jahre alt, funktioniert einwandfrei. Nur Abholung möglich. Ideal für Familien. Zuverlässig und energieeffizient!'
-  },
-  {
-    id: 35,
-    sellerId: 2,
-    listingNumber: 'KA-EL-007',
-    title: 'PlayStation 5 Digital Edition + 2 Controller',
-    price: '449,00 ₺',
-    shipping: '+ 8,90 ₺ Kargo',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Konsollar',
-    condition: 'Yeni Gibi',
-    description: 'PlayStation 5 Digital Edition mit 2 DualSense Controllern. Nur 4 Monate alt, wie neu. Inkl. allen Kabeln und Originalverpackung. Keine Kratzer oder Gebrauchsspuren. Perfekt für Gaming-Fans. Ein absolutes Must-have!'
-  },
-  {
-    id: 36,
-    sellerId: 3,
-    listingNumber: 'KA-EL-008',
-    title: 'Dell XPS 15 Laptop i7 16GB RAM 512GB SSD',
-    price: '1.099,00 ₺',
-    shipping: '+ 7,90 ₺ Kargo',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Dizüstü Bilgisayarlar',
-    condition: 'İkinci El',
-    description: 'Dell XPS 15 Premium Notebook. Intel Core i7, 16GB RAM, 512GB SSD, 15,6" Full HD Display. Perfekt für Arbeit und Multimedia. 1 Jahr alt, sehr guter Zustand. Inkl. Ladegerät und Tasche. Leistungsstarker Begleiter für unterwegs!'
-  },
-  {
-    id: 37,
-    sellerId: 1,
-    listingNumber: 'KA-EL-009',
-    title: 'Gaming PC i5-12400F RTX 3060 16GB RAM',
-    price: '899,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 1234,
-    image: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Bilgisayarlar',
-    condition: 'İkinci El',
-    description: 'Custom Gaming PC: Intel i5-12400F, NVIDIA RTX 3060 12GB, 16GB DDR4 RAM, 500GB NVMe SSD. RGB Beleuchtung, leise Kühlung. Perfekt für aktuelle Games in hohen Einstellungen. 6 Monate alt, top Zustand. Nur Abholung. Bereit zum Zocken!'
-  },
-  {
-    id: 38,
-    sellerId: 2,
-    listingNumber: 'KA-EL-010',
-    title: 'Logitech MX Master 3 Maus + MX Keys Tastatur',
-    price: '149,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Bilgisayar Aksesuarları & Yazılım',
-    condition: 'Yeni Gibi',
-    description: 'Logitech MX Master 3 Maus und MX Keys Tastatur Set. Perfekt für Produktivität. Bluetooth und USB-Empfänger. Nur 2 Monate alt, wie neu. Ergonomisches Design, präzise Steuerung. Ideal für Büro und Home Office. Premium Qualität!'
-  },
-  {
-    id: 39,
-    sellerId: 3,
-    listingNumber: 'KA-EL-011',
-    title: 'Apple iPad Air 5. Gen 64GB WiFi - Blau',
-    price: '499,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Tabletler & E-Okuyucular',
-    condition: 'Yeni Gibi',
-    description: 'Apple iPad Air 5. Generation in Blau, 64GB WiFi. M1 Chip, 10,9" Liquid Retina Display. Nur 3 Monate alt, neuwertig. Inkl. Originalverpackung und Ladekabel. Perfekt für Arbeit, Studium und Entertainment. Leistungsstark und elegant!'
-  },
-  {
-    id: 40,
-    sellerId: 1,
-    listingNumber: 'KA-EL-012',
-    title: 'Samsung 55" QLED 4K Smart TV Q60B',
-    price: '649,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Essen',
-    postalCode: '45127',
-    city: 'Essen',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'TV & Video',
-    condition: 'Yeni Gibi',
-    description: 'Samsung 55 Zoll QLED 4K Smart TV Q60B. Quantum HDR, 100% Farbvolumen, Tizen OS. 6 Monate alt, wie neu. Brillante Bildqualität, Smart Features. Inkl. Fernbedienung und Standfuß. Nur Abholung. Perfekt für Heimkino-Erlebnis!'
-  },
-  {
-    id: 41,
-    sellerId: 2,
-    listingNumber: 'KA-EL-013',
-    title: 'The Legend of Zelda: Tears of the Kingdom - Switch',
-    price: '45,00 ₺',
-    shipping: '+ 3,90 ₺ Kargo',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Video Oyunları',
-    condition: 'Yeni Gibi',
-    description: 'The Legend of Zelda: Tears of the Kingdom für Nintendo Switch. Nur einmal durchgespielt, wie neu. Inkl. Originalverpackung. Eines der besten Switch-Spiele! Episches Abenteuer mit atemberaubender Grafik. Ein Muss für Zelda-Fans!'
-  },
-  {
-    id: 42,
-    sellerId: 3,
-    listingNumber: 'KA-EL-014',
-    title: 'Philips Hue White & Color Starter Set E27',
-    price: '129,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Dresden',
-    postalCode: '01067',
-    city: 'Dresden',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1558089687-e460d2d7f0e2?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Elektronik',
-    subCategory: 'Diğer Elektronik',
-    condition: 'Yeni',
-    description: 'Philips Hue Starter Set mit 3 E27 Lampen und Bridge. 16 Millionen Farben, App-Steuerung, kompatibel mit Alexa und Google Home. Originalverpackt, ungeöffnet. Schaffen Sie die perfekte Atmosphäre in jedem Raum. Smart Home leicht gemacht!'
-  },
-  {
-    id: 43,
-    sellerId: 1,
-    listingNumber: 'KA-HS-001',
-    title: 'Aquarium 200L komplett mit Zubehör & Fischen',
-    price: '299,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1520990269523-c5aed1f9a2d4?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Balıklar',
-    condition: 'İkinci El',
-    description: 'Komplettes Aquarium-Set 200L mit Unterschrank, Filter, Heizung, Beleuchtung und Dekoration. Inkl. verschiedene Zierfische. Sehr guter Zustand, läuft seit 2 Jahren problemlos. Nur Abholung. Perfekt für Aquaristik-Einsteiger oder Erweiterung!'
-  },
-  {
-    id: 44,
-    sellerId: 2,
-    listingNumber: 'KA-HS-002',
-    title: 'Golden Retriever Welpen - Reinrassig mit Papieren',
-    price: '1.200,00 ₺',
-    shipping: 'Gel Al',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 1234,
-    image: 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Köpekler',
-    condition: 'Yeni',
-    description: 'Wunderschöne Golden Retriever Welpen aus liebevoller Hobbyzucht. 8 Wochen alt, geimpft, entwurmt, mit EU-Heimtierausweis und Stammbaum. Elterntiere vor Ort. Sehr sozial und verspielt. Perfekte Familienhunde. Besichtigung jederzeit möglich!'
-  },
-  {
-    id: 45,
-    sellerId: 3,
-    listingNumber: 'KA-HS-003',
-    title: 'Maine Coon Katzenbabys - Verschmust & Verspielt',
-    price: '800,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Kediler',
-    condition: 'Yeni',
-    description: 'Reinrassige Maine Coon Kitten, 12 Wochen alt. Geimpft, entwurmt, mit Stammbaum. Sehr verschmust und verspielt. An Kinder gewöhnt. Elterntiere können besichtigt werden. Perfekte Familienkatzen mit sanftem Wesen. Abgabe nur in liebevolle Hände!'
-  },
-  {
-    id: 46,
-    sellerId: 1,
-    listingNumber: 'KA-HS-004',
-    title: 'Zwergkaninchen Pärchen mit großem Gehege',
-    price: '120,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Küçük Hayvanlar',
-    condition: 'İkinci El',
-    description: 'Süßes Zwergkaninchen-Pärchen (1 Jahr alt) mit großem Gehege (150x80cm), Häuschen, Futternäpfen und Zubehör. Sehr zutraulich und handzahm. Perfekt für Kinder. Nur zusammen abzugeben. Aus zeitlichen Gründen schweren Herzens abzugeben.'
-  },
-  {
-    id: 47,
-    sellerId: 2,
-    listingNumber: 'KA-HS-005',
-    title: 'Hühner Legehennen - Verschiedene Rassen',
-    price: '15,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Çiftlik Hayvanları',
-    condition: 'İkinci El',
-    description: 'Gesunde Legehennen verschiedener Rassen (Braun, Weiß, Grünleger). 1-2 Jahre alt, legen regelmäßig. Preis pro Huhn. Mindestabnahme 3 Stück. Aus Freilandhaltung. Ideal für Selbstversorger oder Hobbyhalter. Sehr robust und pflegeleicht!'
-  },
-  {
-    id: 48,
-    sellerId: 3,
-    listingNumber: 'KA-HS-006',
-    title: 'Reitbeteiligung für Freizeitpferd gesucht',
-    price: '150,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Atlar',
-    condition: 'Yeni',
-    description: 'Suche zuverlässige Reitbeteiligung für meinen 8-jährigen Wallach (Warmblut, 165cm). Freizeitpferd, geländesicher, für Anfänger geeignet. 2-3x pro Woche. Monatliche Beteiligung 150₺. Schöner Stall mit Halle und Außenplatz. Erfahrung mit Pferden erwünscht!'
-  },
-  {
-    id: 49,
-    sellerId: 1,
-    listingNumber: 'KA-HS-007',
-    title: 'Hundesitting & Gassi-Service - Erfahren & Zuverlässig',
-    price: '25,00 ₺',
-    shipping: 'Yerinde Servis',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Hayvan Bakımı & Eğitimi',
-    condition: 'Yeni',
-    description: 'Biete professionelle Hundebetreuung und Gassi-Service. Über 5 Jahre Erfahrung mit allen Rassen. Flexible Zeiten, auch am Wochenende. Einzelbetreuung oder Gruppenausflüge möglich. Versichert und zuverlässig. Ihr Hund ist bei mir in besten Händen!'
-  },
-  {
-    id: 50,
-    sellerId: 2,
-    listingNumber: 'KA-HS-008',
-    title: 'VERMISST: Graue Hauskatze "Luna" - Belohnung!',
-    price: '0,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Kayıp Hayvanlar',
-    condition: 'Yeni',
-    description: 'VERMISST seit 25.11.2025: Graue Hauskatze "Luna", weiblich, 3 Jahre alt, grüne Augen, weißer Fleck auf der Brust. Sehr scheu. Zuletzt gesehen in Leipzig-Zentrum. Bitte melden bei Hinweisen! Belohnung! Sie fehlt uns sehr!'
-  },
-  {
-    id: 51,
-    sellerId: 3,
-    listingNumber: 'KA-HS-009',
-    title: 'Wellensittiche Pärchen - Handzahm & Zahm',
-    price: '45,00 ₺',
-    shipping: '+ 15,00 ₺ Kargo',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Kuşlar',
-    condition: 'İkinci El',
-    description: 'Handzahmes Wellensittich-Pärchen, blau und grün, 1 Jahr alt. Sehr zutraulich, kommen auf die Hand. Gesund und munter. Inkl. Käfig (60x40cm) und Zubehör gegen Aufpreis. Perfekt für Anfänger. Nur zusammen abzugeben!'
-  },
-  {
-    id: 52,
-    sellerId: 1,
-    listingNumber: 'KA-HS-010',
-    title: 'Kratzbaum XXL 180cm - Wie Neu',
-    price: '89,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Evcil Hayvanlar',
-    subCategory: 'Aksesuarlar',
-    condition: 'Yeni Gibi',
-    description: 'XXL Kratzbaum 180cm hoch mit mehreren Ebenen, Höhlen und Liegeflächen. Beige/Braun, sehr stabil. Nur 3 Monate alt, wie neu. Perfekt für große Katzen oder Mehrkatzenhaushalt. Selbstabholung bevorzugt. Katzen lieben ihn!'
-  },
-  {
-    id: 53,
-    sellerId: 2,
-    listingNumber: 'KA-FK-001',
-    title: 'Altenpflege 24h Betreuung - Erfahren & Liebevoll',
-    price: '2.500,00 ₺',
-    shipping: 'Yerinde Servis',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Altenpflege',
-    condition: 'Yeni',
-    description: 'Professionelle 24h Altenpflege und Betreuung. Erfahrene Pflegekräfte mit Herz. Individuelle Betreuung, Medikamentengabe, Hauswirtschaft. Auch stundenweise möglich. Kostenlose Erstberatung. Ihre Liebsten sind bei uns in besten Händen!'
-  },
-  {
-    id: 54,
-    sellerId: 3,
-    listingNumber: 'KA-FK-002',
-    title: 'Baby Kleidungspaket Größe 62-68 - 20 Teile',
-    price: '45,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Baby- & Kinderkleidung',
-    condition: 'İkinci El',
-    description: 'Süßes Babykleidungs-Paket in Größe 62-68. 20 Teile: Bodies, Strampler, Hosen, Oberteile. Verschiedene Marken (H&M, C&A, etc.). Sehr guter Zustand, gewaschen und gebügelt. Perfekt für die ersten Monate. Junge/Mädchen gemischt. Tolle Erstausstattung!'
-  },
-  {
-    id: 55,
-    sellerId: 1,
-    listingNumber: 'KA-FK-003',
-    title: 'Kinder Sneaker Nike Größe 28 - Wie Neu',
-    price: '28,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Baby- & Kinderschuhe',
-    condition: 'Yeni Gibi',
-    description: 'Nike Kinder Sneaker in Größe 28, wie neu. Nur 2x getragen, da zu klein gekauft. Bequem und robust. Perfekt für aktive Kids. Keine Gebrauchsspuren. Originalkarton vorhanden. Tolle Qualität zum fairen Preis!'
-  },
-  {
-    id: 56,
-    sellerId: 2,
-    listingNumber: 'KA-FK-004',
-    title: 'Babybett 70x140cm mit Matratze - Weiß',
-    price: '120,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Baby-Ausstattung',
-    condition: 'İkinci El',
-    description: 'Hochwertiges Babybett 70x140cm in Weiß mit höhenverstellbarem Lattenrost. Inkl. Matratze. 3 Schlupfsprossen. Umbaubar zum Juniorbett. Sehr guter Zustand, keine Beschädigungen. Nur Abholung. Perfekt für die ersten Jahre!'
-  },
-  {
-    id: 57,
-    sellerId: 3,
-    listingNumber: 'KA-FK-005',
-    title: 'Maxi-Cosi Babyschale mit Isofix Base',
-    price: '89,00 ₺',
-    shipping: '+ 8,90 ₺ Kargo',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1617854818583-09e7f077a156?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Babyschalen & Kindersitze',
-    condition: 'İkinci El',
-    description: 'Maxi-Cosi Babyschale Gruppe 0+ mit Isofix Base. Für Neugeborene bis 13kg. Sehr sicher und komfortabel. 2 Jahre alt, unfallfrei. Inkl. Sonnenverdeck und Regenschutz. Bezug waschbar. Perfekt für sichere Autofahrten mit Baby!'
-  },
-  {
-    id: 58,
-    sellerId: 1,
-    listingNumber: 'KA-FK-006',
-    title: 'Kinderbetreuung Tagesmutter - Liebevoll & Flexibel',
-    price: '5,00 ₺',
-    shipping: 'Yerinde Servis',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Babysitter/-in & Kinderbetreuung',
-    condition: 'Yeni',
-    description: 'Erfahrene Tagesmutter bietet liebevolle Kinderbetreuung. Flexible Zeiten, auch spontan möglich. Großer Garten, viele Spielsachen. Gesunde Mahlzeiten inklusive. Referenzen vorhanden. 5₺/Stunde. Noch 2 Plätze frei. Ihr Kind ist bei mir bestens aufgehoben!'
-  },
-  {
-    id: 59,
-    sellerId: 2,
-    listingNumber: 'KA-FK-007',
-    title: 'Bugaboo Kinderwagen Cameleon 3 - Komplett-Set',
-    price: '450,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 1123,
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Kinderwagen & Buggys',
-    condition: 'İkinci El',
-    description: 'Bugaboo Cameleon 3 Kinderwagen Komplett-Set. Inkl. Babywanne, Sportsitz, Regenschutz, Sonnenschirm, Adapter. Grau/Schwarz. Sehr guter Zustand, gepflegt. Wendig und komfortabel. Perfekt für Stadt und Land. Ein Premium-Kinderwagen!'
-  },
-  {
-    id: 60,
-    sellerId: 3,
-    listingNumber: 'KA-FK-008',
-    title: 'Kinderzimmer Komplett-Set Weiß/Rosa - 3-teilig',
-    price: '399,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Kinderzimmermöbel',
-    condition: 'İkinci El',
-    description: 'Komplettes Kinderzimmer-Set in Weiß/Rosa. 3-teilig: Kleiderschrank (120cm), Bett (90x200cm), Schreibtisch. Sehr guter Zustand, stabil und hochwertig. Perfekt für Mädchenzimmer. Nur Abholung, kann zerlegt werden. Schaffen Sie ein Traumzimmer!'
-  },
-  {
-    id: 61,
-    sellerId: 1,
-    listingNumber: 'KA-FK-009',
-    title: 'LEGO Duplo Großes Konvolut - Über 200 Teile',
-    price: '65,00 ₺',
-    shipping: '+ 7,90 ₺ Kargo',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 1234,
-    image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Spielzeug',
-    condition: 'İkinci El',
-    description: 'Großes LEGO Duplo Konvolut mit über 200 Teilen. Verschiedene Sets: Bauernhof, Eisenbahn, Bausteine, Figuren, Tiere. Vollständig und sauber. Perfekt für Kinder ab 2 Jahren. Fördert Kreativität und Motorik. Stundenlanger Spielspaß garantiert!'
-  },
-  {
-    id: 62,
-    sellerId: 2,
-    listingNumber: 'KA-FK-010',
-    title: 'Stillkissen XXL Theraline - Grau',
-    price: '35,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1586339277861-b0b895343ba5?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Aile, Çocuk & Bebek',
-    subCategory: 'Weiteres Familie, Kind & Baby',
-    condition: 'İkinci El',
-    description: 'Theraline Stillkissen XXL in Grau. 190cm lang, mit Mikroperlenfüllung. Sehr bequem und vielseitig einsetzbar. Bezug waschbar bei 60°C. Guter Zustand, hygienisch gereinigt. Perfekt für Schwangerschaft, Stillen und als Lagerungskissen. Unverzichtbar für Mamas!'
-  },
-  {
-    id: 63,
-    sellerId: 1,
-    listingNumber: 'KA-JOB-001',
-    title: 'Ausbildung zum Fachinformatiker (m/w/d) 2026',
-    price: '1.100,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Ausbildung',
-    condition: 'Yeni',
-    description: 'Starte deine Karriere! Ausbildung zum Fachinformatiker für Anwendungsentwicklung ab August 2026. Vergütung 1. Jahr: 1.100₺. Moderne Technik, erfahrene Ausbilder, Übernahmegarantie. Bewirb dich jetzt mit Lebenslauf und Zeugnissen!'
-  },
-  {
-    id: 64,
-    sellerId: 2,
-    listingNumber: 'KA-JOB-002',
-    title: 'Maurer/Bauhelfer (m/w/d) - Sofort gesucht!',
-    price: '3.200,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'İnşaat, Zanaat & Üretim',
-    condition: 'Yeni',
-    description: 'Wir suchen Maurer und Bauhelfer in Vollzeit. Gehalt ab 3.200₺/Monat. Erfahrung erwünscht, aber auch Quereinsteiger willkommen. Firmenwagen, Werkzeug gestellt. Unbefristeter Vertrag. Sofortiger Einstieg möglich. Bewirb dich jetzt!'
-  },
-  {
-    id: 65,
-    sellerId: 3,
-    listingNumber: 'KA-JOB-003',
-    title: 'Bürokauffrau/-mann (m/w/d) Teilzeit 20h',
-    price: '1.800,00 ₺',
-    shipping: 'Yerinde',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Büroarbeit & Verwaltung',
-    condition: 'Yeni',
-    description: 'Bürokauffrau/-mann für allgemeine Verwaltungsaufgaben gesucht. Teilzeit 20h/Woche, flexible Arbeitszeiten. 1.800₺/Monat. MS Office Kenntnisse erforderlich. Nettes Team, moderne Büros. Homeoffice teilweise möglich. Bewerbung per E-Mail!'
-  },
-  {
-    id: 66,
-    sellerId: 1,
-    listingNumber: 'KA-JOB-004',
-    title: 'Kellner/in für Restaurant - Vollzeit',
-    price: '2.400,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Gastronomie & Tourismus',
-    condition: 'Yeni',
-    description: 'Erfahrene/r Kellner/in für gehobenes Restaurant gesucht. Vollzeit, 2.400₺ + Trinkgeld. Schichtdienst, 2 Tage frei/Woche. Freundliches Team, gute Arbeitsatmosphäre. Erfahrung in der Gastronomie erforderlich. Sofortiger Einstieg möglich!'
-  },
-  {
-    id: 67,
-    sellerId: 2,
-    listingNumber: 'KA-JOB-005',
-    title: 'Kundenberater Call Center (m/w/d) - Homeoffice',
-    price: '2.200,00 ₺',
-    shipping: 'Homeoffice',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 1234,
-    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Kundenservice & Call Center',
-    condition: 'Yeni',
-    description: 'Kundenberater für Inbound-Telefonie gesucht. 100% Homeoffice möglich! 2.200₺/Monat, Vollzeit. Flexible Schichten, auch Quereinsteiger willkommen. Einarbeitung bezahlt. Gute Deutschkenntnisse erforderlich. Starte deine Karriere von zu Hause!'
-  },
-  {
-    id: 68,
-    sellerId: 3,
-    listingNumber: 'KA-JOB-006',
-    title: 'Minijob Prospektverteiler (m/w/d) 520₺',
-    price: '520,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Mini- & Nebenjobs',
-    condition: 'Yeni',
-    description: 'Minijob als Prospektverteiler auf 520₺-Basis. Flexible Zeiten, ca. 10h/Woche. Perfekt als Nebenjob oder für Studenten. Eigenes Auto von Vorteil. Einfache Tätigkeit, zuverlässige Bezahlung. Sofort starten möglich. Bewirb dich jetzt!'
-  },
-  {
-    id: 69,
-    sellerId: 1,
-    listingNumber: 'KA-JOB-007',
-    title: 'Praktikum Marketing & Social Media 6 Monate',
-    price: '800,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Praktika',
-    condition: 'Yeni',
-    description: 'Praktikum im Marketing & Social Media ab sofort für 6 Monate. 800₺/Monat Vergütung. Lerne Content Creation, Instagram, TikTok Management. Kreatives Team, moderne Büros. Ideal für Studenten. Übernahme nach Praktikum möglich. Bewirb dich mit Portfolio!'
-  },
-  {
-    id: 70,
-    sellerId: 2,
-    listingNumber: 'KA-JOB-008',
-    title: 'Pflegefachkraft (m/w/d) - Attraktive Bezahlung',
-    price: '3.800,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 1123,
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Sozialer Sektor & Pflege',
-    condition: 'Yeni',
-    description: 'Pflegefachkraft für Seniorenheim gesucht. Gehalt ab 3.800₺ + Zulagen. Vollzeit/Teilzeit möglich. Modernes Arbeitsumfeld, kleine Teams, faire Dienstpläne. Unbefristeter Vertrag, betriebliche Altersvorsorge. Wir schätzen deine Arbeit! Jetzt bewerben!'
-  },
-  {
-    id: 71,
-    sellerId: 3,
-    listingNumber: 'KA-JOB-009',
-    title: 'LKW Fahrer CE (m/w/d) - Fernverkehr',
-    price: '3.500,00 ₺',
-    shipping: 'Deutschlandweit',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Transport, Logistik & Verkehr',
-    condition: 'Yeni',
-    description: 'LKW Fahrer mit Führerschein CE für Fernverkehr gesucht. 3.500₺/Monat + Spesen. Moderne Fahrzeuge, regelmäßige Heimfahrten. Unbefristeter Vertrag, Weihnachts-/Urlaubsgeld. Berufserfahrung erforderlich. Starte deine Tour mit uns! Jetzt bewerben!'
-  },
-  {
-    id: 72,
-    sellerId: 1,
-    listingNumber: 'KA-JOB-010',
-    title: 'Verkäufer/in Einzelhandel (m/w/d) Vollzeit',
-    price: '2.600,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Vertrieb, Einkauf & Verkauf',
-    condition: 'Yeni',
-    description: 'Verkäufer/in für Modegeschäft gesucht. Vollzeit, 2.600₺/Monat. Freundliches Auftreten, Verkaufstalent. Mitarbeiterrabatt, flexible Arbeitszeiten. Erfahrung im Einzelhandel von Vorteil. Nettes Team, zentrale Lage. Bewirb dich mit Lebenslauf!'
-  },
-  {
-    id: 73,
-    sellerId: 2,
-    listingNumber: 'KA-JOB-011',
-    title: 'IT Support Mitarbeiter (m/w/d) - Quereinsteiger OK',
-    price: '2.800,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Dresden',
-    postalCode: '01067',
-    city: 'Dresden',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'İş İlanları',
-    subCategory: 'Weitere Jobs',
-    condition: 'Yeni',
-    description: 'IT Support Mitarbeiter für First Level Support gesucht. 2.800₺/Monat, Vollzeit. Auch Quereinsteiger mit IT-Affinität willkommen! Einarbeitung garantiert. Homeoffice teilweise möglich. Modernes Büro, junges Team. Starte deine IT-Karriere! Jetzt bewerben!'
-  },
-  {
-    id: 74,
-    sellerId: 3,
-    listingNumber: 'KA-FHN-001',
-    title: 'Tarot Kartenlesung - Spirituelle Beratung',
-    price: '45,00 ₺',
-    shipping: 'Online/Yerinde',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Ezoterizm & Spiritüalizm',
-    condition: 'Yeni',
-    description: 'Professionelle Tarot Kartenlesung und spirituelle Lebensberatung. Über 10 Jahre Erfahrung. Online oder persönlich. Finde Antworten auf deine Fragen zu Liebe, Karriere, Zukunft. Einfühlsam und diskret. Termine nach Vereinbarung. Erste Sitzung 45₺.'
-  },
-  {
-    id: 75,
-    sellerId: 1,
-    listingNumber: 'KA-FHN-002',
-    title: 'Italienischer Rotwein Barolo DOCG 2018',
-    price: '35,00 ₺',
-    shipping: '+ 6,90 ₺ Kargo',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Yiyecek & İçecek',
-    condition: 'Yeni',
-    description: 'Edler italienischer Barolo DOCG Rotwein Jahrgang 2018. Ungeöffnet, perfekt gelagert. Vollmundiger Geschmack, ideal zu Fleischgerichten. Perfekt als Geschenk oder für besondere Anlässe. Versand möglich. Ein Genuss für Weinkenner!'
-  },
-  {
-    id: 76,
-    sellerId: 2,
-    listingNumber: 'KA-FHN-003',
-    title: 'Yoga Kurs für Anfänger - 10er Karte',
-    price: '120,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Boş Zaman Aktiviteleri',
-    condition: 'Yeni',
-    description: 'Yoga Anfängerkurs - 10er Karte für 120₺. Entspannung, Flexibilität, innere Ruhe. Kleine Gruppen, erfahrene Lehrerin. Montags und Mittwochs 18:00 Uhr. Matten vorhanden. Perfekt zum Stressabbau. Schnupperstunde kostenlos! Jetzt anmelden!'
-  },
-  {
-    id: 77,
-    sellerId: 3,
-    listingNumber: 'KA-FHN-004',
-    title: 'Strickset Anfänger - Wolle, Nadeln & Anleitung',
-    price: '28,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'El Sanatları & Hobi',
-    condition: 'Yeni',
-    description: 'Komplettes Strickset für Anfänger. Hochwertige Wolle in verschiedenen Farben, Stricknadeln Größe 5, ausführliche Anleitung für Schal. Perfekt zum Einstieg ins Stricken. Entspannendes Hobby. Ideal als Geschenk. Neu und originalverpackt!'
-  },
-  {
-    id: 78,
-    sellerId: 1,
-    listingNumber: 'KA-FHN-005',
-    title: 'Antikes Ölgemälde Landschaft - Signiert',
-    price: '450,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Sanat & Antikalar',
-    condition: 'İkinci El',
-    description: 'Wunderschönes antikes Ölgemälde mit Landschaftsmotiv. Signiert, ca. 1920er Jahre. 60x80cm, originaler Rahmen. Sehr guter Erhaltungszustand. Echtes Kunstwerk mit Geschichte. Nur Abholung. Perfekt für Sammler und Kunstliebhaber. Ein Unikat!'
-  },
-  {
-    id: 79,
-    sellerId: 2,
-    listingNumber: 'KA-FHN-006',
-    title: 'Live Musik für Events - Akustik Duo',
-    price: '400,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
-    isTop: false,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Sanatçılar & Müzisyenler',
-    condition: 'Yeni',
-    description: 'Professionelles Akustik Duo für Hochzeiten, Geburtstage, Firmenevents. Gitarre & Gesang, vielseitiges Repertoire von Pop bis Jazz. Über 5 Jahre Bühnenerfahrung. Preis ab 400₺ (3 Stunden). Referenzen vorhanden. Unvergessliche musikalische Untermalung!'
-  },
-  {
-    id: 80,
-    sellerId: 3,
-    listingNumber: 'KA-FHN-007',
-    title: 'Märklin H0 Eisenbahn Set - Komplett',
-    price: '280,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 1123,
-    image: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Model Yapımı',
-    condition: 'İkinci El',
-    description: 'Märklin H0 Modelleisenbahn Komplett-Set. Lok, 8 Waggons, Gleise (Oval + Erweiterungen), Trafo, Zubehör. Sehr guter Zustand, voll funktionsfähig. Perfekt für Einsteiger oder Sammler. Nur Abholung. Stundenlanger Spielspaß garantiert!'
-  },
-  {
-    id: 81,
-    sellerId: 1,
-    listingNumber: 'KA-FHN-008',
-    title: 'Hochzeitsplanung & Eventservice - Professionell',
-    price: '1.500,00 ₺',
-    shipping: 'Yerinde Servis',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Seyahat & Etkinlik Hizmetleri',
-    condition: 'Yeni',
-    description: 'Professionelle Hochzeitsplanung von A-Z. Location-Suche, Dekoration, Catering, Musik, Fotograf. Über 50 erfolgreiche Events. Individuelle Beratung, stressfreie Planung. Paket ab 1.500₺. Kostenlose Erstberatung. Euer Traumtag in besten Händen!'
-  },
-  {
-    id: 82,
-    sellerId: 2,
-    listingNumber: 'KA-FHN-009',
-    title: 'Briefmarkensammlung Deutschland 1950-2000',
-    price: '350,00 ₺',
-    shipping: '+ 8,90 ₺ Kargo',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 1234,
-    image: 'https://images.unsplash.com/photo-1509043759401-136742328bb3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Koleksiyon',
-    condition: 'İkinci El',
-    description: 'Umfangreiche Briefmarkensammlung Deutschland 1950-2000. Über 500 Marken, viele Sondermarken, komplett in Alben. Sehr guter Zustand, katalogisiert. Perfekt für Sammler oder als Wertanlage. Versand versichert möglich. Ein Schatz für Philatelisten!'
-  },
-  {
-    id: 83,
-    sellerId: 3,
-    listingNumber: 'KA-FHN-010',
-    title: 'Camping Zelt 4 Personen + Zubehör',
-    price: '120,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Spor & Kamp',
-    condition: 'İkinci El',
-    description: '4-Personen Camping Zelt mit Vorzelt. Wasserdicht, schneller Aufbau. Inkl. Heringe, Abspannseile, Tragetasche. 3x benutzt, sehr guter Zustand. Perfekt für Festivals und Campingurlaub. Nur Abholung. Bereit für dein nächstes Abenteuer!'
-  },
-  {
-    id: 84,
-    sellerId: 1,
-    listingNumber: 'KA-FHN-011',
-    title: 'Flohmarkt Haushaltsauflösung - Diverses',
-    price: '5,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Dresden',
-    postalCode: '01067',
-    city: 'Dresden',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Bit Pazarı',
-    condition: 'İkinci El',
-    description: 'Haushaltsauflösung - Diverses zu verkaufen! Geschirr, Deko, Bücher, Kleinkram. Preise ab 5₺. Samstag 10-16 Uhr Besichtigung möglich. Nur Abholung, Barzahlung. Stöbern lohnt sich! Schnäppchen garantiert. Kommt vorbei und findet eure Schätze!'
-  },
-  {
-    id: 85,
-    sellerId: 2,
-    listingNumber: 'KA-FHN-012',
-    title: 'GEFUNDEN: Schwarzer Rucksack am Hauptbahnhof',
-    price: '0,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Kayıp & Buluntu',
-    condition: 'İkinci El',
-    description: 'GEFUNDEN am 25.11.2025 am Hamburger Hauptbahnhof: Schwarzer Rucksack mit Laptop und Unterlagen. Bitte melden mit genauer Beschreibung des Inhalts. Ehrlicher Finder möchte zurückgeben. Kontakt per E-Mail oder Telefon. Hoffe, der Besitzer meldet sich!'
-  },
-  {
-    id: 86,
-    sellerId: 3,
-    listingNumber: 'KA-FHN-013',
-    title: 'Nachbarschaftshilfe - Garten, Einkauf, Haushalt',
-    price: '15,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğlence, Hobi & Mahalle',
-    subCategory: 'Diğer Eğlence, Hobi & Mahalle',
-    condition: 'Yeni',
-    description: 'Biete Nachbarschaftshilfe in Berlin-Mitte. Gartenarbeit, Einkäufe, Haushaltshilfe, Botengänge. 15₺/Stunde. Zuverlässig, freundlich, flexibel. Ideal für Senioren oder Berufstätige. Auch kurzfristig verfügbar. Referenzen vorhanden. Helfe gerne in der Nachbarschaft!'
-  },
-  {
-    id: 87,
-    sellerId: 1,
-    listingNumber: 'KA-MFB-001',
-    title: 'Harry Potter Komplett-Set - Alle 7 Bände',
-    price: '35,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Kitap & Dergi',
-    condition: 'İkinci El',
-    description: 'Harry Potter Komplett-Set mit allen 7 Bänden. Deutsche Ausgabe, Taschenbuch. Sehr guter Zustand, nur leichte Gebrauchsspuren. Perfekt für Fans oder als Geschenk. Versand möglich. Tauche ein in die magische Welt von Hogwarts!'
-  },
-  {
-    id: 88,
-    sellerId: 2,
-    listingNumber: 'KA-MFB-002',
-    title: 'Schreibtisch-Organizer Set - 5-teilig',
-    price: '18,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Kırtasiye',
-    condition: 'Yeni',
-    description: '5-teiliges Schreibtisch-Organizer Set aus Bambus. Stifthalter, Ablagefächer, Notizzettelhalter. Nachhaltig und stylisch. Perfekt für Homeoffice oder Büro. Neu und originalverpackt. Ordnung auf dem Schreibtisch leicht gemacht!'
-  },
-  {
-    id: 89,
-    sellerId: 3,
-    listingNumber: 'KA-MFB-003',
-    title: 'Marvel Comics Sammlung - 25 Hefte',
-    price: '85,00 ₺',
-    shipping: '+ 6,90 ₺ Kargo',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Çizgi Romanlar',
-    condition: 'İkinci El',
-    description: 'Marvel Comics Sammlung mit 25 Heften. Spider-Man, Avengers, X-Men. Verschiedene Ausgaben aus den 90ern und 2000ern. Guter Zustand, komplett. Perfekt für Sammler. Versand versichert möglich. Ein Schatz für Marvel-Fans!'
-  },
-  {
-    id: 90,
-    sellerId: 1,
-    listingNumber: 'KA-MFB-004',
-    title: 'Medizin Lehrbuch - Anatomie & Physiologie',
-    price: '45,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Ders Kitapları, Okul & Eğitim',
-    condition: 'İkinci El',
-    description: 'Anatomie & Physiologie Lehrbuch für Medizinstudium. Aktuelle Auflage, sehr guter Zustand. Mit Markierungen und Notizen. Perfekt für Studenten. Versand möglich. Spare Geld beim Studium! Unverzichtbar fürs Medizinstudium!'
-  },
-  {
-    id: 91,
-    sellerId: 2,
-    listingNumber: 'KA-MFB-005',
-    title: 'Lord of the Rings Trilogy - Extended Edition Blu-ray',
-    price: '28,00 ₺',
-    shipping: '+ 4,90 ₺ Kargo',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 1123,
-    image: 'https://images.unsplash.com/photo-1594908900066-3f47337549d8?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Film & DVD',
-    condition: 'Yeni Gibi',
-    description: 'Herr der Ringe Trilogie - Extended Edition auf Blu-ray. Alle 3 Filme in Langfassung. Wie neu, nur 1x geschaut. Inkl. Bonusmaterial. Perfekt für Mittelerde-Fans. Versand möglich. Episches Kino-Erlebnis für zu Hause!'
-  },
-  {
-    id: 92,
-    sellerId: 3,
-    listingNumber: 'KA-MFB-006',
-    title: 'The Beatles - Abbey Road Vinyl LP',
-    price: '32,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1619983081563-430f63602796?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Müzik & CD\'ler',
-    condition: 'İkinci El',
-    description: 'The Beatles - Abbey Road Original Vinyl LP. Guter Zustand, spielt einwandfrei. Klassiker der Musikgeschichte. Perfekt für Vinyl-Sammler. Versand versichert möglich. Zeitlose Musik auf zeitlosem Medium. Ein Must-have!'
-  },
-  {
-    id: 93,
-    sellerId: 1,
-    listingNumber: 'KA-MFB-007',
-    title: 'Yamaha Akustik Gitarre - Anfängermodell',
-    price: '120,00 ₺',
-    shipping: 'Gel Al',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Müzik Enstrümanları',
-    condition: 'İkinci El',
-    description: 'Yamaha Akustik Gitarre, perfekt für Anfänger. Guter Zustand, spielt sich leicht. Inkl. Tasche und Stimmgerät. 2 Jahre alt, wenig benutzt. Nur Abholung. Starte deine musikalische Reise! Ideal zum Lernen!'
-  },
-  {
-    id: 94,
-    sellerId: 2,
-    listingNumber: 'KA-MFB-008',
-    title: 'Hörbuch-Sammlung - 15 CDs Krimi & Thriller',
-    price: '25,00 ₺',
-    shipping: '+ 5,90 ₺ Kargo',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Müzik, Film & Kitap',
-    subCategory: 'Diğer Müzik, Film & Kitap',
-    condition: 'İkinci El',
-    description: 'Hörbuch-Sammlung mit 15 CDs. Verschiedene Krimis und Thriller. Guter Zustand, alle komplett. Perfekt für lange Autofahrten oder zum Entspannen. Versand möglich. Spannende Unterhaltung für unterwegs! Top Autoren!'
-  },
-  {
-    id: 95,
-    sellerId: 3,
-    listingNumber: 'KA-ET-001',
-    title: 'DB Bahn Ticket Hamburg-München - Flexpreis',
-    price: '89,00 ₺',
-    shipping: 'Dijital',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 123,
-    image: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Tren & Toplu Taşıma',
-    condition: 'Yeni',
-    description: 'DB Flexpreis Ticket Hamburg-München für 1 Person. Gültig 30.11.2025. Kann nicht mehr genutzt werden, daher günstiger Verkauf. Übertragbar. Digitales Ticket per E-Mail. Schnäppchen für Kurzentschlossene!'
-  },
-  {
-    id: 96,
-    sellerId: 1,
-    listingNumber: 'KA-ET-002',
-    title: 'Comedy Show - Mario Barth Live in Berlin',
-    price: '45,00 ₺',
-    shipping: 'Gel Al/Posta',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Komedi & Kabare',
-    condition: 'Yeni',
-    description: 'Mario Barth Live Show am 15.12.2025 in Berlin, Mercedes-Benz Arena. 2 Tickets verfügbar, Kategorie 2. Leider verhindert. VK 45₺/Stück (Original 55₺). Abholung oder Versand möglich. Lachen garantiert!'
-  },
-  {
-    id: 97,
-    sellerId: 2,
-    listingNumber: 'KA-ET-003',
-    title: 'Amazon Gutschein 50₺ - Unbenutzt',
-    price: '45,00 ₺',
-    shipping: 'Dijital',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Hediye Çekleri',
-    condition: 'Yeni',
-    description: 'Amazon Gutschein im Wert von 50₺, unbenutzt. Code wird digital per E-Mail versendet. Verkaufe für 45₺. Sofort einsetzbar. Perfekt als Geschenk oder für eigene Einkäufe. Sicher und schnell!'
-  },
-  {
-    id: 98,
-    sellerId: 3,
-    listingNumber: 'KA-ET-004',
-    title: 'Playmobil FunPark Tickets - Familie 2+2',
-    price: '65,00 ₺',
-    shipping: 'Posta',
-    location: 'Nürnberg',
-    postalCode: '90402',
-    city: 'Nürnberg',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Çocuk',
-    condition: 'Yeni',
-    description: 'Playmobil FunPark Familientickets für 2 Erwachsene + 2 Kinder. Gültig bis 31.12.2025. Leider können wir nicht, daher Verkauf. VK 65₺ (Original 80₺). Versand per Post. Riesenspaß für die ganze Familie!'
-  },
-  {
-    id: 99,
-    sellerId: 1,
-    listingNumber: 'KA-ET-005',
-    title: 'Coldplay Konzert München - 2 Tickets Stehplatz',
-    price: '180,00 ₺',
-    shipping: 'Gel Al/Posta',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 1234,
-    image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Konserler',
-    condition: 'Yeni',
-    description: 'Coldplay Live Konzert am 20.01.2026 in München, Olympiastadion. 2 Stehplatz-Tickets. Leider verhindert. VK 90₺/Stück (Original 95₺). Abholung in München oder Versand. Unvergessliches Konzerterlebnis!'
-  },
-  {
-    id: 100,
-    sellerId: 2,
-    listingNumber: 'KA-ET-006',
-    title: 'FC Bayern vs Dortmund - 2 Tickets Südkurve',
-    price: '220,00 ₺',
-    shipping: 'Gel Al',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 1567,
-    image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Spor',
-    condition: 'Yeni',
-    description: 'FC Bayern München vs Borussia Dortmund am 10.12.2025, Allianz Arena. 2 Tickets Südkurve, Stehplätze. Der Klassiker! Leider verhindert. VK 110₺/Stück. Nur Abholung in München. Echte Stadionatmosphäre!'
-  },
-  {
-    id: 101,
-    sellerId: 3,
-    listingNumber: 'KA-ET-007',
-    title: 'König der Löwen Musical Hamburg - 2 Tickets',
-    price: '150,00 ₺',
-    shipping: 'Posta',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Tiyatro & Müzikal',
-    condition: 'Yeni',
-    description: 'König der Löwen Musical in Hamburg am 05.01.2026. 2 Tickets Kategorie 2, gute Sicht. Leider verhindert. VK 75₺/Stück (Original 89₺). Versand möglich. Magisches Musical-Erlebnis für die ganze Familie!'
-  },
-  {
-    id: 102,
-    sellerId: 1,
-    listingNumber: 'KA-ET-008',
-    title: 'Therme Erding Tageskarte - 2 Personen',
-    price: '55,00 ₺',
-    shipping: 'Dijital',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Biletler',
-    subCategory: 'Diğer Biletler',
-    condition: 'Yeni',
-    description: 'Therme Erding Tageskarten für 2 Personen. Gültig bis 31.03.2026. Leider keine Zeit. VK 55₺ für beide (Original 70₺). Digitale Tickets per E-Mail. Entspannung pur in Europas größter Therme!'
-  },
-  {
-    id: 103,
-    sellerId: 2,
-    listingNumber: 'KA-DL-001',
-    title: 'Altenpflege & Betreuung - Erfahren & Zuverlässig',
-    price: '25,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=800&q=80',
-    isTop: false,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Yaşlı Bakımı',
-    condition: 'Yeni',
-    description: 'Professionelle Altenpflege und Betreuung. Erfahrene Pflegekraft mit Herz. Hauswirtschaft, Medikamentengabe, Begleitung zu Ärzten. Stundenweise oder 24h. 25₺/Stunde. Referenzen vorhanden. Ihre Liebsten sind bei mir in besten Händen!'
-  },
-  {
-    id: 104,
-    sellerId: 3,
-    listingNumber: 'KA-DL-002',
-    title: 'KFZ Reparatur & Wartung - Meisterbetrieb',
-    price: '80,00 ₺',
-    shipping: 'Yerinde',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Otomobil, Bisiklet & Tekne',
-    condition: 'Yeni',
-    description: 'KFZ Meisterbetrieb bietet Reparatur und Wartung aller Marken. Ölwechsel, Inspektion, TÜV-Vorbereitung, Bremsen, Reifen. Faire Preise, schnelle Termine. Stundensatz 80₺. Kostenloser Kostenvoranschlag. Ihr Auto ist bei uns in guten Händen!'
-  },
-  {
-    id: 105,
-    sellerId: 1,
-    listingNumber: 'KA-DL-003',
-    title: 'Kinderbetreuung Tagesmutter - Liebevoll',
-    price: '6,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80',
-    isTop: false,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Babysitter & Çocuk Bakımı',
-    condition: 'Yeni',
-    description: 'Erfahrene Tagesmutter bietet liebevolle Kinderbetreuung. Flexible Zeiten, großer Garten, viele Spielsachen. Gesunde Mahlzeiten inklusive. 6₺/Stunde. Noch 2 Plätze frei ab Januar. Referenzen vorhanden. Ihr Kind ist bei mir bestens aufgehoben!'
-  },
-  {
-    id: 106,
-    sellerId: 2,
-    listingNumber: 'KA-DL-004',
-    title: 'Handy & Laptop Reparatur - Schnell & Günstig',
-    price: '49,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 892,
-    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Elektronik',
-    condition: 'Yeni',
-    description: 'Professionelle Handy & Laptop Reparatur. Display-Tausch, Akku-Wechsel, Wasserschaden, Software-Probleme. Alle Marken. Express-Service möglich. Ab 49₺. Kostenlose Diagnose. 6 Monate Garantie. Schnell, günstig, zuverlässig!'
-  },
-  {
-    id: 107,
-    sellerId: 3,
-    listingNumber: 'KA-DL-005',
-    title: 'Gartenpflege & Rasenmähen - Professionell',
-    price: '35,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Ev & Bahçe',
-    condition: 'Yeni',
-    description: 'Professionelle Gartenpflege - Rasenmähen, Heckenschneiden, Unkraut jäten, Laub entfernen. Regelmäßig oder einmalig. 35₺/Stunde. Eigene Geräte. Zuverlässig und pünktlich. Kostenlose Besichtigung. Ihr Garten in besten Händen!'
-  },
-  {
-    id: 108,
-    sellerId: 1,
-    listingNumber: 'KA-DL-006',
-    title: 'Live Musik Hochzeit - Gitarre & Gesang',
-    price: '500,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Sanatçılar & Müzisyenler',
-    condition: 'Yeni',
-    description: 'Professioneller Musiker für Hochzeiten & Events. Gitarre & Gesang, vielseitiges Repertoire. Pop, Rock, Jazz, Klassik. 500₺ für 4 Stunden. Über 10 Jahre Erfahrung. Referenzen vorhanden. Unvergessliche musikalische Untermalung!'
-  },
-  {
-    id: 109,
-    sellerId: 2,
-    listingNumber: 'KA-DL-007',
-    title: 'Hochzeitsplanung Komplett - Traumhochzeit',
-    price: '2.500,00 ₺',
-    shipping: 'Service',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 1123,
-    image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Seyahat & Etkinlik',
-    condition: 'Yeni',
-    description: 'Professionelle Hochzeitsplanung von A-Z. Location, Catering, Dekoration, Fotograf, Musik. Über 100 erfolgreiche Hochzeiten. Individuelle Beratung, stressfreie Planung. Paket ab 2.500₺. Kostenlose Erstberatung. Euer Traumtag wird wahr!'
-  },
-  {
-    id: 110,
-    sellerId: 3,
-    listingNumber: 'KA-DL-008',
-    title: 'Hundesitting & Gassi-Service - Täglich',
-    price: '20,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80',
-    isTop: false,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Hayvan Bakımı & Eğitimi',
-    condition: 'Yeni',
-    description: 'Hundesitting & Gassi-Service. Täglich verfügbar, auch spontan. Große Erfahrung mit allen Rassen. 20₺/Stunde. Auch Urlaubsbetreuung möglich. Referenzen vorhanden. Ihr Hund ist bei mir in liebevollen Händen. Jetzt anfragen!'
-  },
-  {
-    id: 111,
-    sellerId: 1,
-    listingNumber: 'KA-DL-009',
-    title: 'Umzugsservice mit LKW - Komplett-Service',
-    price: '450,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1600518464441-9154a4dea21b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Taşımacılık & Nakliye',
-    condition: 'Yeni',
-    description: 'Professioneller Umzugsservice mit 7,5t LKW. Komplettservice: Packen, Transport, Aufbau. Erfahrenes Team, faire Preise. Ab 450₺ (lokaler Umzug). Auch Möbeltransport einzeln. Kostenloser Kostenvoranschlag. Stressfrei umziehen!'
-  },
-  {
-    id: 112,
-    sellerId: 2,
-    listingNumber: 'KA-DL-010',
-    title: 'Fensterreinigung & Gebäudereinigung',
-    price: '3,50 ₺',
-    shipping: 'Yerinde',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Hizmetler',
-    subCategory: 'Diğer Hizmetler',
-    condition: 'Yeni',
-    description: 'Professionelle Fensterreinigung für Privat & Gewerbe. Auch Rahmen & Fensterbänke. 3,50₺/m². Regelmäßig oder einmalig. Streifenfreies Ergebnis garantiert. Eigene Ausrüstung. Kostenlose Besichtigung. Saubere Fenster, klare Sicht!'
-  },
-  {
-    id: 113,
-    sellerId: 3,
-    listingNumber: 'KA-VT-001',
-    title: 'Tausche Nintendo Switch gegen PS5 Spiele',
-    price: 'Tausch',
-    shipping: 'Gel Al',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Ücretsiz & Takas',
-    subCategory: 'Takas',
-    condition: 'İkinci El',
-    description: 'Tausche meine Nintendo Switch (V2) gegen PS5 Spiele. Konsole in sehr gutem Zustand, mit 2 Controllern und Tasche. Suche aktuelle PS5 Spiele (FIFA, Call of Duty, etc.). Nur Tausch, kein Verkauf. Abholung in Hamburg.'
-  },
-  {
-    id: 114,
-    sellerId: 1,
-    listingNumber: 'KA-VT-002',
-    title: 'Verleihe Hochdruckreiniger Kärcher K5',
-    price: '15,00 ₺',
-    shipping: 'Gel Al',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Ücretsiz & Takas',
-    subCategory: 'Kiralama',
-    condition: 'İkinci El',
-    description: 'Verleihe Kärcher K5 Hochdruckreiniger für 15₺/Tag. Perfekt für Terrasse, Auto, Fassade. Inkl. Zubehör. Kaution 50₺. Nur Abholung in München. Gerät ist top gepflegt und voll funktionsfähig. Ideal für gelegentliche Nutzung!'
-  },
-  {
-    id: 115,
-    sellerId: 2,
-    listingNumber: 'KA-VT-003',
-    title: 'Verschenke Ikea Regal Billy - Weiß',
-    price: 'Zu verschenken',
-    shipping: 'Gel Al',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1594620302200-9a762244a156?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Ücretsiz & Takas',
-    subCategory: 'Ücretsiz',
-    condition: 'İkinci El',
-    description: 'Verschenke Ikea Billy Regal in Weiß, 80x202cm. Guter Zustand, nur leichte Gebrauchsspuren. Muss bis Ende der Woche weg wegen Umzug. Nur Abholung, selbst abbauen. Wer zuerst kommt, mahlt zuerst. Kostenlos!'
-  },
-  {
-    id: 116,
-    sellerId: 3,
-    listingNumber: 'KA-UK-001',
-    title: 'Yoga & Meditation Kurs - Anfänger',
-    price: '80,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Güzellik & Sağlık',
-    condition: 'Yeni',
-    description: 'Yoga & Meditation für Anfänger. 8 Wochen Kurs, 1x wöchentlich 90 Min. Entspannung, Flexibilität, innere Ruhe. Kleine Gruppen max. 10 Personen. 80₺ Gesamtpreis. Matten vorhanden. Start: 05.01.2026. Jetzt anmelden!'
-  },
-  {
-    id: 117,
-    sellerId: 1,
-    listingNumber: 'KA-UK-002',
-    title: 'Excel & Word Kurs für Senioren',
-    price: '120,00 ₺',
-    shipping: 'Yerinde',
-    location: 'München',
-    postalCode: '80331',
-    city: 'München',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Bilgisayar Kursları',
-    condition: 'Yeni',
-    description: 'Computerkurs speziell für Senioren. Excel & Word Grundlagen. 6 Termine à 2 Stunden. Geduldig erklärt, viele Übungen. 120₺ inkl. Unterlagen. Kleine Gruppen. Eigener Laptop mitbringen. Start: 08.01.2026. Anmeldung jetzt!'
-  },
-  {
-    id: 118,
-    sellerId: 2,
-    listingNumber: 'KA-UK-003',
-    title: 'Tarot Karten Legen lernen - Workshop',
-    price: '65,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Berlin',
-    postalCode: '10115',
-    city: 'Berlin',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=800&q=80',
-    isTop: false,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Ezoterizm & Spiritüalizm',
-    condition: 'Yeni',
-    description: 'Tarot Karten legen lernen - Tages-Workshop. Bedeutung der Karten, Legesysteme, Intuition entwickeln. Für Anfänger geeignet. 65₺ inkl. Tarot-Deck. Samstag 10-17 Uhr. Max. 8 Teilnehmer. Vorkenntnisse nicht nötig. Jetzt buchen!'
-  },
-  {
-    id: 119,
-    sellerId: 3,
-    listingNumber: 'KA-UK-004',
-    title: 'Italienische Küche - Kochkurs',
-    price: '89,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Köln',
-    postalCode: '50667',
-    city: 'Köln',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Yemek & Pastacılık',
-    condition: 'Yeni',
-    description: 'Italienischer Kochkurs - Pasta selbst machen! 4-Gänge Menü kochen & genießen. Alle Zutaten inklusive. 89₺ pro Person. Freitag 18-22 Uhr. Max. 12 Teilnehmer. Getränke inklusive. Rezepte zum Mitnehmen. Buon appetito!'
-  },
-  {
-    id: 120,
-    sellerId: 1,
-    listingNumber: 'KA-UK-005',
-    title: 'Aquarell Malen für Anfänger',
-    price: '95,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Frankfurt',
-    postalCode: '60311',
-    city: 'Frankfurt',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Sanat & Tasarım',
-    condition: 'Yeni',
-    description: 'Aquarell Malkurs für Anfänger. 5 Termine à 3 Stunden. Grundtechniken, Farbenlehre, eigene Bilder malen. 95₺ inkl. Material. Kleine Gruppen max. 8 Personen. Sonntags 14-17 Uhr. Start: 12.01.2026. Kreativität entdecken!'
-  },
-  {
-    id: 121,
-    sellerId: 2,
-    listingNumber: 'KA-UK-006',
-    title: 'Gitarrenunterricht - Einzelstunden',
-    price: '35,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Stuttgart',
-    postalCode: '70173',
-    city: 'Stuttgart',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Müzik & Şan',
-    condition: 'Yeni',
-    description: 'Professioneller Gitarrenunterricht - Einzelstunden 45 Min. Für Anfänger & Fortgeschrittene. Alle Stilrichtungen. 35₺/Stunde. Flexible Terminvereinbarung. Über 10 Jahre Erfahrung. Eigene Gitarre mitbringen. Probestunde möglich!'
-  },
-  {
-    id: 122,
-    sellerId: 3,
-    listingNumber: 'KA-UK-007',
-    title: 'Mathe Nachhilfe Klasse 5-10',
-    price: '25,00 ₺',
-    shipping: 'Vor Ort/Online',
-    location: 'Düsseldorf',
-    postalCode: '40210',
-    city: 'Düsseldorf',
-    viewCount: 789,
-    image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Özel Ders',
-    condition: 'Yeni',
-    description: 'Mathe Nachhilfe für Klasse 5-10. Einzelunterricht 60 Min. Erfahrener Lehrer, verständlich erklärt. 25₺/Stunde. Vor Ort oder Online. Flexible Zeiten auch abends. Notenverbesserung garantiert! Probestunde kostenlos!'
-  },
-  {
-    id: 123,
-    sellerId: 1,
-    listingNumber: 'KA-UK-008',
-    title: 'Pilates Kurs - 10er Karte',
-    price: '110,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Leipzig',
-    postalCode: '04109',
-    city: 'Leipzig',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Spor Kursları',
-    condition: 'Yeni',
-    description: 'Pilates Kurs - 10er Karte für 110₺. Kräftigung, Beweglichkeit, Körperhaltung verbessern. Dienstags & Donnerstags 19:00 Uhr. Kleine Gruppen. Matten vorhanden. Für alle Level geeignet. Schnupperstunde 10₺. Jetzt starten!'
-  },
-  {
-    id: 124,
-    sellerId: 2,
-    listingNumber: 'KA-UK-009',
-    title: 'Englisch Konversationskurs B1/B2',
-    price: '140,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Dortmund',
-    postalCode: '44135',
-    city: 'Dortmund',
-    viewCount: 456,
-    image: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Dil Kursları',
-    condition: 'Yeni',
-    description: 'Englisch Konversationskurs Level B1/B2. 8 Wochen, 1x wöchentlich 90 Min. Sprechen üben, Vokabular erweitern. Native Speaker. 140₺. Kleine Gruppen max. 8 Personen. Mittwochs 18:30 Uhr. Start: 15.01.2026. Improve your English!'
-  },
-  {
-    id: 125,
-    sellerId: 3,
-    listingNumber: 'KA-UK-010',
-    title: 'Salsa Tanzkurs für Paare - Anfänger',
-    price: '120,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Bremen',
-    postalCode: '28195',
-    city: 'Bremen',
-    viewCount: 567,
-    image: 'https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Dans Kursları',
-    condition: 'Yeni',
-    description: 'Salsa Tanzkurs für Paare - Anfänger. 6 Termine à 90 Min. Grundschritte, Drehungen, Rhythmusgefühl. 120₺ pro Paar. Freitags 20:00 Uhr. Lockere Atmosphäre. Keine Vorkenntnisse nötig. Start: 10.01.2026. ¡Vamos a bailar!'
-  },
-  {
-    id: 126,
-    sellerId: 1,
-    listingNumber: 'KA-UK-011',
-    title: 'Excel Fortgeschrittene - Online Kurs',
-    price: '199,00 ₺',
-    shipping: 'Online',
-    location: 'Dresden',
-    postalCode: '01067',
-    city: 'Dresden',
-    viewCount: 678,
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Sürekli Eğitim',
-    condition: 'Yeni',
-    description: 'Excel Fortgeschrittene - Online Live-Kurs. Pivot-Tabellen, Makros, Formeln. 4 Wochen, 2x wöchentlich 2 Std. 199₺ inkl. Zertifikat. Aufzeichnungen verfügbar. Interaktiv mit Übungen. Abends 18-20 Uhr. Karriere-Boost garantiert!'
-  },
-  {
-    id: 127,
-    sellerId: 2,
-    listingNumber: 'KA-UK-012',
-    title: 'Fotografie Grundkurs - Spiegelreflex',
-    price: '149,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Hannover',
-    postalCode: '30159',
-    city: 'Hannover',
-    viewCount: 345,
-    image: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Eğitim & Kurslar',
-    subCategory: 'Diğer Eğitim & Kurslar',
-    condition: 'Yeni',
-    description: 'Fotografie Grundkurs für Spiegelreflex-Kameras. 3 Termine: Theorie + 2 Praxis-Shootings. Blende, ISO, Belichtung verstehen. 149₺. Eigene Kamera mitbringen. Samstags 10-16 Uhr. Max. 10 Teilnehmer. Bessere Fotos garantiert!'
-  },
-  {
-    id: 128,
-    sellerId: 3,
-    listingNumber: 'KA-NH-001',
-    title: 'Nachbarschaftshilfe - Einkauf, Garten, Haushalt',
-    price: '18,00 ₺',
-    shipping: 'Yerinde',
-    location: 'Hamburg',
-    postalCode: '20095',
-    city: 'Hamburg',
-    viewCount: 234,
-    image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80',
-    isTop: true,
-    date: '27.11.2025',
-    category: 'Komşu Yardımı',
-    subCategory: 'Komşu Yardımı',
-    condition: 'Yeni',
-    description: 'Biete zuverlässige Nachbarschaftshilfe in Hamburg. Einkäufe erledigen, Gartenarbeit, Haushaltshilfe, Botengänge, Begleitung zu Ärzten. 18₺/Stunde. Flexibel, freundlich, vertrauenswürdig. Ideal für Senioren oder Berufstätige. Auch kurzfristig verfügbar. Referenzen vorhanden!'
-  }
-];
-
-// Mock data for gallery items
-const galleryItems = [
-  {
-    id: 1,
-    title: 'ÖLSBERG Kaminöfen für Wohnzimmer',
-    price: '2.999 ₺',
-    location: 'Delmenhorst',
-    image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwxfHxsZWdvfGVufDB8fHx8MTc1MzM3NzUzNHww&ixlib=rb-4.1.0&q=85',
-    isTop: true
-  },
-  {
-    id: 2,
-    title: 'Hya ES1 Wasseraufbereitung',
-    price: '800 ₺',
-    location: 'Besigheim',
-    image: 'https://images.unsplash.com/photo-1633469924738-52101af51d87?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHwzfHxsZWdvfGVufDB8fHx8MTc1MzM3NzUzNHww&ixlib=rb-4.1.0&q=85',
-    isTop: true
-  },
-  {
-    id: 3,
-    title: 'XXL Lego Star Wars Set',
-    price: '2.400 ₺',
-    location: 'Augsburg',
-    image: 'https://images.unsplash.com/photo-1626806819282-2c1dc01a5e0c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHxob3VzZWhvbGR8ZW58MHx8fHwxNzUzMzc3NTQxfDA&ixlib=rb-4.1.0&q=85',
-    isTop: true
-  },
-  {
-    id: 4,
-    title: 'Boxen frei, Pferde, Pony...',
-    price: '610 ₺',
-    location: 'Schwaan',
-    image: 'https://images.unsplash.com/photo-1654064756668-16a32248d391?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHxob3VzZWhvbGR8ZW58MHx8fHwxNzUzMzc3NTQxfDA&ixlib=rb-4.1.0&q=85',
-    isTop: true
-  }
-];
 
 // Mock data for sellers
-const mockSellers = {
-  1: {
-    name: 'Ali Yılmaz',
-    phone: '+49 176 12345678',
-    email: 'ali@gmail.com',
-    address: 'Musterstraße 12, 10115 Berlin',
-    website: 'www.ali-handel.de',
-    memberSince: '2020-03-15',
-    rating: 4.8,
-    totalRatings: 127,
-    responseRate: '98%',
-    responseTime: '1 Std.',
-    profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    sellerType: 'Ticari Kullanıcı',
-    businessType: 'Bisiklet Ticareti',
-    totalListings: 45,
-    followers: 156,
-    following: 12
-  },
-  2: {
-    name: 'Ayşe Demir',
-    phone: '+49 152 98765432',
-    email: 'ayse@hotmail.com',
-    address: 'Hauptstraße 45, 80331 München',
-    website: 'www.ayse-design.com',
-    memberSince: '2021-06-22',
-    rating: 4.9,
-    totalRatings: 84,
-    responseRate: '100%',
-    responseTime: '30 Min.',
-    profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    sellerType: 'Bireysel Kullanıcı',
-    totalListings: 12,
-    followers: 42,
-    following: 8
-  },
-  3: {
-    name: 'Fatma Kaya',
-    phone: '+49 160 55555555',
-    email: 'fatma@web.de',
-    address: 'Hafenstraße 8, 20095 Hamburg',
-    website: null,
-    memberSince: '2019-11-05',
-    rating: 4.5,
-    totalRatings: 215,
-    responseRate: '92%',
-    responseTime: '2 Std.',
-    profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    sellerType: 'Ticari Kullanıcı',
-    businessType: 'Mobilya & Dekorasyon',
-    totalListings: 89,
-    followers: 312,
-    following: 45
-  },
-  4: {
-    name: 'Mehmet Öz',
-    phone: '555-444-5555',
-    email: 'mehmet@gmail.com',
-    memberSince: '2018-11-05',
-    rating: 4.6,
-    totalRatings: 203,
-    totalListings: 42,
-    sellerType: 'Ticari Kullanıcı',
-    businessType: 'Elektronik & Teknoloji',
-    profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-  },
-  5: {
-    name: 'Can Erdem',
-    phone: '555-555-6666',
-    email: 'can@gmail.com',
-    memberSince: '2022-05-18',
-    rating: 4.9,
-    totalRatings: 34,
-    totalListings: 5,
-    sellerType: 'Bireysel Kullanıcı',
-    profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-  },
-  6: {
-    name: 'Zeynep Tunç',
-    phone: '555-666-7788',
-    email: 'zeynep@gmail.com',
-    memberSince: '2020-09-12',
-    rating: 4.8,
-    totalRatings: 156,
-    totalListings: 31,
-    sellerType: 'Ticari Kullanıcı',
-    businessType: 'Moda & Aksesuar',
-    profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-  },
-  7: {
-    name: 'Burak Gün',
-    phone: '555-777-8899',
-    email: 'burak@gmail.com',
-    memberSince: '2019-12-20',
-    rating: 4.5,
-    totalRatings: 78,
-    totalListings: 19,
-    sellerType: 'Bireysel Kullanıcı',
-    profileImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-  },
-  8: {
-    name: 'Merve Sol',
-    phone: '555-888-9900',
-    email: 'merve@gmail.com',
-    memberSince: '2021-08-30',
-    rating: 4.7,
-    totalRatings: 92,
-    totalListings: 12,
-    sellerType: 'Privatnutzer',
-    profileImage: 'https://i.pravatar.cc/150?img=30'
-  },
-  9: {
-    name: 'Elif Rad',
-    businessType: 'Fahrrad Handel',
-    phone: '+49 2541 123456',
-    email: 'info@elifrad.de',
-    address: 'Alter Kirchplatz 5, 48653 Coesfeld',
-    website: 'www.elifrad.de',
-    memberSince: '2018-03-15',
-    rating: 4.9,
-    totalRatings: 245,
-    responseRate: '99%',
-    responseTime: '30 Min.',
-    profileImage: 'https://www.elifrad.de/images/IMG_2158.JPG',
-    sellerType: 'Ticari Kullanıcı',
-    totalListings: 87,
-    followers: 423,
-    following: 15
-  },
-};
+const mockSellers = {};
+
 
 // Header Component
 export const Header = ({ followedSellers = [], setSelectedCategory }) => {
@@ -2995,6 +380,9 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
   const [unreadCount, setUnreadCount] = React.useState(0);
+  const [notificationCount, setNotificationCount] = React.useState(0);
+  const [notifications, setNotifications] = React.useState([]);
+  const [notificationDropdownOpen, setNotificationDropdownOpen] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState(null);
 
   // Fetch user profile for display name
@@ -3036,6 +424,30 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
     }
   }, [user]);
 
+  // Fetch notifications
+  React.useEffect(() => {
+    const fetchNotifications = async () => {
+      if (user) {
+        try {
+          const { getNotificationCount, getUnreadNotifications } = await import('./api/notifications');
+          const count = await getNotificationCount();
+          const notifs = await getUnreadNotifications();
+          setNotificationCount(count);
+          setNotifications(notifs);
+        } catch (error) {
+          console.error('Error fetching notifications:', error);
+        }
+      }
+    };
+
+    if (user) {
+      fetchNotifications();
+      // Refresh every 30 seconds
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -3046,263 +458,360 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
   };
 
   return (
-    <header className="glass sticky top-0 z-50 border-b border-neutral-200/50 shadow-lg overflow-visible">
-      <div className="max-w-[1400px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4 overflow-visible">
-        {/* Mobile Menu Button - Hidden on mobile if bottom nav is present */}
-        {!isMobile && (
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
-            aria-label="Menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        )}
-
-        {/* Logo */}
-        <div
-          onClick={() => {
-            if (setSelectedCategory) setSelectedCategory(t.categories.all);
-            navigate('/');
-            setMobileMenuOpen(false);
-          }}
-          className="cursor-pointer flex-shrink-0 px-2 sm:px-4 py-2 rounded-xl"
-        >
-          <img
-            src="/logo_v5.jpg"
-            alt="Kleinbazaar Logo"
-            className="h-8 sm:h-12 w-auto object-contain"
-          />
-        </div>
-
-        {/* Desktop Auth Buttons */}
-        <div className="hidden lg:flex items-center gap-3">
-          {user ? (
-            <>
-              {/* Subscription Packages Button */}
-              <button
-                onClick={() => navigate('/packages')}
-                className="p-3 text-neutral-600 hover:text-yellow-600 hover:bg-yellow-50 rounded-xl transition-all duration-300 relative focus:outline-none group"
-                title="Abonelik Paketleri"
-              >
-                <svg className="w-6 h-6 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-              </button>
-
-              {/* Admin Panel Button - Only for User 1001 */}
-              {userProfile?.user_number === 1001 && (
-                <button
-                  onClick={() => navigate('/admin')}
-                  className="p-3 text-neutral-600 hover:text-pink-600 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 rounded-xl transition-all duration-300 relative focus:outline-none group"
-                  title="Admin Panel"
-                >
-                  <svg className="w-6 h-6 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </button>
-              )}
-              <span className="text-neutral-700 font-semibold hidden sm:inline-block">
-                <span className="text-neutral-500">{t.common.hello},</span>{' '}
-                <span className="gradient-text">{userProfile?.full_name || user.email?.split('@')[0]}</span>
-              </span>
-
-              <button
-                onClick={handleLogout}
-                className="px-5 py-2.5 bg-white border-2 border-neutral-300 rounded-full text-neutral-700 hover:border-primary-500 hover:text-primary-600 transition-all duration-300 font-semibold shadow-sm hover:shadow-premium transform hover:-translate-y-0.5 focus:outline-none"
-              >
-                {t.nav.logout}
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => navigate('/register')}
-                className="px-5 py-2.5 bg-white border-2 border-neutral-300 rounded-full text-neutral-700 hover:border-primary-500 hover:text-primary-600 transition-all duration-300 font-semibold shadow-sm hover:shadow-premium transform hover:-translate-y-0.5 focus:outline-none hidden sm:inline-block"
-              >
-                {t.nav.register}
-              </button>
-              <span className="text-neutral-400 hidden sm:inline-block">{t.common.or}</span>
-              <button
-                onClick={() => navigate('/login')}
-                className="px-6 py-2.5 bg-gradient-premium text-white rounded-full shadow-premium hover:shadow-premium-lg transform hover:-translate-y-0.5 transition-all duration-300 font-bold focus:outline-none relative overflow-hidden group"
-              >
-                <span className="relative z-10">{t.nav.login}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-700 to-primary-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
-            </>
-          )}
-
-          {/* Notifications Icon - Visible only on Desktop to keep mobile header clean */}
+    <>
+      <header className="glass fixed w-full top-0 z-50 border-b border-neutral-200/50 shadow-lg overflow-visible">
+        <div className="max-w-[1400px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4 overflow-visible">
+          {/* Mobile Menu Button - Hidden on mobile if bottom nav is present */}
           {!isMobile && (
-            <button className="p-3 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300 relative focus:outline-none group">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+              aria-label="Menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-gradient-accent rounded-full animate-pulse shadow-glow"></span>
             </button>
           )}
-        </div>
 
-        {/* Mobile Icons */}
-        <div className="flex lg:hidden items-center gap-2">
-          <button
-            onClick={() => window.location.href = '/messages'}
-            className="p-2 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all relative"
-            title={t.nav.messages}
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu Drawer */}
-      {mobileMenuOpen && (
-        <>
-          {/* Overlay */}
           <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          ></div>
+            onClick={() => {
+              if (setSelectedCategory) setSelectedCategory(t.categories.all);
+              navigate('/');
+              setMobileMenuOpen(false);
+            }}
+            className="cursor-pointer flex-shrink-0 px-2 sm:px-4 py-2 rounded-xl flex items-center gap-2 group"
+          >
+            <img
+              src="/logo_exvitrin_2026.png"
+              alt="ExVitrin"
+              className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110"
+            />
+            <span className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent tracking-tight">
+              exvitrin
+            </span>
+          </div>
 
-          {/* Drawer */}
-          <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 lg:hidden overflow-y-auto">
-            <div className="p-6">
-              {/* Close Button */}
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-4 right-4 p-2 text-neutral-600 hover:bg-neutral-100 rounded-lg"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+          {/* Desktop Auth Buttons */}
+          <div className="hidden lg:flex items-center gap-3">
+            {user ? (
+              <>
 
-              {/* User Info */}
-              {currentUser ? (
-                <div className="mb-6 pb-6 border-b border-neutral-200">
-                  <p className="text-sm text-neutral-500 mb-1">{t.common.hello},</p>
-                  <p className="text-lg font-bold gradient-text">{currentUser.name}</p>
-                </div>
-              ) : (
-                <div className="mb-6 pb-6 border-b border-neutral-200 space-y-3">
+
+                {/* Admin Panel Button - For User 1001, kerem_aydin@aol.com or any user with is_admin=true */}
+                {(userProfile?.user_number === 1001 || user.email === 'kerem_aydin@aol.com' || userProfile?.is_admin) && (
                   <button
-                    onClick={() => {
-                      navigate('/login');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full px-6 py-3 bg-gradient-premium text-white rounded-full shadow-premium font-bold"
+                    onClick={() => navigate('/admin')}
+                    className="p-3 text-neutral-600 hover:text-pink-600 hover:bg-gradient-to-r hover:from-pink-50 hover:to-red-50 rounded-xl transition-all duration-300 relative focus:outline-none group"
+                    title="Admin Panel"
                   >
-                    {t.nav.login}
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigate('/register');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full px-6 py-3 bg-white border-2 border-neutral-300 rounded-full text-neutral-700 font-semibold"
-                  >
-                    {t.nav.register}
-                  </button>
-                </div>
-              )}
-
-              {/* Menu Items */}
-              <nav className="space-y-2">
-                <button
-                  onClick={() => {
-                    navigate('/');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  {t.nav.home}
-                </button>
-
-                <button
-                  onClick={() => {
-                    navigate('/Alle-Kategorien');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                  {t.categories.all}
-                </button>
-
-                <button
-                  onClick={() => {
-                    navigate('/packages');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
-                >
-                  <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                  Abonelik Paketleri
-                </button>
-
-                <button
-                  onClick={() => {
-                    navigate('/messages');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                  {t.nav.messages}
-                </button>
-
-                <button
-                  onClick={() => {
-                    navigate('/favorites');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                  {t.nav.favorites}
-                </button>
-
-                {currentUser && (
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium flex items-center gap-3 mt-4"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <svg className="w-6 h-6 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    {t.nav.logout}
                   </button>
                 )}
-              </nav>
-            </div>
+                <span className="text-neutral-700 font-semibold hidden sm:inline-block">
+                  <span className="text-neutral-500">{t.common.hello},</span>{' '}
+                  <span className="gradient-text">{userProfile?.full_name || user.email?.split('@')[0]}</span>
+                </span>
+
+                <button
+                  onClick={handleLogout}
+                  className="px-5 py-2.5 bg-white border-2 border-neutral-300 rounded-full text-neutral-700 hover:border-primary-500 hover:text-primary-600 transition-all duration-300 font-semibold shadow-sm hover:shadow-premium transform hover:-translate-y-0.5 focus:outline-none"
+                >
+                  {t.nav.logout}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="px-5 py-2.5 bg-white border-2 border-neutral-300 rounded-full text-neutral-700 hover:border-primary-500 hover:text-primary-600 transition-all duration-300 font-semibold shadow-sm hover:shadow-premium transform hover:-translate-y-0.5 focus:outline-none hidden sm:inline-block"
+                >
+                  {t.nav.register}
+                </button>
+                <span className="text-neutral-400 hidden sm:inline-block">{t.common.or}</span>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-6 py-2.5 bg-gradient-premium text-white rounded-full shadow-premium hover:shadow-premium-lg transform hover:-translate-y-0.5 transition-all duration-300 font-bold focus:outline-none relative overflow-hidden group"
+                >
+                  <span className="relative z-10">{t.nav.login}</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-700 to-primary-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </>
+            )}
+
+            {/* Notifications Icon - Visible only on Desktop to keep mobile header clean */}
+            {!isMobile && (
+              <div className="relative">
+                <button
+                  onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
+                  className="p-3 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300 relative focus:outline-none group"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  {notificationCount > 0 ? (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse shadow-glow">
+                      {notificationCount}
+                    </span>
+                  ) : (
+                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-gradient-accent rounded-full animate-pulse shadow-glow"></span>
+                  )}
+                </button>
+
+                {/* Notification Dropdown */}
+                {notificationDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setNotificationDropdownOpen(false)}
+                    ></div>
+                    <div className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                      <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 className="font-bold text-gray-900">Bildirimler</h3>
+                        {notificationCount > 0 && (
+                          <span className="text-xs text-gray-500">{notificationCount} yeni</span>
+                        )}
+                      </div>
+                      {notifications.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500">
+                          <svg className="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                          </svg>
+                          <p className="text-sm">Henüz bildirim yok</p>
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-gray-100">
+                          {notifications.map((notification) => (
+                            <div
+                              key={notification.id}
+                              onClick={async () => {
+                                try {
+                                  const { markNotificationAsRead } = await import('./api/notifications');
+                                  await markNotificationAsRead(notification.id);
+                                  setNotificationDropdownOpen(false);
+                                  if (notification.listing_id) {
+                                    navigate(`/product/${notification.listing_id}`);
+                                  }
+                                } catch (error) {
+                                  console.error('Error handling notification click:', error);
+                                }
+                              }}
+                              className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-start gap-3"
+                            >
+                              <div className="flex-shrink-0 mt-1 relative">
+                                {notification.type === 'price_drop' ? (
+                                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    </svg>
+                                  </div>
+                                ) : notification.type === 'new_listing' ? (
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                  </div>
+                                ) : (
+                                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                  </div>
+                                )}
+                                {!notification.is_read && (
+                                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white shadow-glow"></div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-gray-900 truncate">
+                                  {notification.title}
+                                </p>
+                                <p className="text-xs text-gray-600 mt-1">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-gray-400 mt-1">
+                                  {new Date(notification.created_at).toLocaleDateString('tr-TR', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-        </>
-      )}
-    </header>
+
+          {/* Mobile Icons */}
+          <div className="flex lg:hidden items-center gap-2">
+            <button
+              onClick={() => window.location.href = '/messages'}
+              className="p-2 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all relative"
+              title={t.nav.messages}
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Drawer */}
+        {
+          mobileMenuOpen && (
+            <>
+              {/* Overlay */}
+              <div
+                className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              ></div>
+
+              {/* Drawer */}
+              <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 lg:hidden overflow-y-auto">
+                <div className="p-6">
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="absolute top-4 right-4 p-2 text-neutral-600 hover:bg-neutral-100 rounded-lg"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+
+                  {/* User Info */}
+                  {currentUser ? (
+                    <div className="mb-6 pb-6 border-b border-neutral-200">
+                      <p className="text-sm text-neutral-500 mb-1">{t.common.hello},</p>
+                      <p className="text-lg font-bold gradient-text">{currentUser.name}</p>
+                    </div>
+                  ) : (
+                    <div className="mb-6 pb-6 border-b border-neutral-200 space-y-3">
+                      <button
+                        onClick={() => {
+                          navigate('/login');
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full px-6 py-3 bg-gradient-premium text-white rounded-full shadow-premium font-bold"
+                      >
+                        {t.nav.login}
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate('/register');
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full px-6 py-3 bg-white border-2 border-neutral-300 rounded-full text-neutral-700 font-semibold"
+                      >
+                        {t.nav.register}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Menu Items */}
+                  <nav className="space-y-2">
+                    <button
+                      onClick={() => {
+                        navigate('/');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                      {t.nav.home}
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        navigate('/Butun-Kategoriler');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                      </svg>
+                      {t.categories.all}
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        navigate('/packages');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
+                    >
+                      <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                      Abonelik Paketleri
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        navigate('/messages');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      {t.nav.messages}
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        navigate('/favorites');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      {t.nav.favorites}
+                    </button>
+
+                    {currentUser && (
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium flex items-center gap-3 mt-4"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        {t.nav.logout}
+                      </button>
+                    )}
+                  </nav>
+                </div>
+              </div>
+            </>
+          )
+        }
+      </header >
+      <div className="h-16 sm:h-20"></div>
+    </>
   );
 };
 
@@ -3373,7 +882,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
       console.log('💰 Total:', orderData.total);
     }
 
-    alert(`Vielen Dank für Ihre Bestellung!\n\nBestellnummer: ${orderData.orderId}\n\nEine Bestätigungs-E-Mail wurde an ${formData.email} gesendet.`);
+    alert(`Siparişiniz için teşekkür ederiz!\n\nSipariş Numarası: ${orderData.orderId}\n\n${formData.email} adresine bir onay e-postası gönderildi.`);
     setCartItems([]);
     navigate('/');
   };
@@ -3381,13 +890,13 @@ export const Checkout = ({ cartItems, setCartItems }) => {
   if (cartItems.length === 0) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 py-12 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Ihr Warenkorb ist leer</h2>
-        <p className="text-gray-600 mb-8">Fügen Sie Artikel hinzu, um zur Kasse zu gehen.</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.cart.empty}</h2>
+        <p className="text-gray-600 mb-8">{t.cart.addItems}</p>
         <button
           onClick={() => navigate('/')}
           className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
         >
-          Weiter einkaufen
+          {t.cart.continueShopping}
         </button>
       </div>
     );
@@ -3517,7 +1026,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
         {/* Right Column - Order Summary */}
         <div className="lg:col-span-1">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 sticky top-4">
-            <h2 className="text-xl font-semibold mb-4">Bestellübersicht</h2>
+            <h2 className="text-xl font-semibold mb-4">{t.checkout.orderSummary}</h2>
             <div className="space-y-6 mb-6">
               {(() => {
                 // Ürünleri satıcıya göre grupla
@@ -3532,10 +1041,10 @@ export const Checkout = ({ cartItems, setCartItems }) => {
 
                 return Object.entries(groupedBySeller).map(([sellerId, items]) => {
                   const seller = mockSellers[sellerId] || {
-                    name: 'Unbekannter Verkäufer',
+                    name: t.cart.unknownSeller,
                     initials: '?',
-                    level: 'Privat',
-                    rating: 'Neu',
+                    level: t.addListing.private,
+                    rating: t.addListing.options.new,
                     profileImage: 'https://i.pravatar.cc/150'
                   };
 
@@ -3600,7 +1109,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                               <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
-                              <span className="text-xs text-gray-600">Antwortet in {seller.responseTime || 'wenigen Stunden'}</span>
+                              <span className="text-xs text-gray-600">Yanıt süresi: {seller.responseTime || 'birkaç saat'}</span>
                             </div>
                           </div>
 
@@ -3629,7 +1138,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
 
                                 {/* Miktar Kontrolü */}
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-gray-500">Menge:</span>
+                                  <span className="text-xs text-gray-500">{t.cart.quantity}:</span>
                                   <div className="flex items-center border border-gray-300 rounded-full bg-white overflow-hidden">
                                     <button
                                       onClick={() => updateQuantity(cartIndex, (item.quantity || 1) - 1)}
@@ -3658,7 +1167,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                                   <button
                                     onClick={() => removeItem(cartIndex)}
                                     className="ml-auto p-1.5 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
-                                    title="Entfernen"
+                                    title={t.cart.remove}
                                     type="button"
                                   >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3684,7 +1193,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                       {/* Satıcı Toplam */}
                       <div className="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
                         <span className="text-sm text-gray-600">
-                          Zwischensumme ({items.reduce((total, item) => total + (item.quantity || 1), 0)} Artikel)
+                          {t.checkout.subtotal} ({items.reduce((total, item) => total + (item.quantity || 1), 0)} {t.cart.item})
                         </span>
                         <span className="font-semibold text-gray-900">
                           {items.reduce((sum, item) => {
@@ -3704,15 +1213,15 @@ export const Checkout = ({ cartItems, setCartItems }) => {
 
             <div className="border-t pt-4 space-y-2">
               <div className="flex justify-between text-gray-600">
-                <span>Zwischensumme</span>
+                <span>{t.checkout.subtotal}</span>
                 <span>{total.toFixed(2).replace('.', ',')} ₺</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Versand</span>
-                <span>Kostenlos</span>
+                <span>{t.checkout.shipping}</span>
+                <span>{t.checkout.free}</span>
               </div>
               <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t">
-                <span>Gesamtsumme</span>
+                <span>{t.checkout.total}</span>
                 <span>{total.toFixed(2).replace('.', ',')} ₺</span>
               </div>
             </div>
@@ -3722,11 +1231,11 @@ export const Checkout = ({ cartItems, setCartItems }) => {
               form="checkout-form"
               className="w-full mt-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
             >
-              Jetzt kaufen
+              {t.checkout.buyNow}
             </button>
 
             <p className="text-xs text-gray-500 mt-4 text-center">
-              Mit Ihrer Bestellung erklären Sie sich mit unseren AGB und Datenschutzbestimmungen einverstanden.
+              {t.checkout.termsConsent}
             </p>
           </div>
         </div>
@@ -3737,8 +1246,8 @@ export const Checkout = ({ cartItems, setCartItems }) => {
 // Placeholder Components for Meins Dropdown
 export const Messages = () => (
   <div className="max-w-[1400px] mx-auto px-4 py-12 text-center">
-    <h2 className="text-2xl font-bold text-gray-900 mb-4">Meine Nachrichten</h2>
-    <p className="text-gray-600">Hier finden Sie bald Ihre Nachrichten.</p>
+    <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.nav.messages}</h2>
+    <p className="text-gray-600">Mesajlarınız yakında burada görünecek.</p>
   </div>
 );
 
@@ -3817,7 +1326,9 @@ export const MyListings = () => {
       const packageDetails = {
         gallery: { id: 'gallery', price: 59.90, duration: 30 },
         top: { id: 'top', price: 39.90, duration: 15 },
-        highlight: { id: 'highlight', price: 19.90, duration: 30 }
+        highlight: { id: 'highlight', price: 19.90, duration: 30 },
+        'multi-bump': { id: 'multi-bump', price: 29.90, duration: 7 },
+        premium: { id: 'z_premium', price: 19.99, duration: 7 }
       }[packageId];
 
       await purchasePromotion(selectedListing.id, packageDetails, currentUser.id);
@@ -3835,8 +1346,8 @@ export const MyListings = () => {
   if (loading) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
-        <p className="text-gray-600 mt-4">Lade Ihre Anzeigen...</p>
+        <LoadingSpinner size="medium" className="mx-auto" />
+        <p className="text-gray-600 mt-4">{t.myListingsPage.loading}</p>
       </div>
     );
   }
@@ -3844,13 +1355,13 @@ export const MyListings = () => {
   if (listings.length === 0) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 py-12 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Meine Anzeigen</h2>
-        <p className="text-gray-600 mb-8">Sie haben noch keine Anzeigen erstellt.</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.myListingsPage.title}</h2>
+        <p className="text-gray-600 mb-8">{t.myListingsPage.noListings}</p>
         <button
           onClick={() => navigate('/add-listing')}
           className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
         >
-          Erste Anzeige erstellen
+          {t.myListingsPage.createFirst}
         </button>
       </div>
     );
@@ -3858,7 +1369,7 @@ export const MyListings = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Meine Anzeigen</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.myListingsPage.title}</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {listings.map((listing) => (
           <div key={listing._id || listing.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -3875,7 +1386,7 @@ export const MyListings = () => {
               </h3>
               <span className="text-base font-bold text-gray-900">
                 {listing.price_type === 'giveaway' || listing.price === 0
-                  ? 'Zu verschenken'
+                  ? t.addListing.options.givingAway
                   : typeof listing.price === 'number'
                     ? `${listing.price.toLocaleString('tr-TR')} ₺`
                     : listing.price?.toString().includes('₺')
@@ -4027,10 +1538,10 @@ export const Settings = () => {
   const handleEmailChange = (e) => {
     e.preventDefault();
     if (newEmail !== newEmailConfirm) {
-      alert('Die E-Mail-Adressen stimmen nicht überein.');
+      alert(t.settings.emailsNoMatch);
       return;
     }
-    alert('Bestätigungs-E-Mails wurden an beide Adressen gesendet.');
+    alert(t.settings.emailConfirmSent);
     setCurrentEmail('');
     setNewEmail('');
     setNewEmailConfirm('');
@@ -4040,10 +1551,10 @@ export const Settings = () => {
   const handlePhoneChange = (e) => {
     e.preventDefault();
     if (!newPhoneNumber || !verificationCode) {
-      alert('Bitte füllen Sie alle Felder aus.');
+      alert(t.settings.fillAllFields);
       return;
     }
-    alert('Telefonnummer erfolgreich geändert!');
+    alert(t.settings.phoneChangeSuccess);
     setPhoneNumber(newPhoneNumber);
     setShowPhoneModal(false);
     setNewPhoneNumber('');
@@ -4053,14 +1564,14 @@ export const Settings = () => {
   const handlePasswordChange = (e) => {
     e.preventDefault();
     if (newPassword !== newPasswordConfirm) {
-      alert('Die Passwörter stimmen nicht überein.');
+      alert(t.settings.passwordsNoMatch);
       return;
     }
     if (newPassword.length < 8) {
-      alert('Das Passwort muss mindestens 8 Zeichen lang sein.');
+      alert(t.settings.passwordMinLength);
       return;
     }
-    alert('Passwort erfolgreich geändert!');
+    alert(t.settings.passwordChangeSuccess);
     setShowPasswordModal(false);
     setCurrentPassword('');
     setNewPassword('');
@@ -4069,19 +1580,19 @@ export const Settings = () => {
 
   const handleBillingChange = (e) => {
     e.preventDefault();
-    alert('Rechnungsadresse erfolgreich aktualisiert!');
+    alert(t.settings.billingUpdateSuccess);
     setShowBillingModal(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Einstellungen</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.settings.title}</h1>
 
         <div className="space-y-6">
           {/* Newsletter Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Newsletter</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.newsletterTitle}</h2>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -4090,25 +1601,25 @@ export const Settings = () => {
                 className="mt-1 w-4 h-4 text-red-500 focus:ring-red-400 rounded"
               />
               <span className="text-sm text-gray-700">
-                Ja, zu regelmäßigen Mails von uns mit Produktinfos, Tipps, Aktionen und spannenden Geschichten über uns und verbundene Unternehmen - du kannst dich jederzeit abmelden.
+                {t.settings.newsletterText}
               </span>
             </label>
           </div>
 
           {/* Email Change Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">E-Mail-Adresse ändern</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.changeEmail}</h2>
             <div className="mb-4 text-sm text-gray-600 space-y-2">
-              <p>Um deine E-Mail-Adresse zu ändern, erhältst du zwei E-Mails von uns.</p>
-              <p>Zu deiner Sicherheit verschicken wir eine E-Mail an deine bisherige E-Mail-Adresse. Diese dient zu deiner Information.</p>
-              <p>Du erhältst außerdem eine E-Mail an deine neue E-Mail-Adresse. Bitte bestätige durch Auswahl des Links in der E-Mail, dass du im Besitz dieses E-Mail-Kontos bist.</p>
-              <p className="text-red-600">Weitere Informationen findest du im Hilfebereich.</p>
+              <p>{t.settings.changeEmailInstructions}</p>
+              <p>{t.settings.changeEmailSecurity}</p>
+              <p>{t.settings.changeEmailConfirm}</p>
+              <p className="text-red-600">{t.settings.helpAreaLink}</p>
             </div>
 
             <form onSubmit={handleEmailChange} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Registrierte E-Mail-Adresse
+                  {t.settings.registeredEmail}
                 </label>
                 <input
                   type="email"
@@ -4121,7 +1632,7 @@ export const Settings = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Neue E-Mail-Adresse
+                  {t.settings.newEmail}
                 </label>
                 <input
                   type="email"
@@ -4134,7 +1645,7 @@ export const Settings = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Neue E-Mail-Adresse wiederholen
+                  {t.settings.repeatNewEmail}
                 </label>
                 <input
                   type="email"
@@ -4147,7 +1658,7 @@ export const Settings = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Passwort eingeben
+                  {t.settings.enterPassword}
                 </label>
                 <input
                   type="password"
@@ -4162,14 +1673,14 @@ export const Settings = () => {
                 type="submit"
                 className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all"
               >
-                Neue E-Mail-Adresse speichern
+                {t.settings.saveNewEmail}
               </button>
             </form>
           </div>
 
           {/* Email Notifications Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Benachrichtigungen per E-Mail</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.emailNotifications}</h2>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -4178,28 +1689,28 @@ export const Settings = () => {
                 className="mt-1 w-4 h-4 text-red-500 focus:ring-red-400 rounded"
               />
               <span className="text-sm text-gray-700">
-                Du erhältst eine E-Mail, sobald du eine Nachricht von einem anderen Nutzer erhältst.
+                {t.settings.emailNotificationsText}
               </span>
             </label>
           </div>
 
           {/* Password Change Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Passwort ändern</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.changePassword}</h2>
             <p className="text-sm text-gray-600 mb-4">
-              Ändere dein Passwort von Zeit zu Zeit, um Betrug zu vermeiden.
+              {t.settings.passwordChangeInstructions}
             </p>
             <button
               onClick={() => setShowPasswordModal(true)}
               className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all"
             >
-              Passwort ändern
+              {t.settings.changePassword}
             </button>
           </div>
 
           {/* Billing Data Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Rechnungsdaten</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.billingTitle}</h2>
             <label className="flex items-center gap-3 cursor-pointer mb-4">
               <input
                 type="checkbox"
@@ -4207,7 +1718,7 @@ export const Settings = () => {
                 onChange={(e) => setIsCommercial(e.target.checked)}
                 className="w-4 h-4 text-red-500 focus:ring-red-400 rounded"
               />
-              <span className="text-sm font-medium text-gray-700">Gewerblich</span>
+              <span className="text-sm font-medium text-gray-700">{t.settings.commercial}</span>
             </label>
             <button
               onClick={() => setShowBillingModal(true)}
@@ -4291,28 +1802,28 @@ export const Settings = () => {
 
           {/* Account Activity Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Übersicht deiner Aktivität</h2>
-            <h3 className="font-semibold text-gray-900 mb-3">Mein Konto</h3>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.activityOverview}</h2>
+            <h3 className="font-semibold text-gray-900 mb-3">{t.settings.myAccount}</h3>
             <div className="space-y-2 text-sm text-gray-700">
-              <p>Du hast aktuell <span className="font-semibold">1 Anzeige</span> online.</p>
-              <p>Du hast in den letzten 30 Tagen <span className="font-semibold">1 Anzeige</span> aufgegeben.</p>
+              <p>{t.settings.currentAdsOnline.replace('{count}', sellerListings.length)}</p>
+              <p>{t.settings.adsPostedLast30Days.replace('{count}', '0')}</p>
             </div>
           </div>
 
           {/* Phone Number Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Telefonnummer ändern</h2>
-            <h1 className="text-xl font-bold text-gray-900 mb-2">{seller.full_name || 'Unbekannter Verkäufer'}</h1>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.changePhoneNumber}</h2>
+            <h1 className="text-xl font-bold text-gray-900 mb-2">{seller.full_name || t.cart.unknownSeller}</h1>
             <p className="text-sm text-gray-500 mb-1">
               Aktiv seit {seller.created_at
                 ? new Date(seller.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
-                : 'Unbekannt'}
+                : 'Bilinmiyor'}
             </p>
             <p className="text-sm text-gray-500">
-              {sellerListings.length} {sellerListings.length === 1 ? 'Anzeige' : 'Anzeigen'}
+              {sellerListings.length} {sellerListings.length === 1 ? 'İlan' : 'İlanlar'}
             </p>
             <p className="text-sm text-gray-700 mb-4">
-              Verifizierte Telefonnummer: <span className="font-semibold">{phoneNumber}</span>
+              {t.settings.verifyPhone} <span className="font-semibold">{phoneNumber}</span>
             </p>
             <button
               onClick={() => setShowPhoneModal(true)}
@@ -4324,16 +1835,16 @@ export const Settings = () => {
 
           {/* LUCID ID Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Verpackungsregister LUCID-Identifikationsnummer</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.settings.lucidTitle}</h2>
 
             {hasLucidId === null ? (
               <div>
                 <p className="text-sm text-gray-700 mb-4">
-                  Sie haben noch keine LUCID-ID eingetragen.
+                  {t.lucid.notEntered}
                 </p>
                 <p className="text-sm text-gray-600 mb-4">
-                  Falls Sie Verpackungen verwenden, können Sie hier Ihre persönliche LUCID-Identifikationsnummer eingeben.
-                  Sollten Sie nicht registrierungspflichtig sein, teilen Sie und das bitte im nächsten Schritt mit.
+                  {t.lucid.description}
+                  {t.lucid.notObligated}
                 </p>
                 <a
                   href="#"
@@ -4346,14 +1857,14 @@ export const Settings = () => {
                     onClick={() => setHasLucidId(true)}
                     className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all"
                   >
-                    Auswahl treffen
+                    {t.common.next}
                   </button>
                 </div>
               </div>
             ) : hasLucidId ? (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  LUCID-Identifikationsnummer
+                  {t.settings.lucidTitle}
                 </label>
                 <input
                   type="text"
@@ -4361,12 +1872,12 @@ export const Settings = () => {
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-400 focus:border-transparent mb-4"
                 />
                 <button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all">
-                  Speichern
+                  {t.common.save}
                 </button>
               </div>
             ) : (
               <p className="text-sm text-gray-700">
-                Sie haben angegeben, dass Sie nicht registrierungspflichtig sind.
+                {t.lucid.statedNotObligated}
               </p>
             )}
           </div>
@@ -4377,7 +1888,7 @@ export const Settings = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Telefonnummer ändern</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t.settings.changePhoneNumber}</h3>
                 <button
                   onClick={() => setShowPhoneModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -4391,7 +1902,7 @@ export const Settings = () => {
               <form onSubmit={handlePhoneChange} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Neue Telefonnummer
+                    {t.settings.newPhoneNumber}
                   </label>
                   <input
                     type="tel"
@@ -4405,19 +1916,19 @@ export const Settings = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Bestätigungscode
+                    {t.settings.verificationCode}
                   </label>
                   <input
                     type="text"
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
-                    placeholder="6-stelliger Code"
+                    placeholder={t.settings.verificationCodePlaceholder}
                     maxLength={6}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-400 focus:border-transparent"
                     required
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Wir senden Ihnen einen Bestätigungscode per SMS.
+                    {t.settings.smsNotice}
                   </p>
                 </div>
 
@@ -4427,13 +1938,13 @@ export const Settings = () => {
                     onClick={() => setShowPhoneModal(false)}
                     className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                   >
-                    Abbrechen
+                    {t.common.cancel}
                   </button>
                   <button
                     type="submit"
                     className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
                   >
-                    Speichern
+                    {t.common.save}
                   </button>
                 </div>
               </form>
@@ -4446,7 +1957,7 @@ export const Settings = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Passwort ändern</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t.settings.changePassword}</h3>
                 <button
                   onClick={() => setShowPasswordModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -4460,7 +1971,7 @@ export const Settings = () => {
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Aktuelles Passwort
+                    {t.settings.currentPassword}
                   </label>
                   <input
                     type="password"
@@ -4474,7 +1985,7 @@ export const Settings = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Neues Passwort
+                    {t.settings.newPassword}
                   </label>
                   <input
                     type="password"
@@ -4486,13 +1997,13 @@ export const Settings = () => {
                     minLength={8}
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Mindestens 8 Zeichen
+                    {t.settings.passwordMinLength}
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Neues Passwort wiederholen
+                    {t.settings.confirmNewPassword}
                   </label>
                   <input
                     type="password"
@@ -4510,13 +2021,13 @@ export const Settings = () => {
                     onClick={() => setShowPasswordModal(false)}
                     className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                   >
-                    Abbrechen
+                    {t.common.cancel}
                   </button>
                   <button
                     type="submit"
                     className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
                   >
-                    Speichern
+                    {t.common.save}
                   </button>
                 </div>
               </form>
@@ -4529,7 +2040,7 @@ export const Settings = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Rechnungsadresse ändern</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t.settings.changeBillingAddress}</h3>
                 <button
                   onClick={() => setShowBillingModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -4544,7 +2055,7 @@ export const Settings = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Vorname
+                      {t.addListing.firstName}
                     </label>
                     <input
                       type="text"
@@ -4556,7 +2067,7 @@ export const Settings = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Nachname
+                      {t.addListing.lastName}
                     </label>
                     <input
                       type="text"
@@ -4571,7 +2082,7 @@ export const Settings = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Straße
+                      {t.addListing.streetHouse}
                     </label>
                     <input
                       type="text"
@@ -4598,7 +2109,7 @@ export const Settings = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      PLZ
+                      {t.checkout.postalCode}
                     </label>
                     <input
                       type="text"
@@ -4610,7 +2121,7 @@ export const Settings = () => {
                   </div>
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Stadt
+                      {t.addListing.city}
                     </label>
                     <input
                       type="text"
@@ -4624,16 +2135,16 @@ export const Settings = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Land
+                    {t.addListing.country || 'Ülke'}
                   </label>
                   <select
                     value={billingData.country}
                     onChange={(e) => setBillingData({ ...billingData, country: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-400 focus:border-transparent"
                   >
-                    <option value="Deutschland">Deutschland</option>
-                    <option value="Österreich">Österreich</option>
-                    <option value="Schweiz">Schweiz</option>
+                    <option value="Deutschland">Almanya</option>
+                    <option value="Österreich">Avusturya</option>
+                    <option value="Schweiz">İsviçre</option>
                   </select>
                 </div>
 
@@ -4737,7 +2248,7 @@ export const Favorites = ({ favorites, toggleFavorite, isFavorite, followedSelle
               : 'text-gray-500 hover:text-gray-700'
               }`}
           >
-            Anzeigen ({favoriteListings.length})
+            {t.nav.myListings} ({favoriteListings.length})
           </button>
           <button
             onClick={() => setActiveTab('users')}
@@ -4746,7 +2257,7 @@ export const Favorites = ({ favorites, toggleFavorite, isFavorite, followedSelle
               : 'text-gray-500 hover:text-gray-700'
               }`}
           >
-            Nutzer ({followedSellerList.length})
+            {t.nav.following} ({followedSellerList.length})
           </button>
         </div>
 
@@ -4767,16 +2278,16 @@ export const Favorites = ({ favorites, toggleFavorite, isFavorite, followedSelle
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Favoriten</h3>
-              <p className="text-gray-500">Du hast noch keine Anzeigen zu deinen Favoriten hinzugefügt.</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Henüz favori yok</h3>
+              <p className="text-gray-500">{t.favorites.empty}</p>
             </div>
           )
         ) : (
           /* Users Tab Content */
           loadingFollowed ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
-              <p className="text-gray-600">Lade gefolgte Nutzer...</p>
+              <LoadingSpinner size="medium" className="mb-4" />
+              <p className="text-gray-600">Takip edilen kullanıcılar yükleniyor...</p>
             </div>
           ) : followedSellerList.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -4836,6 +2347,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
   const [recentSearches, setRecentSearches] = useState([]);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [suggestions, setSuggestions] = useState({ categories: [], listings: [] });
+  const [isSearchingSuggestions, setIsSearchingSuggestions] = useState(false);
   const searchInputRef = React.useRef(null);
   const recentSearchesDropdownRef = React.useRef(null);
 
@@ -4913,6 +2426,32 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
     setRecentSearches(updatedSearches);
     localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
   };
+
+  // Suggestion fetching logic
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchTerm.trim().length < 2) {
+        setSuggestions({ categories: [], listings: [] });
+        return;
+      }
+
+      setIsSearchingSuggestions(true);
+      try {
+        const data = await searchApi.getSuggestions(searchTerm);
+        setSuggestions(data);
+      } catch (error) {
+        console.error('Error in SearchSection suggestions:', error);
+      } finally {
+        setIsSearchingSuggestions(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(() => {
+      fetchSuggestions();
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm]);
 
   // Fetch user profile for display name
   useEffect(() => {
@@ -5064,7 +2603,13 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               if (searchTerm.trim()) {
                 saveRecentSearch(searchTerm);
                 setShowRecentSearches(false);
-                navigate(`/search?q=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(selectedCategory)}&location=${encodeURIComponent(location)}`);
+                const params = new URLSearchParams();
+                params.append('q', searchTerm.trim());
+                if (selectedCategory && selectedCategory !== 'Tüm Kategoriler') params.append('category', selectedCategory);
+                if (location && location !== 'Türkiye') params.append('location', location);
+                if (selectedDistance) params.append('distance', selectedDistance);
+
+                navigate(`/search?${params.toString()}`);
               }
             }}
             className="flex-1 flex items-center gap-1 sm:gap-2 bg-white rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-xl hover:shadow-2xl transition-shadow duration-300"
@@ -5106,30 +2651,94 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 className="w-full px-1 sm:px-2 py-2 border-none outline-none text-gray-700 placeholder-gray-400 text-sm sm:text-base"
               />
 
-              {/* Recent Searches Dropdown */}
-              {showRecentSearches && recentSearches.length > 0 && (
+              {/* Recent Searches & Suggestions Dropdown */}
+              {showRecentSearches && (searchTerm.trim().length < 2 ? recentSearches.length > 0 : (suggestions.categories.length > 0 || suggestions.listings.length > 0)) && (
                 <div
                   ref={recentSearchesDropdownRef}
                   className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[100] overflow-hidden"
                 >
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100">
-                    Son aramalar
-                  </div>
-                  {recentSearches.map((term, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSearchTerm(term);
-                        setShowRecentSearches(false);
-                      }}
-                      className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
-                    >
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {term}
-                    </button>
-                  ))}
+                  {/* Recent Searches - Only when search term is short */}
+                  {searchTerm.trim().length < 2 && recentSearches.length > 0 && (
+                    <>
+                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100 uppercase tracking-wider">
+                        Son aramalar
+                      </div>
+                      {recentSearches.map((term, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            setSearchTerm(term);
+                            setShowRecentSearches(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {term}
+                        </button>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Category Suggestions */}
+                  {searchTerm.trim().length >= 2 && suggestions.categories.length > 0 && (
+                    <>
+                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100 uppercase tracking-wider">
+                        Kategoriler
+                      </div>
+                      {suggestions.categories.map((cat, index) => (
+                        <button
+                          key={`cat-${index}`}
+                          onClick={() => {
+                            setSelectedCategory(cat);
+                            setShowRecentSearches(false);
+                            navigate(`/search?category=${encodeURIComponent(cat)}`);
+                          }}
+                          className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 flex items-center gap-2 transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                          </svg>
+                          <span className="font-medium">{cat}</span>
+                          <span className="text-xs text-gray-400 ml-auto">Kategoride Ara</span>
+                        </button>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Listing Suggestions */}
+                  {searchTerm.trim().length >= 2 && suggestions.listings.length > 0 && (
+                    <>
+                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-100 border-t uppercase tracking-wider">
+                        İlanlar
+                      </div>
+                      {suggestions.listings.map((listing) => (
+                        <button
+                          key={listing.id}
+                          onClick={() => {
+                            setShowRecentSearches(false);
+                            navigate(`/product/${listing.id}`);
+                          }}
+                          className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                          <div className="flex flex-col">
+                            <span className="truncate max-w-[400px]">{listing.title}</span>
+                            <span className="text-[10px] text-gray-400 uppercase">{listing.category}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </>
+                  )}
+
+                  {isSearchingSuggestions && (
+                    <div className="px-3 py-2 text-center">
+                      <LoadingSpinner size="small" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -5284,7 +2893,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
             <button
               onClick={() => {
                 const params = new URLSearchParams();
-                if (searchTerm) params.append('search', searchTerm);
+                if (searchTerm) params.append('q', searchTerm);
                 if (selectedCategory && selectedCategory !== 'Tüm Kategoriler') params.append('category', selectedCategory);
                 if (location && location !== 'Türkiye') params.append('location', location);
                 if (selectedDistance) params.append('distance', selectedDistance);
@@ -5292,7 +2901,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
 
                 console.log('Submitting form with data:', Object.fromEntries(params));
                 // Navigate to search results
-                navigate(`/Alle-Kategorien?${params.toString()}`);
+                navigate(`/search?${params.toString()}`);
               }}
               className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-medium focus:outline-none"
             >
@@ -5445,7 +3054,7 @@ export const normalizeSubcategoryName = (subcategoryName) => {
 // Category Sidebar Component
 export const getCategoryPath = (categoryName, subcategoryName = null) => {
   const mainMappings = {
-    'Tüm Kategoriler': 'Alle-Kategorien',
+    'Tüm Kategoriler': 'Butun-Kategoriler',
     'Otomobil, Bisiklet & Tekne': 'Otomobil-Bisiklet-Tekne',
     'Otomobil, Bisiklet & Tekne Servisi': 'Otomobil-Bisiklet-Tekne',
     'Emlak': 'Emlak',
@@ -5485,6 +3094,7 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     'Konteyner': 'Konteyner',
     'Satılık Daireler': 'Satilik-Daireler',
     'Satılık Daire': 'Satilik-Daireler',
+    'Satılık Yazlık': 'Satilik-Yazlik',
     'Tatil Evi & Yurt Dışı Emlak': 'Tatil-Evi-Yurt-Disi-Emlak',
     'Tatil ve Yurt Dışı Emlak': 'Tatil-Evi-Yurt-Disi-Emlak',
     'Garaj & Otopark': 'Garaj-Otopark',
@@ -5899,13 +3509,15 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   // Determine card styles based on promotion Type
   let cardClasses = "listing-card rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group relative hover:-translate-y-1 bg-white ";
 
-  if (listing.is_top) {
-    cardClasses += "border-2 border-red-500 ring-4 ring-red-50/50 bg-red-50/10 ";
-  } else if (listing.is_multi_bump) {
-    cardClasses += "border-2 border-yellow-400 ring-4 ring-yellow-50/50 bg-yellow-50/10 ";
-  } else if (listing.is_gallery) {
-    cardClasses += "border-2 border-purple-400 ring-4 ring-purple-50/50 bg-purple-50/10 ";
-  } else if (listing.is_highlighted) {
+  const pkgType = listing?.package_type?.toLowerCase();
+
+  if (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType)) {
+    cardClasses += "border-[3px] border-purple-500 ring-4 ring-purple-100 shadow-[0_0_20px_rgba(147,51,234,0.3)] bg-purple-50/20 scale-[1.01] ";
+  } else if (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType)) {
+    cardClasses += "border-2 border-amber-400 ring-4 ring-amber-50/50 bg-amber-50/10 ";
+  } else if (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing.is_multi_bump) {
+    cardClasses += "border-2 border-orange-400 ring-4 ring-orange-50/50 bg-orange-50/10 ";
+  } else if (listing.is_highlighted || pkgType === 'highlight' || pkgType === 'budget') {
     cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 shadow-yellow-100 ";
   }
 
@@ -5930,35 +3542,57 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         />
         {/* RESERVIERT Badge - highest priority */}
         {isReserved && (
-          <div className="absolute top-3 left-3 bg-yellow-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg flex items-center gap-1 z-20">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+          <div className="absolute top-1 left-1 bg-yellow-500 text-white px-2 py-0.5 rounded text-[9px] font-bold shadow-lg flex items-center gap-1 z-20">
+            <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
             </svg>
             REZERVE
           </div>
         )}
-        {/* TOP Badge - positioned below RESERVIERT if it exists */}
-        {listing.is_top && (
-          <div className={`absolute ${isReserved ? 'top-14' : 'top-3'} left-3 bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg z-10 animate-pulse`}>
-            ⭐ TOP
+        {/* TOP Badge removed per user request */}
+        {/* Package Badge */}
+        {listing?.package_type &&
+          listing.package_type.toLowerCase() !== 'basic' &&
+          listing.package_type.toLowerCase() !== 'top' &&
+          listing.package_type.toLowerCase() !== 'basic' &&
+          listing.package_type.toLowerCase() !== 'galerie' &&
+          listing.package_type.toLowerCase() !== 'gallery' &&
+          listing.package_type.toLowerCase() !== 'galeri' &&
+          listing.package_type.toLowerCase() !== 'vitrin' &&
+          listing.package_type.toLowerCase() !== 'verlängerung' &&
+          listing.package_type.toLowerCase() !== 'extension' && (
+            <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 px-2 py-1 rounded-md text-[10px] font-bold shadow-md border border-white/20 z-10 uppercase tracking-wider ${listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? 'bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]' :
+              listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-200' :
+                listing.package_type.toLowerCase() === 'plus' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
+                  'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-200'
+              }`}>
+              {listing.package_type.toLowerCase() === 'budget' || listing.package_type.toLowerCase() === 'highlight' ? 'ÖNE ÇIKAN' :
+                listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? '⚡ YUKARI' :
+                  listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? '👑 PREMIUM' :
+                    listing.package_type}
+            </div>
+          )}
+        {/* Vitrin Badge - Even more inclusive check */}
+        {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.trim().toLowerCase())) && (
+          <div className={`absolute ${isReserved ? (listing.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin', 'verlängerung', 'extension'].includes(listing.package_type.toLowerCase()) ? 'top-14' : 'top-8') : (listing.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin', 'verlängerung', 'extension'].includes(listing.package_type.toLowerCase()) ? 'top-8' : 'top-1')} left-1 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-1.5 py-0.5 rounded-md text-[9px] font-bold shadow-md border border-white/20 z-10 flex items-center gap-1`}>
+            <span>⭐ VİTRİN</span>
           </div>
         )}
-        {/* Highlighted Badge */}
-        {listing.is_highlighted && !listing.is_top && (
-          <div className={`absolute ${isReserved ? 'top-14' : 'top-3'} left-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg z-10`}>
-            ✨ Öne Çıkan
+        {listing.is_highlighted && !listing.is_top && !listing.is_gallery && !listing.package_type && (
+          <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-1.5 py-0.5 rounded text-[9px] font-bold shadow-lg z-10`}>
+            ✨ Öne Çıkarılan
           </div>
         )}
         {/* Commercial/PRO Badge */}
         {(listing.is_commercial || listing.is_pro) && (
-          <div className="absolute bottom-2 left-2 flex flex-col gap-1">
+          <div className="absolute bottom-1.5 right-1.5 flex flex-col items-end gap-1">
             {listing.is_pro && (
-              <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter shadow-sm border border-red-500">
+              <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter shadow-sm border border-red-500">
                 PRO
               </span>
             )}
             {listing.is_commercial && (
-              <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter shadow-sm border border-blue-500">
+              <span className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter shadow-sm border border-blue-500">
                 KURUMSAL
               </span>
             )}
@@ -5998,8 +3632,8 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
               listing.price_type === 'giveaway' || listing.price === 0
                 ? 'Ücretsiz'
                 : listing.price
-                  ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' Pazarlıklı' : ''}`
-                  : 'Pazarlıklı'
+                  ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
+                  : t.addListing.options.negotiable
             )}
           </span>
           {listing.city && (
@@ -6107,20 +3741,30 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
   })();
 
   if (loading && isLatest) {
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-        {[...Array(10)].map((_, i) => (
-          <div key={i} className="animate-pulse bg-white rounded-xl shadow-md h-64 overflow-hidden border border-gray-100">
-            <div className="bg-gray-200 h-32 w-full"></div>
-            <div className="p-3 space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+    // Check if skeletons are enabled
+    const { SKELETON_CONFIG } = require('./config/skeletonConfig');
+
+    if (SKELETON_CONFIG.enabled) {
+      // Use modern skeleton component
+      const { ListingGridSkeleton } = require('./components/skeletons/ListingCardSkeleton');
+      return <ListingGridSkeleton count={10} />;
+    } else {
+      // Use old spinner/placeholder
+      return (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-white rounded-xl shadow-md h-64 overflow-hidden border border-gray-100">
+              <div className="bg-gray-200 h-32 w-full"></div>
+              <div className="p-3 space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    );
+          ))}
+        </div>
+      );
+    }
   }
 
   if (displayListings.length === 0) {
@@ -6150,9 +3794,10 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
 };
 
 // Gallery Component
-export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filterLocation = 'Alle Orte', sortBy = 'relevance' }) => {
+export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filterLocation = 'Tüm Şehirler', sortBy = 'relevance' }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [galleryItems, setGalleryItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerView = 5;
   const [showInfoModal, setShowInfoModal] = useState(false);
   const { user } = useAuth();
@@ -6160,6 +3805,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
   useEffect(() => {
     const fetchTopListings = async () => {
       try {
+        setLoading(true);
         const { fetchListings } = await import('./api/listings');
         const { clearCache } = await import('./utils/cache');
 
@@ -6168,8 +3814,11 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
 
         // Fetch top listings, skip count for speed
         const data = await fetchListings({}, { count: false });
-        // Include both Gallery and Top listings in the showcase
-        let topListings = data.filter(listing => listing.is_gallery === true || listing.is_top === true);
+        // Include both Gallery and Top listings in the showcase (Exclude Multi-Bump and Premium from Gallery)
+        // Only include actual Vitrin (gallery) listings in the showcase
+        let topListings = data.filter(listing =>
+          listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())
+        );
 
         // Fiyat filtresi
         if (priceRange !== 'all') {
@@ -6198,7 +3847,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
         }
 
         // Konum filtresi
-        if (filterLocation && filterLocation !== 'Tüm Şehirler' && filterLocation !== 'Alle Orte') {
+        if (filterLocation && filterLocation !== 'Tüm Şehirler') {
           topListings = topListings.filter(listing =>
             listing.city && listing.city.includes(filterLocation)
           );
@@ -6242,6 +3891,8 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
       } catch (error) {
         console.error('Error fetching top listings:', error);
         setGalleryItems([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchTopListings();
@@ -6262,7 +3913,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
   return (
     <section className="mt-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Galeri</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Vitrin</h2>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowInfoModal(true)}
@@ -6296,7 +3947,33 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
       </div>
 
       <div className="relative overflow-hidden">
-        {galleryItems.length === 0 ? (
+        {loading ? (
+          // Check if skeletons are enabled
+          (() => {
+            const { SKELETON_CONFIG } = require('./config/skeletonConfig');
+            if (SKELETON_CONFIG.enabled) {
+              const GallerySkeleton = require('./components/skeletons/GallerySkeleton').default;
+              return <GallerySkeleton />;
+            } else {
+              // Old loading placeholder
+              return (
+                <div className="flex gap-3">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="w-64 flex-shrink-0 animate-pulse">
+                      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div className="h-48 bg-gray-200"></div>
+                        <div className="p-3 space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+          })()
+        ) : galleryItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
             <p className="text-gray-500 font-medium">Henüz vitrin ilanı bulunmamaktadır.</p>
             <p className="text-sm text-gray-400 mt-1">İlanınızı öne çıkarmak için "İlanınızı burada yayınlayın"a tıklayın.</p>
@@ -6459,7 +4136,18 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
 
         const topListings = await fetchListings(filters);
 
-        const shuffled = [...topListings].sort(() => 0.5 - Math.random());
+        // Filter out premium, multi-bump and other basic types manually after fetch to be extra safe
+        const filteredTop = topListings.filter(l =>
+          l.package_type?.toLowerCase() !== 'premium' &&
+          l.package_type?.toLowerCase() !== 'z_premium' &&
+          l.package_type?.toLowerCase() !== 'multi-bump' &&
+          l.package_type?.toLowerCase() !== 'z_multi_bump' &&
+          l.package_type?.toLowerCase() !== 'basic' &&
+          l.package_type?.toLowerCase() !== 'verlängerung' &&
+          l.package_type?.toLowerCase() !== 'extension'
+        );
+
+        const shuffled = [...filteredTop].sort(() => 0.5 - Math.random());
 
         // If no top listings found, show random listings from category/subcategory
         if (shuffled.length === 0) {
@@ -6569,6 +4257,8 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
 // Welcome Modal Component
 export const WelcomeModal = ({ onClose }) => {
   const navigate = useNavigate();
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -6881,13 +4571,13 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
   return (
     <section className="mt-8 sm:mt-12 mb-8 sm:mb-12">
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Unternehmensseiten in Deutschland</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Türkiye'deki Kurumsal Sayfalar</h2>
         <div className="flex items-center gap-2 sm:gap-4">
           <a
             href="/Unternehmensseiten"
             className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
           >
-            Alle anzeigen
+            {t.common.all || 'Hepsini göster'}
           </a>
           <div className="flex gap-1 sm:gap-2">
             <button
@@ -6966,7 +4656,7 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
                         const match = lastPart.match(/(\d{5})\s+(.+)/);
                         return match ? `${match[1]} ${match[2]}` : lastPart;
                       })()
-                      : 'Deutschland'}
+                      : 'Türkiye'}
                   </span>
                 </div>
 
@@ -6976,7 +4666,7 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <span>{company.totalListings || 0} Anzeigen</span>
+                    <span>{company.totalListings || 0} İlanlar</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-yellow-500">★</span>
@@ -7444,7 +5134,7 @@ export const AddListing = () => {
               'Auf Zeit & WG', 'Container', 'Eigentumswohnungen', 'Ferien- & Auslandsimmobilien',
               'Garagen & Stellplätze', 'Gewerbeimmobilien', 'Grundstücke & Gärten',
               'Häuser zum Kauf', 'Häuser zur Miete', 'Mietwohnungen', 'Neubauprojekte',
-              'Umzug & Transport', 'Weitere Immobilien'
+              'Umzug & Transport', 'Weitere Immobilien', 'Satılık Yazlık'
             ];
             return {
               ...cat,
@@ -7808,32 +5498,17 @@ export const AddListing = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if user is logged in
     if (!user) {
       alert(t.addListing.pleaseLogin);
       navigate('/login');
       return;
     }
 
-    // Check listing limits before proceeding
     if (!limitState.canAdd && !isEditMode) {
       setShowLimitModal(true);
       return;
     }
 
-    console.log('=== FORM SUBMITTED ===');
-    console.log('User ID:', user.id);
-    console.log('Title:', title);
-    console.log('Category:', category);
-    console.log('SubCategory:', subCategory);
-    console.log('Price:', price);
-    console.log('City:', city);
-    console.log('District:', district);
-    console.log('Region:', region);
-    console.log('Image Files:', imageFiles.length);
-
-    // Save location data to localStorage
-    // localStorage.setItem('savedPostalCode', postalCode); // Removed
     localStorage.setItem('savedCity', city);
     localStorage.setItem('savedDistrict', district);
     localStorage.setItem('savedRegion', region);
@@ -7841,39 +5516,34 @@ export const AddListing = () => {
     localStorage.setItem('savedShowLocation', showLocation.toString());
 
     try {
-      // Upload images first if any
-      let imageUrls = [];
+      setLoading(true);
 
-      if (imageFiles && imageFiles.length > 0) {
-        // Separate existing URLs from new files
-        const existingUrls = imageFiles.filter(img => typeof img === 'string');
-        const newFiles = imageFiles.filter(img => typeof img !== 'string');
+      // Upload new files and preserve order
+      const newFiles = imageFiles.filter(img => typeof img !== 'string');
+      let uploadedUrls = [];
 
-        console.log(`Existing images: ${existingUrls.length}, New files: ${newFiles.length}`);
-
-        // Keep existing URLs
-        imageUrls = [...existingUrls];
-
-        // Put NEW images FIRST, then existing images
-        if (newFiles.length > 0) {
-          console.log(`Uploading ${newFiles.length} new images...`);
-          const { uploadListingImages } = await import('./api/storage');
-          const newUrls = await uploadListingImages(newFiles, user.id);
-          console.log('New images uploaded successfully:', newUrls);
-          imageUrls = [...newUrls, ...imageUrls]; // New images FIRST
-        }
-
-        if (imageUrls.length === 0) {
-          alert(t.addListing.imageUploadWarning);
-        }
+      if (newFiles.length > 0) {
+        const { uploadListingImages } = await import('./api/images');
+        uploadedUrls = await uploadListingImages(user.id, newFiles);
       }
 
-      // Prepare listing data for Supabase
+      let uploadedIdx = 0;
+      const imageUrls = imageFiles.map(file => {
+        if (typeof file === 'string') return file;
+        return uploadedUrls[uploadedIdx++];
+      });
+
+      const unformatPrice = (val) => {
+        if (!val) return '';
+        return val.toString().replace(/\./g, '').replace(',', '.');
+      };
+
+      const cleanedPrice = unformatPrice(price);
       const listingData = {
         user_id: user.id,
         title: title.trim(),
         description: description.trim(),
-        price: priceType === 'giveaway' ? 0 : (priceType === 'negotiable' && !price ? null : (parseFloat(price.toString().replace(',', '.')) || 0)),
+        price: priceType === 'giveaway' ? 0 : (priceType === 'negotiable' && !price ? null : (parseFloat(cleanedPrice) || 0)),
         price_type: priceType,
         category: category.trim(),
         sub_category: subCategory ? subCategory.trim() : null,
@@ -7882,14 +5552,13 @@ export const AddListing = () => {
         district: district ? district.trim() : null,
         address: address ? address.trim() : null,
         region: region ? region.trim() : null,
-        federal_state: city.trim(), // Auto-set to city value for filter compatibility
+        federal_state: city.trim(),
         show_location: showLocation,
         show_phone_number: showPhoneNumber,
         contact_name: contactName ? contactName.trim() : null,
         contact_phone: phoneNumber ? phoneNumber.trim() : null,
-        images: imageUrls, // Add uploaded image URLs
+        images: imageUrls,
         status: 'active',
-        // Add category-specific fields
         versand_art: hideConditionAndShipping ? null : (selectedVersand || null),
         car_brand: selectedCarBrand || null,
         car_model: selectedCarModel || null,
@@ -7897,7 +5566,6 @@ export const AddListing = () => {
         bike_art: selectedBikeArt || null,
         autoteile_art: selectedAutoteileArt || null,
         autoteile_angebotstyp: selectedAutoteileAngebotstyp || null,
-        // Common offer_type field
         offer_type: offerType || null,
         boote_art: selectedBooteArt || null,
         motorrad_art: selectedMotorradArt || null,
@@ -7913,7 +5581,7 @@ export const AddListing = () => {
         dienstleistungen_haus_garten_art: selectedDienstleistungenHausGartenArt || null,
         buecher_zeitschriften_art: selectedBuecherZeitschriftenArt || null,
         sammeln_art: selectedSammelnArt || null,
-        audio_hifi_art: selectedElektronikAudioHifiArt || null,
+        audio_hifi_art: selectedAudioHifiArt || selectedElektronikAudioHifiArt || null,
         sport_camping_art: selectedSportCampingArt || null,
         modellbau_art: selectedModellbauArt || null,
         handarbeit_art: selectedHandarbeitArt || null,
@@ -7976,7 +5644,6 @@ export const AddListing = () => {
         taschen_accessoires_art: selectedTaschenAccessoiresArt || null,
         uhren_schmuck_art: selectedUhrenSchmuckArt || null,
         beauty_gesundheit_art: selectedBeautyGesundheitArt || null,
-        audio_hifi_art: selectedAudioHifiArt || selectedElektronikAudioHifiArt || null,
         handy_telefon_art: selectedHandyTelefonArt || null,
         foto_art: selectedFotoArt || null,
         haushaltsgeraete_art: selectedHaushaltsgeraeteArt || null,
@@ -7989,7 +5656,6 @@ export const AddListing = () => {
         videospiele_art: selectedVideospieleArt || null,
         weitere_elektronik_art: selectedWeitereElektronikArt || null,
         dienstleistungen_elektronik_art: selectedDienstleistungenElektronikArt || null,
-        // Auf Zeit & WG and general Immobilien fields
         auf_zeit_wg_art: selectedAufZeitWGArt || null,
         rental_type: selectedRentalType || null,
         living_space: livingSpace ? parseFloat(livingSpace) : null,
@@ -8000,7 +5666,6 @@ export const AddListing = () => {
         warm_rent: warmRent ? parseFloat(warmRent) : null,
         amenities: selectedAmenities.length > 0 ? selectedAmenities : null,
         general_features: selectedGeneralFeatures.length > 0 ? selectedGeneralFeatures : null,
-        // Extended Immobilien fields
         wohnungstyp: selectedWohnungstyp || null,
         haustyp: selectedHaustyp || null,
         grundstuecksart: selectedGrundstuecksart || null,
@@ -8016,18 +5681,15 @@ export const AddListing = () => {
         house_features: selectedHouseFeatures.length > 0 ? selectedHouseFeatures : null,
         angebotsart: selectedAngebotsart || null,
         tauschangebot: selectedTauschangebot || null,
-        // Jobs fields
         working_time: workingTime || null,
         hourly_wage: hourlyWage ? parseFloat(hourlyWage) : null,
         job_type: jobType || null,
-        // Common vehicle fields
         marke: selectedCarBrand || marke || null,
         modell: selectedCarModel || null,
         kilometerstand: kilometerstand ? parseInt(kilometerstand.toString().replace(/\D/g, '')) : null,
         erstzulassung: erstzulassung ? parseInt(erstzulassung) : null,
         hubraum: hubraum ? parseInt(hubraum.toString().replace(/\D/g, '')) : null,
         getriebe: getriebe || null,
-        // Standardized names with fallbacks
         leistung: leistung ? parseInt(leistung.toString().replace(/\D/g, '')) : null,
         power: leistung ? parseInt(leistung.toString().replace(/\D/g, '')) : null,
         kraftstoff: kraftstoff || null,
@@ -8046,191 +5708,26 @@ export const AddListing = () => {
         scheckheftgepflegt: isScheckheftgepflegt,
         nichtraucher_fahrzeug: isNichtraucher,
         car_amenities: selectedCarAmenities.length > 0 ? selectedCarAmenities : null,
-        // Seller info
         seller_type: sellerType || null
       };
 
-      console.log('Creating listing in Supabase:', listingData);
-      console.log('📦 Versand value being saved:', selectedVersand);
-      console.log('📦 versand_art in listingData:', listingData.versand_art);
-
       if (isEditMode && editId) {
-        // UPDATE existing listing
-        console.log('Updating listing with ID:', editId);
         const { supabase } = await import('./lib/supabase');
-        const { data, error } = await supabase
-          .from('listings')
-          .update(listingData)
-          .eq('id', editId)
-          .select()
-          .single();
-
+        const { error } = await supabase.from('listings').update(listingData).eq('id', editId);
         if (error) throw error;
-
-        console.log('Listing updated successfully:', data);
-        alert(`${t.addListing.updateSuccess}${imageUrls.length > 0 ? ` ${t.addListing.imagesUploaded.replace('{count}', imageUrls.length.toString())}` : ''}`);
+        alert(t.addListing.updateSuccess);
       } else {
-        // CREATE new listing
         const { createListing } = await import('./api/listings');
-        const result = await createListing(listingData);
-        console.log('Listing created successfully:', result);
-        alert(`${t.addListing.success}${imageUrls.length > 0 ? ` ${t.addListing.imagesUploaded.replace('{count}', imageUrls.length.toString())}` : ''}`);
+        await createListing(listingData);
+        alert(t.addListing.success);
       }
 
-      // Reset form
-
-      setTitle('');
-      setCategory('');
-      setSubCategory('');
-
-      // Reset Immobilien fields
-      setSelectedAufZeitWGArt('');
-      setSelectedRentalType('');
-      setLivingSpace('');
-      setRooms('');
-      setRoommates('');
-      setAvailableFrom('');
-      setSelectedOnlineViewing('');
-      setWarmRent('');
-      setSelectedAmenities([]);
-      setSelectedGeneralFeatures([]);
-      setSelectedWohnungstyp('');
-      setSelectedHaustyp('');
-      setSelectedGrundstuecksart('');
-      setSelectedObjektart('');
-      setSelectedGarageType('');
-      setFloor('');
-      setConstructionYear('');
-      setPlotArea('');
-      setSelectedCommission('');
-      setSelectedLage('');
-      setPricePerSqm('');
-      setSelectedApartmentFeatures([]);
-      setSelectedHouseFeatures([]);
-      setSelectedAngebotsart('');
-      setSelectedTauschangebot('');
-      setCondition('used');
-      setPrice('');
-      setPriceType('fixed');
-      setDescription('');
-      setImageFiles([]);
-      setSelectedCarBrand('');
-      setSelectedCarModel('');
-      setSelectedAutoteileArt('');
-      setSelectedAutoteileAngebotstyp('');
-      setSelectedBikeArt('');
-      setSelectedBikeArt('');
-      setSelectedBikeType('');
-      setSelectedWohnzimmerArt('');
-      setSelectedGartenzubehoerArt('');
-      setSelectedWohnzimmerArt('');
-      setSelectedGartenzubehoerArt('');
-      setSelectedDekorationArt('');
-      setSelectedDienstleistungenHausGartenArt('');
-      setSelectedBuecherZeitschriftenArt('');
-      setSelectedSammelnArt('');
-      setSelectedModellbauArt('');
-      setSelectedHandarbeitArt('');
-      setSelectedKuenstlerMusikerArt('');
-      setSelectedReiseEventservicesArt('');
-      setSelectedTierbetreuungTrainingArt('');
-      setSelectedBauHandwerkProduktionArt('');
-      setSelectedBueroArbeitVerwaltungArt('');
-      setSelectedBueroArbeitVerwaltungArt('');
-      setSelectedGastronomieTourismusArt('');
-      setSelectedSozialerSektorPflegeArt('');
-      setSelectedTransportLogistikVerkehrArt('');
-      setSelectedVertriebEinkaufVerkaufArt('');
-      setSelectedWeitereJobsArt('');
-      setSelectedTaschenAccessoiresArt('');
-      setSelectedUhrenSchmuckArt('');
-      setSelectedAudioHifiArt('');
-      setSelectedHandyTelefonArt('');
-      setSelectedFotoArt('');
-      setSelectedHaushaltsgeraeteArt('');
-      setSelectedKonsolenArt('');
-      setSelectedPCZubehoerSoftwareArt('');
-      setSelectedTabletsReaderArt('');
-      setSelectedTVVideoArt('');
-      setSelectedNotebooksArt('');
-      setSelectedPCsArt('');
-      setSelectedVideospieleArt('');
-      setSelectedWeitereElektronikArt('');
-      setSelectedDienstleistungenElektronikArt('');
-      setSelectedAltenpflegeArt('');
-      setSelectedSprachkurseArt('');
-      setSelectedKunstGestaltungArt('');
-      setSelectedWeiteresHausGartenArt('');
-      setBabyKinderkleidungArt('');
-      setBabyKinderkleidungSize('');
-      setBabyKinderkleidungGender('');
-      setBabyKinderkleidungColor('');
-      setBabyKinderschuheArt('');
-      setBabyKinderschuheSize('');
-      setBabyKinderschuheColor('');
-      setBabyschalenKindersitzeColor('');
-      setKinderwagenBuggysColor('');
-      setKinderwagenBuggysArt('');
-      setDamenbekleidungColor('');
-      setDamenschuheColor('');
-      setHerrenbekleidungColor('');
-      setSelectedHerrenschuheColor('');
-      setSelectedKinderzimmermobelArt('');
-      setSelectedSpielzeugArt('');
-      setSelectedFischeArt('');
-      setSelectedHundeArt('');
-      setSelectedHundeAlter('');
-      setSelectedHundeGeimpft('');
-      setSelectedHundeErlaubnis('');
-      setSelectedKatzenArt('');
-      setSelectedKatzenAlter('');
-      setSelectedKatzenGeimpft('');
-      setSelectedKatzenErlaubnis('');
-      setSelectedKleintiereArt('');
-      setSelectedNutztiereArt('');
-      setSelectedPferdeArt('');
-      setSelectedVermisstetiereStatus('');
-      setSelectedHaustierZubehoerArt('');
-      setSelectedBeautyGesundheitArt('');
-      setSelectedAudioHifiArt('');
-      setSelectedHandyTelefonArt('');
-      setSelectedFotoArt('');
-      setSelectedHaushaltsgeraeteArt('');
-      setSelectedKonsolenArt('');
-      setSelectedPCZubehoerSoftwareArt('');
-      setSelectedTabletsReaderArt('');
-      setSelectedTVVideoArt('');
-
-      setWorkingTime('');
-      setHourlyWage('');
-      setJobType('');
-
-      // Reset common vehicle fields
-      setMarke('');
-      setKilometerstand('');
-      setErstzulassung('');
-      setErstzulassungMonat('');
-      setHubraum('');
-      setGetriebe('');
-      setLeistung('');
-      setKraftstoff('');
-      setSelectedFahrzeugtyp('');
-      setSelectedDoorCount('');
-      setSelectedExteriorColor('');
-      setSelectedInteriorMaterial('');
-      setSelectedEmissionBadge('');
-      setSelectedSchadstoffklasse('');
-      setSelectedHU('');
-      setIsUnfallfrei(false);
-      setIsScheckheftgepflegt(false);
-      setIsNichtraucher(false);
-      setSelectedCarAmenities([]);
-
-      // Redirect to profile page to see the listing
       navigate('/profile?tab=listings');
     } catch (error) {
       console.error('Error submitting listing:', error);
       alert(t.addListing.errorSaving + (error.message ? ': ' + error.message : ''));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -8323,14 +5820,16 @@ export const AddListing = () => {
                       const newSubCategory = e.target.value;
                       setSubCategory(newSubCategory);
 
-                      // Auto-set Art for specific house subcategories
-                      if (newSubCategory === 'Satılık Evler') {
+                      // Auto-set Art for specific real estate subcategories
+                      if (newSubCategory === 'Satılık Müstakil Ev') {
                         setSelectedAngebotsart('Kaufen');
-                      } else if (newSubCategory === 'Kiralık Evler') {
+                      } else if (newSubCategory === 'Kiralık Müstakil Ev') {
                         setSelectedAngebotsart('Mieten');
-                      } else if (newSubCategory === 'Kiralık Daireler') {
+                      } else if (newSubCategory === 'Kiralık Daire') {
                         setSelectedAngebotsart('Mieten');
-                      } else if (newSubCategory === 'Satılık Daireler') {
+                      } else if (newSubCategory === 'Satılık Daire') {
+                        setSelectedAngebotsart('Kaufen');
+                      } else if (newSubCategory === 'Satılık Yazlık') {
                         setSelectedAngebotsart('Kaufen');
                       }
 
@@ -8867,7 +6366,15 @@ export const AddListing = () => {
                     <input
                       type="text"
                       value={price}
-                      onChange={(e) => setPrice(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (priceType === 'giveaway') return;
+
+                        // Only allow numbers and format with dots
+                        const numeric = val.replace(/\D/g, '');
+                        const formatted = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        setPrice(formatted);
+                      }}
                       required={priceType !== 'giveaway' && priceType !== 'negotiable'}
                       disabled={priceType === 'giveaway'}
                       className={`flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 ${priceType === 'giveaway' ? 'bg-gray-100 text-gray-400' : ''}`}
@@ -9256,7 +6763,7 @@ export const AddListing = () => {
                   className="w-full py-4 border-2 border-red-600 text-red-600 rounded-2xl font-black hover:bg-red-50 transition-all flex items-center justify-center gap-2"
                 >
                   {payingExtra ? (
-                    <div className="w-5 h-5 border-2 border-red-600/30 border-t-red-600 rounded-full animate-spin"></div>
+                    <LoadingSpinner size="small" />
                   ) : (
                     <span>{t.addListing.limitReached.paySingle}</span>
                   )}
@@ -9371,8 +6878,8 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
     { id: 'bump', name: 'Yukarı Çıkar', price: '4,99', duration: 1, effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
     { id: 'highlight', name: 'Öne Çıkan', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
     { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '16,99', duration: 7, effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
-    { id: 'top', name: 'En Üst İlan', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
-    { id: 'galerie', name: 'Galeri', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
+    { id: 'z_premium', name: 'Premium', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
+    { id: 'galerie', name: 'Vitrin', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
   ];
 
   const togglePromotionSelection = (pkgId) => {
@@ -9695,12 +7202,12 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
   return (
     <>
       <div
-        className={`${listing.is_gallery || listing.is_top ? 'bg-purple-50' : 'bg-white'} border ${listing.is_top ? 'border-purple-200' : 'border-gray-200'} rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer`}
+        className={`${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'bg-purple-50/30 border-purple-400 border-[2px] shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005]' : 'bg-white'} border ${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'border-purple-200' : 'border-gray-200'} rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer`}
         onClick={() => navigate(`/product/${listing.id}`)}
       >
         <div className="flex flex-col md:flex-row">
-          {/* Image Section */}
-          <div className="md:w-64 h-44 md:h-48 relative group flex-shrink-0 bg-gray-100">
+          {/* Image Section - Compact Size */}
+          <div className="md:w-60 h-44 md:h-48 relative group flex-shrink-0 bg-gray-100">
             <img
               src={Array.isArray(listing?.images) && listing.images.length > 0
                 ? listing.images[0]
@@ -9711,17 +7218,46 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
             />
             {/* RESERVIERT Badge - always on top */}
             {isReserved && (
-              <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded text-[10px] font-bold shadow flex items-center gap-1 z-20">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <div className="absolute top-1 left-1 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow flex items-center gap-1 z-20">
+                <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
                 REZERVE EDİLDİ
               </div>
             )}
-            {/* TOP Badge - positioned below RESERVIERT if it exists */}
-            {listing?.is_top && (
-              <div className={`absolute ${isReserved ? 'top-10' : 'top-2'} left-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow z-10`}>
-                ⭐ TOP
+            {/* Package Badge */}
+            {listing?.package_type &&
+              listing.package_type.toLowerCase() !== 'basic' &&
+              listing.package_type.toLowerCase() !== 'top' &&
+              listing.package_type.toLowerCase() !== 'galerie' && // Vitrin is handled separately
+              listing.package_type.toLowerCase() !== 'gallery' &&
+              listing.package_type.toLowerCase() !== 'galeri' &&
+              listing.package_type.toLowerCase() !== 'vitrin' &&
+              listing.package_type.toLowerCase() !== 'verlängerung' &&
+              listing.package_type.toLowerCase() !== 'extension' && (
+                <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold shadow-md border border-white/20 z-10 uppercase tracking-wider ${listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? 'bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]' :
+                  listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-200' :
+                    listing.package_type.toLowerCase() === 'plus' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
+                      'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-200'
+                  }`}>
+                  {listing.package_type.toLowerCase() === 'budget' || listing.package_type.toLowerCase() === 'highlight' ? 'ÖNE ÇIKAN' :
+                    listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? '⚡ YUKARI' :
+                      listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? '👑 PREMIUM' :
+                        listing.package_type}
+                </div>
+              )}
+
+            {/* Vitrin/Gallery Badge - Inclusive check */}
+            {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.trim().toLowerCase())) && (
+              <div className={`absolute ${isReserved ? (listing.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin', 'verlängerung', 'extension'].includes(listing.package_type.toLowerCase()) ? 'top-14' : 'top-8') : (listing.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin', 'verlängerung', 'extension'].includes(listing.package_type.toLowerCase()) ? 'top-8' : 'top-1')} left-1 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-md border border-white/20 z-10 flex items-center gap-1`}>
+                <span>⭐ VİTRİN</span>
+              </div>
+            )}
+
+            {/* Highlighted Fallback */}
+            {listing?.is_highlighted && !listing?.is_top && !listing?.package_type && (
+              <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-1.5 py-0.5 rounded text-[9px] font-bold shadow-md z-10`}>
+                ✨ Öne Çıkarılan
               </div>
             )}
             {/* ABGELAUFEN Badge - for owner only */}
@@ -9766,7 +7302,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               {renderCustomFields ? renderCustomFields(listing) : (() => {
                 const attrs = [];
                 // Technical Attributes
-                if (listing.rooms) attrs.push(`${listing.rooms} Zi.`);
+                if (listing.rooms) attrs.push(`${listing.rooms} Oda`);
                 if (listing.living_space) attrs.push(`${listing.living_space} m²`);
                 if (listing.erstzulassung) attrs.push(listing.erstzulassung);
                 if (listing.kilometerstand) attrs.push(`${listing.kilometerstand.toLocaleString('tr-TR')} km`);
@@ -9812,8 +7348,8 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                 listing?.price_type === 'giveaway' || listing?.price === 0
                   ? 'Ücretsiz'
                   : listing?.price
-                    ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' Pazarlıklı' : ''}`
-                    : 'Pazarlıklı'
+                    ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
+                    : t.addListing.options.negotiable
               )}
             </div>
 
@@ -9974,17 +7510,210 @@ export const ListingCountdown = ({ expiryDate, onExpire }) => {
 };
 
 
-// Professional Print Flyer (Sales Sign) Component - Optimized for single page
-const PrintFlyer = ({ listing, sellerProfile }) => {
+/* Translations for Amenities and Features */
+const amenityTranslations = {
+  // Condition values
+  'defekt': 'Arızalı',
+  'in_ordnung': 'İdare Eder',
+  'in ordnung': 'İdare Eder',
+  'gut': 'İyi',
+  'sehr_gut': 'Çok İyi',
+  'sehr gut': 'Çok İyi',
+  'neu': 'Yeni',
+  'neu_mit_etikett': 'Etiketli Yeni',
+  'neu mit etikett': 'Etiketli Yeni',
+  // Residential Amenities
+  'Möbliert/Teilmöbliert': 'Mobilyalı/Kısmen Mobilyalı',
+  'Balkon': 'Balkon',
+  'Terrasse': 'Teras',
+  'Einbauküche': 'Ankastre Mutfak',
+  'Badewanne': 'Küvet',
+  'Gäste-WC': 'Misafir Tuvaleti',
+  'Stufenloser Zugang': 'Engelsiz Erişim',
+  'Fußbodenheizung': 'Yerden Isıtma',
+  'WLAN': 'Wi-Fi',
+  'Kühlschrank': 'Buzdolabı',
+  'Waschmaschine': 'Çamaşır Makinesi',
+  'Spülmaschine': 'Bulaşık Makinesi',
+  'TV': 'Televizyon',
+  // Commercial Amenities
+  'Starkstrom': 'Yüksek Akım',
+  'Klimaanlage': 'Klima',
+  'DV-Verkabelung': 'DV Kablolama',
+  'Parkplätze vorhanden': 'Otopark Mevcut',
+  'Küche': 'Mutfak',
+  // General Features
+  'Altbau': 'Eski Yapı',
+  'Neubau': 'Yeni Yapı',
+  'Aufzug': 'Asansör',
+  'Keller': 'Bodrum',
+  'Dachboden': 'Çatı Katı',
+  'Garage/Stellplatz': 'Garaj/Park Yeri',
+  'Garten/-mitnutzung': 'Bahçe/Ortak Bahçe',
+  'Haustiere erlaubt': 'Evcil Hayvan İzni',
+  'WG-geeignet': 'Paylaşımlı Eve Uygun',
+  'Denkmalobjekt': 'Tarihi Eser/Anıt',
+  'Aktuell vermietet': 'Halen Kirada',
+  // Other values
+  'Garage': 'Garaj',
+  'Außenstellplatz': 'Açık Otopark',
+  'Möglich': 'Mümkün',
+  'Nicht möglich': 'Mümkün Değil',
+  'Provisionsfrei': 'Komisyonsuz',
+  'Mit Provision': 'Komisyonlu',
+  'Inland': 'Yurt İçi',
+  'Ausland': 'Yurt Dışı',
+  'befristet': 'Süreli',
+  'unbefristet': 'Süresiz',
+  'Gesamte Unterkunft': 'Tüm Konut',
+  'Privatzimmer': 'Özel Oda',
+  'Gemeinsames Zimmer': 'Paylaşımlı Oda',
+  'Einfamilienhaus': 'Müstakil Ev',
+  'Mehrfamilienhaus': 'Apartman',
+  'Reihenhaus': 'Sıra Ev',
+  'Reihenmittelhaus': 'Sıra Ev (Orta)',
+  'Reiheneckhaus': 'Sıra Ev (Köşe)',
+  'Doppelhaushälfte': 'İkiz Ev',
+  'Bungalow': 'Bungalov',
+  'Bauernhaus': 'Çiftlik Evi',
+  'Villa': 'Villa',
+  'Schloss': 'Şato',
+  // Apartment Types
+  'Etagenwohnung': 'Ara Kat Daire',
+  'Erdgeschosswohnung': 'Giriş Kat Daire',
+  'Dachgeschosswohnung': 'Çatı Katı Daire',
+  'Maisonette': 'Maisonette',
+  'Penthouse': 'Penthouse',
+  'Loft': 'Loft',
+  'Souterrain': 'Bodrum Kat Daire',
+  'Hochparterre': 'Yüksek Giriş',
+  'Terrassenwohnung': 'Teraslı Daire',
+  'Sonstige': 'Diğer',
+  // Vehicle Types
+  'Kleinwagen': 'Küçük Araç',
+  'Limousine': 'Sedan',
+  'Kombi': 'Station Wagon',
+  'Cabrio/Roadster': 'Cabrio',
+  'Cabrio': 'Cabrio',
+  'Sportwagen/Coupé': 'Spor Araba/Kupe',
+  'Coupé': 'Kupe',
+  'SUV/Geländewagen': 'SUV/Arazi Aracı',
+  'SUV': 'SUV',
+  'Geländewagen': 'Arazi Aracı',
+  'Van/Kleinbus': 'Minivan/Panelvan',
+  'Van': 'Minivan',
+  'Kleinbus': 'Minibüs',
+  'Andere': 'Diğer',
+  // Car Colors
+  'Blau': 'Mavi',
+  'Schwarz': 'Siyah',
+  'Weiß': 'Beyaz',
+  'Silber': 'Gümüş',
+  'Grau': 'Gri',
+  'Rot': 'Kırmızı',
+  'Grün': 'Yeşil',
+  'Gelb': 'Sarı',
+  'Orange': 'Turuncu',
+  'Braun': 'Kahverengi',
+  'Beige': 'Bej',
+  'Gold': 'Altın',
+  'Violett': 'Mor',
+  'Helleres Beigegrau': 'Açık Bej Gri',
+  'Kosmosschwarz Metallic': 'Kozmos Siyah Metalik',
+  // Car Interiors
+  'Stoff': 'Kumaş',
+  'Teilleder': 'Yarı Deri',
+  'Vollleder': 'Tam Deri',
+  'Alcantara': 'Alcantara',
+  'Velours': 'Kadife',
+  // Car Amenities
+  'Anhängerkupplung': 'Römork Demiri',
+  'Leichtmetallfelgen': 'Alaşım Jant',
+  'Radio/Tuner': 'Radyo',
+  'Tempomat': 'Hız Sabitleyici',
+  'Freisprecheinrichtung': 'Araç Telefonu / Hands-Free',
+  'Antiblockiersystem (ABS)': 'ABS',
+  'Klimaanlage': 'Klima',
+  'Navigationssystem': 'Navigasyon',
+  'Schiebedach': 'Sunroof',
+  'Sitzheizung': 'Koltuk Isıtma',
+  'Bluetooth': 'Bluetooth',
+  'Bordcomputer': 'Yol Bilgisayarı',
+  'Elektr. Fensterheber': 'Elektrikli Camlar',
+  'Elektr. Seitenspiegel': 'Elektrikli Aynalar',
+  'Elektr. Sitzeinstellung': 'Elektrikli Koltuk Ayarı',
+  'Head-Up Display': 'Head-Up Display',
+  'Isofix': 'Isofix',
+  'Kurvenlicht': 'Viraj Aydınlatma',
+  'Lichtsensor': 'Far Sensörü',
+  'Multifunktionslenkrad': 'Çok Fonksiyonlu Direksiyon',
+  'Nebelscheinwerfer': 'Sis Farları',
+  'Nichtraucher-Fahrzeug': 'Sigara İçilmemiş',
+  'Panorama-Dach': 'Panoramik Cam Tavan',
+  'Regensensor': 'Yağmur Sensörü',
+  'Scheckheftgepflegt': 'Bakımlı (Servis Bakımlı)',
+  'Servolenkung': 'Hidrolik Direksiyon',
+  'Sitzbelüftung': 'Koltuk Soğutma',
+  'Skisack': 'Kayak Torbası',
+  'Sommerreifen': 'Yaz Lastikleri',
+  'Soundsystem': 'Ses Sistemi',
+  'Sportfahrwerk': 'Spor Süspansiyon',
+  'Sportpaket': 'Spor Paket',
+  'Sportsitze': 'Spor Koltuklar',
+  'Sprachsteuerung': 'Sesli Kontrol',
+  'Spurhalteassistent': 'Şerit Takip Asistanı',
+  'Standheizung': 'Webasto / Park Isıtıcı',
+  'Start/Stopp-Automatik': 'Start/Stop',
+  'Tagfahrlicht': 'Gündüz Farları',
+  'Tempomat': 'Hız Sabitleyici',
+  'Totwinkel-Assistent': 'Kör Nokta Asistanı',
+  'Touchscreen': 'Dokunmatik Ekran',
+  'Traktionskontrolle': 'Çekiş Kontrolü',
+  'Tuner/Radio': 'Radyo',
+  'TV': 'TV',
+  'USB': 'USB',
+  'Verkehrszeichenerkennung': 'Trafik İşareti Tanıma',
+  'Volldigitales Kombiinstrument': 'Hayalet Gösterge',
+  'Winterpaket': 'Kış Paketi',
+  'Winterreifen': 'Kış Lastikleri',
+  'Xenonscheinwerfer': 'Xenon Farlar',
+  'Zentralverriegelung': 'Merkezi Kilit',
+  'H-Zulassung': 'Klasik Araç (H Plaka)',
+  'Originalzustand': 'Orijinal Durum',
+  'Radio': 'Radyo',
+  'AMG-Line': 'AMG Paket',
+  'Night-Paket': 'Gece Paketi',
+  'LED High Performance': 'Yüksek Performans LED',
+  'Park-Assistent': 'Park Asistanı',
+  'MBUX Multimediasystem': 'MBUX Multimedya'
+};
+
+const translateVal = (val) => amenityTranslations[val] || val;
+
+// Professional Print Flyer (Sales Sign) Component - Optimized for multi-page printing
+const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   if (!listing) return null;
 
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(window.location.href)}`;
-  const displayImage = Array.isArray(listing.images) && listing.images.length > 0 ? listing.images[0] : (listing.image || '');
-  const addressLine1 = listing.show_location === true ? (listing.address || '') : '';
-  const addressLine2 = `${listing.district ? listing.district + ', ' : ''}${listing.city || ''}`.trim();
+  const displayImage = Array.isArray(listing.images) && listing.images.length > 0
+    ? listing.images[0]
+    : (listing.image || '');
+
+  // Current URL for QR code
+  const currentUrl = window.location.href;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
+
+  const renderDetailRow = (label, value) => {
+    if (value === undefined || value === null || value === '') return null;
+    return (
+      <div className="flex justify-between items-center py-1 border-b border-gray-100 last:border-0">
+        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{label}</span>
+        <span className="text-sm font-black text-gray-900 text-right ml-2">{value}</span>
+      </div>
+    );
+  };
 
   return (
-    <div className="hidden print:block print-flyer bg-white text-gray-900 font-sans h-[275mm] w-[210mm] relative overflow-hidden box-border border-0">
+    <div className="hidden print:block print-flyer bg-white text-gray-900 font-sans relative overflow-visible box-border border-0 p-8 max-w-[21cm] mx-auto">
       {/* Header with Title and Price - Compact */}
       <div className="flex justify-between items-start border-b-4 border-red-600 pb-4 mb-6">
         <div className="flex-1 pr-4">
@@ -9992,138 +7721,202 @@ const PrintFlyer = ({ listing, sellerProfile }) => {
             {listing.title}
           </h1>
           <div className="text-[12px] text-gray-500 font-bold uppercase tracking-widest">
-            No: {listing.listing_number || listing.id.slice(0, 8)} | {new Date().toLocaleDateString('tr-TR')}
+            No: {listing.listing_number || (listing.id && listing.id.slice(0, 8)) || '---'} | {new Date().toLocaleDateString('tr-TR')}
           </div>
         </div>
         <div className="bg-red-600 text-white px-6 py-4 rounded-xl text-center shadow-lg flex-shrink-0 min-w-[150px]">
           <div className="text-[12px] font-bold uppercase tracking-widest leading-none mb-2 opacity-90">Fiyat</div>
-          <div className="text-5xl font-black tabular-nums leading-none">{listing.price}₺</div>
+          <div className="text-5xl font-black tabular-nums leading-none">
+            {listing.category !== 'Jobs' && listing.category !== 'İş İlanları' && (
+              listing.price_type === 'giveaway' || listing.price === 0
+                ? 'Ücretsiz'
+                : `${listing.price || '---'}₺`
+            )}
+          </div>
+          {listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">{t.addListing.options.negotiable}</div>}
         </div>
       </div>
 
       <div className="grid grid-cols-12 gap-8">
-        {/* Left Side: Image and Description */}
-        <div className="col-span-8">
-          <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm mb-4 max-h-[300px]">
-            <img src={displayImage} alt={listing.title} className="w-full h-full object-cover" />
+        {/* Main Content Area */}
+        <div className="col-span-12">
+          <div className="grid grid-cols-12 gap-8 mb-6">
+            <div className="col-span-7">
+              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm max-h-[400px]">
+                <img src={displayImage} alt={listing.title} className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div className="col-span-5 flex flex-col gap-4">
+              {/* Kontakt Section */}
+              <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <h3 className="text-sm font-black uppercase tracking-tight mb-3 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  {t.common.contact}
+                </h3>
+                <div className="space-y-2.5">
+                  <div>
+                    <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.seller}</div>
+                    <div className="text-sm font-black truncate">{listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common.privateSeller}</div>
+                  </div>
+
+                  {!hideContact && (
+                    <div>
+                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common.phone}</div>
+                      <div className="text-lg font-black text-red-600">
+                        {listing.show_phone_number === true ? (listing.contact_phone || sellerProfile?.phone || t.common.notSpecified) : t.common.notSpecified}
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common.location}</div>
+                    <div className="text-[11px] font-bold leading-tight">
+                      <div className="text-gray-900 line-clamp-1">{listing.show_location === true && listing.address ? listing.address : ''}</div>
+                      <div className="text-gray-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Code Section */}
+              {!hideContact && (
+                <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-center">
+                  <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mb-1">Detaylı Bilgi İçin Tara</div>
+                  <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center p-1">
+                    <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
+                  </div>
+                  <div className="text-[8px] font-black text-red-600 uppercase">exvitrin.com</div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-6">
             <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-2">
               {t.productDetail.description}
             </h2>
-            <div className="text-[12px] text-gray-700 whitespace-pre-wrap leading-snug line-clamp-[12] mb-4">
+
+            {/* 5199 Animal Law Disclaimer for Pets category */}
+            {(listing.category === 'haustiere' || listing.category === 'Evcil Hayvanlar') && (
+              <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                <div className="flex gap-3">
+                  <svg className="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <p className="text-xs text-red-800 leading-relaxed font-medium">
+                    {t.footer.animalLawDisclaimer}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Real Estate Disclaimer */}
+            {(listing.category === 'immobilien' || listing.category === 'Emlak') && (
+              <div className="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                <div className="flex gap-3">
+                  <svg className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <p className="text-xs text-blue-800 leading-relaxed font-medium">
+                    {t.footer.realEstateDisclaimer}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Vehicle Disclaimer */}
+            {(listing.category === 'auto, rad & boot' || listing.category === 'Otomobil, Bisiklet & Tekne') && (
+              <div className="mb-4 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-lg">
+                <div className="flex gap-3">
+                  <svg className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <p className="text-xs text-orange-800 leading-relaxed font-medium">
+                    {t.footer.vehicleDisclaimer}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="text-[13px] text-gray-700 whitespace-pre-wrap leading-relaxed">
               {listing.description}
             </div>
-
-            {/* Internal Branding */}
-            <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full">
-              <div className="flex items-center gap-1">
-                <span className="text-red-600 text-[10px] font-black">LokalPazar</span>
-                <span>{t.common.onlineMarketplace}</span>
-              </div>
-              <div>www.lokalpazar.com</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Info Sidebar */}
-        <div className="col-span-4 flex flex-col gap-4">
-          {/* Kontakt Section */}
-          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-            <h3 className="text-sm font-black uppercase tracking-tight mb-3 flex items-center gap-2">
-              <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              {t.common.contact}
-            </h3>
-            <div className="space-y-2.5">
-              <div>
-                <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.seller}</div>
-                <div className="text-sm font-black truncate">{listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common.privateSeller}</div>
-              </div>
-              <div>
-                <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.common.phone}</div>
-                <div className="text-base font-black text-red-600">
-                  {listing.show_phone_number === true ? (listing.contact_phone || sellerProfile?.phone || t.common.notSpecified) : t.common.notSpecified}
-                </div>
-              </div>
-              <div>
-                <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.common.location}</div>
-                <div className="text-[11px] font-bold leading-tight">
-                  <div className="text-gray-900 line-clamp-1">{listing.show_location === true && listing.address ? listing.address : ''}</div>
-                  <div className="text-gray-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Details Section */}
-          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-            <h3 className="text-sm font-black uppercase tracking-tight mb-3 flex items-center gap-2">
-              <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+          {/* Technical Details Grid */}
+          <div className="mb-6">
+            <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-3">
               {t.productDetail.details}
-            </h3>
-            <div className="space-y-2.5">
-              {(listing.katzen_art || listing.art) && (
-                <div>
-                  <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.art}</div>
-                  <div className="text-sm font-black line-clamp-1">{listing.katzen_art || listing.art}</div>
-                </div>
-              )}
-              {(listing.katzen_alter || listing.alter) && (
-                <div>
-                  <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.age}</div>
-                  <div className="text-sm font-black line-clamp-1">{listing.katzen_alter || listing.alter}</div>
-                </div>
-              )}
-              {listing.katzen_geimpft && (
-                <div>
-                  <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.vaccinatedAndChipped}</div>
-                  <div className="text-sm font-black">{listing.katzen_geimpft}</div>
-                </div>
-              )}
-              {listing.katzen_erlaubnis && (
-                <div>
-                  <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.officialPermission}</div>
-                  <div className="text-sm font-black">{listing.katzen_erlaubnis}</div>
-                </div>
-              )}
-              {!listing.katzen_art && listing.brand && (
-                <div>
-                  <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.addListing.brand}</div>
-                  <div className="text-sm font-black">{listing.brand}</div>
-                </div>
-              )}
+            </h2>
+            <div className="grid grid-cols-2 gap-x-12 gap-y-1">
+              {/* Common Fields */}
+              {renderDetailRow(t.productDetail.condition, translateVal(listing.condition))}
+              {renderDetailRow(t.addListing.brand, listing.marke || listing.car_brand || listing.brand || listing.carBrand)}
+              {renderDetailRow(t.productDetail.model, listing.modell || listing.car_model || listing.carModel)}
+
+              {/* Car Specific */}
+              {renderDetailRow(t.productDetail.mileage, (listing.kilometerstand || listing.kilometer || listing.kilometerStand) ? `${(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km` : null)}
+              {renderDetailRow(t.productDetail.firstRegistration, listing.erstzulassung || listing.bj)}
+              {renderDetailRow(t.productDetail.fuelType, listing.kraftstoff || listing.fuel_type)}
+              {renderDetailRow(t.productDetail.power, (listing.leistung || listing.power) ? `${listing.leistung || listing.power} PS` : null)}
+              {renderDetailRow(t.productDetail.transmission, listing.getriebe)}
+              {renderDetailRow(t.productDetail.exteriorColor, translateVal(listing.exterior_color))}
+              {renderDetailRow(t.productDetail.interiorMaterial, translateVal(listing.interior_material))}
+              {renderDetailRow(t.productDetail.huUntil, listing.hu)}
+
+              {/* Real Estate Specific */}
+              {renderDetailRow(t.productDetail.propertyType, translateVal(listing.wohnungstyp || listing.haustyp || listing.objektart))}
+              {renderDetailRow(t.productDetail.livingSpace, listing.living_space ? `${listing.living_space} m²` : null)}
+              {renderDetailRow(t.productDetail.rooms, listing.rooms)}
+              {renderDetailRow(t.productDetail.floor, listing.floor)}
+              {renderDetailRow(t.productDetail.constructionYear, listing.construction_year)}
+              {renderDetailRow(t.productDetail.plotArea, listing.plot_area ? `${listing.plot_area} m²` : null)}
+              {renderDetailRow(t.productDetail.availableFrom, listing.available_from)}
+
+              {/* Pet Specific */}
+              {renderDetailRow(t.productDetail.art, listing.katzen_art || listing.dog_art || listing.pet_art || listing.art)}
+              {renderDetailRow(t.productDetail.age, listing.katzen_alter || listing.pet_age || listing.alter)}
+              {renderDetailRow(t.productDetail.vaccinatedAndChipped, listing.katzen_geimpft || listing.vaccinated)}
+              {renderDetailRow(t.productDetail.officialPermission, listing.katzen_erlaubnis || listing.permission)}
+
+              {/* Clothes Specific */}
+              {renderDetailRow(t.addListing.size, listing.size || listing.baby_kinderkleidung_size || listing.baby_kinderschuhe_size || listing.damenbekleidung_size)}
+              {renderDetailRow(t.addListing.color, listing.color || listing.baby_kinderkleidung_color || listing.baby_kinderschuhe_color || listing.damenbekleidung_color)}
+
+              {/* Item Art (General) */}
+              {renderDetailRow(t.productDetail.art, listing.audio_hifi_art || listing.dienstleistungen_elektronik_art || listing.foto_art || listing.handy_telefon_art || listing.haushaltsgeraete_art || listing.konsolen_art || listing.notebooks_art || listing.pc_zubehoer_software_art || listing.pcs_art || listing.tablets_reader_art || listing.tv_video_art || listing.videospiele_art || listing.art_type || listing.autoteile_art || listing.boote_art || listing.motorrad_art || listing.wohnwagen_art || listing.beauty_gesundheit_art || listing.damenbekleidung_art || listing.gartenzubehoer_art || listing.kueche_esszimmer_art || listing.heimwerken_art || listing.schlafzimmer_art || listing.bike_art || listing.wohnzimmer_art)}
             </div>
           </div>
 
-          {/* QR Code Section - More space efficient */}
-          <div className="bg-gray-900 text-white p-4 rounded-2xl text-center shadow-xl flex flex-col items-center">
-            <div className="bg-white p-2 rounded-xl inline-block mb-3">
-              <img src={qrUrl} alt="QR Code" className="w-20 h-20" />
+          {/* Amenities & Features */}
+          {(listing.car_amenities?.length > 0 || listing.amenities?.length > 0 || listing.general_features?.length > 0) && (
+            <div className="mb-6">
+              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-3">
+                {t.productDetail.amenities} & {t.productDetail.features}
+              </h2>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {[...(listing.car_amenities || []), ...(listing.amenities || []), ...(listing.general_features || [])].map((item, i) => (
+                  <div key={i} className="flex items-center gap-1.5 text-[11px] font-bold text-gray-700">
+                    <svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {translateVal(item)}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="text-[12px] font-black uppercase mb-1">{t.productDetail.detailsOnline}</div>
-            <div className="text-[8px] text-gray-400 font-bold leading-tight uppercase tracking-tighter">{t.productDetail.scanToView}</div>
-          </div>
-        </div>
-      </div>
+          )}
 
-      {/* Tear-off Tabs (Abreißzettel) */}
-      <div className="absolute bottom-0 left-0 right-0 border-t-2 border-dashed border-gray-300 bg-white no-break">
-        <div className="flex h-36 overflow-hidden" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-          {[...Array(10)].map((_, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center justify-between py-2 border-r border-dashed border-gray-300 last:border-r-0" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-              <div style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }} className="text-[11px] font-black text-red-600 rotate-180">
-                {listing.phone || sellerProfile?.phone || t.common.notSpecified}
-              </div>
-              <div className="bg-white p-1 border border-gray-100 rounded mt-1">
-                <img src={qrUrl} alt="QR" className="w-12 h-12" />
-              </div>
+          {/* Internal Branding */}
+          <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
+            <div className="flex items-center gap-1">
+              <span className="text-red-600 text-[10px] font-black">ExVitrin</span>
+              <span>{t.common.onlineMarketplace}</span>
             </div>
-          ))}
+            <div>www.exvitrin.com</div>
+          </div>
         </div>
       </div>
     </div>
@@ -10133,149 +7926,8 @@ const PrintFlyer = ({ listing, sellerProfile }) => {
 export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [printHideContact, setPrintHideContact] = useState(false);
 
-  /* Translations for Amenities and Features */
-  const amenityTranslations = {
-    // Residential Amenities
-    'Möbliert/Teilmöbliert': 'Mobilyalı/Kısmen Mobilyalı',
-    'Balkon': 'Balkon',
-    'Terrasse': 'Teras',
-    'Einbauküche': 'Ankastre Mutfak',
-    'Badewanne': 'Küvet',
-    'Gäste-WC': 'Misafir Tuvaleti',
-    'Stufenloser Zugang': 'Engelsiz Erişim',
-    'Fußbodenheizung': 'Yerden Isıtma',
-    'WLAN': 'Wi-Fi',
-    'Kühlschrank': 'Buzdolabı',
-    'Waschmaschine': 'Çamaşır Makinesi',
-    'Spülmaschine': 'Bulaşık Makinesi',
-    'TV': 'Televizyon',
-    // Commercial Amenities
-    'Starkstrom': 'Yüksek Akım',
-    'Klimaanlage': 'Klima',
-    'DV-Verkabelung': 'DV Kablolama',
-    'Parkplätze vorhanden': 'Otopark Mevcut',
-    'Küche': 'Mutfak',
-    // General Features
-    'Altbau': 'Eski Yapı',
-    'Neubau': 'Yeni Yapı',
-    'Aufzug': 'Asansör',
-    'Keller': 'Bodrum',
-    'Dachboden': 'Çatı Katı',
-    'Garage/Stellplatz': 'Garaj/Park Yeri',
-    'Garten/-mitnutzung': 'Bahçe/Ortak Bahçe',
-    'Haustiere erlaubt': 'Evcil Hayvan İzni',
-    'WG-geeignet': 'Paylaşımlı Eve Uygun',
-    'Denkmalobjekt': 'Tarihi Eser/Anıt',
-    'Aktuell vermietet': 'Halen Kirada',
-    // Other values
-    'Garage': 'Garaj',
-    'Außenstellplatz': 'Açık Otopark',
-    'Möglich': 'Mümkün',
-    'Nicht möglich': 'Mümkün Değil',
-    'Provisionsfrei': 'Komisyonsuz',
-    'Mit Provision': 'Komisyonlu',
-    'Inland': 'Yurt İçi',
-    'Ausland': 'Yurt Dışı',
-    'befristet': 'Süreli',
-    'unbefristet': 'Süresiz',
-    'Gesamte Unterkunft': 'Tüm Konut',
-    'Privatzimmer': 'Özel Oda',
-    'Gemeinsames Zimmer': 'Paylaşımlı Oda',
-    'Einfamilienhaus': 'Müstakil Ev',
-    'Mehrfamilienhaus': 'Çok Aileli Ev',
-    'Reihenhaus': 'Sıra Ev',
-    'Doppelhaushälfte': 'İkiz Ev',
-    'Bungalow': 'Bungalov',
-    'Bauernhaus': 'Çiftlik Evi',
-    'Villa': 'Villa',
-    'Schloss': 'Şato',
-    'Sonstige': 'Diğer',
-    // Car Colors
-    'Blau': 'Mavi',
-    'Schwarz': 'Siyah',
-    'Weiß': 'Beyaz',
-    'Silber': 'Gümüş',
-    'Grau': 'Gri',
-    'Rot': 'Kırmızı',
-    'Grün': 'Yeşil',
-    'Gelb': 'Sarı',
-    'Orange': 'Turuncu',
-    'Braun': 'Kahverengi',
-    'Beige': 'Bej',
-    'Gold': 'Altın',
-    'Violett': 'Mor',
-    'Helleres Beigegrau': 'Açık Bej Gri',
-    'Kosmosschwarz Metallic': 'Kozmos Siyah Metalik',
-    // Car Interiors
-    'Stoff': 'Kumaş',
-    'Teilleder': 'Yarı Deri',
-    'Vollleder': 'Tam Deri',
-    'Alcantara': 'Alcantara',
-    'Velours': 'Kadife',
-    // Car Amenities
-    'Anhängerkupplung': 'Römork Demiri',
-    'Leichtmetallfelgen': 'Alaşım Jant',
-    'Radio/Tuner': 'Radyo',
-    'Tempomat': 'Hız Sabitleyici',
-    'Freisprecheinrichtung': 'Araç Telefonu / Hands-Free',
-    'Antiblockiersystem (ABS)': 'ABS',
-    'Klimaanlage': 'Klima',
-    'Navigationssystem': 'Navigasyon',
-    'Schiebedach': 'Sunroof',
-    'Sitzheizung': 'Koltuk Isıtma',
-    'Bluetooth': 'Bluetooth',
-    'Bordcomputer': 'Yol Bilgisayarı',
-    'Elektr. Fensterheber': 'Elektrikli Camlar',
-    'Elektr. Seitenspiegel': 'Elektrikli Aynalar',
-    'Elektr. Sitzeinstellung': 'Elektrikli Koltuk Ayarı',
-    'Head-Up Display': 'Head-Up Display',
-    'Isofix': 'Isofix',
-    'Kurvenlicht': 'Viraj Aydınlatma',
-    'Lichtsensor': 'Far Sensörü',
-    'Multifunktionslenkrad': 'Çok Fonksiyonlu Direksiyon',
-    'Nebelscheinwerfer': 'Sis Farları',
-    'Nichtraucher-Fahrzeug': 'Sigara İçilmemiş',
-    'Panorama-Dach': 'Panoramik Cam Tavan',
-    'Regensensor': 'Yağmur Sensörü',
-    'Scheckheftgepflegt': 'Bakımlı (Servis Bakımlı)',
-    'Servolenkung': 'Hidrolik Direksiyon',
-    'Sitzbelüftung': 'Koltuk Soğutma',
-    'Skisack': 'Kayak Torbası',
-    'Sommerreifen': 'Yaz Lastikleri',
-    'Soundsystem': 'Ses Sistemi',
-    'Sportfahrwerk': 'Spor Süspansiyon',
-    'Sportpaket': 'Spor Paket',
-    'Sportsitze': 'Spor Koltuklar',
-    'Sprachsteuerung': 'Sesli Kontrol',
-    'Spurhalteassistent': 'Şerit Takip Asistanı',
-    'Standheizung': 'Webasto / Park Isıtıcı',
-    'Start/Stopp-Automatik': 'Start/Stop',
-    'Tagfahrlicht': 'Gündüz Farları',
-    'Tempomat': 'Hız Sabitleyici',
-    'Totwinkel-Assistent': 'Kör Nokta Asistanı',
-    'Touchscreen': 'Dokunmatik Ekran',
-    'Traktionskontrolle': 'Çekiş Kontrolü',
-    'Tuner/Radio': 'Radyo',
-    'TV': 'TV',
-    'USB': 'USB',
-    'Verkehrszeichenerkennung': 'Trafik İşareti Tanıma',
-    'Volldigitales Kombiinstrument': 'Hayalet Gösterge',
-    'Winterpaket': 'Kış Paketi',
-    'Winterreifen': 'Kış Lastikleri',
-    'Xenonscheinwerfer': 'Xenon Farlar',
-    'Zentralverriegelung': 'Merkezi Kilit',
-    'H-Zulassung': 'Klasik Araç (H Plaka)',
-    'Originalzustand': 'Orijinal Durum',
-    'Radio': 'Radyo',
-    'AMG-Line': 'AMG Paket',
-    'Night-Paket': 'Gece Paketi',
-    'LED High Performance': 'Yüksek Performans LED',
-    'Park-Assistent': 'Park Asistanı',
-    'MBUX Multimediasystem': 'MBUX Multimedya'
-  };
-
-  const translateVal = (val) => amenityTranslations[val] || val;
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   // State for listing data
@@ -10314,6 +7966,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const [sellerRecentListings, setSellerRecentListings] = useState([]);
   const [categoryListings, setCategoryListings] = useState([]);
   const [sellerRating, setSellerRating] = useState(null);
+  const [sellerRatings, setSellerRatings] = useState([]);
   const [selectedPromotions, setSelectedPromotions] = useState([]);
   const { user } = useAuth();
   const isMobile = useIsMobile();
@@ -10322,8 +7975,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     { id: 'bump', name: 'Yukarı Çıkar', price: '4,99', duration: 1, effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
     { id: 'highlight', name: 'Öne Çıkan', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
     { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '16,99', duration: 7, effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
-    { id: 'top', name: 'En Üst İlan', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
-    { id: 'galerie', name: 'Galeri', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
+    { id: 'z_premium', name: 'Premium', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
+    { id: 'galerie', name: 'Vitrin', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
   ];
 
   // Fetch listing from Supabase
@@ -10343,7 +7996,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           data.erstzulassung = '07/1970';
           data.kraftstoff = 'Benzin';
           data.leistung = 44;
-          data.getriebe = 'Schaltgetriebe';
+          data.getriebe = 'Manuel';
           data.car_brand = 'Volkswagen';
           data.car_model = 'Käfer';
           data.hubraum = 1493;
@@ -10370,7 +8023,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           data.erstzulassung = '06/2021';
           data.kraftstoff = 'Benzin';
           data.leistung = 163;
-          data.getriebe = 'Automatik';
+          data.getriebe = 'Otomatik';
           data.car_brand = 'Mercedes Benz';
           data.car_model = 'A 200';
           data.hubraum = 1332;
@@ -10488,9 +8141,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     if (listing?.user_id) {
       const loadSellerRating = async () => {
         try {
-          const { getUserRating } = await import('./api/ratings');
+          const { getUserRating, getRatings } = await import('./api/ratings');
           const rating = await getUserRating(listing.user_id);
           setSellerRating(rating);
+
+          // Also fetch the list of ratings
+          const ratingsList = await getRatings(listing.user_id);
+          setSellerRatings(ratingsList || []);
         } catch (error) {
           console.error('Error loading seller rating:', error);
         }
@@ -10505,6 +8162,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     if (listing?.user_id) {
       const loadSellerListings = async () => {
         try {
+          const { supabase } = await import('./lib/supabase');
           const { data, error } = await supabase
             .from('listings')
             .select('*')
@@ -10526,17 +8184,54 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
   // Load 10 category-related listings
   useEffect(() => {
-    if (listing?.category) {
+    if (listing?.id) {
       const loadCategoryListings = async () => {
         try {
           const { fetchListings } = await import('./api/listings');
-          const data = await fetchListings({ category: listing.category }, { count: false });
-          // Filter out current listing and seller's listings, get 10 random
-          const relatedListings = data
-            .filter(l => l.id !== listing.id && l.user_id !== listing.user_id)
+
+          // Determine search parameters
+          const mainCat = listing.category;
+          const subCat = listing.sub_category;
+
+          // Fetch from both category and subcategory for better coverage
+          const [catData, subCatData] = await Promise.all([
+            fetchListings({ category: mainCat }, { count: false }).catch(() => []),
+            subCat ? fetchListings({ subCategory: subCat }, { count: false }).catch(() => []) : Promise.resolve([])
+          ]);
+
+          let combinedData = [...(catData || []), ...(subCatData || [])];
+
+          // STAGE 2: Broad category fallback
+          if (combinedData.length <= 1 && (mainCat === 'Otomobiller' || mainCat?.includes('Otomobil'))) {
+            const autoData = await fetchListings({ category: 'Otomobil, Bisiklet & Tekne' }, { count: false }).catch(() => []);
+            combinedData = [...combinedData, ...(autoData || [])];
+          }
+
+          // STAGE 3: Final fallback to general listings
+          if (combinedData.length <= 1) {
+            const latestData = await fetchListings({}, { count: false }).catch(() => []);
+            combinedData = [...combinedData, ...(latestData || [])];
+          }
+
+          // Filter out duplicates and current listing
+          const seenIds = new Set();
+          const uniqueResults = combinedData.filter(item => {
+            if (!item || seenIds.has(item.id)) return false;
+            seenIds.add(item.id);
+            return item.id !== listing.id;
+          });
+
+          // Mix with priority for other sellers
+          const otherSellersListings = uniqueResults.filter(l => l.user_id !== listing.user_id);
+          const sameSellerListings = uniqueResults.filter(l => l.user_id === listing.user_id);
+          const pool = [...otherSellersListings, ...sameSellerListings];
+
+          const randomized = pool
+            .slice(0, 20)
             .sort(() => 0.5 - Math.random())
             .slice(0, 10);
-          setCategoryListings(relatedListings);
+
+          setCategoryListings(randomized);
         } catch (error) {
           console.error('Error loading category listings:', error);
         }
@@ -10544,7 +8239,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
       loadCategoryListings();
     }
-  }, [listing]);
+  }, [listing?.id, listing?.category, listing?.sub_category]);
 
   // Fetch favorite count
   useEffect(() => {
@@ -10589,7 +8284,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+          <LoadingSpinner size="medium" className="mb-4" />
           <p className="text-gray-600">İlan yükleniyor...</p>
         </div>
       </div>
@@ -10666,11 +8361,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
       alert(t.sellerProfile.messageError);
     }
   };
-
   const favorite = isFavorite ? isFavorite(listing.id) : false;
-
-  // TODO: Fetch similar listings from Supabase based on category
-  const similarListings = [];
 
   const handleShare = () => {
     const url = window.location.href;
@@ -10713,7 +8404,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     e.preventDefault();
 
     if (!user) {
-      alert('Bitte melden Sie sich an, um eine Nachricht zu senden.');
+      alert(t.sellerProfile.loginToMessage);
       return;
     }
 
@@ -10728,12 +8419,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         sender_phone: contactPhone
       });
 
-      alert('Nachricht erfolgreich gesendet!');
+      alert(t.sellerProfile.messageSuccess);
       setContactMessage('');
       setShowContactForm(false);
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut.');
+      alert(t.sellerProfile.messageError);
     }
   };
 
@@ -10851,7 +8542,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   };
 
   const handleDeleteDetail = async () => {
-    if (window.confirm(`Möchten Sie diese Anzeige wirklich löschen?\n\n${listing.title}\n\nDiese Aktion kann nicht rückgängig gemacht werden!`)) {
+    if (window.confirm(t.productDetail.deleteConfirm.replace('{title}', listing.title))) {
       try {
         const { supabase } = await import('./lib/supabase');
         const { error } = await supabase
@@ -10864,7 +8555,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         navigate('/profile?tab=listings');
       } catch (error) {
         console.error('Error deleting listing:', error);
-        alert('Fehler beim Löschen der Anzeige');
+        alert('İlan silinirken hata oluştu');
       }
     }
   };
@@ -10890,7 +8581,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           }, user.id);
         }
 
-        alert(`Vielen Dank! Die gewählten Pakete wurden aktiviert.`);
+        alert(`Teşekkür ederiz! Seçilen paketler aktif edildi.`);
         setSelectedPromotions([]);
         window.location.reload();
       } catch (error) {
@@ -10916,7 +8607,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   return (
     <>
       {/* Print-Only Flyer */}
-      <PrintFlyer listing={listing} sellerProfile={sellerProfile} />
+      <PrintFlyer listing={listing} sellerProfile={sellerProfile} hideContact={printHideContact} />
 
       {/* Web-Only Styles and Content */}
       {/* Safe Print Styles - Optimized for Single Page */}
@@ -10939,20 +8630,17 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             display: none !important;
           }
 
-          /* The Flyer - Locked to top on one page */
+          /* The Flyer - Full Content Multi-page 지원 */
           .print-flyer {
             display: block !important;
             visibility: visible !important;
             position: relative !important;
-            width: 210mm !important;
-            height: 275mm !important; /* Safe height to avoid margins pushing to page 2 */
-            margin: 0 auto !important;
-            padding: 10mm !important;
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 15mm !important;
             background: white !important;
             box-sizing: border-box !important;
-            page-break-after: avoid !important;
-            page-break-inside: avoid !important;
-            overflow: hidden !important;
           }
 
           #root, .App {
@@ -10970,7 +8658,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               onClick={() => navigate('/')}
               className="text-red-500 hover:text-red-600 font-medium whitespace-nowrap"
             >
-              Kleinbazaar
+              ExVitrin
             </button>
             <span className="text-gray-400">›</span>
             <button
@@ -11090,7 +8778,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </button>
 
                   <button
-                    onClick={() => window.print()}
+                    onClick={() => {
+                      setPrintHideContact(true);
+                      setTimeout(() => window.print(), 100);
+                    }}
                     className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-gray-200 hover:border-purple-500 hover:shadow-lg transition-all group"
                   >
                     <svg className="w-5 h-5 text-gray-400 group-hover:text-purple-500 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -11243,17 +8934,30 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           {t.productDetail.reservedLabel}
                         </div>
                       )}
+                      {/* Vitrin Badge - Inclusive check */}
+                      {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.trim().toLowerCase())) && (
+                        <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg border border-white/20 flex items-center gap-2">
+                          <span>⭐ VİTRİN</span>
+                        </div>
+                      )}
 
-                      {/* TOP Badge */}
-                      {listing?.is_top && (
-                        <div className="bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center animate-pulse">
-                          <span>⭐ TOP</span>
 
+                      {/* Premium Badge */}
+                      {(listing?.package_type?.toLowerCase() === 'premium' || listing?.package_type?.toLowerCase() === 'z_premium') && (
+                        <div className="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.5)] border border-white/20 flex items-center gap-2">
+                          <span>👑 PREMIUM</span>
+                        </div>
+                      )}
+
+                      {/* Multi-Bump Badge */}
+                      {(listing?.package_type?.toLowerCase() === 'multi-bump' || listing?.package_type?.toLowerCase() === 'z_multi_bump') && (
+                        <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg border border-white/20 flex items-center gap-2">
+                          <span>⚡ GÜNLÜK YUKARI</span>
                         </div>
                       )}
 
                       {/* Öne Çıkan Badge */}
-                      {listing?.is_highlighted && !listing?.is_top && (
+                      {listing?.is_highlighted && !listing?.is_top && !listing?.is_gallery && (
                         <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
                           <span>✨ Öne Çıkan</span>
 
@@ -11326,7 +9030,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     {/* Fiyat - En Üstte */}
                     {listing.sub_category !== 'Ausbildung' && listing.sub_category !== 'Bau, Handwerk & Produktion' && listing.category !== 'Jobs' && (
                       <div className="mb-4">
-                        <div className="text-4xl font-bold text-gray-900 mb-1">
+                        <div className="text-2xl font-bold text-gray-900 mb-1">
                           {listing.price_type === 'giveaway' || listing.price === 0
                             ? t.productDetail.giveaway
                             : typeof listing.price === 'number'
@@ -11347,7 +9051,6 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                             </svg>
-                            <span className="font-medium">{favoriteCount}</span>
                             <span>{favoriteCount === 1 ? t.productDetail.personFavorited : t.productDetail.peopleFavorited.replace('{count}', favoriteCount)}</span>
                           </div>
                         )}
@@ -11356,22 +9059,22 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                     {/* Başlık */}
                     <div>
-                      <h1 className="text-xl font-bold text-gray-900 leading-tight">
+                      <h1 className="text-lg font-bold text-gray-900 leading-tight">
                         {listing.title}
                       </h1>
                     </div>
                   </div>
 
                   {/* General Info Grid - Below Title/Price */}
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100 mb-2">
-                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b border-gray-100 mb-12">
+                    <div className="flex justify-between">
                       <span className="text-gray-500">{t.productDetail.postedOn}</span>
                       <span className="font-semibold text-gray-900">
                         {listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
                       </span>
                     </div>
                     {listing.condition && (
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.addListing.condition || 'Durum'}</span>
                         <span className="font-semibold text-gray-900">
                           {listing.condition === 'defekt' ? (t.addListing?.options?.defective || 'Arızalı') :
@@ -11385,11 +9088,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </span>
                       </div>
                     )}
-                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="flex justify-between">
                       <span className="text-gray-500">{t.productDetail.listingId}</span>
                       <span className="font-semibold text-gray-900">{generateListingNumber(listing)}</span>
                     </div>
-                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="flex justify-between">
                       <span className="text-gray-500">{t.productDetail.location}</span>
                       <div className="text-right">
                         <span className="font-semibold text-gray-900 block">
@@ -11400,12 +9103,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </span>
                       </div>
                     </div>
-                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="flex justify-between">
                       <span className="text-gray-500">{t.productDetail.views}</span>
                       <span className="font-semibold text-gray-900">{(listing.views || 0).toLocaleString('tr-TR')}</span>
                     </div>
                     {listing.versand_art && (
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.addListing.shipping}</span>
                         <span className="font-semibold text-gray-900">
                           {listing.versand_art === 'Versand möglich' ? t.addListing.options.shipping :
@@ -11464,8 +9167,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {((listing.kilometerstand !== undefined && listing.kilometerstand !== null) || (listing.kilometer !== undefined && listing.kilometer !== null) || listing.erstzulassung || listing.bj || listing.leistung || listing.power || listing.vehicle_type || listing.fahrzeugtyp || listing.hu ||
                   ['Autos', 'Motorräder & Motorroller', 'Wohnwagen & Wohnmobile', 'Nutzfahrzeuge & Anhänger', 'Weiteres Auto, Rad & Boot'].includes(listing.subCategory) ||
                   ['Autos', 'Motorräder & Motorroller', 'Wohnwagen & Wohnmobile', 'Nutzfahrzeuge & Anhänger', 'Weiteres Auto, Rad & Boot'].includes(listing.sub_category)) && (
-                    <div className="mb-12 bg-gray-50 rounded-xl border-2 border-gray-100 shadow-sm overflow-hidden">
-                      <div className="p-8">
+                    <div className="mb-12">
+                      <div className="pb-8 mb-8">
                         <div className="mb-8">
                           <h2 className="text-2xl font-bold text-gray-900">
                             {t.productDetail.vehicleDetails}
@@ -11475,91 +9178,91 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {/* Specs Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-5 text-sm mb-8">
                           {(listing.marke || listing.car_brand || listing.carBrand) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.manufacturer}</span>
                               <span className="font-bold text-gray-900">{listing.marke || listing.car_brand || listing.carBrand}</span>
                             </div>
                           )}
                           {(listing.modell || listing.car_model || listing.carModel) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.model}</span>
                               <span className="font-bold text-gray-900">{listing.modell || listing.car_model || listing.carModel}</span>
                             </div>
                           )}
                           {(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.propertyType || t.productDetail.art}</span>
-                              <span className="font-bold text-gray-900">{listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType}</span>
+                              <span className="font-bold text-gray-900">{translateVal(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType)}</span>
                             </div>
                           )}
                           {(listing.kilometerstand !== undefined && listing.kilometerstand !== null || listing.kilometer !== undefined && listing.kilometer !== null || listing.kilometerStand !== undefined && listing.kilometerStand !== null) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.mileage}</span>
                               <span className="font-bold text-gray-900">{(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km</span>
                             </div>
                           )}
                           {(listing.erstzulassung || listing.bj) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.firstRegistration}</span>
                               <span className="font-bold text-gray-900">{listing.erstzulassung || listing.bj}</span>
                             </div>
                           )}
                           {(listing.kraftstoff || listing.fuel_type) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.fuelType}</span>
                               <span className="font-bold text-gray-900">{listing.kraftstoff || listing.fuel_type}</span>
                             </div>
                           )}
                           {(listing.leistung || listing.power) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.power}</span>
                               <span className="font-bold text-gray-900">{listing.leistung || listing.power} PS</span>
                             </div>
                           )}
                           {listing.hubraum && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.displacement}</span>
                               <span className="font-bold text-gray-900">{listing.hubraum} cm³</span>
                             </div>
                           )}
                           {listing.getriebe && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.transmission}</span>
                               <span className="font-bold text-gray-900">{listing.getriebe}</span>
                             </div>
                           )}
                           {listing.door_count && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.doorCount}</span>
                               <span className="font-bold text-gray-900">{listing.door_count}</span>
                             </div>
                           )}
                           {listing.hu && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-500 font-medium">{t.productDetail.huUntil}</span>
                               <span className="font-bold text-gray-900">{listing.hu}</span>
                             </div>
                           )}
                           {(listing.emission_badge || listing.emission_sticker) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.emissionBadge}</span>
                               <span className="font-bold text-gray-900">{listing.emission_badge || listing.emission_sticker}</span>
                             </div>
                           )}
                           {(listing.schadstoffklasse || listing.emission_class) && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.emissionClass}</span>
                               <span className="font-bold text-gray-900">{translateVal(listing.schadstoffklasse || listing.emission_class)}</span>
                             </div>
                           )}
                           {listing.exterior_color && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.exteriorColor}</span>
                               <span className="font-bold text-gray-900">{translateVal(listing.exterior_color)}</span>
                             </div>
                           )}
                           {listing.interior_material && (
-                            <div className="flex justify-between border-b border-gray-200 pb-3.5">
+                            <div className="flex justify-between">
                               <span className="text-gray-600 font-medium">{t.productDetail.interiorMaterial}</span>
                               <span className="font-bold text-gray-900">{translateVal(listing.interior_material)}</span>
                             </div>
@@ -11617,8 +9320,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.wohnzimmer_art}</span>
                       </div>
@@ -11632,27 +9335,27 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.schlafzimmer_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.schlafzimmer_art}</span>
                         </div>
                       )}
                       {listing.kueche_esszimmer_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.kueche_esszimmer_art}</span>
                         </div>
                       )}
                       {listing.heimwerken_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.heimwerken_art}</span>
                         </div>
                       )}
                       {listing.lamba_aydinlatma_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.lamba_aydinlatma_art}</span>
                         </div>
@@ -11667,15 +9370,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.art_type && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.art_type}</span>
                         </div>
                       )}
                       {listing.bike_type && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.bike_type}</span>
                         </div>
@@ -11690,45 +9393,45 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.baby_kinderkleidung_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_art}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_size && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.size}</span>
                           <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_size}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_color && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
                           <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_color}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_gender && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.gender}</span>
                           <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_gender}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.baby_kinderschuhe_art}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_size && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.size}</span>
                           <span className="font-semibold text-gray-900">{listing.baby_kinderschuhe_size}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_color && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
                           <span className="font-semibold text-gray-900">{listing.baby_kinderschuhe_color}</span>
                         </div>
@@ -11743,15 +9446,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.kinderwagen_buggys_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.kinderwagen_buggys_art}</span>
                         </div>
                       )}
                       {listing.kinderwagen_buggys_color && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
                           <span className="font-semibold text-gray-900">{listing.kinderwagen_buggys_color}</span>
                         </div>
@@ -11768,28 +9471,28 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <h2 className="text-lg font-bold text-gray-900 mb-4">
                         {t.productDetail.details}
                       </h2>
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                         {/* Damenschuhe */}
                         {listing.damenschuhe_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.damenschuhe_art}</span>
                           </div>
                         )}
                         {listing.damenschuhe_marke && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
                             <span className="font-semibold text-gray-900">{listing.damenschuhe_marke}</span>
                           </div>
                         )}
                         {listing.damenschuhe_size && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
                             <span className="font-semibold text-gray-900">{listing.damenschuhe_size}</span>
                           </div>
                         )}
                         {listing.damenschuhe_color && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
                             <span className="font-semibold text-gray-900">{listing.damenschuhe_color}</span>
                           </div>
@@ -11797,25 +9500,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                         {/* Herrenbekleidung */}
                         {listing.herrenbekleidung_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenbekleidung_art}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_marke && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenbekleidung_marke}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_size && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenbekleidung_size}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_color && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenbekleidung_color}</span>
                           </div>
@@ -11823,25 +9526,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                         {/* Herrenschuhe */}
                         {listing.herrenschuhe_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenschuhe_art}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_marke && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenschuhe_marke}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_size && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenschuhe_size}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_color && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
                             <span className="font-semibold text-gray-900">{listing.herrenschuhe_color}</span>
                           </div>
@@ -11856,8 +9559,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.addListing.color}</span>
                         <span className="font-semibold text-gray-900">{listing.babyschalen_kindersitze_color}</span>
                       </div>
@@ -11871,8 +9574,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.kinderzimmermobel_art}</span>
                       </div>
@@ -11886,8 +9589,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.spielzeug_art}</span>
                       </div>
@@ -11900,8 +9603,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.fische_art}</span>
                       </div>
@@ -11915,8 +9618,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.haustier_zubehoer_art}</span>
                       </div>
@@ -11930,27 +9633,27 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.hunde_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.hunde_art}</span>
                         </div>
                       )}
                       {listing.hunde_alter && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.age}</span>
                           <span className="font-semibold text-gray-900">{listing.hunde_alter}</span>
                         </div>
                       )}
                       {listing.hunde_geimpft && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.vaccinatedAndChipped}</span>
                           <span className="font-semibold text-gray-900">{listing.hunde_geimpft}</span>
                         </div>
                       )}
                       {listing.hunde_erlaubnis && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.officialPermission}</span>
                           <span className="font-semibold text-gray-900">{listing.hunde_erlaubnis}</span>
                         </div>
@@ -11965,27 +9668,27 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.katzen_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.katzen_art}</span>
                         </div>
                       )}
                       {listing.katzen_alter && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.age}</span>
                           <span className="font-semibold text-gray-900">{listing.katzen_alter}</span>
                         </div>
                       )}
                       {listing.katzen_geimpft && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.vaccinatedAndChipped}</span>
                           <span className="font-semibold text-gray-900">{listing.katzen_geimpft}</span>
                         </div>
                       )}
                       {listing.katzen_erlaubnis && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.officialPermission}</span>
                           <span className="font-semibold text-gray-900">{listing.katzen_erlaubnis}</span>
                         </div>
@@ -12000,9 +9703,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.kleintiere_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.kleintiere_art}</span>
                         </div>
@@ -12017,9 +9720,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.nutztiere_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.nutztiere_art}</span>
                         </div>
@@ -12034,9 +9737,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.pferde_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.pferde_art}</span>
                         </div>
@@ -12051,9 +9754,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.vermisste_tiere_status && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.status}</span>
                           <span className="font-semibold text-gray-900">{listing.vermisste_tiere_status}</span>
                         </div>
@@ -12068,9 +9771,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.voegel_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.voegel_art}</span>
                         </div>
@@ -12085,8 +9788,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.taschen_accessoires_art}</span>
                       </div>
@@ -12100,8 +9803,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.uhren_schmuck_art}</span>
                       </div>
@@ -12115,8 +9818,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.beauty_gesundheit_art}</span>
                       </div>
@@ -12134,81 +9837,81 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <h2 className="text-lg font-bold text-gray-900 mb-4">
                         {t.productDetail.details}
                       </h2>
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                         {listing.audio_hifi_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.audio_hifi_art}</span>
                           </div>
                         )}
                         {listing.handy_telefon_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.handy_telefon_art}</span>
                           </div>
                         )}
                         {listing.foto_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.foto_art}</span>
                           </div>
                         )}
                         {listing.haushaltsgeraete_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.haushaltsgeraete_art}</span>
                           </div>
                         )}
                         {listing.konsolen_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.konsolen_art}</span>
                           </div>
                         )}
                         {listing.pc_zubehoer_software_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.pc_zubehoer_software_art}</span>
                           </div>
                         )}
                         {listing.tablets_reader_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.tablets_reader_art}</span>
                           </div>
                         )}
                         {listing.tv_video_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.tv_video_art}</span>
                           </div>
                         )}
                         {listing.notebooks_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.notebooks_art}</span>
                           </div>
                         )}
                         {listing.pcs_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.pcs_art}</span>
                           </div>
                         )}
                         {listing.videospiele_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.videospiele_art}</span>
                           </div>
                         )}
                         {listing.weitere_elektronik_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.weitere_elektronik_art}</span>
                           </div>
                         )}
                         {listing.dienstleistungen_elektronik_art && (
-                          <div className="flex justify-between border-b border-gray-200 pb-2">
+                          <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900">{listing.dienstleistungen_elektronik_art}</span>
                           </div>
@@ -12224,8 +9927,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.altenpflege_art}</span>
                       </div>
@@ -12239,8 +9942,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.sprachkurse_art}</span>
                       </div>
@@ -12254,8 +9957,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.kunst_gestaltung_art}</span>
                       </div>
@@ -12269,8 +9972,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.weiteres_haus_garten_art}</span>
                       </div>
@@ -12284,8 +9987,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.kueche_esszimmer_art}</span>
                       </div>
@@ -12299,8 +10002,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.heimwerken_art}</span>
                       </div>
@@ -12314,8 +10017,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.gartenzubehoer_art}</span>
                       </div>
@@ -12329,8 +10032,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.modellbau_art}</span>
                       </div>
@@ -12344,8 +10047,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.handarbeit_art}</span>
                       </div>
@@ -12359,27 +10062,27 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.damenbekleidung_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
                           <span className="font-semibold text-gray-900">{listing.damenbekleidung_art}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_marke && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">Marka</span>
                           <span className="font-semibold text-gray-900">{listing.damenbekleidung_marke}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_size && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">Beden</span>
                           <span className="font-semibold text-gray-900">{listing.damenbekleidung_size}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_color && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">Renk</span>
                           <span className="font-semibold text-gray-900">{listing.damenbekleidung_color}</span>
                         </div>
@@ -12392,63 +10095,63 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {(listing.category === 'Emlak' || listing.living_space || listing.rooms || listing.auf_zeit_wg_art || listing.wohnungstyp || listing.haustyp || listing.objektart || listing.grundstuecksart || listing.garage_type) && (
                   <div className="mb-8">
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm mt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm mt-4 pb-8 mb-8">
                       {listing.angebotsart && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.offerType}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.angebotsart)}</span>
                         </div>
                       )}
                       {listing.auf_zeit_wg_art && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.offerType}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.auf_zeit_wg_art)}</span>
                         </div>
                       )}
                       {listing.wohnungstyp && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.propertyType}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.wohnungstyp)}</span>
                         </div>
                       )}
                       {listing.haustyp && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.propertyType}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.haustyp)}</span>
                         </div>
                       )}
                       {listing.living_space && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{['Ticari Emlak', 'Konteyner', 'Arsa & Bahçe'].includes(listing.sub_category) ? t.productDetail.totalArea : t.productDetail.livingSpace}</span>
                           <span className="font-semibold text-gray-900">{listing.living_space} m²</span>
                         </div>
                       )}
                       {listing.rooms && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.rooms}</span>
                           <span className="font-semibold text-gray-900">{listing.rooms}</span>
                         </div>
                       )}
                       {listing.floor !== undefined && listing.floor !== null && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.floor}</span>
                           <span className="font-semibold text-gray-900">{listing.floor}</span>
                         </div>
                       )}
                       {listing.roommates && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.roommates}</span>
                           <span className="font-semibold text-gray-900">{listing.roommates}</span>
                         </div>
                       )}
                       {listing.construction_year && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.constructionYear}</span>
                           <span className="font-semibold text-gray-900">{listing.construction_year}</span>
                         </div>
                       )}
                       {listing.available_from && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.availableFrom}</span>
                           <span className="font-semibold text-gray-900">
                             {listing.available_from.length === 7
@@ -12458,61 +10161,61 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </div>
                       )}
                       {listing.warm_rent && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.warmRent}</span>
                           <span className="font-semibold text-gray-900">{listing.warm_rent.toLocaleString('tr-TR')} ₺</span>
                         </div>
                       )}
                       {listing.price_per_sqm && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.pricePerSqm}</span>
                           <span className="font-semibold text-gray-900">{listing.price_per_sqm.toLocaleString('tr-TR')} ₺/m²</span>
                         </div>
                       )}
                       {listing.plot_area && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.plotArea}</span>
                           <span className="font-semibold text-gray-900">{listing.plot_area} m²</span>
                         </div>
                       )}
                       {listing.grundstuecksart && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.plotType}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.grundstuecksart)}</span>
                         </div>
                       )}
                       {listing.objektart && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.objectType}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.objektart)}</span>
                         </div>
                       )}
                       {listing.garage_type && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.garage}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.garage_type)}</span>
                         </div>
                       )}
                       {listing.rental_type && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.rentalType}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.rental_type)}</span>
                         </div>
                       )}
                       {listing.online_viewing && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.onlineViewing}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.online_viewing)}</span>
                         </div>
                       )}
                       {listing.commission && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.commission}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.commission)}</span>
                         </div>
                       )}
                       {listing.lage && (
-                        <div className="flex justify-between border-b border-gray-200 pb-2">
+                        <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.location}</span>
                           <span className="font-semibold text-gray-900">{translateVal(listing.lage)}</span>
                         </div>
@@ -12599,8 +10302,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <h2 className="text-lg font-bold text-gray-900 mb-4">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm bg-gray-50 p-6 rounded-xl border border-gray-100">
-                      <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b-2 border-gray-300 mb-8">
+                      <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900">{listing.reise_eventservices_art}</span>
                       </div>
@@ -12744,13 +10447,19 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         >
                           <div className="relative">
                             <img
-                              src={otherListing.image}
+                              src={otherListing.images && otherListing.images[0] ? otherListing.images[0] : (otherListing.image || 'https://via.placeholder.com/300x200?text=No+Image')}
                               alt={otherListing.title}
                               className="w-full h-32 object-cover"
                             />
-                            {otherListing.isTop && (
-                              <div className="absolute top-2 right-2 bg-purple-600 text-white px-2 py-1 rounded text-xs font-medium">
-                                TOP
+                            {/* Vitrin Badge - Inclusive check */}
+                            {(otherListing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(otherListing.package_type?.toLowerCase())) && (
+                              <div className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-2 py-1 rounded text-xs font-bold z-10">
+                                ⭐ VİTRİN
+                              </div>
+                            )}
+                            {(otherListing.package_type?.toLowerCase() === 'premium' || otherListing.package_type?.toLowerCase() === 'z_premium') && (
+                              <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-400 to-amber-600 text-white px-2 py-1 rounded text-xs font-bold z-10">
+                                PREMIUM
                               </div>
                             )}
                           </div>
@@ -12843,12 +10552,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     </div>
 
                     {(seller.is_pro || seller.is_commercial || sellerProfile?.seller_type === 'Gewerblicher Nutzer' || (seller && seller.seller_type === 'commercial')) && (
-                      <button
-                        onClick={() => navigate(`/store/${seller.id}`)}
+                      <a
+                        href={`/store/${seller.id}`}
                         className="w-full mb-3 py-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xs font-bold rounded-lg hover:from-black hover:to-gray-900 transition-all shadow-sm flex items-center justify-center gap-2"
                       >
                         🏪 MAĞAZAYI ZİYARET ET
-                      </button>
+                      </a>
                     )}
 
                     {/* City Location */}
@@ -12885,6 +10594,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           userRating={sellerRating}
                           showDetails={false}
                           size="small"
+                          center={true}
                         />
                       </div>
                     )}
@@ -12904,10 +10614,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 >
                   {followLoading ? (
                     <>
-                      <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
+                      <LoadingSpinner size="small" />
                       {t.productDetail.loading}
                     </>
                   ) : (
@@ -12982,18 +10689,66 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {/* Teilen & Drucken */}
                 <div className="mt-4 space-y-3 pt-4 border-t border-gray-100 no-print">
-                  <button
-                    onClick={handleShare}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                    {t.productDetail.share}
-                  </button>
+                  <div className="pt-2">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-1">{t.productDetail.share}</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          const url = window.location.href;
+                          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                        }}
+                        className="flex-1 bg-[#1877F2] text-white py-2.5 rounded-lg flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
+                        title="Facebook"
+                      >
+                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => {
+                          const url = window.location.href;
+                          const text = `${listing.title} ilanını ExVitrin'de keşfedin!`;
+                          window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                        }}
+                        className="flex-1 bg-[#25D366] text-white py-2.5 rounded-lg flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
+                        title="WhatsApp"
+                      >
+                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => {
+                          const url = window.location.href;
+                          const text = `${listing.title} ilanını ExVitrin'de keşfedin!`;
+                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+                        }}
+                        className="flex-1 bg-zinc-700 shadow-sm text-white py-2.5 rounded-lg flex items-center justify-center hover:bg-zinc-800 hover:scale-105 transition-all border border-zinc-600"
+                        title="X"
+                      >
+                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 1200 1227">
+                          <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href).then(() => {
+                            alert('Bağlantı panoya kopyalandı!');
+                          });
+                        }}
+                        className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm"
+                        title="Bağlantıyı Kopyala"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                   <button
                     onClick={() => {
-                      window.print();
+                      setPrintHideContact(false);
+                      setTimeout(() => window.print(), 100);
                     }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700"
                   >
@@ -13041,25 +10796,6 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         </div>
 
 
-        {/* Ähnliche Anzeigen Section */}
-        {
-          similarListings.length > 0 && (
-            <div className="max-w-7xl mx-auto px-4 py-8 border-t border-gray-200 mt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">{t.productDetail.similarListings}</h2>
-              <div className="flex flex-col gap-4">
-                {similarListings.map((similar) => (
-                  <HorizontalListingCard
-                    key={similar.id}
-                    listing={similar}
-                    toggleFavorite={toggleFavorite}
-                    isFavorite={isFavorite}
-                  />
-                ))}
-              </div>
-            </div>
-          )
-        }
-
 
         {/* Report Modal */}
         <ReportModal
@@ -13103,14 +10839,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               </svg>
               {listing?.category} Kategorisindeki Benzer İlanlar
             </h2>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6">
               {categoryListings.map(item => (
                 <HorizontalListingCard
                   key={item.id}
                   listing={item}
                   toggleFavorite={toggleFavorite}
                   isFavorite={isFavorite}
-                  compact={true}
                 />
               ))}
             </div>
@@ -13162,10 +10897,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 // All Categories Component
 export const AllCategories = ({ setSelectedCategory }) => {
   const navigate = useNavigate();
-  const [categories, setCategories] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadCategories = async () => {
       try {
         setLoading(true);
@@ -13182,17 +10917,16 @@ export const AllCategories = ({ setSelectedCategory }) => {
   }, []);
 
   // Scroll to top when component mounts
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
-          <p className="text-gray-600">Kategorien werden geladen...</p>
+          <LoadingSpinner size="medium" className="mb-4" />
+          <p className="text-gray-600">Kategoriler yükleniyor...</p>
         </div>
       </div>
     );
@@ -13211,7 +10945,7 @@ export const AllCategories = ({ setSelectedCategory }) => {
             </svg>
             {t.common.backToHome}
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Alle Kategorien</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t.filters.allCategories}</h1>
         </div>
 
         <CategoryGallery
@@ -13221,13 +10955,13 @@ export const AllCategories = ({ setSelectedCategory }) => {
 
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {categories.filter(c => c.name !== 'Alle Kategorien').map((category) => (
+            {categories.filter(c => c.name !== 'Tüm Kategoriler').map((category) => (
               <div key={category.name} className="space-y-3">
                 <h2
                   onClick={() => navigate(getCategoryPath(category.name))}
                   className="text-xl font-semibold text-gray-900 flex items-center justify-between border-b border-gray-100 pb-2 cursor-pointer hover:text-red-500 transition-colors"
                 >
-                  <span className="flex-1">{category.name}</span>
+                  <span className="flex-1">{getCategoryTranslation(category.name)}</span>
                   <span className="text-sm font-normal text-gray-500">({category.count})</span>
                 </h2>
                 <ul className="space-y-2">
@@ -13237,7 +10971,7 @@ export const AllCategories = ({ setSelectedCategory }) => {
                         onClick={() => navigate(getCategoryPath(category.name, sub.name))}
                         className="text-gray-600 hover:text-red-500 hover:underline text-sm flex items-center justify-between w-full text-left"
                       >
-                        <span>{sub.name}</span>
+                        <span>{getCategoryTranslation(sub.name)}</span>
                         <span className="text-gray-400 text-xs">({sub.count})</span>
                       </button>
                     </li>
@@ -13256,10 +10990,12 @@ export const AllCategories = ({ setSelectedCategory }) => {
 export const SellerProfile = () => {
   const { sellerId } = useParams();
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('Alle');
+  const [selectedCategory, setSelectedCategory] = useState(t.sellerProfile.all);
 
   const [seller, setSeller] = useState(null);
   const [sellerListings, setSellerListings] = useState([]);
+  const [sellerRating, setSellerRating] = useState(null);
+  const [sellerRatings, setSellerRatings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13278,7 +11014,7 @@ export const SellerProfile = () => {
         if (profile) {
           setSeller({
             id: sellerId,
-            name: profile.full_name || (listings.length > 0 ? listings[0].sellerName : 'Verkäufer'),
+            name: profile.full_name || (listings.length > 0 ? listings[0].sellerName : t.cart.seller),
             rating: 4.5,
             totalSales: listings.length,
             memberSince: profile.created_at,
@@ -13290,7 +11026,7 @@ export const SellerProfile = () => {
           // Fallback to listing data if profile fetch fails
           setSeller({
             id: sellerId,
-            name: listings[0].sellerName || 'Verkäufer',
+            name: listings[0].sellerName || t.cart.seller,
             rating: 4.5,
             totalSales: listings.length
           });
@@ -13302,6 +11038,25 @@ export const SellerProfile = () => {
       }
     };
     loadSellerData();
+  }, [sellerId]);
+
+  // Load seller ratings
+  useEffect(() => {
+    if (sellerId) {
+      const loadRatings = async () => {
+        try {
+          const { getUserRating, getRatings } = await import('./api/ratings');
+          const rating = await getUserRating(sellerId);
+          setSellerRating(rating);
+
+          const ratingsList = await getRatings(sellerId);
+          setSellerRatings(ratingsList || []);
+        } catch (error) {
+          console.error('Error loading ratings:', error);
+        }
+      };
+      loadRatings();
+    }
   }, [sellerId]);
 
   if (!seller) return <div className="p-8">{t.sellerProfile.sellerNotFound}</div>;
@@ -13403,6 +11158,28 @@ export const SellerProfile = () => {
           listingTitle={t.sellerProfile.inquiryToSeller}
         />
 
+        {/* Satıcı Değerlendirmeleri */}
+        {sellerRating && sellerRating.count > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                Satıcı Değerlendirmeleri
+              </h2>
+              <div className="flex items-center gap-3 mb-4">
+                <RatingDisplay
+                  userRating={sellerRating}
+                  showDetails={false}
+                  size="medium"
+                />
+              </div>
+            </div>
+            <RatingsList ratings={sellerRatings} />
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-8">
           {/* Sidebar Categories */}
           <div className="sm:w-64 flex-shrink-0">
@@ -13435,7 +11212,7 @@ export const SellerProfile = () => {
           {/* Listings Grid */}
           <div className="flex-1">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              {selectedCategory === t.sellerProfile.all ? t.sellerProfile.activeListings : selectedCategory} von {seller.name}
+              {selectedCategory === t.sellerProfile.all ? t.sellerProfile.activeListings : selectedCategory} - {seller.name}
             </h2>
             <div className="flex flex-col gap-4">
               {filteredListings.map((listing) => (
@@ -13477,12 +11254,15 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
   const [sellerListings, setSellerListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('Alle');
+  const [selectedCategory, setSelectedCategory] = useState(t.sellerProfile.all);
   const [activeTab, setActiveTab] = useState('listings'); // Tab state for own profile
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
+  const [ratings, setRatings] = useState([]);
+  const [averageRating, setAverageRating] = useState({ average: 0, count: 0 });
+  const [isRatingLoading, setIsRatingLoading] = useState(false);
 
   // Initialize states
   useEffect(() => {
@@ -13548,6 +11328,31 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
     loadSellerData();
   }, [sellerId]);
 
+  // Fetch ratings and average rating
+  useEffect(() => {
+    const fetchRatings = async () => {
+      // We need the seller's UUID, which might not be immediate if we fetched by user_number
+      // But loadSellerData should set it in 'seller'
+      if (!seller?.id) return;
+
+      setIsRatingLoading(true);
+      try {
+        const [ratingsData, avgData] = await Promise.all([
+          getRatings(seller.id),
+          getUserAverageRating(seller.id)
+        ]);
+        setRatings(ratingsData);
+        setAverageRating(avgData);
+      } catch (error) {
+        console.error('Error fetching ratings:', error);
+      } finally {
+        setIsRatingLoading(false);
+      }
+    };
+
+    fetchRatings();
+  }, [seller?.id]);
+
   // Load follower/following counts
   useEffect(() => {
     const loadFollowCounts = async () => {
@@ -13592,7 +11397,7 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+          <LoadingSpinner size="medium" className="mb-4" />
           <p className="text-gray-600">{t.sellerProfile.loadingSeller}</p>
         </div>
       </div>
@@ -13628,7 +11433,7 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
   }, {});
 
   // Filter listings by selected category
-  const filteredListings = selectedCategory === 'Alle' || selectedCategory === t.sellerProfile.all
+  const filteredListings = selectedCategory === t.sellerProfile.all
     ? sellerListings
     : sellerListings.filter(l => l.category === selectedCategory);
 
@@ -13720,21 +11525,34 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                       setFollowLoading(false);
                     }}
                     disabled={followLoading}
-                    className={`w-full font-semibold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center gap-2 ${isSellerFollowed(seller.id)
-                      ? 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-50'
-                      : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white'
+                    className={`w-full font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 transform active:scale-95 ${isSellerFollowed(seller.id)
+                      ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      : 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-red-200'
                       } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     {followLoading ? (
                       <>
-                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        {t.sellerProfile.loading}
+                        <LoadingSpinner size="small" />
+                        <span>{t.sellerProfile.loading}</span>
                       </>
                     ) : (
-                      isSellerFollowed(seller.id) ? t.sellerProfile.followed : t.sellerProfile.follow
+                      <>
+                        {isSellerFollowed(seller.id) ? (
+                          <>
+                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>{t.sellerProfile.followed}</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            <span>{t.sellerProfile.follow}</span>
+                          </>
+                        )}
+                      </>
                     )}
                   </button>
                   <button
@@ -13745,34 +11563,100 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                   </button>
                 </div>
               )}
+
+              <div className="mt-6 pt-6 border-t border-gray-100">
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-3 text-center">Profili Paylaş</p>
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                    }}
+                    className="w-10 h-10 bg-[#1877F2] text-white rounded-xl flex items-center justify-center hover:opacity-90 hover:scale-110 transition-all shadow-md"
+                    title="Facebook"
+                  >
+                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      const text = `${seller.full_name} profilini ExVitrin'de keşfedin!`;
+                      window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                    }}
+                    className="w-10 h-10 bg-[#25D366] text-white rounded-xl flex items-center justify-center hover:opacity-90 hover:scale-110 transition-all shadow-md"
+                    title="WhatsApp"
+                  >
+                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      const text = `${seller.full_name} profilini ExVitrin'de keşfedin!`;
+                      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+                    }}
+                    className="w-10 h-10 bg-zinc-700 text-white rounded-xl flex items-center justify-center hover:bg-zinc-800 hover:scale-110 transition-all shadow-md border border-zinc-600"
+                    title="X"
+                  >
+                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 1200 1227">
+                      <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href).then(() => {
+                        alert('Bağlantı panoya kopyalandı!');
+                      });
+                    }}
+                    className="w-10 h-10 bg-gray-100 text-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-200 hover:scale-110 transition-all shadow-md"
+                    title="Bağlantıyı Kopyala"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Tab Navigation - Only show for own profile */}
-            {isOwnProfile && (
-              <div className="bg-white rounded-lg shadow-sm p-4 sticky top-6">
-                <h3 className="font-semibold text-gray-900 mb-4 pb-2 border-b">{t.sellerProfile.myProfile}</h3>
-                <nav className="space-y-1">
-                  {[
-                    { id: 'listings', name: t.nav.myListings },
-                    { id: 'favorites', name: t.nav.favorites },
-                    { id: 'messages', name: t.nav.messages },
-                    { id: 'following', name: t.sellerProfile.following },
-                    { id: 'settings', name: t.nav.settings }
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${activeTab === tab.id
-                        ? 'bg-red-50 text-red-600 font-semibold'
-                        : 'text-gray-700 hover:bg-gray-50'
-                        }`}
-                    >
+            {/* Tab Navigation */}
+            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-6">
+              <h3 className="font-semibold text-gray-900 mb-4 pb-2 border-b">
+                {isOwnProfile ? t.sellerProfile.myProfile : t.sellerProfile.stats}
+              </h3>
+              <nav className="space-y-1">
+                {[
+                  { id: 'listings', name: t.sellerProfile.listings },
+                  { id: 'ratings', name: t.sellerProfile.reviews }
+                ].concat(isOwnProfile ? [
+                  { id: 'favorites', name: t.nav.favorites },
+                  { id: 'messages', name: t.nav.messages },
+                  { id: 'following', name: t.sellerProfile.following },
+                  { id: 'settings', name: t.nav.settings }
+                ] : []).map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${activeTab === tab.id
+                      ? 'bg-red-50 text-red-600 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                  >
+                    <div className="flex justify-between items-center">
                       <span className="text-sm">{tab.name}</span>
-                    </button>
-                  ))}
-                </nav>
-              </div>
-            )}
+                      {tab.id === 'ratings' && averageRating.count > 0 && (
+                        <span className="bg-gray-100 px-2 py-0.5 rounded-full text-[10px] text-gray-500">
+                          {averageRating.count}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </nav>
+            </div>
 
             {/* Categories - Only show when not in own profile or when viewing listings */}
             {(!isOwnProfile || activeTab === 'listings') && (
@@ -13780,8 +11664,8 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                 <h3 className="font-semibold text-gray-900 mb-4 pb-2 border-b">{t.sellerProfile.categories}</h3>
                 <ul className="space-y-2">
                   <li
-                    onClick={() => setSelectedCategory('Alle')}
-                    className={`flex justify-between items-center font-medium cursor-pointer transition-colors ${selectedCategory === 'Alle' ? 'text-red-500' : 'text-gray-600 hover:text-red-500'}`}
+                    onClick={() => setSelectedCategory(t.sellerProfile.all)}
+                    className={`flex justify-between items-center font-medium cursor-pointer transition-colors ${selectedCategory === t.sellerProfile.all ? 'text-red-500' : 'text-gray-600 hover:text-red-500'}`}
                   >
                     <span>{t.sellerProfile.all}</span>
                     <span className="bg-gray-100 px-2 py-0.5 rounded-full text-xs text-gray-600">{sellerListings.length}</span>
@@ -13803,8 +11687,8 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
 
           {/* Right Side - Tab Content */}
           <div className="lg:col-span-3">
-            {/* Listings Tab - Show seller info and listings */}
-            {(!isOwnProfile || activeTab === 'listings') && (
+            {/* Listings Tab */}
+            {activeTab === 'listings' && (
               <div>
                 {/* Seller Info Panel */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 font-sans">
@@ -13882,11 +11766,118 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                   </div>
                   {filteredListings.length === 0 && (
                     <div className="text-center py-12 text-gray-500">
-                      {t.sellerProfile.sellerNotFound}
+                      {t.sellerProfile.all} {t.sellerProfile.listings.toLowerCase()} bulunamadı.
                     </div>
                   )}
                 </div>
-              </div >
+              </div>
+            )}
+
+            {/* Ratings Tab */}
+            {activeTab === 'ratings' && (
+              <div className="space-y-6">
+                {/* Rating Summary Card */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                  <div className="flex flex-col md:flex-row items-center gap-12">
+                    <div className="text-center">
+                      <div className="text-6xl font-black text-gray-900 mb-2">
+                        {averageRating.average}
+                        <span className="text-2xl text-gray-400 font-normal ml-1">/ 5</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-1 mb-3 text-2xl">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={`${star <= Math.round(averageRating.average) ? 'text-yellow-400' : 'text-gray-200'} drop-shadow-sm`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <div className="text-sm font-bold text-gray-500 uppercase tracking-widest bg-gray-50 px-4 py-1.5 rounded-full inline-block">
+                        {averageRating.count} {t.sellerProfile.reviews}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 w-full space-y-3">
+                      {[5, 4, 3, 2, 1].map((star) => {
+                        const count = ratings.filter(r => r.rating === star).length;
+                        const percentage = averageRating.count > 0 ? (count / averageRating.count) * 100 : 0;
+                        return (
+                          <div key={star} className="flex items-center gap-4 group">
+                            <span className="text-sm font-bold text-gray-600 w-16 whitespace-nowrap group-hover:text-red-600 transition-colors uppercase tracking-tighter">
+                              {star} {t.sellerProfile.listings.includes('İlan') ? 'Yıldız' : 'Stars'}
+                            </span>
+                            <div className="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                              <div
+                                className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full shadow-sm group-hover:from-red-500 group-hover:to-red-600 transition-all duration-500"
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                            <span className="text-sm font-black text-gray-400 w-8 text-right group-hover:text-gray-900 transition-colors">
+                              {count}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reviews List */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="px-8 py-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                    <h3 className="text-lg font-bold text-gray-900 uppercase tracking-wider">{t.sellerProfile.reviews}</h3>
+                  </div>
+                  <div className="divide-y divide-gray-50">
+                    {ratings.length > 0 ? (
+                      ratings.map((review) => (
+                        <div key={review.id} className="p-8 hover:bg-gray-50/50 transition-all duration-300">
+                          <div className="flex items-start gap-4">
+                            <img
+                              src={review.rater?.avatar_url || review.rater?.store_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.rater?.full_name || 'U')}&background=f3f4f6&color=4b5563&bold=true`}
+                              alt={review.rater?.full_name}
+                              className="w-12 h-12 rounded-xl object-cover shadow-sm border-2 border-white ring-1 ring-gray-100"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <h4 className="font-bold text-gray-900 truncate">{review.rater?.full_name}</h4>
+                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                  {new Date(review.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1 mb-3">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <span
+                                    key={star}
+                                    className={`text-sm ${star <= review.rating ? 'text-yellow-400' : 'text-gray-200'}`}
+                                  >
+                                    ★
+                                  </span>
+                                ))}
+                              </div>
+                              {review.comment && (
+                                <p className="text-gray-600 leading-relaxed text-sm italic font-medium">
+                                  "{review.comment}"
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-20 px-8">
+                        <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 mx-auto mb-4">
+                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                          </svg>
+                        </div>
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">{t.sellerProfile.noRatingsYet}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
           </div >
 
@@ -13908,77 +11899,87 @@ export const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-12 pb-8 mt-16">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-8">
-          {/* Kleinanzeigen */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
+          {/* ExVitrin */}
           <div>
-            <h3 className="text-white font-semibold mb-4">LokalPazar</h3>
+            <h3 className="text-white font-semibold mb-4">ExVitrin</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="/ueber-uns" className="hover:text-white transition-colors">{t.footer.aboutUs}</a></li>
-              <li><a href="/karriere" className="hover:text-white transition-colors">{t.footer.career}</a></li>
-              <li><a href="/presse" className="hover:text-white transition-colors">{t.footer.press}</a></li>
-              <li><a href="/kleinbazaar-magazin" className="hover:text-white transition-colors">{t.footer.magazine}</a></li>
-              <li><a href="/engagement" className="hover:text-white transition-colors">{t.footer.engagement}</a></li>
+              <li><a href="/hakkimizda" className="hover:text-white transition-colors">{t.footer.aboutUs}</a></li>
               <li><a href="/mobile-apps" className="hover:text-white transition-colors">{t.footer.mobileApps}</a></li>
+              <li><a href="/hayvan-haklari-ve-yasal-uyari" className="hover:text-white transition-colors">{t.footer.animalLawLink}</a></li>
+              <li><a href="/emlak-ilanlari-yasal-uyari" className="hover:text-white transition-colors">{t.footer.realEstateLawLink}</a></li>
+              <li><a href="/vasita-ilanlari-yasal-uyari" className="hover:text-white transition-colors">{t.footer.vehicleLawLink}</a></li>
+              <li><a href="/iletisim" className="text-red-400 hover:text-red-300 font-semibold transition-colors mt-2 inline-block">📞 {t.contact.title}</a></li>
             </ul>
           </div>
 
-          {/* Informationen */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">{t.footer.information}</h3>
-            <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.help}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.safetyTips}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.reportVulnerability}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.youthProtection}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.accessibility}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.privacyPolicy}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.privacySettings}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.terms}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.imprint}</a></li>
-            </ul>
-          </div>
 
           {/* Für Unternehmen */}
           <div>
             <h3 className="text-white font-semibold mb-4">{t.footer.forCompanies}</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">LokalPazar Emlak</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.proInfopoint}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.proPackages}</a></li>
+
+              <li><a href="/packages" className="hover:text-white transition-colors">{t.footer.proPackages}</a></li>
               <li><a href="#" className="hover:text-white transition-colors">{t.footer.advertising}</a></li>
             </ul>
           </div>
 
-          {/* Social Media */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">{t.footer.socialMedia}</h3>
-            <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">Facebook</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">YouTube</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Instagram</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Threads</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Pinterest</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">TikTok</a></li>
-            </ul>
-          </div>
 
-          {/* Allgemein */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">{t.footer.general}</h3>
-            <ul className="space-y-2 text-sm">
-              <li><a href="/categories" className="hover:text-white transition-colors">{t.footer.allCategories}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.popularSearches}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.listingsOverview}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.companyOverview}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.carEvaluation}</a></li>
-            </ul>
+
+          {/* Allgemein + Logo + Social Media */}
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-3">
+              <img src="/logo_exvitrin_2026.png" alt="ExVitrin" className="h-12 w-auto" />
+              <span className="text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent tracking-tight">
+                exvitrin
+              </span>
+            </div>
+
+            {/* Social Media Icons */}
+            <div className="flex gap-4">
+              {/* Facebook */}
+              <a href="https://facebook.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Facebook">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+              {/* Instagram */}
+              <a href="https://instagram.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Instagram">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+              </a>
+              {/* YouTube */}
+              <a href="https://youtube.com/@exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="YouTube">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              </a>
+              {/* TikTok */}
+              <a href="https://www.tiktok.com/@exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="TikTok">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                </svg>
+              </a>
+              {/* Pinterest */}
+              <a href="https://pinterest.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Pinterest">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
+                </svg>
+              </a>
+              {/* Threads */}
+              <a href="https://threads.net/@exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Threads">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.704-1.8 0-3.19-.65-4.14-1.93C6.87 14.79 6.3 12.96 6.3 10.77c0-2.19.57-4.02 1.69-5.44.95-1.28 2.34-1.93 4.14-1.93 1.8 0 3.19.65 4.14 1.93.95 1.28 1.42 3.11 1.42 5.44 0 .94-.06 1.76-.18 2.46.49.28.88.61 1.17.99.58.76.87 1.71.87 2.84 0 1.27-.38 2.37-1.14 3.29-1.76 2.12-4.29 3.19-7.54 3.19zm.014-2.717c1.08 0 1.898-.31 2.438-.93.54-.62.81-1.54.81-2.76 0-.81-.15-1.54-.45-2.19-.3-.65-.75-1.17-1.35-1.56-.6-.39-1.35-.59-2.25-.59-1.08 0-1.898.31-2.438.93-.54.62-.81 1.54-.81 2.76 0 1.22.27 2.14.81 2.76.54.62 1.358.93 2.438.93z" />
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
-          <p>{t.footer.copyright}</p>
-        </div>
+      <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500 space-y-4">
+        <p>{t.footer.copyright}</p>
       </div>
     </footer>
   );
@@ -14075,3 +12076,228 @@ export const ReportModal = ({ isOpen, onClose, onSubmit, reason, setReason, desc
 
 // Export ReservationButton
 export { ReservationButton };
+// Export BannerSlider
+export { default as BannerSlider } from './components/BannerSlider';
+
+// Animal Protection & Legal Disclaimer Page
+export const AnimalProtectionPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 shadow-sm">
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Header Section */}
+        <div className="bg-red-600 px-8 py-10 text-white text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6">
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-4">
+            {t.footer.animalLawLink}
+          </h1>
+          <p className="text-red-100 font-medium max-w-2xl mx-auto">
+            5199 Sayılı Hayvanları Koruma Kanunu ve Yasal Yükümlülükler Hakkında Bilgilendirme
+          </p>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-8 md:p-12 space-y-8">
+          <section className="bg-gray-50 rounded-2xl p-6 border-l-4 border-red-500">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+              Yasal Uyarı Metni
+            </h2>
+            <p className="text-gray-700 leading-relaxed text-lg italic">
+              "{t.footer.animalLawDisclaimer}"
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+              Kapsam ve Sorumluluk
+            </h2>
+            <div className="prose prose-red text-gray-600 space-y-4">
+              <p>
+                ExVitrin platformu, kullanıcıların çeşitli kategorilerde ilanlar paylaşabildiği dijital bir pazaryeridir.
+                Evcil hayvan kategorisinde paylaşılan ilanlar için aşağıdaki hususların bilinmesi yasal bir gerekliliktir:
+              </p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li><strong>Yer Sağlayıcı Konumu:</strong> ExVitrin, 5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi ve Bu Yayınlar Yoluyla İşlenen Suçlarla Mücadele Edilmesi Hakkında Kanun uyarınca "Yer Sağlayıcı" sıfatıyla hizmet vermektedir. Platform, içeriği kontrol etme sorumluluğuna sahip değildir.</li>
+                <li><strong>Satış Tarafı Değildir:</strong> İşlemler sadece alıcı ve satıcı arasında gerçekleşir. ExVitrin bu işlemlerde aracı, komisyoncu veya garantör değildir.</li>
+                <li><strong>Hayvan Sağlığı ve Refahı:</strong> İlan edilen canlıların sağlık durumu, aşılama kayıtları ve yaşam koşulları tamamen ilanı veren kullanıcının beyanı ve sorumluluğundadır.</li>
+                <li><strong>Mevzuata Uyum:</strong> İlan sahiplerinin 5199 sayılı kanunda belirtilen tüm usul ve esaslara uyması zorunludur. Yasaklı ırkların satışı veya kanuna aykırı her türlü faaliyet yasaktır.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section className="bg-blue-50 rounded-2xl p-6 text-sm text-blue-800 flex gap-4">
+            <svg className="w-6 h-6 shrink-0 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>
+              Herhangi bir yasa dışı durum veya kanun aykırılık tespit ettiğiniz ilanları platformumuzun "İlanı Bildir" özelliğini kullanarak tarafımıza iletebilirsiniz. Gereken durumlarda yetkili mercilerle iş birliği yapılmaktadır.
+            </p>
+          </section>
+        </div>
+
+        {/* Footer Section */}
+        <div className="bg-gray-100 p-8 text-center text-sm text-gray-500 border-t border-gray-200">
+          <p>© 2025 ExVitrin - Hayvan Hakları ve Toplumsal Sorumluluk Politikası</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Real Estate Legal Disclaimer Page
+export const RealEstateLegalPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 shadow-sm">
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Header Section */}
+        <div className="bg-blue-600 px-8 py-10 text-white text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6">
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-4">
+            {t.footer.realEstateLawLink}
+          </h1>
+          <p className="text-blue-100 font-medium max-w-2xl mx-auto">
+            Emlak Alım-Satım ve Kiralama İşlemlerinde Yasal Yükümlülükler
+          </p>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-8 md:p-12 space-y-8">
+          <section className="bg-gray-50 rounded-2xl p-6 border-l-4 border-blue-500">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+              Yasal Uyarı Metni
+            </h2>
+            <p className="text-gray-700 leading-relaxed text-lg italic">
+              "{t.footer.realEstateDisclaimer}"
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+              Önemli Bilgiler
+            </h2>
+            <div className="prose prose-blue text-gray-600 space-y-4">
+              <p>
+                Emlak ilanları yayınlayan ve bu ilanlardan faydalanan kullanıcılarımızın dikkat etmesi gereken önemli hususlar:
+              </p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li><strong>Tapu Kontrolü:</strong> Gayrimenkul alım-satımında mutlaka tapu kaydını ve malik bilgilerini kontrol ediniz. Sahte tapu veya yetkisiz satış girişimlerine karşı dikkatli olunuz.</li>
+                <li><strong>Emlak Danışmanı Yetkilendirmesi:</strong> İlan sahibinin yetkili bir emlak danışmanı olup olmadığını, varsa yetki belgesi numarasını sorgulayınız.</li>
+                <li><strong>Ön Ödeme Riski:</strong> Görüşme yapmadan veya gayrimenkulü yerinde görmeden kesinlikle ön ödeme yapmayınız.</li>
+                <li><strong>Sözleşme İncelemesi:</strong> Kira veya satış sözleşmelerini imzalamadan önce hukuki danışmanlık alınız.</li>
+                <li><strong>Platform Sorumluluğu:</strong> ExVitrin sadece ilan yayınlama platformudur. Taraflar arasındaki anlaşmazlıklar, sözleşme ihlalleri veya hukuki sorunlardan sorumlu değildir.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section className="bg-amber-50 rounded-2xl p-6 text-sm text-amber-800 flex gap-4">
+            <svg className="w-6 h-6 shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p>
+              Şüpheli veya dolandırıcılık amacı taşıdığını düşündüğünüz emlak ilanlarını "İlanı Bildir" özelliğini kullanarak tarafımıza bildirebilirsiniz.
+            </p>
+          </section>
+        </div>
+
+        {/* Footer Section */}
+        <div className="bg-gray-100 p-8 text-center text-sm text-gray-500 border-t border-gray-200">
+          <p>© 2025 ExVitrin - Emlak İlanları Yasal Uyarı ve Kullanıcı Bilgilendirmesi</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Vehicle Legal Disclaimer Page
+export const VehicleLegalPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 shadow-sm">
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Header Section */}
+        <div className="bg-orange-600 px-8 py-10 text-white text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6">
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-4">
+            {t.footer.vehicleLawLink}
+          </h1>
+          <p className="text-orange-100 font-medium max-w-2xl mx-auto">
+            Araç Alım-Satımında Yasal Yükümlülükler ve Tüketici Hakları
+          </p>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-8 md:p-12 space-y-8">
+          <section className="bg-gray-50 rounded-2xl p-6 border-l-4 border-orange-500">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+              Yasal Uyarı Metni
+            </h2>
+            <p className="text-gray-700 leading-relaxed text-lg italic">
+              "{t.footer.vehicleDisclaimer}"
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+              Araç Alımında Dikkat Edilmesi Gerekenler
+            </h2>
+            <div className="prose prose-orange text-gray-600 space-y-4">
+              <p>
+                İkinci el araç alım-satımında kullanıcılarımızın güvenliği için aşağıdaki hususlara dikkat edilmelidir:
+              </p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li><strong>Tramer Kaydı:</strong> Aracın kaza geçmişini, hasar kayıtlarını ve sigorta bilgilerini mutlaka Tramer sisteminden sorgulayınız.</li>
+                <li><strong>Ekspertiz Raporu:</strong> Bağımsız bir ekspertiz firmasından araç değerlendirme raporu alınız.</li>
+                <li><strong>Ruhsat ve Belge Kontrolü:</strong> Aracın ruhsatı, trafik sigortası ve muayene belgelerinin güncel ve geçerli olduğundan emin olunuz.</li>
+                <li><strong>Kilometre Doğrulaması:</strong> Kilometre saatinin değiştirilip değiştirilmediğini servis kayıtları ve muayene raporlarıyla teyit ediniz.</li>
+                <li><strong>Ticari Satıcılardan Alım:</strong> Ticari satıcılardan alımlarda 6 ay garanti hakkınız bulunmaktadır. Tüketici Kanunu kapsamındaki haklarınızı biliniz.</li>
+                <li><strong>Bireysel Satıcılardan Alım:</strong> Bireysel satıcılardan alımlarda satıcının kimlik bilgilerini ve araç üzerindeki yetkisini kontrol ediniz.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section className="bg-red-50 rounded-2xl p-6 text-sm text-red-800 flex gap-4">
+            <svg className="w-6 h-6 shrink-0 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p>
+              Yanıltıcı bilgi içeren, sahte belge veya kilometre tahrifi yapılmış araç ilanlarını "İlanı Bildir" özelliğini kullanarak bildirmenizi rica ederiz.
+            </p>
+          </section>
+        </div>
+
+        {/* Footer Section */}
+        <div className="bg-gray-100 p-8 text-center text-sm text-gray-500 border-t border-gray-200">
+          <p>© 2025 ExVitrin - Vasıta İlanları Yasal Uyarı ve Tüketici Bilgilendirmesi</p>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -22,6 +22,7 @@ const AdminLayout = () => {
         { name: 'Ödemeler', href: '/admin/promotions', icon: '💰' },
         { name: 'İlanlar', href: '/admin/listings', icon: '📝' },
         { name: 'Kullanıcılar', href: '/admin/users', icon: '👥' },
+        { name: 'Yöneticiler', href: '/admin/admins', icon: '🛡️' },
         { name: 'Kurumsal Satıcılar', href: '/admin/commercial', icon: '🏪' },
         { name: 'İstatistikler', href: '/admin/sales-reports', icon: '📊' },
         { name: 'Bildirimler', href: '/admin/reports', icon: '⚠️' },

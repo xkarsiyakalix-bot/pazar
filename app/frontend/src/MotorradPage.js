@@ -61,9 +61,9 @@ const MotorradPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Şanzıman',
             type: 'multiselect',
             options: [
-                { value: 'Automatik', label: 'Otomatik' },
-                { value: 'Manuell', label: 'Manuel' },
-                { value: 'Halbautomatik', label: 'Yarı Otomatik' }
+                { value: 'Otomatik', label: 'Otomatik' },
+                { value: 'Manuel', label: 'Manuel' },
+                { value: 'Yarı Otomatik', label: 'Yarı Otomatik' }
             ],
             field: 'getriebe'
         },

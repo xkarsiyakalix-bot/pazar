@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import { fetchUserProfile, updateUserProfile } from './api/profile';
+import LoadingSpinner from './components/LoadingSpinner';
 
 const SubscriptionPackages = () => {
     const navigate = useNavigate();
@@ -77,9 +78,11 @@ const SubscriptionPackages = () => {
             features: [
                 'Sınırsız İlan Hakkı',
                 'Tüm Pro Özellikler',
+                'Ücretsiz Vitrin Özelliği',
                 'Özel Müşteri Temsilcisi',
                 'Logo & Banner Desteği',
-                'Reklasız Mağaza Deneyimi'
+                'Reklasız Mağaza Deneyimi',
+                'Özel Mağaza URL\'si (exvitrin.com/isminiz)'
             ],
             color: 'purple',
             buttonText: 'Sınırsıza Geç',
@@ -102,7 +105,7 @@ const SubscriptionPackages = () => {
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+            <LoadingSpinner size="large" />
         </div>
     );
 
@@ -169,7 +172,7 @@ const SubscriptionPackages = () => {
                             >
                                 {processing ? (
                                     <div className="flex items-center justify-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        <LoadingSpinner size="small" />
                                         <span>İşleniyor...</span>
                                     </div>
                                 ) : (

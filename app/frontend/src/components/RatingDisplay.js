@@ -9,10 +9,12 @@ import StarRating from './StarRating';
  * @param {boolean} showDetails - Detaylı puanları göster
  * @param {string} size - Boyut: 'small', 'medium', 'large'
  */
-function RatingDisplay({ userRating, showDetails = false, size = 'medium' }) {
-    if (!userRating || userRating.total_ratings === 0) {
+function RatingDisplay({ userRating, showDetails = false, size = 'medium', center = false }) {
+    const ratingCount = userRating?.count !== undefined ? userRating.count : userRating?.total_ratings;
+
+    if (!userRating || ratingCount === 0 || ratingCount === undefined) {
         return (
-            <div className="text-gray-500 text-sm">
+            <div className={`text-gray-500 text-sm ${center ? 'text-center' : ''}`}>
                 Henüz değerlendirme yok
             </div>
         );
@@ -40,18 +42,14 @@ function RatingDisplay({ userRating, showDetails = false, size = 'medium' }) {
 
     return (
         <div className="space-y-2">
-            {/* Genel Puan */}
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${center ? 'justify-center' : ''}`}>
                 <StarRating
-                    rating={Math.round(userRating.average_rating)}
+                    rating={Math.round(userRating.average || userRating.average_rating || 0)}
                     readOnly
                     size={currentSize.star}
                 />
                 <span className={`font-bold text-gray-900 ${currentSize.text}`}>
-                    {parseFloat(userRating.average_rating).toFixed(1)}
-                </span>
-                <span className={`text-gray-500 ${currentSize.title}`}>
-                    ({userRating.total_ratings} {userRating.total_ratings === 1 ? 'Bewertung' : 'Bewertungen'})
+                    {parseFloat(userRating.average || userRating.average_rating || 0).toFixed(1)}
                 </span>
             </div>
 

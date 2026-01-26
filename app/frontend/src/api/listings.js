@@ -14,6 +14,32 @@ import { supabase } from '../lib/supabase';
 import { getCache, setCache, clearCache } from '../utils/cache';
 
 /**
+ * Helper to mask promotion flags if the promotion has expired
+ * @param {Object} listing - The listing object
+ * @returns {Object} Transformation listing
+ */
+export const applyPromotionExpiry = (listing) => {
+    if (!listing) return listing;
+
+
+    const now = new Date();
+    const expiry = listing.promotion_expiry ? new Date(listing.promotion_expiry) : null;
+
+    if (expiry && expiry < now) {
+        return {
+            ...listing,
+            is_top: false,
+            is_gallery: false,
+            is_highlighted: false,
+            is_multi_bump: false,
+            package_type: 'basic',
+            promotion_expiry: null // Treat as none
+        };
+    }
+    return listing;
+};
+
+/**
  * Fetch all listings with optional filters, pagination and caching
  * @param {Object} filters - Filter options
  * @param {string} filters.category - Main category
@@ -27,8 +53,8 @@ import { getCache, setCache, clearCache } from '../utils/cache';
  * @returns {Promise<Array>} Array of listings
  */
 export const fetchListings = async (filters = {}, options = { count: true }) => {
-    // Generate cache key based on filters - v2 for subcategory mapping fix
-    const cacheKey = 'v2_' + JSON.stringify(filters);
+    // Generate cache key based on filters - v3 for subcategory mapping fix + force-premium override
+    const cacheKey = 'v3_' + JSON.stringify(filters);
     const cachedData = getCache(cacheKey);
 
     if (cachedData) {
@@ -46,12 +72,11 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
     if (filters.sort_by_newest || filters.sort_by === 'created_at') {
         query = query.order('created_at', { ascending: false });
     } else {
-        // Default priority sorting: Promoted first, then newest
+        // Default priority sorting: Promoted first (TOP), then newest
+        // We prioritize 'z_premium' by sorting package_type DESC
         query = query
             .order('is_top', { ascending: false })
-            .order('is_multi_bump', { ascending: false })
-            .order('is_gallery', { ascending: false })
-            .order('is_highlighted', { ascending: false })
+            .order('package_type', { ascending: false })
             .order('created_at', { ascending: false });
     }
 
@@ -122,6 +147,8 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
         'Oyuncaklar': ['Oyuncaklar', 'Oyuncak', 'Spielzeug'],
 
         // Otomobil, Bisiklet & Tekne
+        'Otomobiller': ['Otomobiller', 'Autos'],
+        'Autos': ['Otomobiller', 'Autos'],
         'Bisiklet & Aksesuarlar': ['Bisiklet & Aksesuarlar', 'Bisiklet & Aksesuarları', 'Fahrräder & Zubehör'],
         'Bisiklet & Aksesuarları': ['Bisiklet & Aksesuarlar', 'Bisiklet & Aksesuarları', 'Fahrräder & Zubehör'],
         'Otomobil, Bisiklet & Tekne': ['Otomobil, Bisiklet & Tekne', 'Otomobil, Bisiklet & Tekne Servisi', 'Oto, Bisiklet & Tekne Servisi', 'Auto, Rad & Boot'],
@@ -301,6 +328,7 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
 
         // Transform data to use plural forms for pet subcategories to match frontend expectations
         const transformedData = (data || []).map(item => {
+
             if (item.category === 'Evcil Hayvanlar') {
                 const subCategoryMapping = {
                     'Balık': 'Balıklar',
@@ -312,12 +340,12 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
                     'Kuş': 'Kuşlar',
                     'Hayvan Aksesuarları': 'Aksesuarlar'
                 };
-                return {
+                return applyPromotionExpiry({
                     ...item,
                     sub_category: subCategoryMapping[item.sub_category] || item.sub_category
-                };
+                });
             }
-            return item;
+            return applyPromotionExpiry(item);
         });
 
         // Cache the result
@@ -347,6 +375,7 @@ export const fetchListingById = async (id) => {
         .eq('id', id)
         .single();
 
+
     if (data && data.category === 'Evcil Hayvanlar') {
         const subCategoryMapping = {
             'Balık': 'Balıklar',
@@ -360,8 +389,7 @@ export const fetchListingById = async (id) => {
         };
         data.sub_category = subCategoryMapping[data.sub_category] || data.sub_category;
     }
-
-    return data;
+    return applyPromotionExpiry(data);
 };
 
 /**
@@ -515,7 +543,7 @@ export const fetchUserListings = async (userId) => {
             favorite_count: favoritesCountMap[listing.id] || 0
         }));
 
-        return listingsWithCounts;
+        return listingsWithCounts.map(l => applyPromotionExpiry(l));
     } catch (error) {
         console.error('Error in fetchUserListings:', error);
         return [];
@@ -617,6 +645,26 @@ export const fetchCategoryCounts = async () => {
     }
 };
 /**
+ * Fetch total number of active listings
+ * @returns {Promise<number>} Total count
+ */
+export const fetchTotalActiveListingsCount = async () => {
+    try {
+        const { count, error } = await supabase
+            .from('listings')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'active')
+            .or(`expiry_date.gt.${new Date().toISOString()},expiry_date.is.null`);
+
+        if (error) throw error;
+        return count || 0;
+    } catch (error) {
+        console.error('Error fetching total listing count:', error);
+        return 0; // Fallback
+    }
+};
+
+/**
  * Fetch stats for a specific category to calculate sidebar counts correctly
  * @param {string} category - Category name
  * @param {string} subCategory - Optional subcategory name to filter by
@@ -708,12 +756,12 @@ export const fetchCategoryStats = async (category, subCategory = null) => {
                     'Kuş': 'Kuşlar',
                     'Hayvan Aksesuarları': 'Aksesuarlar'
                 };
-                return {
+                return applyPromotionExpiry({
                     ...item,
                     sub_category: subCategoryMapping[item.sub_category] || item.sub_category
-                };
+                });
             }
-            return item;
+            return applyPromotionExpiry(item);
         });
 
         if (error) throw error;

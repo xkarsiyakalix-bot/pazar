@@ -53,7 +53,7 @@ export const RealEstateFields = ({
     return (
         <div className="space-y-4 pt-4 border-t border-gray-200">
             {/* Specific Art Selectors */}
-            {['Konteyner', 'Tatil ve Yurt Dışı Emlak', 'Ticari Emlak', 'Arsa & Bahçe', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Kiralık Daire', 'Satılık Daire'].includes(subCategory) && (
+            {['Konteyner', 'Tatil Evi & Yurt Dışı Emlak', 'Ticari Emlak', 'Arsa & Bahçe', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Kiralık Daire', 'Satılık Daire', 'Satılık Yazlık'].includes(subCategory) && (
                 <div className="space-y-4 mb-4">
                     {subCategory === 'Ticari Emlak' && (
                         <div>
@@ -121,7 +121,7 @@ export const RealEstateFields = ({
                             </select>
                         </div>
                     )}
-                    {!['Kiralık Evler', 'Satılık Evler', 'Kiralık Daireler', 'Satılık Daireler'].includes(subCategory) && (
+                    {!['Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Kiralık Daire', 'Satılık Daire', 'Satılık Yazlık'].includes(subCategory) && (
                         <div>
                             <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
                             <select
@@ -217,7 +217,7 @@ export const RealEstateFields = ({
                     )}
 
                     {/* Plot Area */}
-                    {['Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Arsa & Bahçe'].includes(subCategory) && (
+                    {['Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Arsa & Bahçe', 'Satılık Yazlık'].includes(subCategory) && (
                         <div>
                             <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.lotArea}</label>
                             <input
@@ -285,7 +285,7 @@ export const RealEstateFields = ({
                     )}
 
                     {/* Construction Year */}
-                    {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev'].includes(subCategory) && (
+                    {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Satılık Yazlık'].includes(subCategory) && (
                         <div>
                             <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.buildYear}</label>
                             <input
@@ -315,7 +315,7 @@ export const RealEstateFields = ({
                     )}
 
                     {/* Commission */}
-                    {['Satılık Daire', 'Satılık Müstakil Ev', 'Arsa & Bahçe', 'Ticari Emlak', 'Garaj & Park Yeri'].includes(subCategory) && (
+                    {['Satılık Daire', 'Satılık Müstakil Ev', 'Arsa & Bahçe', 'Ticari Emlak', 'Garaj & Park Yeri', 'Satılık Yazlık'].includes(subCategory) && (
                         <div>
                             <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.commission}</label>
                             <select
@@ -389,7 +389,7 @@ export const RealEstateFields = ({
                         </>
                     )}
 
-                    {subCategory === 'Tatil ve Yurt Dışı Emlak' && (
+                    {subCategory === 'Tatil Evi & Yurt Dışı Emlak' && (
                         <div>
                             <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.location}</label>
                             <select
@@ -407,7 +407,7 @@ export const RealEstateFields = ({
             )}
 
             {/* Features (Checkboxes) */}
-            {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Geçici Konaklama & Paylaşımlı Ev', 'Tatil ve Yurt Dışı Emlak'].includes(subCategory) && (
+            {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Geçici Konaklama & Paylaşımlı Ev', 'Tatil Evi & Yurt Dışı Emlak', 'Satılık Yazlık'].includes(subCategory) && (
                 <div>
                     <label className="block text-sm text-gray-600 mb-2">{t.addListing.realEstate.amenities}</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -475,7 +475,7 @@ export const RealEstateFields = ({
             )}
 
             {/* General Features */}
-            {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Geçici Konaklama & Paylaşımlı Ev', 'Tatil ve Yurt Dışı Emlak', 'Ticari Emlak'].includes(subCategory) && (
+            {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Geçici Konaklama & Paylaşımlı Ev', 'Tatil Evi & Yurt Dışı Emlak', 'Ticari Emlak', 'Satılık Yazlık'].includes(subCategory) && (
                 <div>
                     <label className="block text-sm text-gray-600 mb-2">{t.addListing.realEstate.generalFeatures}</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">

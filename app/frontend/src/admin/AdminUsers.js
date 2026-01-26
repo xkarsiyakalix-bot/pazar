@@ -204,6 +204,32 @@ const AdminUsers = () => {
                                         >
                                             {user.status === 'banned' ? 'Engeli Kaldır' : 'Engelle'}
                                         </button>
+                                        {!user.is_admin && user.user_number !== 1001 && (
+                                            <button
+                                                onClick={async () => {
+                                                    if (window.confirm(`${user.email} kullanıcısını yönetici yapmak istiyor musunuz?`)) {
+                                                        try {
+                                                            const { error } = await supabase.from('profiles').update({ is_admin: true }).eq('id', user.id);
+                                                            if (error) throw error;
+
+                                                            alert('Kullanıcı yönetici yapıldı! Yöneticiler sayfasından yönetebilirsiniz.');
+                                                            setUsers(users.map(u => u.id === user.id ? { ...u, is_admin: true } : u));
+                                                        } catch (error) {
+                                                            console.error('Error making admin:', error);
+                                                            if (error.message?.includes('Could not find the') || error.message?.includes('is_admin')) {
+                                                                alert('HATA: "is_admin" kolonu hala görünmüyor.\n\nLÜTFEN MANUEL EKLEYİN:\n1. Supabase Panelinde "Table Editor"e gidin.\n2. "profiles" tablosunu açın.\n3. "New Column" (veya +) butonuna basın.\n4. Name: is_admin\n5. Type: Boolean\n6. Default Value: FALSE\n7. Save\'e basın.');
+                                                            } else {
+                                                                alert('Hata: ' + error.message);
+                                                            }
+                                                        }
+                                                    }
+                                                }}
+                                                className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 transition-colors"
+                                                title="Yönetici Yap"
+                                            >
+                                                🛡️
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

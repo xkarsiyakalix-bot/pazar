@@ -1,25 +1,37 @@
 {
-    "short_name": "LokalPazar",
-    "name": "LokalPazar - Ücretsiz İlanlar",
+    "short_name": "ExVitrin",
+    "name": "ExVitrin - Türkiye'nin İlan Pazaryeri",
+    "description": "Araba, emlak, elektronik ve daha fazlasını ExVitrin'de keşfedin",
     "icons": [
         {
-            "src": "favicon.png",
+            "src": "logo_exvitrin_2026_cropped.png",
             "sizes": "64x64 32x32 24x24 16x16",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
-            "src": "logo.png",
+            "src": "logo_exvitrin_2026_cropped.png",
             "type": "image/png",
-            "sizes": "192x192"
+            "sizes": "192x192",
+            "purpose": "any maskable"
         },
         {
-            "src": "favicon.png",
+            "src": "logo_exvitrin_2026_cropped.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "any maskable"
         }
     ],
-    "start_url": ".",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff"
+    "orientation": "portrait-primary",
+    "theme_color": "#EF4444",
+    "background_color": "#FFFFFF",
+    "categories": [
+        "shopping",
+        "lifestyle"
+    ],
+    "lang": "tr",
+    "dir": "ltr"
 }

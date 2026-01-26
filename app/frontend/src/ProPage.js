@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { t } from './translations';
 
 function ProPage() {
     const navigate = useNavigate();
@@ -11,55 +12,55 @@ function ProPage() {
     const packages = [
         {
             name: 'Basic',
-            subtitle: 'Professioneller Anfang',
+            subtitle: t.pro.packages.basic.subtitle,
             price: 59,
             features: 11,
             color: 'blue',
-            description: 'Perfekt für den Start',
+            description: t.pro.packages.basic.description,
             mainFeatures: [
-                'Detaillierte Unternehmensseite',
-                'Startseitenplatzierung in Kategorien',
-                'Unbegrenzte Anzeigenlaufzeit',
-                'Eigene PRO URL',
-                'Automatisches Hochschieben',
-                'Artikelseite frei von Anzeigen anderer Verkäufer',
-                'Exklusive Sichtbarkeitspakete',
-                'Komfortable Anzeigenverwaltung',
-                'Anzeigenstatistik',
-                'Verkaufslabels',
-                'Verkaufsschild generieren'
+                t.pro.packages.features.companyPage,
+                t.pro.packages.features.categoryPlacement,
+                t.pro.packages.features.unlimitedRuntime,
+                t.pro.packages.features.proUrl,
+                t.pro.packages.features.autoPush,
+                t.pro.packages.features.noCompetitorAds,
+                t.pro.packages.features.exclusiveVisibility,
+                t.pro.packages.features.easyManagement,
+                t.pro.packages.features.stats,
+                t.pro.packages.features.salesLabels,
+                t.pro.packages.features.salesSign
             ]
         },
         {
             name: 'Power',
-            subtitle: 'Verstärkte Sichtbarkeit',
+            subtitle: t.pro.packages.power.subtitle,
             price: 129,
             features: 16,
             color: 'purple',
             popular: true,
-            description: 'Maximale Reichweite',
+            description: t.pro.packages.power.description,
             mainFeatures: [
-                'Alle Basic-Funktionen',
-                'Startseitenplatzierung',
-                'Follower-Ansprache',
-                'Favoriten-Ansprache',
-                'Anbietervorschau in Suchergebnissen',
-                '1 dauerhafte Top-Anzeige'
+                t.pro.packages.features.basicFunctions,
+                t.pro.packages.features.homePlacement,
+                t.pro.packages.features.followerEngagement,
+                t.pro.packages.features.favoriteEngagement,
+                t.pro.packages.features.providerPreview,
+                t.pro.packages.features.topAd1
             ]
         },
         {
             name: 'Premium',
-            subtitle: 'Erstklassiger Gesamtauftritt',
+            subtitle: t.pro.packages.premium.subtitle,
             price: 189,
             features: 20,
             color: 'red',
-            description: 'Vollständige Kontrolle',
+            description: t.pro.packages.premium.description,
             mainFeatures: [
-                'Alle Power-Funktionen',
-                'Werbefreie Anzeigenseite',
-                'Individualisierbare Unternehmensseite',
-                'Erweiterte Anzeigengestaltung',
-                '2 Top-Anzeigen (insgesamt)'
+                t.pro.packages.features.powerFunctions,
+                t.pro.packages.features.adFreePage,
+                t.pro.packages.features.customCompanyPage,
+                t.pro.packages.features.advancedDesign,
+                t.pro.packages.features.topAd2
             ]
         }
     ];
@@ -97,9 +98,9 @@ function ProPage() {
                         <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-6">
                             <span className="text-sm font-semibold">PRO</span>
                         </div>
-                        <h1 className="text-5xl font-bold mb-6">Kleinanzeigen PRO</h1>
+                        <h1 className="text-5xl font-bold mb-6">{t.pro.intro.title}</h1>
                         <p className="text-xl text-red-100 max-w-3xl mx-auto">
-                            Die Lösung für gewerbliche Anbieter, um noch mehr Wachstum zu erzielen
+                            {t.pro.hero.subtitle}
                         </p>
                     </div>
                 </div>
@@ -109,41 +110,44 @@ function ProPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
                     <p className="text-lg text-gray-700 leading-relaxed">
-                        Nutzen Sie Kleinanzeigen gewerblich? Dann buchen Sie ein PRO Paket und erhalten Sie Zugang zu einer Vielzahl von Funktionen.
-                        Profitieren Sie unter anderem von einem <span className="font-semibold text-red-600">starken Unternehmensauftritt</span>,
-                        mehr <span className="font-semibold text-red-600">Sichtbarkeit für Ihre Anzeigen</span> und einer
-                        <span className="font-semibold text-red-600"> einfachen Verwaltung</span> Ihres Angebotsbestands.
+                        {t.pro.intro.description.split('Kurumsal görünümden')[0]}
+                        <span className="font-semibold text-red-600">güçlü bir kurumsal görünümden</span>,
+                        {t.pro.intro.description.split('güçlü bir kurumsal görünümden')[1]?.split('daha fazla görünürlükten')[0]}
+                        <span className="font-semibold text-red-600">ilanlarınız için daha fazla görünürlükten</span>
+                        {t.pro.intro.description.split('daha fazla görünürlükten')[1]?.split('kolay yönetiminden')[0]}
+                        <span className="font-semibold text-red-600"> kolay yönetiminden</span>
+                        {t.pro.intro.description.split('kolay yönetiminden')[1]}
                     </p>
                 </div>
 
                 {/* Ad Selector */}
                 <div className="mb-16">
                     <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-                        Jetzt Anzeigenanzahl und PRO Paket wählen
+                        {t.pro.selector.title}
                     </h2>
                     <div className="bg-white rounded-2xl shadow-xl p-8">
                         <label className="block text-lg font-semibold text-gray-900 mb-6">
-                            Aktive Anzeigen, die Sie im Monat benötigen
+                            {t.pro.selector.label}
                         </label>
                         <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
                             {adOptions.map((num) => (
                                 <button
                                     key={num}
                                     onClick={() => setSelectedAds(num)}
-                                    className={`py - 4 px - 6 rounded - xl font - semibold transition - all duration - 200 ${selectedAds === num
+                                    className={`py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${selectedAds === num
                                         ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg scale-105'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        } `}
+                                        }`}
                                 >
                                     {num}
                                 </button>
                             ))}
                             <button
                                 onClick={() => setSelectedAds(400)}
-                                className={`py - 4 px - 6 rounded - xl font - semibold transition - all duration - 200 ${selectedAds === 400
+                                className={`py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${selectedAds === 400
                                     ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg scale-105'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    } `}
+                                    }`}
                             >
                                 400+
                             </button>
@@ -173,7 +177,7 @@ function ProPage() {
                                 )}
                                 {pkg.popular && (
                                     <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-2 rounded-bl-2xl font-semibold">
-                                        Beliebt
+                                        {t.pro.packages.popular}
                                     </div>
                                 )}
 
@@ -182,15 +186,15 @@ function ProPage() {
                                     <p className="text-white/90 mb-6">{pkg.subtitle}</p>
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-5xl font-bold">{pkg.price}₺</span>
-                                        <span className="text-white/80">/ Monat</span>
+                                        <span className="text-white/80">{t.pro.packages.perMonth}</span>
                                     </div>
-                                    <p className="text-sm text-white/80 mt-2">bis zu {selectedAds} Anzeigen - zzgl. MwSt.</p>
+                                    <p className="text-sm text-white/80 mt-2">{t.pro.packages.upTo.replace('{count}', selectedAds)}</p>
                                 </div>
 
                                 <div className="p-8">
                                     <div className="mb-6">
                                         <span className="inline-block bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold">
-                                            {pkg.features} Funktionen
+                                            {t.pro.packages.functions.replace('{count}', pkg.features)}
                                         </span>
                                     </div>
 
@@ -215,11 +219,11 @@ function ProPage() {
                                             : `bg-gradient-to-r ${colors.bg} ${colors.hover} text-white`
                                             }`}
                                     >
-                                        {isSelected ? '✓ Ausgewählt' : `${pkg.name} auswählen`}
+                                        {isSelected ? t.pro.packages.selected : `${pkg.name} ${t.pro.packages.select}`}
                                     </button>
 
                                     <button className="w-full mt-3 text-gray-600 hover:text-gray-900 font-medium py-2 transition-colors">
-                                        Mehr Info →
+                                        {t.pro.packages.moreInfo} →
                                     </button>
                                 </div>
                             </div>
@@ -229,38 +233,38 @@ function ProPage() {
 
                 {/* Benefits Section */}
                 <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-2xl p-12 text-white mb-16">
-                    <h2 className="text-3xl font-bold mb-8 text-center">Warum Kleinanzeigen PRO?</h2>
+                    <h2 className="text-3xl font-bold mb-8 text-center">{t.pro.benefits.title}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
                             {
                                 icon: '🚀',
-                                title: 'Mehr Sichtbarkeit',
-                                description: 'Ihre Anzeigen werden prominent platziert und erreichen mehr potenzielle Kunden'
+                                title: t.pro.benefits.visibility.title,
+                                description: t.pro.benefits.visibility.description
                             },
                             {
                                 icon: '⭐',
-                                title: 'Professioneller Auftritt',
-                                description: 'Präsentieren Sie Ihr Unternehmen mit einer detaillierten Unternehmensseite'
+                                title: t.pro.benefits.appearance.title,
+                                description: t.pro.benefits.appearance.description
                             },
                             {
                                 icon: '📊',
-                                title: 'Detaillierte Statistiken',
-                                description: 'Verfolgen Sie den Erfolg Ihrer Anzeigen mit monatlichen Reports'
+                                title: t.pro.benefits.stats.title,
+                                description: t.pro.benefits.stats.description
                             },
                             {
                                 icon: '🎯',
-                                title: 'Zielgerichtete Werbung',
-                                description: 'Erreichen Sie Ihre Zielgruppe durch optimierte Platzierungen'
+                                title: t.pro.benefits.target.title,
+                                description: t.pro.benefits.target.description
                             },
                             {
                                 icon: '💼',
-                                title: 'Einfache Verwaltung',
-                                description: 'Verwalten Sie alle Ihre Anzeigen zentral und effizient'
+                                title: t.pro.benefits.management.title,
+                                description: t.pro.benefits.management.description
                             },
                             {
                                 icon: '🔒',
-                                title: 'Vertrauenswürdig',
-                                description: 'Verkaufslabels und Zertifizierungen stärken das Vertrauen'
+                                title: t.pro.benefits.trust.title,
+                                description: t.pro.benefits.trust.description
                             }
                         ].map((benefit, idx) => (
                             <div key={idx} className="text-center">
@@ -274,43 +278,41 @@ function ProPage() {
 
                 {/* CTA Section */}
                 <div className="bg-gradient-to-r from-red-600 to-rose-600 rounded-2xl shadow-2xl p-12 text-white text-center">
-                    <h2 className="text-4xl font-bold mb-4">Bereit durchzustarten?</h2>
+                    <h2 className="text-4xl font-bold mb-4">{t.pro.cta.title}</h2>
                     {selectedPackage ? (
                         <>
                             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 mb-6 max-w-md mx-auto">
-                                <p className="text-lg mb-2">Ausgewähltes Paket:</p>
+                                <p className="text-lg mb-2">{t.pro.cta.selected}</p>
                                 <p className="text-3xl font-bold mb-2">{selectedPackage}</p>
                                 <p className="text-xl">
-                                    {packages.find(p => p.name === selectedPackage)?.price}₺ / Monat
+                                    {packages.find(p => p.name === selectedPackage)?.price}₺ {t.pro.packages.perMonth}
                                 </p>
                                 <p className="text-sm text-red-100 mt-2">
-                                    {selectedAds} Anzeigen - zzgl. MwSt.
+                                    {t.pro.cta.ads.replace('{count}', selectedAds)}
                                 </p>
                             </div>
                             <p className="text-xl text-red-100 mb-8 max-w-2xl mx-auto">
-                                Ohne Risiko und jederzeit kündbar zum Ende des Folgemonats.
+                                {t.pro.cta.riskFree}
                             </p>
                             <button
                                 onClick={() => {
                                     alert(`Vielen Dank für Ihr Interesse am ${selectedPackage} Paket!\n\nSie werden zur Checkout-Seite weitergeleitet.`);
-                                    // Hier könnte die Navigation zur Checkout-Seite erfolgen
-                                    // navigate('/checkout');
                                 }}
                                 className="bg-white text-red-600 font-bold py-4 px-12 rounded-xl text-lg hover:bg-gray-100 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
                             >
-                                Jetzt {selectedPackage} buchen
+                                {t.pro.cta.bookNow.replace('{package}', selectedPackage)}
                             </button>
                         </>
                     ) : (
                         <>
                             <p className="text-xl text-red-100 mb-8 max-w-2xl mx-auto">
-                                Wählen Sie zuerst ein Paket aus, um fortzufahren.
+                                {t.pro.cta.chooseFirst}
                             </p>
                             <button
                                 disabled
                                 className="bg-gray-400 text-gray-200 font-bold py-4 px-12 rounded-xl text-lg cursor-not-allowed opacity-60"
                             >
-                                Paket auswählen
+                                {t.pro.cta.chooseBtn}
                             </button>
                         </>
                     )}
@@ -321,10 +323,10 @@ function ProPage() {
                     <div className="flex items-center justify-center gap-8 flex-wrap">
                         <div className="text-center">
                             <div className="text-5xl mb-4">💬</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Noch Fragen?</h3>
-                            <p className="text-gray-600 mb-4">Kontaktieren Sie uns direkt!</p>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">{t.pro.contact.title}</h3>
+                            <p className="text-gray-600 mb-4">{t.pro.contact.subtitle}</p>
                             <a href="tel:+493070016033" className="text-red-600 font-semibold hover:underline">
-                                Tel.: +49 30 700160333
+                                {t.pro.contact.tel} +49 30 700160333
                             </a>
                         </div>
                     </div>
@@ -333,8 +335,7 @@ function ProPage() {
                 {/* Footer Note */}
                 <div className="mt-8 text-center text-sm text-gray-500">
                     <p>
-                        ¹ Die jeweilige Paketgröße entspricht der Anzahl der Anzeigen, die Sie gleichzeitig online haben können.
-                        Die maximale Anzahl der Anzeigen, die Sie pro Monat neu erstellen können, entspricht auch der jeweiligen Paketgröße.
+                        {t.pro.footnote}
                     </p>
                 </div>
             </div>

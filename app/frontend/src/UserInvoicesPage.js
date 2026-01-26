@@ -3,6 +3,7 @@ import { supabase } from './lib/supabase';
 import { useAuth } from './contexts/AuthContext';
 import ProfileLayout from './ProfileLayout';
 import InvoiceModal from './components/InvoiceModal';
+import LoadingSpinner from './components/LoadingSpinner';
 
 const UserInvoicesPage = () => {
     const { user } = useAuth();
@@ -42,7 +43,7 @@ const UserInvoicesPage = () => {
         return (
             <ProfileLayout>
                 <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                    <LoadingSpinner size="medium" />
                 </div>
             </ProfileLayout>
         );
@@ -96,12 +97,20 @@ const UserInvoicesPage = () => {
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-1 h-8 bg-red-600 rounded-full"></div>
-                                                <span className="font-black text-gray-800 text-sm uppercase tracking-tight">{promo.package_type}</span>
+                                                <span className="font-black text-gray-800 text-sm uppercase tracking-tight">
+                                                    {promo.package_type === 'highlight' ? 'Öne Çıkarılan' :
+                                                        ['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase()) ? 'Vitrin' :
+                                                            promo.package_type === 'top' ? 'Top' :
+                                                                promo.package_type === 'budget' ? 'Budget' :
+                                                                    promo.package_type === 'premium' ? 'Premium' :
+                                                                        promo.package_type === 'plus' ? 'Plus' :
+                                                                            promo.package_type}
+                                                </span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
                                             <div className="text-sm font-medium text-gray-600 truncate max-w-[200px]" title={promo.listings?.title}>
-                                                {promo.listings?.title || 'İlan silinmiş'}
+                                                {promo.listings?.title || 'Abonelik Paketi'}
                                             </div>
                                         </td>
                                         <td className="px-8 py-6 text-right">

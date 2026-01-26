@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LoadingSpinner from '../LoadingSpinner';
 import { t } from '../../translations';
 
 const PromotionModal = ({ isOpen, onClose, onConfirm, listingTitle }) => {
@@ -10,7 +11,9 @@ const PromotionModal = ({ isOpen, onClose, onConfirm, listingTitle }) => {
     const packages = [
         { id: 'gallery', key: 'gallery', icon: '🌟' },
         { id: 'top', key: 'top', icon: '🔝' },
-        { id: 'highlight', key: 'highlight', icon: '🎨' }
+        { id: 'highlight', key: 'highlight', icon: '🎨' },
+        { id: 'multi-bump', key: 'multi_bump', icon: '⚡' },
+        { id: 'premium', key: 'premium', icon: '👑' }
     ];
 
     const handleConfirm = async () => {
@@ -52,8 +55,8 @@ const PromotionModal = ({ isOpen, onClose, onConfirm, listingTitle }) => {
                                     key={pkg.id}
                                     onClick={() => setSelectedPackage(pkg.id)}
                                     className={`relative p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 group ${selectedPackage === pkg.id
-                                            ? 'border-red-500 bg-red-50 shadow-md scale-[1.02]'
-                                            : 'border-gray-100 hover:border-red-200 hover:bg-gray-50'
+                                        ? 'border-red-500 bg-red-50 shadow-md scale-[1.02]'
+                                        : 'border-gray-100 hover:border-red-200 hover:bg-gray-50'
                                         }`}
                                 >
                                     <div className="flex items-center gap-4">
@@ -84,8 +87,8 @@ const PromotionModal = ({ isOpen, onClose, onConfirm, listingTitle }) => {
                                 disabled={!selectedPackage}
                                 onClick={handleConfirm}
                                 className={`w-full mt-8 font-bold py-4 rounded-xl shadow-lg transition-all duration-200 ${selectedPackage
-                                        ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white transform hover:-translate-y-1'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                    ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white transform hover:-translate-y-1'
+                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                     }`}
                             >
                                 {t.promotions.continue}
@@ -96,7 +99,7 @@ const PromotionModal = ({ isOpen, onClose, onConfirm, listingTitle }) => {
                     {status === 'payment' && (
                         <div className="py-12 text-center space-y-6">
                             <div className="relative inline-block">
-                                <div className="w-20 h-20 border-4 border-red-100 border-t-red-500 rounded-full animate-spin"></div>
+                                <LoadingSpinner size="large" />
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <span className="text-2xl">💳</span>
                                 </div>

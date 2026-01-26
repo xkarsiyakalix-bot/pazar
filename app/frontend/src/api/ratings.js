@@ -1,56 +1,37 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * Ratings API
- * Puanlama işlemleri için fonksiyonlar
+ * Submit a rating for a user
+ * @param {string} ratedId - ID of user being rated
+ * @param {number} rating - 1 to 5 stars
+ * @param {string} comment - Optional text comment
  */
-
-/**
- * Puanlama gönder
- * @param {object} ratingData - Puanlama verisi
- */
-export const submitRating = async (ratingData) => {
-    const {
-        transactionId,
-        sellerId,
-        buyerId,
-        listingId,
-        communicationRating,
-        descriptionRating,
-        deliveryRating,
-        overallRating,
-        reviewText
-    } = ratingData;
-
+export const submitRating = async (ratedId, rating, comment) => {
     try {
-        // Puanlamayı ekle
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        // Check eligibility first
+        const canRate = await checkRatingEligibility(ratedId);
+        if (!canRate) {
+            throw new Error('Rating eligibility requirement not met (min 5 messages)');
+        }
+
+        // Use upsert to update existing rating or insert new one
         const { data, error } = await supabase
-            .from('seller_ratings')
-            .insert({
-                transaction_id: transactionId,
-                seller_id: sellerId,
-                buyer_id: buyerId,
-                listing_id: listingId,
-                communication_rating: communicationRating,
-                description_rating: descriptionRating,
-                delivery_rating: deliveryRating,
-                overall_rating: overallRating,
-                review_text: reviewText
+            .from('ratings')
+            .upsert({
+                rater_id: user.id,
+                rated_id: ratedId,
+                rating,
+                comment
+            }, {
+                onConflict: 'rater_id,rated_id'
             })
             .select()
             .single();
 
         if (error) throw error;
-
-        // Transaction'ı güncelle (buyer_rated = true)
-        await supabase
-            .from('transactions')
-            .update({ buyer_rated: true })
-            .eq('id', transactionId);
-
-        // Satıcının ortalama puanlarını güncelle
-        await updateSellerAverages(sellerId);
-
         return data;
     } catch (error) {
         console.error('Error submitting rating:', error);
@@ -59,175 +40,130 @@ export const submitRating = async (ratingData) => {
 };
 
 /**
- * Satıcının ortalama puanlarını güncelle
- * @param {string} sellerId - Satıcı ID
+ * Check if current user can rate target user
+ * @param {string} targetUserId - ID of user to rate
+ * @returns {Promise<boolean>} True if eligible
  */
-export const updateSellerAverages = async (sellerId) => {
+export const checkRatingEligibility = async (targetUserId) => {
     try {
-        // Satıcının tüm puanlarını al
-        const { data: ratings, error } = await supabase
-            .from('seller_ratings')
-            .select('*')
-            .eq('seller_id', sellerId);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
 
-        if (error) throw error;
-
-        if (ratings.length === 0) return;
-
-        // Ortalamaları hesapla
-        const totalRatings = ratings.length;
-        const communicationAvg = ratings.reduce((sum, r) => sum + r.communication_rating, 0) / totalRatings;
-        const descriptionAvg = ratings.reduce((sum, r) => sum + r.description_rating, 0) / totalRatings;
-        const deliveryAvg = ratings.reduce((sum, r) => sum + r.delivery_rating, 0) / totalRatings;
-        const overallAvg = ratings.reduce((sum, r) => sum + r.overall_rating, 0) / totalRatings;
-
-        // user_ratings tablosunu güncelle veya oluştur
-        const { data: existing } = await supabase
-            .from('user_ratings')
-            .select('*')
-            .eq('user_id', sellerId)
-            .single();
-
-        if (existing) {
-            // Güncelle
-            await supabase
-                .from('user_ratings')
-                .update({
-                    total_ratings: totalRatings,
-                    communication_avg: communicationAvg.toFixed(2),
-                    description_avg: descriptionAvg.toFixed(2),
-                    delivery_avg: deliveryAvg.toFixed(2),
-                    average_rating: overallAvg.toFixed(2),
-                    updated_at: new Date().toISOString()
-                })
-                .eq('user_id', sellerId);
-        } else {
-            // Oluştur
-            await supabase
-                .from('user_ratings')
-                .insert({
-                    user_id: sellerId,
-                    total_ratings: totalRatings,
-                    communication_avg: communicationAvg.toFixed(2),
-                    description_avg: descriptionAvg.toFixed(2),
-                    delivery_avg: deliveryAvg.toFixed(2),
-                    average_rating: overallAvg.toFixed(2)
-                });
-        }
-
-        return {
-            totalRatings,
-            communicationAvg,
-            descriptionAvg,
-            deliveryAvg,
-            averageRating: overallAvg
-        };
-    } catch (error) {
-        console.error('Error updating seller averages:', error);
-        throw error;
-    }
-};
-
-/**
- * Satıcının puanlarını al
- * @param {string} sellerId - Satıcı ID
- * @param {number} limit - Maksimum sonuç sayısı
- */
-export const getSellerRatings = async (sellerId, limit = 50) => {
-    try {
+        // Use RPC function if available for secure server-side check
         const { data, error } = await supabase
-            .from('seller_ratings')
-            .select('*')
-            .eq('seller_id', sellerId)
-            .order('created_at', { ascending: false })
-            .limit(limit);
+            .rpc('check_rating_eligibility', {
+                user1_id: user.id,
+                user2_id: targetUserId
+            });
 
-        if (error) throw error;
-        return data;
-    } catch (error) {
-        console.error('Error fetching seller ratings:', error);
-        throw error;
-    }
-};
+        if (error) {
+            // Fallback: Client-side count if RPC missing (less secure but works for MVP)
+            console.warn('RPC check failed, falling back to client-side count:', error);
 
-/**
- * Kullanıcının puanlama bilgilerini al
- * @param {string} userId - Kullanıcı ID
- */
-export const getUserRating = async (userId) => {
-    try {
-        const { data, error } = await supabase
-            .from('user_ratings')
-            .select('*')
-            .eq('user_id', userId)
-            .single();
+            // Count messages sent by ME to HIM
+            const { count: sentCount } = await supabase
+                .from('messages')
+                .select('*', { count: 'exact', head: true })
+                .eq('sender_id', user.id)
+                .eq('receiver_id', targetUserId);
 
-        if (error && error.code !== 'PGRST116') throw error;
+            // Count messages sent by HIM to ME
+            const { count: receivedCount } = await supabase
+                .from('messages')
+                .select('*', { count: 'exact', head: true })
+                .eq('sender_id', targetUserId)
+                .eq('receiver_id', user.id);
 
-        // Eğer kayıt yoksa default değerler döndür
-        if (!data) {
-            return {
-                user_id: userId,
-                average_rating: 0,
-                total_ratings: 0,
-                communication_avg: 0,
-                description_avg: 0,
-                delivery_avg: 0
-            };
+            const total = (sentCount || 0) + (receivedCount || 0);
+            return total >= 5;
         }
 
         return data;
     } catch (error) {
-        console.error('Error fetching user rating:', error);
-        throw error;
+        console.error('Error checking rating eligibility:', error);
+        return false;
     }
 };
 
 /**
- * Kullanıcının yaptığı puanlamaları al
- * @param {string} buyerId - Alıcı ID
+ * Fetch ratings for a specific user
+ * @param {string} userId - User ID
  */
-export const getUserGivenRatings = async (buyerId) => {
+export const getRatings = async (userId) => {
     try {
         const { data, error } = await supabase
-            .from('seller_ratings')
-            .select('*')
-            .eq('buyer_id', buyerId)
+            .from('ratings')
+            .select(`
+                *,
+                rater:profiles!rater_id(full_name, avatar_url, store_logo)
+            `)
+            .eq('rated_id', userId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data;
     } catch (error) {
-        console.error('Error fetching user given ratings:', error);
-        throw error;
+        console.error('Error fetching ratings:', error);
+        return [];
     }
 };
 
 /**
- * Belirli bir işlem için puanlama var mı kontrol et
- * @param {string} transactionId - İşlem ID
+ * Get average rating for a user
+ * @param {string} userId 
  */
-export const hasRating = async (transactionId) => {
+export const getUserAverageRating = async (userId) => {
     try {
         const { data, error } = await supabase
-            .from('seller_ratings')
-            .select('id')
-            .eq('transaction_id', transactionId)
-            .single();
+            .from('ratings')
+            .select('rating')
+            .eq('rated_id', userId);
 
-        if (error && error.code !== 'PGRST116') throw error;
-        return !!data;
+        if (error) throw error;
+
+        if (!data || data.length === 0) return { average: 0, count: 0 };
+
+        const sum = data.reduce((acc, curr) => acc + curr.rating, 0);
+        const average = sum / data.length;
+
+        return {
+            average: parseFloat(average.toFixed(1)),
+            count: data.length
+        };
     } catch (error) {
-        console.error('Error checking rating:', error);
-        throw error;
+        console.error('Error calculating average rating:', error);
+        return { average: 0, count: 0 };
     }
 };
 
-export default {
-    submitRating,
-    updateSellerAverages,
-    getSellerRatings,
-    getUserRating,
-    getUserGivenRatings,
-    hasRating
+// Alias for backward compatibility
+export const getUserRating = getUserAverageRating;
+
+/**
+ * Check if the current user has already rated the target user
+ * @param {string} ratedId - ID of the user being rated
+ * @returns {Promise<boolean>} True if already rated
+ */
+export const hasUserRated = async (ratedId) => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+
+        const { data, error } = await supabase
+            .from('ratings')
+            .select('id')
+            .eq('rater_id', user.id)
+            .eq('rated_id', ratedId)
+            .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+            // console.error('Error checking if user rated:', error);
+            return false;
+        }
+
+        return !!data;
+    } catch (error) {
+        console.error('Error checking if user rated:', error);
+        return false;
+    }
 };

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { fetchUserListings } from './api/listings';
 import { HorizontalListingCard } from './components';
+import LoadingSpinner from './components/LoadingSpinner';
 
 import ProfileLayout from './ProfileLayout';
 
@@ -49,7 +50,7 @@ const MyListingsPage = () => {
     if (loading || authLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <LoadingSpinner size="large" />
             </div>
         );
     }

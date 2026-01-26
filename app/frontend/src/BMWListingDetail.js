@@ -44,7 +44,7 @@ function BMWListingDetail() {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
-                    Zurück zu Autos
+                    Arabalara Geri Dön
                 </button>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -119,13 +119,13 @@ function BMWListingDetail() {
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-start gap-3 flex-1">
                                     <h1 className="text-3xl font-bold text-gray-900">
-                                        BMW 320d Limousine - Gepflegter Zustand
+                                        BMW 320d Limousine - Bakımlı Durum
                                     </h1>
                                     {/* Favorite Button */}
                                     <button
                                         onClick={() => setIsFavorite(!isFavorite)}
                                         className="flex-shrink-0 p-2 rounded-full hover:bg-gray-100 transition-colors group"
-                                        title={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
+                                        title={isFavorite ? "Favorilerden çıkar" : "Favorilere ekle"}
                                     >
                                         <svg
                                             className={`w-7 h-7 transition-all ${isFavorite ? 'fill-red-500 text-red-500' : 'fill-none text-gray-400 group-hover:text-red-500'}`}
@@ -139,98 +139,98 @@ function BMWListingDetail() {
                                 </div>
                                 <div className="text-right ml-4">
                                     <div className="text-3xl font-bold text-red-600">18.500 ₺</div>
-                                    <div className="text-sm text-gray-500">VB</div>
+                                    <div className="text-sm text-gray-500">Pazarlıklı</div>
                                 </div>
                             </div>
 
                             {/* Key Details */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t border-b border-gray-200">
                                 <div>
-                                    <div className="text-sm text-gray-500">Kilometerstand</div>
+                                    <div className="text-sm text-gray-500">Kilometre</div>
                                     <div className="font-semibold text-gray-900">85.000 km</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-gray-500">Erstzulassung</div>
+                                    <div className="text-sm text-gray-500">İlk Tescil</div>
                                     <div className="font-semibold text-gray-900">03/2018</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-gray-500">Kraftstoff</div>
+                                    <div className="text-sm text-gray-500">Yakıt</div>
                                     <div className="font-semibold text-gray-900">Diesel</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-gray-500">Leistung</div>
+                                    <div className="text-sm text-gray-500">Güç</div>
                                     <div className="font-semibold text-gray-900">190 PS (140 kW)</div>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
                                 <div>
-                                    <div className="text-sm text-gray-500">Getriebe</div>
-                                    <div className="font-semibold text-gray-900">Automatik</div>
+                                    <div className="text-sm text-gray-500">Şanzıman</div>
+                                    <div className="font-semibold text-gray-900">Otomatik</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-gray-500">Fahrzeugtyp</div>
+                                    <div className="text-sm text-gray-500">Araç Tipi</div>
                                     <div className="font-semibold text-gray-900">Limousine</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-gray-500">Anzahl Türen</div>
+                                    <div className="text-sm text-gray-500">Kapı Sayısı</div>
                                     <div className="font-semibold text-gray-900">4/5</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-gray-500">Außenfarbe</div>
-                                    <div className="font-semibold text-gray-900">Schwarz</div>
+                                    <div className="text-sm text-gray-500">Dış Renk</div>
+                                    <div className="font-semibold text-gray-900">Siyah</div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Features */}
                         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Ausstattung</h2>
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">Donanım</h2>
 
                             <div className="mb-6">
-                                <h3 className="font-semibold text-gray-900 mb-3">Außenausstattung</h3>
+                                <h3 className="font-semibold text-gray-900 mb-3">Dış Donanım</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Xenon-/LED-Scheinwerfer
+                                        Xenon-/LED Farlar
                                     </div>
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Einparkhilfe
+                                        Park Yardımı
                                     </div>
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Leichtmetallfelgen
+                                        Alaşım Jantlar
                                     </div>
                                 </div>
                             </div>
 
                             <div className="mb-6">
-                                <h3 className="font-semibold text-gray-900 mb-3">Innenausstattung</h3>
+                                <h3 className="font-semibold text-gray-900 mb-3">İç Donanım</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Navigationssystem
+                                        Navigasyon Sistemi
                                     </div>
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Klimaanlage
+                                        Klima
                                     </div>
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Sitzheizung
+                                        Koltuk Isıtma
                                     </div>
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -242,13 +242,13 @@ function BMWListingDetail() {
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Tempomat
+                                        Hız Sabitleyici
                                     </div>
                                 </div>
                             </div>
 
                             <div>
-                                <h3 className="font-semibold text-gray-900 mb-3">Sicherheit</h3>
+                                <h3 className="font-semibold text-gray-900 mb-3">Güvenlik</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     <div className="flex items-center text-gray-700">
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -260,7 +260,7 @@ function BMWListingDetail() {
                                         <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
-                                        Scheckheftgepflegt
+                                        Servis Bakımlı
                                     </div>
                                 </div>
                             </div>
@@ -268,19 +268,19 @@ function BMWListingDetail() {
 
                         {/* Description */}
                         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Beschreibung</h2>
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">Açıklama</h2>
                             <div className="text-gray-700 space-y-4">
                                 <p>
-                                    Verkaufe meinen gut gepflegten BMW 320d. Das Fahrzeug ist in einem sehr guten Zustand,
-                                    regelmäßig gewartet und scheckheftgepflegt. Nichtraucherfahrzeug.
+                                    Çok temiz ve bakımlı BMW 320d aracımı satıyorum. Araç gayet iyi durumdadır,
+                                    düzenli olarak bakımı yapılmış ve servis kayıtlıdır. Sigara içilmemiştir.
                                 </p>
                                 <p>
-                                    Der BMW wurde immer in der Garage geparkt und nur für längere Strecken genutzt.
-                                    Alle Wartungen wurden bei einer autorisierten BMW-Werkstatt durchgeführt.
+                                    Araç her zaman garajda park edilmiş ve sadece uzun mesafelerde kullanılmıştır.
+                                    Tüm bakımları yetkili BMW servisinde yapılmıştır.
                                 </p>
                                 <p>
-                                    Das Fahrzeug verfügt über eine umfangreiche Ausstattung und ist technisch einwandfrei.
-                                    TÜV/HU ist bis 08/2025 gültig.
+                                    Araç zengin bir donanıma sahiptir ve teknik olarak kusursuzdur.
+                                    Muayenesi 08/2025 tarihine kadar geçerlidir.
                                 </p>
                             </div>
                         </div>
@@ -312,17 +312,17 @@ function BMWListingDetail() {
                                             <line x1="2" y1="12" x2="4" y2="12" />
                                             <line x1="20" y1="12" x2="22" y2="12" />
                                         </svg>
-                                        <span className="text-sm text-gray-600">München</span>
+                                        <span className="text-sm text-gray-600">Münih</span>
                                     </div>
 
-                                    <div className="text-xs uppercase tracking-wide text-red-500 font-semibold mb-2">PRIVATNUTZER</div>
-                                    <div className="text-sm text-gray-600 mb-2">Aktiv seit 25.11.2020</div>
+                                    <div className="text-xs uppercase tracking-wide text-red-500 font-semibold mb-2">BİREYSEL KULLANICI</div>
+                                    <div className="text-sm text-gray-600 mb-2">25.11.2020 tarihinden beri aktif</div>
                                     <div className="flex items-center justify-center gap-1">
                                         <svg className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
                                             <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                                         </svg>
                                         <span className="text-base font-medium text-gray-700">4.8</span>
-                                        <span className="text-sm text-gray-500">(127 Bewertungen)</span>
+                                        <span className="text-sm text-gray-500">(127 Değerlendirme)</span>
                                     </div>
                                 </div>
                             </div>
@@ -333,7 +333,7 @@ function BMWListingDetail() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                                Verkäufer folgen
+                                Satıcıyı takip et
                             </button>
 
                             {/* Message Button */}
@@ -341,7 +341,7 @@ function BMWListingDetail() {
                                 <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
-                                Nachricht senden
+                                Mesaj gönder
                             </button>
 
                             {/* Phone Button */}
@@ -349,16 +349,16 @@ function BMWListingDetail() {
                                 <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
-                                Anrufen
+                                Ara
                             </button>
 
                             {/* Seller's Other Listings */}
                             <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
                                 <div className="text-sm text-gray-600 mb-2">
-                                    <span className="font-semibold text-gray-900">12</span> weitere Anzeigen von Max Mustermann
+                                    <span className="font-semibold text-gray-900">12</span> Max Mustermann'ın diğer ilanları
                                 </div>
                                 <button className="text-sm text-red-500 hover:text-red-600 font-medium">
-                                    Alle Anzeigen anzeigen →
+                                    Tüm ilanları göster →
                                 </button>
                             </div>
 
@@ -368,7 +368,7 @@ function BMWListingDetail() {
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                     </svg>
-                                    Teilen
+                                    Paylaş
                                 </button>
                                 <button
                                     onClick={() => window.print()}
@@ -377,40 +377,40 @@ function BMWListingDetail() {
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9V2h12v7M6 18H5a2 2 0 01-2-2v-5h18v5a2 2 0 01-2 2h-1m-12 0h12v4H6v-4z" />
                                     </svg>
-                                    Anzeigen drucken
+                                    İlanı yazdır
                                 </button>
                                 <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-gray-700">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
-                                    Anzeige melden
+                                    İlanı bildir
                                 </button>
                             </div>
 
                             {/* Listing Info */}
                             <div className="mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600 space-y-1">
-                                <div>Anzeigen-ID: BMW320D-2024</div>
-                                <div>Veröffentlicht: 25.11.2024</div>
+                                <div>İlan ID: BMW320D-2024</div>
+                                <div>Yayınlandı: 25.11.2024</div>
                             </div>
 
                             {/* Safety Tips */}
                             <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
                                 <div className="flex items-start gap-2 mb-3">
                                     <span className="text-xl">💡</span>
-                                    <h3 className="font-semibold text-gray-900">Sicherheitstipps:</h3>
+                                    <h3 className="font-semibold text-gray-900">Güvenlik İpuçları:</h3>
                                 </div>
                                 <ul className="space-y-2 text-sm text-gray-700">
                                     <li className="flex items-start gap-2">
                                         <span className="text-yellow-600 mt-0.5">•</span>
-                                        <span>Treffe dich an einem öffentlichen Ort</span>
+                                        <span>Halka açık bir yerde buluşun</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <span className="text-yellow-600 mt-0.5">•</span>
-                                        <span>Prüfe die Ware vor dem Kauf</span>
+                                        <span>Satın almadan önce ürünü kontrol edin</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <span className="text-yellow-600 mt-0.5">•</span>
-                                        <span>Überweise kein Geld im Voraus</span>
+                                        <span>Önden para göndermeyin</span>
                                     </li>
                                 </ul>
                             </div>
@@ -422,8 +422,8 @@ function BMWListingDetail() {
             {/* Satıcının Diğer İlanları - Panel İçinde */}
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Weitere Anzeigen von Max Mustermann</h2>
-                    <p className="text-sm text-gray-600 mb-6">Entdecken Sie weitere Fahrzeuge dieses Verkäufers</p>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Max Mustermann'ın Diğer İlanları</h2>
+                    <p className="text-sm text-gray-600 mb-6">Bu satıcının diğer ilanlarını keşfedin</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Ilan 1 */}
@@ -436,14 +436,14 @@ function BMWListingDetail() {
                                 />
                             </div>
                             <div className="p-4">
-                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW 530d xDrive Touring - M Sportpaket</h3>
+                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW 530d xDrive Touring - M Spor Paket</h3>
                                 <p className="text-xl font-bold text-red-600 mb-3">28.900 ₺</p>
                                 <div className="space-y-1 text-sm text-gray-600">
                                     <div className="flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                                         </svg>
-                                        München
+                                        Münih
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -471,14 +471,14 @@ function BMWListingDetail() {
                                 />
                             </div>
                             <div className="p-4">
-                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW X3 xDrive30d - Panoramadach</h3>
+                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW X3 xDrive30d - Panoramik Tavan</h3>
                                 <p className="text-xl font-bold text-red-600 mb-3">32.500 ₺</p>
                                 <div className="space-y-1 text-sm text-gray-600">
                                     <div className="flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                                         </svg>
-                                        München
+                                        Münih
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -506,14 +506,14 @@ function BMWListingDetail() {
                                 />
                             </div>
                             <div className="p-4">
-                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW M4 Competition - Carbon Paket</h3>
+                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW M4 Competition - Karbon Paket</h3>
                                 <p className="text-xl font-bold text-red-600 mb-3">65.900 ₺</p>
                                 <div className="space-y-1 text-sm text-gray-600">
                                     <div className="flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                                         </svg>
-                                        München
+                                        Münih
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -538,8 +538,8 @@ function BMWListingDetail() {
             {/* Ähnliche Anzeigen in dieser Kategorie - Yatay Format (Horizontal Cards) */}
             < div className="max-w-7xl mx-auto px-4 py-8 bg-gray-50" >
                 <div className="mb-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Ähnliche Anzeigen in Autos</h2>
-                    <p className="text-sm text-gray-600">Weitere interessante Fahrzeuge in dieser Kategorie</p>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Arabalarda Benzer İlanlar</h2>
+                    <p className="text-sm text-gray-600">Bu kategorideki diğer ilginç araçlar</p>
                 </div>
 
                 <div className="space-y-4">
@@ -555,11 +555,11 @@ function BMWListingDetail() {
                             </div>
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
-                                    <h4 className="text-lg font-bold text-gray-900">Audi A4 2.0 TDI - Gepflegter Zustand</h4>
+                                    <h4 className="text-lg font-bold text-gray-900">Audi A4 2.0 TDI - Bakımlı Durum</h4>
                                     <span className="text-xl font-bold text-red-600 ml-4">18.500 ₺</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    Verkaufe meinen gepflegten Audi A4 2.0 TDI. Regelmäßig gewartet, Nichtraucherfahrzeug.
+                                    Çok temiz Audi A4 2.0 TDI aracımı satıyorum. Düzenli bakımlı, sigara içilmemiştir.
                                 </p>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     <div className="flex items-center text-sm text-gray-600">
@@ -586,7 +586,7 @@ function BMWListingDetail() {
                                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                                             <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
                                         </svg>
-                                        Diesel
+                                        Dizel
                                     </div>
                                 </div>
                             </div>
@@ -605,11 +605,11 @@ function BMWListingDetail() {
                             </div>
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
-                                    <h4 className="text-lg font-bold text-gray-900">Mercedes C 220d - Vollausstattung</h4>
+                                    <h4 className="text-lg font-bold text-gray-900">Mercedes C 220d - Full Donanım</h4>
                                     <span className="text-xl font-bold text-red-600 ml-4">22.900 ₺</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    Mercedes C-Klasse mit Vollausstattung, Scheckheftgepflegt, 1. Hand.
+                                    Full paket Mercedes C-Klasse, servis bakımlı, ilk elden.
                                 </p>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     <div className="flex items-center text-sm text-gray-600">
@@ -634,7 +634,7 @@ function BMWListingDetail() {
                                         <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                                         </svg>
-                                        Diesel
+                                        Dizel
                                     </div>
                                 </div>
                             </div>
@@ -653,11 +653,11 @@ function BMWListingDetail() {
                             </div>
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
-                                    <h4 className="text-lg font-bold text-gray-900">VW Passat Variant - Kombi</h4>
+                                    <h4 className="text-lg font-bold text-gray-900">VW Passat Variant - Station Wagon</h4>
                                     <span className="text-xl font-bold text-red-600 ml-4">16.800 ₺</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    Geräumiger Passat Variant, ideal für Familien, gepflegter Zustand.
+                                    Geniş Passat Variant, aileler için ideal, bakımlı durum.
                                 </p>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     <div className="flex items-center text-sm text-gray-600">
@@ -682,7 +682,7 @@ function BMWListingDetail() {
                                         <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                                         </svg>
-                                        Diesel
+                                        Dizel
                                     </div>
                                 </div>
                             </div>
@@ -701,11 +701,11 @@ function BMWListingDetail() {
                             </div>
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
-                                    <h4 className="text-lg font-bold text-gray-900">BMW 520d Touring - M Sportpaket</h4>
+                                    <h4 className="text-lg font-bold text-gray-900">BMW 520d Touring - M Spor Paket</h4>
                                     <span className="text-xl font-bold text-red-600 ml-4">24.500 ₺</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    BMW 5er Touring mit M Sportpaket, Vollausstattung, gepflegt.
+                                    M Spor Paketli BMW 5 Serisi Touring, full donanım, bakımlı.
                                 </p>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     <div className="flex items-center text-sm text-gray-600">
@@ -730,7 +730,7 @@ function BMWListingDetail() {
                                         <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                                         </svg>
-                                        Diesel
+                                        Dizel
                                     </div>
                                 </div>
                             </div>
@@ -753,7 +753,7 @@ function BMWListingDetail() {
                                     <span className="text-xl font-bold text-red-600 ml-4">28.900 ₺</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    Audi A6 mit Quattro Allradantrieb, Leder, Navi, Xenon.
+                                    Audi A6 Quattro çekiş sistemi, deri döşeme, navigasyon, xenon.
                                 </p>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     <div className="flex items-center text-sm text-gray-600">
@@ -778,7 +778,7 @@ function BMWListingDetail() {
                                         <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                                         </svg>
-                                        Diesel
+                                        Dizel
                                     </div>
                                 </div>
                             </div>

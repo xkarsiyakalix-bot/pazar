@@ -9,9 +9,15 @@ const KatzenPage = ({ toggleFavorite, isFavorite }) => {
             type: 'multiselect',
             options: [
                 { value: 'British Shorthair', label: 'British Shorthair' },
-                { value: 'Ev Kedisi', label: 'Ev Kedisi' },
+                { value: 'Scottish Fold', label: 'Scottish Fold' },
+                { value: 'British Longhair', label: 'British Longhair' },
                 { value: 'Maine Coon', label: 'Maine Coon' },
-                { value: 'Siyam', label: 'Siyam' },
+                { value: 'İran Kedisi', label: 'İran Kedisi' },
+                { value: 'Ragdoll Kedisi', label: 'Ragdoll Kedisi' },
+                { value: 'Scottish Fold Longhair', label: 'Scottish Fold Longhair' },
+                { value: 'Sfenks Kedisi', label: 'Sfenks Kedisi' },
+                { value: 'Munchkin Kedisi', label: 'Munchkin Kedisi' },
+                { value: 'Bengal Kedisi', label: 'Bengal Kedisi' },
                 { value: 'Diğer Kediler', label: 'Diğer Kediler' }
             ],
             field: 'katzen_art'

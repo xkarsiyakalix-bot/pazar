@@ -1,4 +1,4 @@
-// Centralized translation dictionary for the website
+// Centralized translation dictionary for the website - Updated
 
 export const t = {
     // Navigation & Header
@@ -26,7 +26,7 @@ export const t = {
     // Welcome Modal
     welcome: {
         title: 'Hoş Geldiniz!',
-        subtitle: 'LokalPazar ile ilan verin veya aradığınızı bulun.',
+        subtitle: 'ExVitrin ile ilan verin veya aradığınızı bulun.',
         feature1: 'Saniyeler içinde ilan verin',
         feature2: 'Bölgenizdeki harika fırsatları keşfedin',
         feature3: 'Güvenli ve kolay iletişim',
@@ -708,7 +708,10 @@ export const t = {
                 suv: 'SUV/Arazi Aracı',
                 minivan: 'Minivan/Panelvan',
                 coupe: 'Kupe',
-                other: 'Diğer'
+                other: 'Diğer',
+                manual: 'Manuel',
+                automatic: 'Otomatik',
+                semiAutomatic: 'Yarı Otomatik'
             },
             vehicleDetails: 'Araç Detayları ve Donanım',
             marke: 'Marka',
@@ -1007,7 +1010,7 @@ export const t = {
         subtitle: 'İlanının daha fazla kişiye ulaşmasını sağla ve daha hızlı sat!',
         packages: {
             gallery: {
-                name: 'Premium Galeri',
+                name: 'Premium Vitrin',
                 description: 'Ana sayfa vitrininde 30 gün boyunca görüntülenme.',
                 price: '59,90 ₺'
             },
@@ -1020,6 +1023,16 @@ export const t = {
                 name: 'Renkli Çerçeve',
                 description: 'Liste görünümlerinde dikkat çekici çerçeve (30 gün).',
                 price: '19,90 ₺'
+            },
+            multi_bump: {
+                name: 'Tekrarlı Yukarı Çıkarma',
+                description: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.',
+                price: '29,90 ₺'
+            },
+            premium: {
+                name: 'Premium',
+                description: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!',
+                price: '19,99 ₺'
             }
         },
         select: 'Paketi Seç',
@@ -1042,6 +1055,51 @@ export const t = {
         proBadge: 'Kurumsal PRO',
         noListings: 'Bu mağazada henüz ilan bulunmuyor.',
     },
+    settings: {
+        activityOverview: 'Etkinliklerinize Genel Bakış',
+        myAccount: 'Hesabım',
+        currentAdsOnline: 'Şu anda {count} ilanınız yayında.',
+        adsPostedLast30Days: 'Son 30 günde {count} ilan verdiniz.',
+        changePhoneNumber: 'Telefon Numarasını Değiştir',
+        newPhoneNumber: 'Yeni Telefon Numarası',
+        verificationCode: 'Onay Kodu',
+        verificationCodePlaceholder: '6 haneli kod',
+        smsNotice: 'Size SMS ile bir onay kodu göndereceğiz.',
+        changePassword: 'Şifreyi Değiştir',
+        currentPassword: 'Mevcut Şifre',
+        newPassword: 'Yeni Şifre',
+        confirmNewPassword: 'Yeni Şifreyi Tekrarla',
+        passwordMinLength: 'En az 8 karakter',
+        changeBillingAddress: 'Fatura Adresini Değiştir',
+        lucidTitle: 'Ambalaj Sicili LUCID Kimlik Numarası',
+        lucidNotice: 'Ambalaj Yasası (VerpackG) hakkında daha fazla bilgi',
+        emailsNoMatch: 'E-posta adresleri eşleşmiyor.',
+        emailConfirmSent: 'Onay e-postaları her iki adrese de gönderildi.',
+        fillAllFields: 'Lütfen tüm alanları doldurun.',
+        phoneChangeSuccess: 'Telefon numarası başarıyla değiştirildi!',
+        passwordsNoMatch: 'Şifreler eşleşmiyor.',
+        passwordChangeSuccess: 'Şifre başarıyla değiştirildi!',
+        billingUpdateSuccess: 'Fatura adresi başarıyla güncellendi!',
+        title: 'Ayarlar',
+        newsletterTitle: 'Bülten',
+        newsletterText: 'Evet, ürün bilgileri, ipuçları, promosyonlar ve bizimle ve bağlı şirketlerle ilgili heyecan verici hikayeler içeren düzenli e-postalar almak istiyorum - dilediğiniz zaman abonelikten çıkabilirsiniz.',
+        changeEmail: 'E-posta Adresini Değiştir',
+        changeEmailInstructions: 'E-posta adresinizi değiştirmek için bizden iki e-posta alacaksınız.',
+        changeEmailSecurity: 'Güvenliğiniz için eski e-posta adresinize bilgilendirme amaçlı bir e-posta gönderiyoruz.',
+        changeEmailConfirm: 'Yeni e-posta adresinize de bir e-posta gönderilecektir. Lütfen bu e-posta hesabının size ait olduğunu onaylamak için e-postadaki bağlantıyı seçin.',
+        helpAreaLink: 'Daha fazla bilgiyi yardım bölümünde bulabilirsiniz.',
+        registeredEmail: 'Kayıtlı E-posta Adresi',
+        newEmail: 'Yeni E-posta Adresi',
+        repeatNewEmail: 'Yeni E-posta Adresini Tekrarla',
+        enterPassword: 'Şifreyi girin',
+        saveNewEmail: 'Yeni E-posta Adresini Kaydet',
+        emailNotifications: 'E-posta Bildirimleri',
+        emailNotificationsText: 'Başka bir kullanıcıdan mesaj aldığınızda e-posta alırsınız.',
+        passwordChangeInstructions: 'Dolandırıcılığı önlemek için şifrenizi zaman zaman değiştirin.',
+        billingTitle: 'Fatura Bilgileri',
+        commercial: 'Kurumsal',
+        verifyPhone: 'Doğrulanmış Telefon Numarası:',
+    },
 
     // Product Detail
     checkout: {
@@ -1053,7 +1111,25 @@ export const t = {
         lastName: 'Soyad',
         address: 'Adres',
         city: 'Şehir',
-        email: 'E-posta'
+        email: 'E-posta',
+        orderSummary: 'Sipariş Özeti',
+        buyNow: 'Şimdi Satın Al',
+        subtotal: 'Ara Toplam',
+        shipping: 'Kargo',
+        free: 'Ücretsiz',
+        total: 'Toplam',
+        termsConsent: 'Siparişinizle birlikte Genel Kullanım Koşullarını ve Gizlilik Politikamızı kabul etmiş sayılırsınız.',
+        singleSellerError: 'Aynı anda sadece bir satıcıdan ürün satın alabilirsiniz. Sepeti boşaltıp bu ürünü eklemek ister misiniz?'
+    },
+    cart: {
+        title: 'Sepetim',
+        empty: 'Sepetiniz boş.',
+        addItems: 'Ödeme yapmak için ürün ekleyin.',
+        continueShopping: 'Alışverişe Devam Et',
+        remove: 'Kaldır',
+        quantity: 'Miktar',
+        seller: 'Satıcı',
+        unknownSeller: 'Bilinmeyen Satıcı'
     },
     productDetail: {
         back: 'Geri',
@@ -1076,6 +1152,8 @@ export const t = {
         seller: 'Satıcı',
         memberSince: 'Üyelik tarihi',
         activeListings: 'Aktif ilanlar',
+        unknownSeller: 'Bilinmeyen Satıcı',
+        deleteConfirm: 'Bu ilanı silmek istediğinizden emin misiniz?\n\n{title}\n\nBu işlem geri alınamaz!',
         ownerDashboard: {
             title: 'Senin İlanın',
             subtitle: 'İlanını yönet ve görünürlüğünü artır',
@@ -1219,6 +1297,7 @@ export const t = {
         following: 'Takip Ettiklerim',
         loading: 'Yükleniyor...',
         follow: 'Takip Et',
+        followed: 'Takip Ediliyor',
         message: 'Mesaj',
         myProfile: 'Profilim',
         categories: 'Kategoriler',
@@ -1230,12 +1309,24 @@ export const t = {
         messageSuccess: 'Mesaj başarıyla gönderildi!',
         messageError: 'Mesaj gönderilirken hata oluştu. Lütfen tekrar deneyin.',
         inquiryToSeller: 'Satıcıya soru sor',
-        loginToMessage: 'Mesaj göndermek için lütfen giriş yapın.'
+        loginToMessage: 'Mesaj göndermek için lütfen giriş yapın.',
+        reviews: 'Değerlendirmeler',
+        averageRating: 'Ortalama Puan',
+        outOf5: '/ 5',
+        noRatingsYet: 'Henüz değerlendirme bulunmuyor.',
+        memberSinceText: 'yılından beri üye',
+        stars: {
+            5: '5 Yıldız',
+            4: '4 Yıldız',
+            3: '3 Yıldız',
+            2: '2 Yıldız',
+            1: '1 Yıldız'
+        }
     },
 
     // Top Ads (Gallery)
     topAds: {
-        title: 'Öne Çıkan İlanlar',
+        title: 'ExVitrin İlanları',
         placeAd: 'Buraya ilan verin',
         noAds: 'Öne çıkan ilan bulunmuyor',
         checkBackLater: 'Daha sonra tekrar kontrol edin',
@@ -1245,12 +1336,12 @@ export const t = {
             queriesTitle: '15 kata kadar daha fazla başvuru alın!',
             queriesDesc: 'Öne çıkan konum sayesinde çok daha fazla potansiyel alıcı teklifinizi görür.',
             rotationTitle: '10 Günlük Döngü',
-            rotationDesc: 'İlanınız 10 gün boyunca ana sayfadaki galeri ilanlarıyla dönüşümlü olarak gösterilir.',
+            rotationDesc: 'İlanınız 10 gün boyunca ana sayfadaki vitrin ilanlarıyla dönüşümlü olarak gösterilir.',
             premiumTitle: 'Premium İçin Mükemmel',
             premiumDesc: 'Yüksek fiyatlı veya sıra dışı ürünlerin yanı sıra hizmetler, emlak ve iş ilanları için uygundur.',
             tip: 'İpucu:',
             tipDesc: 'Etkililiği daha da artırmak için ilanınızın resminin dikkat çekici olmasına özen gösterin.',
-            moreInfo: 'Galeri hakkında daha fazla bilgi',
+            moreInfo: 'Vitrin hakkında daha fazla bilgi',
             selectListing: 'Şimdi İlan Seç',
         }
     },
@@ -1294,7 +1385,7 @@ export const t = {
         aboutUs: 'Hakkımızda',
         career: 'Kariyer',
         press: 'Basın',
-        magazine: 'LokalPazar Dergisi',
+        magazine: 'ExVitrin Dergisi',
         engagement: 'Sosyal Sorumluluk',
         mobileApps: 'Mobil Uygulamalar',
         information: 'Bilgi',
@@ -1318,44 +1409,366 @@ export const t = {
         listingsOverview: 'İlanlara Genel Bakış',
         companyOverview: 'Kurumsal Sayfalar',
         carEvaluation: 'Araç Değerleme',
-        copyright: '© 2025 LokalPazar. Tüm hakları saklıdır.',
+        animalLawLink: 'Hayvan Hakları ve Yasal Uyarı',
+        realEstateLawLink: 'Emlak İlanları Yasal Uyarı',
+        vehicleLawLink: 'Vasıta İlanları Yasal Uyarı',
+        copyright: '© 2026 ExVitrin. Tüm hakları saklıdır.',
+        animalLawDisclaimer: 'YASAL UYARI: 5199 sayılı Hayvanları Koruma Kanunu ve ilgili mevzuat uyarınca, canlı hayvan satışlarında tüm sorumluluk ilanı veren kullanıcıya aittir. ExVitrin (exvitrin.com), 5651 sayılı Kanun kapsamında \'Yer Sağlayıcı\' konumundadır ve ilan sahipleri ile alıcılar arasında gerçekleşen işlemlerden, satılan hayvanların sağlık durumundan veya yasal süreçlerinden sorumlu değildir. ExVitrin, satışlarda aracı firma veya taraf pozisyonunda bulunmamaktadır.',
+        realEstateDisclaimer: 'EMLAK İLANLARI HAKKINDA UYARI: ExVitrin, emlak alım-satım ve kiralama işlemlerinde aracı konumunda değildir ve gayrimenkul danışmanlığı hizmeti vermemektedir. İlan sahiplerinin yetkili emlak danışmanı olup olmadığını, tapu kayıtlarını ve tüm yasal belgeleri mutlaka kontrol ediniz. Sahte ilan ve dolandırıcılık riskine karşı dikkatli olunuz. Platform, ilan içeriklerinin doğruluğundan ve taraflar arasındaki anlaşmazlıklardan sorumlu tutulamaz.',
+        vehicleDisclaimer: 'ARAÇ ALIM-SATIMI HAKKINDA UYARI: Araç satın alırken mutlaka tramer kaydını, araç geçmişini, kaza kayıtlarını ve tüm resmi belgelerini kontrol ediniz. ExVitrin, araçların teknik durumu, kilometre bilgisi, kaza geçmişi veya satıcı beyanlarının doğruluğundan sorumlu değildir. Ticari satıcılardan yapılan alımlarda tüketici haklarınızı biliniz. Platform sadece ilan yayınlama hizmeti sunmakta olup, alım-satım işlemlerinde taraf değildir.'
+    },
+
+    // Contact
+    contact: {
+        title: 'İletişim',
+        inquiry: 'Soru ve Şikyetleriniz İçin:',
+        mail: 'kerem_aydin@aol.com',
+        phone: '+49 176 202 78 374',
+        address: '6155 Sokak No:1 Daire: 2',
+        formTitle: 'İletişim Formu',
+        name: 'Ad Soyad',
+        email: 'E-posta Adresi',
+        subject: 'Konu',
+        message: 'Mesajınız',
+        send: 'Gönder',
+        success: 'Mesajınız başarıyla gönderildi!',
+        error: 'Mesaj gönderilirken bir hata oluştu.',
     },
 
     // About Us Page
     aboutUs: {
         hero: {
-            title: 'Kleinbazaar',
+            title: 'ExVitrin',
             subtitle: 'Türkiye\'nin 1 numaralı ilan sitesi',
         },
         about: {
             title: 'Hakkımızda',
-            description1: 'Kleinbazaar, bir startup kadar esnek ve hızlıdır. 400\'den fazla kişi, Kleinbazaar\'ın çalışması ve sürekli gelişmesi için Berlin ve çevresinde çaba göstermektedir.',
-            description2: 'Türkiye\'nin en sık ziyaret edilen web sitelerinden biriyiz ve büyümeye devam ediyoruz. Bizimle birlikte büyüyün! \'Yapabilirim\' tutkusuna ve tüm iş arkadaşlarımızın yeteneklerine ve katkılarına karşılıklı saygıya değer veriyoruz.',
+            description1: 'ExVitrin, Türkiye\'nin en dinamik ve hızlı büyüyen dijital pazaryerlerinden biridir. İzmir merkezli ekibimizle, kullanıcılarımıza en güvenli ve kolay alışveriş deneyimini sunmak için çalışıyoruz.',
+            description2: 'Türkiye\'nin en çok tercih edilen alışveriş platformlarından biri olarak, sürdürülebilir bir gelecek için çalışıyoruz. İkinci el alışverişi teşvik ederek hem ekonomiye hem de çevreye katkı sağlıyoruz. Tutkulu ekibimizle birlikte, e-ticaretin geleceğini şekillendiriyoruz.',
         },
         facts: {
             title: 'Gerçekler ve Rakamlar',
-            adsCount: '55M+',
+            adsCount: '...', // Will be dynamic
             adsLabel: 'Yayındaki İlanlar',
-            staffCount: '400+',
-            staffLabel: 'Çalışan Sayısı',
-            locationCity: 'Berlin',
+            locationCity: 'İzmir',
             locationLabel: 'Merkezi Konum',
         },
         mission: {
             title: 'Misyonumuz',
-            tagline: '"Birlikte, ticareti iyilik için değiştiriyoruz"',
-            description1: 'Kurumsal misyonumuz, günlük iş hayatımızda bizi neyin motive ettiğini gösterir. Türkiye\'nin en büyük online ilan pazarı olarak, bir şeyleri almak, satmak veya hediye etmek için iki dünyanın en iyisini bir araya getiriyoruz: sevilen bir marka ve toplumsal etkisi olan bir iş modeli: Sürdürülebilirlik.',
-            description2: 'Kariyer sayfamızdan nasıl çalıştığımızı, bizi neyin farklı kıldığını ve size hangi iş fırsatlarını sunduğumuzu öğrenin - böylece siz de yakında Kleinbazaar ekibinin bir parçası olabilirsiniz.',
+            tagline: '"Birlikte, ticareti güvenle büyütüyoruz"',
+            description1: 'Misyonumuz, alıcı ve satıcıları güvenli bir ortamda buluşturmaktır. Türkiye\'nin lider ilan platformu olarak, herkesin kolayca ürün alıp satabileceği, şeffaf ve güvenilir bir pazar yeri sunuyoruz. Hem bireysel hem de kurumsal kullanıcılarımız için değer yaratıyoruz.',
+            description2: 'ExVitrin ailesinin bir parçası olmak ve bu heyecan verici yolculukta yer almak ister misiniz? Kariyer sayfamızdan açık pozisyonlarımızı inceleyin ve yeteneklerinizi sergileyebileceğiniz harika bir çalışma ortamına katılın.',
         },
         career: {
-            title: 'Kleinbazaar\'da Kariyer',
-            subtitle: 'Ekibimizin bir parçası olun ve online ticaretin geleceğini birlikte şekillendirelim!',
+            title: 'ExVitrin\'de Kariyer',
+            subtitle: 'Ekibimizin bir parçası olun ve e-ticaretin geleceğini birlikte şekillendirelim!',
             cta: 'İş İlanlarına Göz Atın',
         },
         contact: {
             title: 'Bize Ulaşın',
-            description: 'Bir kullanıcı mısınız ve Kleinbazaar hakkında bir sorunuz mu var? Lütfen müşteri hizmetlerimizle iletişime geçin.',
+            description: 'Bir kullanıcı mısınız ve ExVitrin hakkında bir sorunuz mu var? Lütfen müşteri hizmetlerimizle iletişime geçin.',
             cta: 'Müşteri Hizmetlerine Git',
+        }
+    },
+
+    myListingsPage: {
+        title: 'İlanlarım',
+        loading: 'İlanlarınız yükleniyor...',
+        noListings: 'Henüz ilanınız yok.',
+        createFirst: 'İlk İlanı Oluştur',
+    },
+
+    lucid: {
+        notEntered: 'Henüz bir LUCID-ID girmediniz.',
+        description: 'Ambalaj kullanıyorsanız, kişisel LUCID kimlik numaranızı buraya girebilirsiniz.',
+        notObligated: 'Tescile tabi değilseniz, lütfen bir sonraki adımda bize bildirin.',
+        statedNotObligated: 'Tescile tabi olmadığınızı belirttiniz.'
+    },
+
+    favorites: {
+        pleaseLogin: 'Favori eklemek için giriş yapmanız gerekiyor. Şimdi giriş yapmak ister misiniz?',
+        error: 'Favoriler güncellenirken hata oluştu. Lütfen tekrar deneyin.',
+        empty: 'Henüz favorilerinize bir ilan eklemediniz.'
+    },
+
+    follows: {
+        pleaseLogin: 'Satıcıyı takip etmek için lütfen giriş yapın.',
+        error: 'Takip durumu güncellenirken hata oluştu. Lütfen tekrar deneyin.'
+    },
+
+    karriere: {
+        hero: {
+            title: 'Büyük etki yaratan harika işler.',
+            cta: 'Tüm açık pozisyonları görün',
+        },
+        intro: {
+            description: 'Türkiye\'nin ürünleri bağlamak, satın almak, satmak veya basitçe hediye etmek için 1 numaralı platformu olarak, tüm dünyaların en iyilerini bir araya getiriyoruz: sevilen bir marka, harika iş arkadaşları ve toplumsal etkiye sahip bir iş modeli.',
+        },
+        main: {
+            title: 'Sizin için ve gezegen için harika bir teklif olan bir iş hayal edin.',
+            description1: 'ExVitrin sadece bir online ilan platformu değildir; kariyer hedeflerinizin ve sürdürülebilir değerlerinizin örtüştüğü dinamik bir ekosistemdir. En son teknolojiyi insan odaklı bir yaklaşımla birleştiriyoruz. Topluluğumuz içinde yeniden ticareti mümkün kılıyor, döngüsel ekonomiyi teşvik ediyor ve insanların dolaplarında halihazırda bulunan ürünler için heyecan yaratıyoruz.',
+            description2: 'Çocuk ihtiyaçlarından elektroniğe ve gayrimenkule kadar çeşitli kategorilerde 50 milyondan fazla ilan ve ayda 36 milyondan fazla kullanıcı ile ülkedeki tüm online satış platformları arasında en geniş erişime sahibiz.',
+            description3: 'Geçmişte nasıl çalışmış olursanız olun veya ne tür bir kariyer yolu izlemiş olursanız olun, ExVitrin sizin için ve gezegen için harika bir teklif olan bir iş bulabileceğiniz yerdir.',
+        },
+        areas: {
+            title: 'Bölümlerimiz',
+            cta: 'Açık pozisyonları görün'
+        },
+        culture: {
+            title: 'Yüksek teknolojinin daha yüksek hedeflerle buluştuğu bir iş hayal edin.',
+            description1: 'İnsan odaklı bir çalışma alanı olarak size anlamlı bir kariyer ve aynı zamanda büyük bir etki sunuyoruz.',
+            description2: 'Ekiplerimiz, platformumuzu müşterilerimizin ihtiyaçlarına cevap veren çözümlerle geliştirmek için fonksiyonlar arası çalışır. Bu, her ekibin Ürün & Teknoloji, UX ve Tasarım, Analitik, Pazarlama ve daha fazlası gibi farklı fonksiyonlardan üyelerden oluştuğu anlamına gelir.',
+        },
+        values: {
+            title: 'Kültürel değerlerimiz - sadece CAKE\'den fazlası',
+            description: 'Evet, tatlılara karşı bir zayıflığımız var ve keki seviyoruz – ancak CAKE değerlerimiz bizim için daha da önemli. Bizi başarılı kılan benzersiz kültürümüzü şekillendiriyorlar.',
+            items: [
+                {
+                    title: 'Müşteri Odağı',
+                    points: ['Müşteri biziz', 'Müşteri geri bildirimi ve verilerle hareket ediyoruz', 'Müşterilerimizi memnun etmek için çözümler geliştiriyoruz']
+                },
+                {
+                    title: 'Değişimden Sorumlu',
+                    points: ['Değişimi kucaklıyoruz', 'Sürdürülebilirliğe bağlıyız', 'Sorumluluk alıyor ve sorunları çözüyoruz']
+                },
+                {
+                    title: 'ExVitrin Stili',
+                    points: ['Birbirimize saygı duyuyor ve güveniyoruz', 'Doğrudan ve dürüst iletişim kuruyoruz', 'Daha iyi bir ExVitrin yaratmak için inisiyatif alıyoruz']
+                },
+                {
+                    title: 'Herkes Birlikte',
+                    points: ['Çeşitliliğimizde birleşiyoruz', 'Kolektif hedefleri bireysel çıkarların üzerinde tutuyoruz', 'Eğlenmek ve başarıları kutlamak için bir ekip olarak bir araya geliyoruz']
+                }
+            ]
+        },
+        sustainability: {
+            title: 'CO2\'nin CEO\'dan daha önemli olduğu bir iş hayal edin.',
+            description: 'Sürdürülebilirlik bizim için sadece bir moda sözcük değil; iş modelimizin özünde yer alıyor. Yaptığımız her şey, "sürdürülebilir ticaretin sevincini herkese ulaştırmayı" amaçlıyor.',
+            items: {
+                greenSunday: {
+                    title: 'Yeşil Pazar',
+                    description: 'Sürdürülebilir tüketimi kutlayan yıllık bir etkinlik.'
+                },
+                socialEngagement: {
+                    title: 'Sosyal Sorumluluk',
+                    description: 'Fridays for Future, Earth Day ve daha fazlasına aktif katılım.'
+                },
+                climateInvestment: {
+                    title: 'İklim Yatırımı',
+                    description: 'Akredite projeler aracılığıyla CO2 nötr pazarlama iletişimi.'
+                },
+                campusCleanliness: {
+                    title: 'Kampüs Temizliği',
+                    description: 'Geri dönüşüm istasyonları ve yıllık kampüs temizlik etkinlikleri.'
+                }
+            }
+        },
+        benefits: {
+            title: 'Neden biz? Avantajlarımızı keşfedin.',
+            items: {
+                smartWorking: {
+                    title: 'Akıllı Çalışma',
+                    description: 'Çalışma yeri esnekliği. Yılda 4 haftaya kadar her yerden çalışma imkanı.'
+                },
+                parentalLeave: {
+                    title: 'Ebeveyn İzni',
+                    description: 'Doğum yapan ebeveynler için 5 ay, yapmayanlar için 3 ay tam ücretli ebeveyn izni.'
+                },
+                development: {
+                    title: 'Gelişim',
+                    description: 'Eğitim bütçesi, koçluk seansları ve kendi projeleriniz için zaman.'
+                },
+                culture: {
+                    title: 'Kültür',
+                    description: 'Düzenli ekip etkinlikleri, ortak öğle yemekleri ve spor aktiviteleri.'
+                }
+            }
+        },
+        process: {
+            title: 'Başvuru Süreci',
+            description1: 'Dediğimiz gibi, insanlar önce gelir ve bu adaylar için de geçerlidir. Başvurunuza mümkün olan en kısa sürede yanıt vermeye çalışıyoruz.',
+            description2: 'Sonraki adımlar role göre değişir. Süreç genellikle bir işe alım uzmanıyla görüşme, işe alım yöneticisiyle video mülakat ve iş kategorisine bağlı olarak bir kodlama testi veya vaka çalışmasını içerir.',
+            cta: 'Tüm açık pozisyonları görün'
+        },
+        social: {
+            title: 'Bizi takip edin'
+        }
+    },
+
+    presse: {
+        hero: {
+            title: 'Basın',
+            subtitle: 'ExVitrin\'dan güncel basın bültenleri',
+        },
+        more: 'Daha fazla bilgi al',
+        showAll: 'Tümünü göster',
+        contact: {
+            title: 'Basın İletişim',
+            generalTitle: 'Genel Basın Soruları',
+            materialTitle: 'Basın Materyalleri',
+            materialDescription: 'ExVitrin logolarını, görsellerini ve diğer basın materyallerini basın bölümümüzde bulabilirsiniz.',
+            materialCta: 'Basın bölümüne git'
+        }
+    },
+
+    pro: {
+        hero: {
+            subtitle: 'Ticari satıcılar için daha fazla büyüme elde etme çözümü',
+        },
+        intro: {
+            title: 'ExVitrin PRO',
+            description: 'ExVitrin\'ı ticari olarak mı kullanıyorsunuz? O zaman bir PRO paket satın alın ve birçok fonksiyona erişim sağlayın. Diğerlerinin yanı sıra güçlü bir kurumsal görünümden, ilanlarınız için daha fazla görünürlükten ve teklif stokunuzun kolay yönetiminden yararlanın.'
+        },
+        selector: {
+            title: 'Şimdi ilan sayısını ve PRO paketini seçin',
+            label: 'Ayda ihtiyacınız olan aktif ilan sayısı',
+        },
+        packages: {
+            popular: 'Popüler',
+            perMonth: '/ Ay',
+            upTo: '{count} ilana kadar - KDV hariç.',
+            functions: '{count} Fonksiyon',
+            select: 'Seç',
+            selected: '✓ Seçildi',
+            moreInfo: 'Daha fazla bilgi',
+            basic: {
+                subtitle: 'Profesyonel başlangıç',
+                description: 'Başlangıç için mükemmel',
+            },
+            power: {
+                subtitle: 'Artırılmış görünürlük',
+                description: 'Maksimum erişim',
+            },
+            premium: {
+                subtitle: 'Birinci sınıf genel görünüm',
+                description: 'Tam kontrol',
+            },
+            features: {
+                companyPage: 'Detaylı kurumsal sayfa',
+                categoryPlacement: 'Kategorilerde ana sayfa yerleşimi',
+                unlimitedRuntime: 'Sınırsız ilan süresi',
+                proUrl: 'Özel PRO URL',
+                autoPush: 'Otomatik yukarı taşıma',
+                noCompetitorAds: 'İlan sayfası diğer satıcıların reklamlarından arındırılmış',
+                exclusiveVisibility: 'Özel görünürlük paketleri',
+                easyManagement: 'Konforlu ilan yönetimi',
+                stats: 'İlan istatistikleri',
+                salesLabels: 'Satış etiketleri',
+                salesSign: 'Satış tabelası oluşturma',
+                basicFunctions: 'Tüm Basic fonksiyonları',
+                homePlacement: 'Ana sayfa yerleşimi',
+                followerEngagement: 'Takipçi etkileşimi',
+                favoriteEngagement: 'Favori etkileşimi',
+                providerPreview: 'Arama sonuçlarında sağlayıcı önizlemesi',
+                topAd1: '1 adet kalıcı Top İlan',
+                powerFunctions: 'Tüm Power fonksiyonları',
+                adFreePage: 'Reklamsız ilan sayfası',
+                customCompanyPage: 'Özelleştirilebilir kurumsal sayfa',
+                advancedDesign: 'Gelişmiş ilan tasarımı',
+                topAd2: '2 adet Top İlan (toplam)'
+            }
+        },
+        benefits: {
+            title: 'Neden ExVitrin PRO?',
+            visibility: {
+                title: 'Daha Fazla Görünürlük',
+                description: 'İlanlarınız belirgin bir şekilde yerleştirilir ve daha fazla potansiyel müşteriye ulaşır'
+            },
+            appearance: {
+                title: 'Profesyonel Görünüm',
+                description: 'İşletmenizi detaylı bir kurumsal sayfa ile tanıtın'
+            },
+            stats: {
+                title: 'Detaylı İstatistikler',
+                description: 'Aylık raporlarla ilanlarınızın başarısını takip edin'
+            },
+            target: {
+                title: 'Hedefli Reklam',
+                description: 'Optimize edilmiş yerleşimlerle hedef kitlenize ulaşın'
+            },
+            management: {
+                title: 'Kolay Yönetim',
+                description: 'Tüm ilanlarınızı merkezi ve verimli bir şekilde yönetin'
+            },
+            trust: {
+                title: 'Güvenilir',
+                description: 'Satış etiketleri ve sertifikalar güveni artırır'
+            }
+        },
+        cta: {
+            title: 'Başlamaya hazır mısınız?',
+            selected: 'Seçilen Paket:',
+            ads: '{count} İlan - KDV hariç.',
+            riskFree: 'Risksizdir ve bir sonraki ayın sonuna kadar her an iptal edilebilir.',
+            bookNow: 'Şimdi {package} satın al',
+            chooseFirst: 'Devam etmek için lütfen önce bir paket seçin.',
+            chooseBtn: 'Paket seç'
+        },
+        contact: {
+            title: 'Başka sorunuz mu var?',
+            subtitle: 'Doğrudan bizimle iletişime geçin!',
+            tel: 'Tel.:'
+        },
+        footnote: '¹ İlgili paket boyutu, aynı anda yayında olabilecek ilan sayısına karşılık gelir. Her ay yeni oluşturabileceğiniz ilan sayısı da ilgili paket boyutuna karşılık gelir.'
+    },
+
+    magazin: {
+        hero: {
+            title: 'ExVitrin Magazin',
+            subtitle: 'İkinci el, sürdürülebilirlik ve daha fazlası hakkında her şey',
+        },
+        categories: {
+            all: 'Hepsi',
+            selling: 'Satış',
+            buying: 'Alış',
+            sustainability: 'Sürdürülebilirlik',
+            lifestyle: 'Yaşam Tarzı'
+        },
+        readMore: 'Devamını oku',
+        showMore: 'Daha fazla makale göster'
+    },
+
+    engagement: {
+        hero: {
+            title: 'En iyi toplulukta',
+            subtitle: 'Ve böyle kalması için ne yapıyoruz',
+        },
+        intro: {
+            description: 'Daha iyisini (başka) ne yapabiliriz? Bu soru bizi ExVitrin\'da harekete geçiriyor. Toplumumuzun (birlikte) büyümesine herkesin katkıda bulunabileceğine inanıyoruz. Ve bu küçük şeylerle başlar. Bu yüzden biz de bir yerden başladık.'
+        },
+        sections: {
+            sustainability: {
+                title: 'Sürdürülebilirlik',
+                description: 'Döngüsel ekonomiyi destekliyor ve kaynakları koruyoruz.'
+            },
+            society: {
+                title: 'Toplum',
+                description: 'Sosyal projeleri destekliyor ve birliği teşvik ediyoruz.'
+            },
+            future: {
+                title: 'Gelecek',
+                description: 'Gençleri destekliyor ve dijital eğitime yatırım yapıyoruz.'
+            }
+        }
+    },
+
+    mobileApps: {
+        hero: {
+            title: 'ExVitrin Uygulaması',
+            subtitle: 'İstediğiniz zaman, istediğiniz yerde ilan verin ve bulun',
+        },
+        features: {
+            free: 'Ücretsiz İndirin',
+            fast: 'Hızlı ve Kolay',
+            secure: '%100 Güvenli'
+        },
+        links: {
+            appStore: 'App Store\'dan İndirin',
+            googlePlay: 'Google Play\'den Alın'
+        },
+        tips: {
+            title: 'Satış İpuçları',
+            description: 'İkinci el eşyalarınızı daha hızlı satmak için ipuçlarımıza göz atın.'
         }
     },
 
