@@ -47,6 +47,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     const [citySearch, setCitySearch] = useState('');
     const [categoryCounts, setCategoryCounts] = useState({});
     const [cityCounts, setCityCounts] = useState({});
+    const [showFilters, setShowFilters] = useState(false);
     const { user } = useAuth();
 
     // Sync filters to URL whenever they change
@@ -223,9 +224,9 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     return (
         <div className="min-h-screen bg-gray-50 pb-12">
 
-            <div className="max-w-[1400px] mx-auto px-4 py-6">
+            <div className="max-w-[1400px] mx-auto px-0 sm:px-4 py-6">
                 {/* Başlık ve Sonuç Sayısı */}
-                <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 px-0 sm:px-4 md:px-0">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
                             {query ? `"${query}" için arama sonuçları` : 'Tüm İlanlar'}
@@ -263,10 +264,63 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                     </button>
                 </div>
 
-                <div className="flex gap-6">
-                    {/* Filtreler - Sol Sidebar */}
-                    <div className="w-96 flex-shrink-0">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sticky top-4">
+                {/* Mobil Filtre Butonu */}
+                <div className="xl:hidden mb-6">
+                    <button
+                        onClick={() => setShowFilters(true)}
+                        className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 text-gray-800 rounded-2xl shadow-md border border-gray-100 transition-all active:scale-[0.98]"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-red-50 rounded-xl">
+                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                </svg>
+                            </div>
+                            <span className="font-bold text-base">Filtrele & Kategoriler</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {(priceRange !== 'all' || condition !== 'all' || sortBy !== 'created_at') && (
+                                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-red-600 text-white text-xs font-bold rounded-full">
+                                    Aktif
+                                </span>
+                            )}
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+
+                <div className="flex flex-col xl:flex-row gap-8">
+                    {/* Filtreler - Mobilde çekmece, Desktop'ta solda */}
+                    <aside className={`
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        ${showFilters ? 'block' : 'hidden xl:block'}
+                    `}>
+                        {/* Mobile Overlay Backdrop */}
+                        <div
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm xl:hidden animate-in fade-in duration-300"
+                            onClick={() => setShowFilters(false)}
+                        />
+
+                        {/* Sidebar Content Column */}
+                        <div className={`
+                            relative w-[320px] sm:w-[380px] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-none p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 ml-auto xl:ml-0 border border-gray-100
+                            ${showFilters ? 'animate-in slide-in-from-right duration-300' : ''}
+                        `}>
+                            {/* Mobile Header */}
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
+                                <h3 className="font-bold text-gray-900 text-lg">Filtreleme</h3>
+                                <button
+                                    onClick={() => setShowFilters(false)}
+                                    className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtreler</h2>
 
                             {/* Sıralama */}
@@ -505,7 +559,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                 Filtreleri temizle
                             </button>
                         </div>
-                    </div>
+                    </aside>
 
                     {/* Sonuçlar - Sağ Taraf */}
                     <div className="flex-1">
@@ -532,7 +586,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                             </div>
                         ) : (
 
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-4 px-0 sm:px-4 md:px-0">
                                 {results.map((listing) => (
                                     <HorizontalListingCard
                                         key={listing.id}
@@ -543,10 +597,9 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                 ))}
                             </div>
                         )}
-
                     </div>
                 </div>
-            </div>
+            </div >
         </div >
     );
 };

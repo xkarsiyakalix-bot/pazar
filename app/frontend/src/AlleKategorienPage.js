@@ -17,6 +17,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     const [priceFrom, setPriceFrom] = useState('');
     const [priceTo, setPriceTo] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     const categories = [
         { name: 'Tüm Kategoriler', icon: '🏪', count: 0, subcategories: [] },
@@ -314,161 +315,216 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="max-w-[1400px] mx-auto px-4 py-6">
+            <div className="max-w-[1400px] mx-auto px-0 sm:px-4 py-6">
                 {/* Breadcrumb */}
                 <Breadcrumb items={breadcrumbItems} />
 
-                <div className="flex gap-6">
-                    {/* Left Sidebar - Categories & Filters */}
-                    <aside className="w-96 flex-shrink-0 bg-white rounded-2xl shadow-lg p-6 h-fit sticky top-6">
-                        {/* Categories Section */}
-                        <div className="mb-6 pb-6 border-b border-gray-200">
-                            <h3 className="font-bold text-gray-900 text-lg mb-4">Kategoriler</h3>
-                            <div className="space-y-1">
-                                {categoriesWithCounts.map((category) => (
-                                    <div key={category.name} className="mb-1">
-                                        <button
-                                            onClick={() => handleCategoryClick(category.name)}
-                                            className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === category.name
-                                                ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
-                                                : 'hover:bg-gray-50 text-gray-700'
-                                                }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className={`text-sm font-medium ${selectedCategory === category.name
-                                                    ? 'text-white'
-                                                    : 'group-hover:text-red-600'
-                                                    }`}>
-                                                    {getCategoryTranslation(category.name)}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                {category.name !== 'Tüm Kategoriler' && (
-                                                    <span className={`text-xs ${selectedCategory === category.name
-                                                        ? 'text-white/80'
-                                                        : 'text-gray-400'
+                {/* Mobile/Tablet Filter Button */}
+                <div className="xl:hidden mb-6">
+                    <button
+                        onClick={() => setShowMobileFilters(true)}
+                        className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 text-gray-800 rounded-2xl shadow-md border border-gray-100 transition-all active:scale-[0.98]"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-red-50 rounded-xl">
+                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                </svg>
+                            </div>
+                            <span className="font-bold text-base">Filtrele & Kategoriler</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {(selectedCategory !== 'Tüm Kategoriler' || selectedSubCategory || selectedLocations.length > 0 || priceFrom || priceTo) && (
+                                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-red-600 text-white text-xs font-bold rounded-full">
+                                    Aktif
+                                </span>
+                            )}
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+
+                <div className="flex flex-col xl:flex-row gap-8">
+                    {/* Left Sidebar - Categories & Filters (Drawer on Mobile) */}
+                    <aside className={`
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        ${showMobileFilters ? 'block' : 'hidden xl:block'}
+                    `}>
+                        {/* Mobile Overlay Backdrop */}
+                        <div
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm xl:hidden animate-in fade-in duration-300"
+                            onClick={() => setShowMobileFilters(false)}
+                        />
+
+                        {/* Sidebar Content Column */}
+                        <div className={`
+                            relative w-[320px] sm:w-[380px] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 ml-auto xl:ml-0
+                            ${showMobileFilters ? 'animate-in slide-in-from-right duration-300' : ''}
+                        `}>
+                            {/* Mobile Header */}
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
+                                <h3 className="font-bold text-gray-900 text-lg">Filtreleme</h3>
+                                <button
+                                    onClick={() => setShowMobileFilters(false)}
+                                    className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            {/* Categories Section */}
+                            <div className="mb-6 pb-6 border-b border-gray-200">
+                                <h3 className="font-bold text-gray-900 text-lg mb-4">Kategoriler</h3>
+                                <div className="space-y-1">
+                                    {categoriesWithCounts.map((category) => (
+                                        <div key={category.name} className="mb-1">
+                                            <button
+                                                onClick={() => handleCategoryClick(category.name)}
+                                                className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === category.name
+                                                    ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
+                                                    : 'hover:bg-gray-50 text-gray-700'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`text-sm font-medium ${selectedCategory === category.name
+                                                        ? 'text-white'
+                                                        : 'group-hover:text-red-600'
                                                         }`}>
-                                                        ({category.count.toLocaleString('tr-TR')})
+                                                        {getCategoryTranslation(category.name)}
                                                     </span>
-                                                )}
-                                                <svg
-                                                    className={`w-4 h-4 ${selectedCategory === category.name
-                                                        ? 'text-white rotate-90'
-                                                        : 'text-gray-400 group-hover:text-red-600'
-                                                        } transition-all duration-200`}
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                </svg>
-                                            </div>
-                                        </button>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    {category.name !== 'Tüm Kategoriler' && (
+                                                        <span className={`text-xs ${selectedCategory === category.name
+                                                            ? 'text-white/80'
+                                                            : 'text-gray-400'
+                                                            }`}>
+                                                            ({category.count.toLocaleString('tr-TR')})
+                                                        </span>
+                                                    )}
+                                                    <svg
+                                                        className={`w-4 h-4 ${selectedCategory === category.name
+                                                            ? 'text-white rotate-90'
+                                                            : 'text-gray-400 group-hover:text-red-600'
+                                                            } transition-all duration-200`}
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </div>
+                                            </button>
 
-                                        {/* Subcategories */}
-                                        {selectedCategory === category.name && category.subcategories && category.subcategories.length > 0 && (
-                                            <div className="ml-4 pl-4 border-l-2 border-gray-100 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
-                                                {category.subcategories.map(sub => {
-                                                    const subCount = listings.filter(l => l.category === category.name && l.sub_category === sub).length;
-                                                    return (
-                                                        <button
-                                                            key={sub}
-                                                            onClick={(e) => handleSubCategoryClick(sub, e)}
-                                                            className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors flex justify-between items-center ${selectedSubCategory === sub
-                                                                ? 'bg-red-50 text-red-600 font-medium'
-                                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                                }`}
-                                                        >
-                                                            <span>{getCategoryTranslation(sub)}</span>
-                                                            <span className="text-xs text-gray-400">({subCount})</span>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Filters Section */}
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="font-bold text-gray-900 text-lg">Filtreler</h3>
-                            <button
-                                onClick={() => {
-                                    updateFilters({
-                                        priceFrom: '',
-                                        priceTo: '',
-                                        locations: [],
-                                        category: 'Tüm Kategoriler'
-                                    });
-                                }}
-                                className="text-sm text-red-600 hover:text-red-700 font-medium"
-                            >
-                                Sıfırla
-                            </button>
-                        </div>
-
-                        {/* Price Filter */}
-                        <div className="mb-6 pb-6 border-b border-gray-200">
-                            <h4 className="font-bold text-gray-900 mb-3 text-base">Fiyat</h4>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs text-gray-600 mb-1">Min</label>
-                                    <input
-                                        type="number"
-                                        value={priceFrom}
-                                        onChange={(e) => {
-                                            setPriceFrom(e.target.value);
-                                            updateFilters({ priceFrom: e.target.value });
-                                        }}
-                                        placeholder="0"
-                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-gray-600 mb-1">Max</label>
-                                    <input
-                                        type="number"
-                                        value={priceTo}
-                                        onChange={(e) => {
-                                            setPriceTo(e.target.value);
-                                            updateFilters({ priceTo: e.target.value });
-                                        }}
-                                        placeholder="∞"
-                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Location Filter */}
-                        <div className="mb-6">
-                            <h4 className="font-bold text-gray-900 mb-3 text-base">Konum</h4>
-                            <div className="space-y-2">
-                                {federalStates.map((state) => (
-                                    <label key={state} className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                name="location"
-                                                value={state}
-                                                checked={selectedLocations.includes(state)}
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    const newLocations = selectedLocations.includes(val)
-                                                        ? selectedLocations.filter(l => l !== val)
-                                                        : [...selectedLocations, val];
-                                                    setSelectedLocations(newLocations);
-                                                    updateFilters({ locations: newLocations });
-                                                }}
-                                                className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
-                                            />
-                                            <span className="text-sm text-gray-700">{state}</span>
+                                            {/* Subcategories */}
+                                            {selectedCategory === category.name && category.subcategories && category.subcategories.length > 0 && (
+                                                <div className="ml-4 pl-4 border-l-2 border-gray-100 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                                                    {category.subcategories.map(sub => {
+                                                        const subCount = listings.filter(l => l.category === category.name && l.sub_category === sub).length;
+                                                        return (
+                                                            <button
+                                                                key={sub}
+                                                                onClick={(e) => handleSubCategoryClick(sub, e)}
+                                                                className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors flex justify-between items-center ${selectedSubCategory === sub
+                                                                    ? 'bg-red-50 text-red-600 font-medium'
+                                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                                    }`}
+                                                            >
+                                                                <span>{getCategoryTranslation(sub)}</span>
+                                                                <span className="text-xs text-gray-400">({subCount})</span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
-                                        <span className="text-xs text-gray-400">({getLocationCount(state)})</span>
-                                    </label>
-                                ))}
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Filters Section */}
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="font-bold text-gray-900 text-lg">Filtreler</h3>
+                                <button
+                                    onClick={() => {
+                                        updateFilters({
+                                            priceFrom: '',
+                                            priceTo: '',
+                                            locations: [],
+                                            category: 'Tüm Kategoriler'
+                                        });
+                                    }}
+                                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                                >
+                                    Sıfırla
+                                </button>
+                            </div>
+
+                            {/* Price Filter */}
+                            <div className="mb-6 pb-6 border-b border-gray-200">
+                                <h4 className="font-bold text-gray-900 mb-3 text-base">Fiyat</h4>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Min</label>
+                                        <input
+                                            type="number"
+                                            value={priceFrom}
+                                            onChange={(e) => {
+                                                setPriceFrom(e.target.value);
+                                                updateFilters({ priceFrom: e.target.value });
+                                            }}
+                                            placeholder="0"
+                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Max</label>
+                                        <input
+                                            type="number"
+                                            value={priceTo}
+                                            onChange={(e) => {
+                                                setPriceTo(e.target.value);
+                                                updateFilters({ priceTo: e.target.value });
+                                            }}
+                                            placeholder="∞"
+                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Location Filter */}
+                            <div className="mb-6">
+                                <h4 className="font-bold text-gray-900 mb-3 text-base">Konum</h4>
+                                <div className="space-y-2">
+                                    {federalStates.map((state) => (
+                                        <label key={state} className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    name="location"
+                                                    value={state}
+                                                    checked={selectedLocations.includes(state)}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        const newLocations = selectedLocations.includes(val)
+                                                            ? selectedLocations.filter(l => l !== val)
+                                                            : [...selectedLocations, val];
+                                                        setSelectedLocations(newLocations);
+                                                        updateFilters({ locations: newLocations });
+                                                    }}
+                                                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                                                />
+                                                <span className="text-sm text-gray-700">{state}</span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">({getLocationCount(state)})</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </aside>
@@ -476,7 +532,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                     {/* Right Side - Banner + Listings */}
                     <div className="flex-1">
                         {/* Banner */}
-                        <div className="bg-gradient-to-r from-red-500 to-rose-600 rounded-2xl shadow-xl p-8 mb-6 relative overflow-hidden">
+                        <div className="bg-gradient-to-r from-red-500 to-rose-600 sm:rounded-2xl rounded-none shadow-xl p-4 sm:p-8 mb-6 relative overflow-hidden">
                             <div className="absolute inset-0 opacity-10">
                                 <div
                                     className="absolute top-0 left-0 w-full h-full"
@@ -526,8 +582,8 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                         </div>
 
                         {/* Listings */}
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                        <div className="w-full">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4 px-0 sm:px-4 md:px-0">
                                 {filteredListings.length} İlan
                             </h2>
 
@@ -540,7 +596,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                     <p className="text-gray-500 text-lg">İlan bulunamadı</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="space-y-4 px-0 sm:px-4 md:px-0">
                                     {sortedListings.map((listing) => (
                                         <HorizontalListingCard
                                             key={listing.id}
@@ -554,8 +610,8 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

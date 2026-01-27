@@ -6,6 +6,7 @@ import { supabase } from './lib/supabase';
 import { checkRatingEligibility, hasUserRated } from './api/ratings';
 import RatingModal from './components/RatingModal';
 import LoadingSpinner from './components/LoadingSpinner';
+import { useIsMobile } from './hooks/useIsMobile';
 
 import ProfileLayout from './ProfileLayout';
 
@@ -22,6 +23,7 @@ function MessagesPage() {
     const [hasRated, setHasRated] = useState(false);  // [NEW] Track if already rated
     const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
     const messagesEndRef = useRef(null);
+    const isMobile = useIsMobile();
 
     // Load user profile for phone number
     useEffect(() => {
@@ -309,15 +311,17 @@ function MessagesPage() {
     return (
         <ProfileLayout>
             <div className="max-w-7xl mx-auto">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Mesajlar</h1>
-                    <p className="text-gray-600 mt-1">Konuşmalarınızı buradan yönetin</p>
-                </div>
+                {(!isMobile || !selectedConversation) && (
+                    <div className="mb-6 hidden sm:block">
+                        <h1 className="text-3xl font-bold text-gray-900">Mesajlar</h1>
+                        <p className="text-gray-600 mt-1">Konuşmalarınızı buradan yönetin</p>
+                    </div>
+                )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6">
                     {/* Conversations List */}
-                    <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden h-[calc(100vh-220px)] flex flex-col">
-                        <div className="p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                    <div className={`lg:col-span-1 sm:bg-white sm:rounded-2xl sm:shadow-sm sm:border sm:border-gray-200 overflow-hidden h-[calc(100vh-220px)] flex flex-col ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
+                        <div className="p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white hidden sm:block">
                             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                 <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -403,13 +407,24 @@ function MessagesPage() {
                     </div>
 
                     {/* Chat Window */}
-                    <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[calc(100vh-220px)]">
+                    <div className={`lg:col-span-2 sm:bg-white sm:rounded-2xl sm:shadow-sm sm:border sm:border-gray-200 overflow-hidden flex flex-col h-[calc(100vh-220px)] ${isMobile && !selectedConversation ? 'hidden' : 'flex'}`}>
                         {selectedConversation ? (
                             <>
                                 {/* Chat Header */}
                                 <div className="p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
+                                            {isMobile && (
+                                                <button
+                                                    onClick={() => setSelectedConversation(null)}
+                                                    className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                                    aria-label="Geri Dön"
+                                                >
+                                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                    </svg>
+                                                </button>
+                                            )}
                                             <div className="relative">
                                                 <img
                                                     src={selectedConversation.user.store_logo || selectedConversation.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedConversation.user.full_name || 'U')}&background=ef4444&color=fff`}

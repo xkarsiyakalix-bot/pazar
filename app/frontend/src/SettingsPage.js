@@ -6,8 +6,10 @@ import { t } from './translations';
 import LoadingSpinner from './components/LoadingSpinner';
 
 import ProfileLayout from './ProfileLayout';
+import { useIsMobile } from './hooks/useIsMobile';
 
 const SettingsPage = () => {
+    const isMobile = useIsMobile();
     const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
@@ -108,7 +110,11 @@ const SettingsPage = () => {
                     website: data.website || '',
                     legal_info: data.legal_info || '',
                     seller_type: data.seller_type || '',
-                    store_slug: data.store_slug || ''
+                    store_slug: data.store_slug || '',
+                    facebook_url: data.facebook_url || '',
+                    instagram_url: data.instagram_url || '',
+                    twitter_url: data.twitter_url || '',
+                    tiktok_url: data.tiktok_url || ''
                 });
                 setStoreName(data.store_name || '');
                 setStoreDescription(data.store_description || '');
@@ -461,21 +467,32 @@ const SettingsPage = () => {
 
     return (
         <ProfileLayout>
+            {isMobile && (
+                <button
+                    onClick={() => navigate(-1)}
+                    className="mb-4 flex items-center gap-1.5 text-gray-500 hover:text-gray-900 font-bold bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 text-xs"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Geri
+                </button>
+            )}
             <h1 className="text-3xl font-bold text-gray-900 mb-8">Ayarlar</h1>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="space-y-6">
                 {/* Section Tabs */}
                 <div className="flex gap-2 mb-6 border-b border-gray-200 overflow-x-auto">
                     {sections.map(section => (
                         <button
                             key={section.id}
                             onClick={() => setActiveSection(section.id)}
-                            className={`px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeSection === section.id
+                            className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-colors whitespace-nowrap ${activeSection === section.id
                                 ? 'text-red-600 border-b-2 border-red-600'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
-                            <span className="mr-2">{section.icon}</span>
+                            <span className="mr-1.5 sm:mr-2">{section.icon}</span>
                             {section.name}
                         </button>
                     ))}
@@ -492,28 +509,28 @@ const SettingsPage = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
 
                         {/* Account Type Selection */}
-                        <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Hesap Türü *</h3>
-                            <p className="text-sm text-gray-600 mb-4">
+                        <div className="sm:bg-blue-50/50 p-0 sm:p-4 sm:rounded-xl sm:border sm:border-blue-100">
+                            <h3 className="text-sm font-bold text-gray-900 mb-1.5">Hesap Türü *</h3>
+                            <p className="text-[11px] text-gray-600 mb-3 border-b border-blue-100/50 pb-3">
                                 Lütfen hesap türünüzü seçin. <span className="font-bold text-red-600">Not:</span> "Kurumsal" hesaptan tekrar "Bireysel" hesaba geçiş yapılamaz.
                             </p>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setFormData({ ...formData, seller_type: 'Privatnutzer' })}
-                                    className={`p-4 rounded-xl border-2 text-left transition-all ${formData.seller_type === 'Privatnutzer'
+                                    className={`p-3 rounded-xl border-2 text-left transition-all ${formData.seller_type === 'Privatnutzer'
                                         ? 'border-red-600 bg-red-50'
-                                        : 'border-gray-200 hover:border-red-200'
+                                        : 'border-gray-200 bg-white hover:border-red-200'
                                         }`}
                                 >
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <span className="text-2xl">👤</span>
-                                        <span className={`font-bold ${formData.seller_type === 'Privatnutzer' ? 'text-red-600' : 'text-gray-900'}`}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-lg">👤</span>
+                                        <span className={`text-sm font-bold ${formData.seller_type === 'Privatnutzer' ? 'text-red-600' : 'text-gray-900'}`}>
                                             Bireysel
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-[10px] leading-tight text-gray-500">
                                         Özel satışlar ve alışverişler için. Ücretsiz.
                                     </p>
                                 </button>
@@ -525,18 +542,18 @@ const SettingsPage = () => {
                                             navigate('/packages');
                                         }
                                     }}
-                                    className={`p-4 rounded-xl border-2 text-left transition-all ${formData.seller_type === 'Gewerblicher Nutzer'
+                                    className={`p-3 rounded-xl border-2 text-left transition-all ${formData.seller_type === 'Gewerblicher Nutzer'
                                         ? 'border-blue-600 bg-blue-50'
-                                        : 'border-gray-200 hover:border-blue-200'
+                                        : 'border-gray-200 bg-white hover:border-blue-200'
                                         }`}
                                 >
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <span className="text-2xl">🏢</span>
-                                        <span className={`font-bold ${formData.seller_type === 'Gewerblicher Nutzer' ? 'text-blue-600' : 'text-gray-900'}`}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-lg">🏢</span>
+                                        <span className={`text-sm font-bold ${formData.seller_type === 'Gewerblicher Nutzer' ? 'text-blue-600' : 'text-gray-900'}`}>
                                             Kurumsal
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-[10px] leading-tight text-gray-500">
                                         Ticari satıcılar için. Fatura ile.
                                     </p>
                                 </button>
@@ -610,19 +627,6 @@ const SettingsPage = () => {
                                         placeholder="https://example.com"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Yasal Bilgiler (kurumsal kullanıcılar için)</label>
-                                    <textarea
-                                        value={formData.legal_info}
-                                        onChange={(e) => setFormData({ ...formData, legal_info: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent"
-                                        placeholder="Künye, şirket adı, adres, iletişim detayları..."
-                                        rows={6}
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Bu bilgiler, ticari faaliyet gösterdiğinizde ilanlarınıza otomatik olarak eklenecektir.
-                                    </p>
-                                </div>
                             </div>
                         </div>
 
@@ -652,14 +656,14 @@ const SettingsPage = () => {
                                 </div>
 
                                 {/* Subscription Status Card - NEW */}
-                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 p-6 mb-8">
+                                <div className="sm:bg-gradient-to-br sm:from-gray-50 sm:to-gray-100 sm:rounded-xl sm:border sm:border-gray-200 p-0 mb-6 sm:p-6 sm:mb-8 text-sm">
                                     <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                                         <span className="text-xl">💳</span> Abonelik Durumu
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <p className="text-sm text-gray-500 mb-1">Mevcut Paket</p>
-                                            <p className="text-lg font-bold text-gray-900">
+                                            <p className="text-sm font-bold text-gray-900">
                                                 {getPackageName(profile?.subscription_tier)}
                                             </p>
 
@@ -691,15 +695,15 @@ const SettingsPage = () => {
                                         <div>
                                             <p className="text-sm text-gray-500 mb-1">İlan Limitleri</p>
                                             <div className="flex flex-col gap-1">
-                                                <div className="flex justify-between text-sm">
+                                                <div className="flex justify-between text-xs sm:text-sm">
                                                     <span>Toplam Limit:</span>
                                                     <span className="font-semibold">{totalLimit === Infinity ? 'Sınırsız' : totalLimit}</span>
                                                 </div>
-                                                <div className="flex justify-between text-sm">
+                                                <div className="flex justify-between text-xs sm:text-sm">
                                                     <span>Bu Ayki İlanlar (Son 30 Gün):</span>
                                                     <span className="font-semibold text-blue-600">{monthlyListings}</span>
                                                 </div>
-                                                <div className="flex justify-between text-sm">
+                                                <div className="flex justify-between text-xs sm:text-sm">
                                                     <span>Toplam Aktif İlan:</span>
                                                     <span className="text-gray-600">{activeListings}</span>
                                                 </div>
@@ -711,7 +715,7 @@ const SettingsPage = () => {
                                                         }}
                                                     ></div>
                                                 </div>
-                                                <div className="flex justify-between text-sm mt-1">
+                                                <div className="flex justify-between text-xs sm:text-sm mt-1">
                                                     <span className="font-medium text-gray-700">Kalan Ekleme Hakkı:</span>
                                                     <span className={`font-bold ${remainingLimit === 0 ? 'text-red-600' : 'text-green-600'}`}>
                                                         {remainingLimit}
@@ -781,7 +785,7 @@ const SettingsPage = () => {
                                 </div>
 
                                 <div className="mb-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.store.name}</label>
+                                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">{t.store.name}</label>
                                     <input
                                         type="text"
                                         value={storeName}
@@ -793,7 +797,7 @@ const SettingsPage = () => {
 
                                 <div className="mb-6">
                                     <div className="flex items-center justify-between mb-2">
-                                        <label className="block text-sm font-medium text-gray-700">Mağaza URL Uzantısı</label>
+                                        <label className="block text-xs sm:text-sm font-medium text-gray-700">Mağaza URL Uzantısı</label>
                                         {profile?.subscription_tier !== 'unlimited' && (
                                             <span className="text-[10px] text-amber-600 font-bold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
                                                 🔒 Sadece SINIRSIZ Paket
@@ -861,7 +865,7 @@ const SettingsPage = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <label className="block text-sm font-medium text-gray-700">{t.store.logo}</label>
+                                            <label className="block text-xs sm:text-sm font-medium text-gray-700">{t.store.logo}</label>
                                             <div className="flex items-center gap-2">
                                                 {isFreeTier && <span className="text-xs text-amber-600 font-bold flex items-center gap-1">🔒 Premium Özellik</span>}
                                                 <button
@@ -904,7 +908,7 @@ const SettingsPage = () => {
 
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <label className="block text-sm font-medium text-gray-700">{t.store.banner}</label>
+                                            <label className="block text-xs sm:text-sm font-medium text-gray-700">{t.store.banner}</label>
                                             <div className="flex items-center gap-2">
                                                 {isFreeTier && <span className="text-xs text-amber-600 font-bold flex items-center gap-1">🔒 Premium Özellik</span>}
                                                 <button
@@ -946,24 +950,91 @@ const SettingsPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="mt-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.store.description}</label>
-                                    <textarea
-                                        value={storeDescription}
-                                        onChange={(e) => setStoreDescription(e.target.value)}
-                                        rows={4}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent"
-                                        placeholder="Mağaza açıklaması..."
-                                    />
+                                {/* Social Media Links - NEW */}
+                                <div className="mt-8 pt-8 border-t border-gray-100">
+                                    <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                        <span className="text-xl">🌐</span> Sosyal Medya Hesapları
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5 ml-1">Facebook Profil Linki</label>
+                                            <div className="relative">
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600">
+                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                                    </svg>
+                                                </div>
+                                                <input
+                                                    type="url"
+                                                    value={formData.facebook_url}
+                                                    onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
+                                                    placeholder="https://facebook.com/profiliniz"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5 ml-1">Instagram Profil Linki</label>
+                                            <div className="relative">
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-600">
+                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                                                    </svg>
+                                                </div>
+                                                <input
+                                                    type="url"
+                                                    value={formData.instagram_url}
+                                                    onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
+                                                    placeholder="https://instagram.com/kullaniciadi"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5 ml-1">X (Twitter) Profil Linki</label>
+                                            <div className="relative">
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-black">
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 1200 1227">
+                                                        <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                                                    </svg>
+                                                </div>
+                                                <input
+                                                    type="url"
+                                                    value={formData.twitter_url}
+                                                    onChange={(e) => setFormData({ ...formData, twitter_url: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
+                                                    placeholder="https://x.com/kullaniciadi"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5 ml-1">TikTok Profil Linki</label>
+                                            <div className="relative">
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-900">
+                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                                                    </svg>
+                                                </div>
+                                                <input
+                                                    type="url"
+                                                    value={formData.tiktok_url}
+                                                    onChange={(e) => setFormData({ ...formData, tiktok_url: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent text-sm"
+                                                    placeholder="https://tiktok.com/@kullaniciadi"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
 
                                 <div className="mt-8 pt-8 border-t border-gray-100">
                                     <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
-                                        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                        <h3 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2">
                                             <span className="text-xl">🕒</span> Çalışma Saatleri (Kurumsal)
                                         </h3>
-                                        <div className="flex items-center gap-3 bg-green-50 px-4 py-2 rounded-xl border border-green-100">
-                                            <span className="text-sm font-bold text-green-700">7/24 Sürekli Çevrimiçi</span>
+                                        <div className="flex items-center gap-3 sm:bg-green-50 sm:px-4 sm:py-2 sm:rounded-xl sm:border sm:border-green-100">
+                                            <span className="text-xs sm:text-sm font-bold text-green-700">7/24 Sürekli Çevrimiçi</span>
                                             <label className="relative inline-flex items-center cursor-pointer">
                                                 <input
                                                     type="checkbox"
@@ -990,7 +1061,7 @@ const SettingsPage = () => {
                                                 { id: 'sat', name: 'Cumartesi' },
                                                 { id: 'sun', name: 'Pazar' }
                                             ].map((day) => (
-                                                <div key={day.id} className="flex flex-wrap items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors gap-4">
+                                                <div key={day.id} className="flex flex-wrap items-center justify-between py-4 sm:p-4 sm:rounded-xl border-b sm:border border-gray-100 sm:bg-gray-50/50 hover:bg-gray-50 transition-colors gap-4">
                                                     <div className="flex items-center gap-4 min-w-[140px]">
                                                         <label className="relative inline-flex items-center cursor-pointer">
                                                             <input
@@ -1004,7 +1075,7 @@ const SettingsPage = () => {
                                                             />
                                                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bottom-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                                                         </label>
-                                                        <span className={`text-sm font-bold ${workingHours[day.id]?.active ? 'text-gray-900' : 'text-gray-400'}`}>
+                                                        <span className={`text-xs sm:text-sm font-bold ${workingHours[day.id]?.active ? 'text-gray-900' : 'text-gray-400'}`}>
                                                             {day.name}
                                                         </span>
                                                     </div>
@@ -1012,7 +1083,7 @@ const SettingsPage = () => {
                                                     {workingHours[day.id]?.active ? (
                                                         <div className="flex items-center gap-3">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[10px] font-bold text-gray-400 uppercase">Açılış</span>
+                                                                <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Açılış</span>
                                                                 <input
                                                                     type="time"
                                                                     value={workingHours[day.id]?.open}
@@ -1020,12 +1091,12 @@ const SettingsPage = () => {
                                                                         ...workingHours,
                                                                         [day.id]: { ...workingHours[day.id], open: e.target.value }
                                                                     })}
-                                                                    className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white"
+                                                                    className="px-2 py-1 sm:px-3 sm:py-1.5 border border-gray-200 rounded-lg text-xs sm:text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white w-24 sm:w-auto"
                                                                 />
                                                             </div>
                                                             <span className="text-gray-300">/</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[10px] font-bold text-gray-400 uppercase">Kapanış</span>
+                                                                <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Kapanış</span>
                                                                 <input
                                                                     type="time"
                                                                     value={workingHours[day.id]?.close}
@@ -1033,18 +1104,18 @@ const SettingsPage = () => {
                                                                         ...workingHours,
                                                                         [day.id]: { ...workingHours[day.id], close: e.target.value }
                                                                     })}
-                                                                    className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white"
+                                                                    className="px-2 py-1 sm:px-3 sm:py-1.5 border border-gray-200 rounded-lg text-xs sm:text-sm font-medium focus:ring-2 focus:ring-red-400 focus:border-transparent bg-white w-24 sm:w-auto"
                                                                 />
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-xs font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">KAPALI</span>
+                                                        <span className="text-[10px] sm:text-xs font-bold text-red-500 bg-red-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-red-100">KAPALI</span>
                                                     )}
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="p-8 bg-green-50/50 rounded-2xl border-2 border-dashed border-green-200 text-center">
+                                        <div className="py-6 sm:p-8 sm:bg-green-50/50 sm:rounded-2xl sm:border-2 sm:border-dashed sm:border-green-200 text-center">
                                             <div className="text-4xl mb-3">🌍</div>
                                             <p className="text-green-800 font-bold text-lg mb-1">Mağazanız Sürekli Açık</p>
                                             <p className="text-green-600 text-sm">Ziyaretçileriniz mağazanızı haftanın her günü, günün her saati "AÇIK" olarak görecektir.</p>

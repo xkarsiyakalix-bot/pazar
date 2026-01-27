@@ -28,20 +28,25 @@ const StorePage = ({ sellerId: propSellerId }) => {
     const [activeTab, setActiveTab] = useState('listings'); // 'listings' or 'ratings'
 
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [showMobileShare, setShowMobileShare] = useState(false);
     const hoursDropdownRef = useRef(null);
+    const shareDropdownRef = useRef(null);
 
-    // Handle click outside to close working hours dropdown
+    // Handle click outside to close dropdowns
     useEffect(() => {
         function handleClickOutside(event) {
             if (hoursDropdownRef.current && !hoursDropdownRef.current.contains(event.target)) {
                 setShowHours(false);
+            }
+            if (shareDropdownRef.current && !shareDropdownRef.current.contains(event.target)) {
+                setShowMobileShare(false);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [hoursDropdownRef]);
+    }, []);
 
     async function handleSendMessage(data) {
         if (!user) {
@@ -112,11 +117,11 @@ const StorePage = ({ sellerId: propSellerId }) => {
                 const processedListings = (storeListings || []).map(l => applyPromotionExpiry(l));
                 setListings(processedListings);
 
-                // Fetch ratings
-                const ratingsData = await getRatings(sellerId);
+                // Fetch ratings using actual UUID
+                const ratingsData = await getRatings(actualSellerId);
                 setRatings(ratingsData);
 
-                const avgData = await getUserAverageRating(sellerId);
+                const avgData = await getUserAverageRating(actualSellerId);
                 setAverageRating(avgData);
 
                 // Only set loading false if we are staying on this page
@@ -262,86 +267,171 @@ const StorePage = ({ sellerId: propSellerId }) => {
                     )}
 
                     {/* Store Header Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 md:p-10 flex flex-col justify-end">
-                        <div className="w-full flex flex-col md:flex-row items-center md:items-end gap-5 md:gap-8 text-white text-center md:text-left">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-4 md:p-10 flex flex-col justify-end">
+                        {/* Unified Share Button - TOP RIGHT */}
+                        <div className="absolute top-4 right-4 z-[100]" ref={shareDropdownRef}>
+                            <button
+                                onClick={() => setShowMobileShare(!showMobileShare)}
+                                className="w-9 h-9 md:w-11 md:h-11 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 shadow-lg active:scale-90 transition-all hover:bg-white/20"
+                            >
+                                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                </svg>
+                            </button>
+
+                            {showMobileShare && (
+                                <div className="absolute right-0 top-full -mt-1 w-40 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-1.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="flex flex-col gap-0.5">
+                                        <button
+                                            onClick={() => {
+                                                const url = window.location.href;
+                                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                                                setShowMobileShare(false);
+                                            }}
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                        >
+                                            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white shrink-0">
+                                                <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
+                                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[10px] font-bold">Facebook'ta Paylaş</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                const url = window.location.href;
+                                                const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
+                                                window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                                                setShowMobileShare(false);
+                                            }}
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                        >
+                                            <div className="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center text-white shrink-0">
+                                                <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[10px] font-bold">WhatsApp</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                const url = window.location.href;
+                                                const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
+                                                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+                                                setShowMobileShare(false);
+                                            }}
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                        >
+                                            <div className="w-7 h-7 bg-black rounded-lg flex items-center justify-center text-white shrink-0">
+                                                <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 1200 1227">
+                                                    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[10px] font-bold">X (Twitter)</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(window.location.href).then(() => {
+                                                    alert('Bağlantı panoya kopyalandı!');
+                                                });
+                                                setShowMobileShare(false);
+                                            }}
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                        >
+                                            <div className="w-7 h-7 bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 shrink-0">
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[10px] font-bold">Linki Kopyala</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="w-full flex flex-row items-center md:items-end gap-3 md:gap-8 text-white text-left">
                             <div className="relative shrink-0">
                                 <img
                                     src={storeInfo.store_logo || storeInfo.avatar_url || 'https://i.pravatar.cc/150'}
                                     alt={storeInfo.store_name}
-                                    className="w-24 h-24 md:w-32 md:h-32 rounded-2xl border-4 border-white shadow-2xl object-cover bg-white transform hover:scale-105 transition-transform duration-500"
+                                    className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-xl md:rounded-2xl border-2 md:border-4 border-white shadow-2xl object-cover bg-white transform hover:scale-105 transition-transform duration-500"
                                 />
                                 {storeInfo.is_pro && (
-                                    <div className="absolute -top-3 -right-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-[10px] md:text-xs uppercase font-black px-3 py-1 rounded-full shadow-xl border-2 border-white">
+                                    <div className="absolute -top-2 -right-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-[8px] md:text-xs uppercase font-black px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-xl border border-white">
                                         PRO
                                     </div>
                                 )}
                             </div>
-                            <div className="flex-1 pb-1">
-                                <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2 drop-shadow-2xl">{storeInfo.store_name || storeInfo.full_name}</h1>
-                                <div className="flex items-center justify-center md:justify-start gap-3">
-                                    <p className="text-red-100 font-bold text-sm md:text-base flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 shadow-lg">
+
+                            <div className="flex-1 pb-0.5 sm:pb-1 min-w-0">
+                                <h1 className="text-xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 sm:mb-2 drop-shadow-2xl truncate">
+                                    {storeInfo.store_name || storeInfo.full_name}
+                                </h1>
+                                <div className="flex flex-wrap items-center justify-start gap-2 sm:gap-3">
+                                    <p className="text-red-100 font-bold text-[10px] sm:text-base flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/10 shadow-lg">
                                         {storeInfo.city && (
                                             <>
-                                                <span>{storeInfo.city}</span>
-                                                <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                                <span className="truncate max-w-[80px] sm:max-w-none">{storeInfo.city}</span>
+                                                <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-red-400"></span>
                                             </>
                                         )}
-                                        <span>{listings.length} İlan</span>
+                                        <span className="whitespace-nowrap">{listings.length} İlan</span>
                                     </p>
+                                    {averageRating.count > 0 && (
+                                        <div
+                                            onClick={() => setActiveTab('ratings')}
+                                            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/10 shadow-lg cursor-pointer hover:bg-white/20 transition-all"
+                                        >
+                                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                            </svg>
+                                            <span className="text-white font-bold text-[10px] sm:text-base">{averageRating.average}</span>
+                                            <span className="text-white/60 text-[9px] sm:text-xs">({averageRating.count})</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                            <div className="pb-1">
-                                <div className="flex gap-2">
+
+                            {/* Social Media Icons - Always visible for premium feel */}
+                            <div className="pb-0.5 md:pb-1 flex flex-wrap gap-1.5 md:gap-2 justify-end">
+                                <div className="flex gap-1.5 md:gap-2">
                                     <button
-                                        onClick={() => {
-                                            const url = window.location.href;
-                                            const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
-                                            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-                                        }}
-                                        className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
-                                        title="Facebook'ta Paylaş"
+                                        onClick={() => window.open(storeInfo.facebook_url || 'https://facebook.com/exvitrin', '_blank')}
+                                        className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
+                                        title={storeInfo.facebook_url ? "Facebook Sayfamız" : "Facebook"}
                                     >
-                                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 24 24">
                                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                                         </svg>
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            const url = window.location.href;
-                                            const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
-                                            window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-                                        }}
-                                        className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
-                                        title="WhatsApp'ta Paylaş"
+                                        onClick={() => window.open(storeInfo.instagram_url || 'https://instagram.com/exvitrin', '_blank')}
+                                        className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
+                                        title={storeInfo.instagram_url ? "Instagram Sayfamız" : "Instagram"}
                                     >
-                                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
-                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                                         </svg>
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            const url = window.location.href;
-                                            const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
-                                            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-                                        }}
-                                        className="w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/20"
-                                        title="X'te Paylaş"
+                                        onClick={() => window.open(storeInfo.twitter_url || 'https://x.com/exvitrin', '_blank')}
+                                        className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/20"
+                                        title={storeInfo.twitter_url ? "X (Twitter) Sayfamız" : "X (Twitter)"}
                                     >
-                                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 1200 1227">
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 1200 1227">
                                             <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
                                         </svg>
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(window.location.href).then(() => {
-                                                alert('Bağlantı panoya kopyalandı!');
-                                            });
-                                        }}
-                                        className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
-                                        title="Bağlantıyı Kopyala"
+                                        onClick={() => window.open(storeInfo.tiktok_url || 'https://tiktok.com/@exvitrin', '_blank')}
+                                        className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
+                                        title={storeInfo.tiktok_url ? "TikTok Sayfamız" : "TikTok"}
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 24 24">
+                                            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -352,7 +442,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
             </div>
 
             {/* Store Info Panel - Separate High Visibility Panel */}
-            <div className="relative z-20 mt-4 max-w-[1400px] mx-auto px-4 mb-8">
+            <div className="relative z-20 mt-4 max-w-[1400px] mx-auto px-4 mb-0 sm:mb-8">
                 <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-6">
                     <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-6">
                         <div className="flex flex-wrap items-center gap-6 md:gap-10">
@@ -494,12 +584,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
                 </div>
             </div>
 
-            <main className="max-w-[1400px] mx-auto px-4 py-8">
+            <main className="max-w-[1400px] mx-auto px-4 pt-0 pb-8 sm:py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Sidebar: About Store & Categories */}
                     <div className="lg:col-span-1 space-y-6">
-                        {/* Seller Profile Card - NEW */}
-                        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 overflow-hidden relative group">
+                        {/* Seller Profile Card - Desktop Only */}
+                        <div className="hidden lg:block bg-white rounded-2xl shadow-xl border border-gray-100 p-8 overflow-hidden relative group">
                             {/* Decorative Background */}
                             <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-gray-50 to-gray-100 -z-10"></div>
 
@@ -629,86 +719,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             </div>
                         )}
 
-                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Mağaza Hakkında</h3>
-                            <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
-                                {storeInfo.store_description || 'Kurumsal mağazamıza hoş geldiniz.'}
-                            </p>
 
-                            <hr className="my-6 border-gray-100" />
-
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3 text-sm text-gray-600">
-                                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span>{formatLastSeen(storeInfo.last_seen)}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-sm text-gray-600">
-                                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span>{new Date(storeInfo.created_at).toLocaleDateString('tr-TR')} tarihinden beri üye</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4 tracking-tight">Mağazayı Paylaş</h3>
-                            <div className="flex flex-wrap gap-3">
-                                <button
-                                    onClick={() => {
-                                        const url = window.location.href;
-                                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-                                    }}
-                                    className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:bg-blue-700 hover:scale-110 transition-all shadow-md"
-                                    title="Facebook"
-                                >
-                                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
-                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                                    </svg>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const url = window.location.href;
-                                        const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
-                                        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-                                    }}
-                                    className="w-10 h-10 bg-green-500 text-white rounded-xl flex items-center justify-center hover:bg-green-600 hover:scale-110 transition-all shadow-md"
-                                    title="WhatsApp"
-                                >
-                                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
-                                    </svg>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const url = window.location.href;
-                                        const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
-                                        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-                                    }}
-                                    className="w-10 h-10 bg-zinc-700 text-white rounded-xl flex items-center justify-center hover:bg-zinc-800 hover:scale-110 transition-all shadow-md border border-zinc-600"
-                                    title="X"
-                                >
-                                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 1200 1227">
-                                        <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
-                                    </svg>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(window.location.href).then(() => {
-                                            alert('Bağlantı panoya kopyalandı!');
-                                        });
-                                    }}
-                                    className="w-10 h-10 bg-gray-100 text-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-200 hover:scale-110 transition-all shadow-md"
-                                    title="Bağlantıyı Kopyala"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
 
                         {storeInfo.legal_info && (
                             <div className="bg-gray-100 rounded-xl p-6 border border-gray-200">
@@ -763,14 +774,14 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         <p className="text-gray-500 font-medium">Bu kategoride henüz ilan bulunmuyor.</p>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-6">
                                         {sortedListings.map((listing) => (
                                             <div
                                                 key={listing.id}
                                                 onClick={() => navigate(`/product/${listing.id}`)}
                                                 className={`${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'bg-purple-50/10 border-purple-300' : 'bg-white border-gray-100'} rounded-xl shadow-sm border overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col h-full`}
                                             >
-                                                <div className="relative h-48 overflow-hidden">
+                                                <div className="relative h-32 sm:h-48 overflow-hidden">
                                                     <img
                                                         src={(listing.images && listing.images[0]) || listing.image || 'https://via.placeholder.com/400x300?text=Resim+Yok'}
                                                         alt={listing.title}
@@ -821,17 +832,17 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="p-4 flex flex-col flex-1">
-                                                    <h3 className="font-bold text-gray-700 line-clamp-2 min-h-[48px] mb-2 transition-colors">
+                                                <div className="p-2 sm:p-4 flex flex-col flex-1">
+                                                    <h3 className="font-bold text-gray-700 text-sm sm:text-base line-clamp-2 min-h-[32px] sm:min-h-[48px] mb-1 sm:mb-2 transition-colors">
                                                         {listing.title}
                                                     </h3>
                                                     <div className="mt-auto">
-                                                        <p className="text-2xl font-black text-gray-700 mb-3">
+                                                        <p className="text-base sm:text-2xl font-black text-gray-700 mb-1 sm:mb-3">
                                                             {listing.price !== null && listing.price !== undefined
                                                                 ? `${listing.price.toLocaleString('tr-TR')} ₺`
                                                                 : 'Fiyat Belirtilmemiş'}
                                                         </p>
-                                                        <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-50">
+                                                        <div className="flex items-center justify-between text-[10px] sm:text-xs text-gray-500 pt-2 sm:pt-3 border-t border-gray-50">
                                                             <span className="truncate mr-2">{listing.city || listing.location}</span>
                                                             <span className="shrink-0">{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
                                                         </div>
@@ -934,6 +945,42 @@ const StorePage = ({ sellerId: propSellerId }) => {
                 sellerName={storeInfo?.full_name || 'Mağaza'}
                 listingTitle={t.sellerProfile.inquiryToSeller}
             />
+
+            {/* Mobile Bottom Bar (Sticky) - Positioned above main MobileBottomNavigation (h-16) */}
+            <div className="lg:hidden fixed bottom-16 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 p-3 z-[9998] flex items-center gap-3 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
+                <button
+                    onClick={handleFollowToggle}
+                    className={`flex-1 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 border-2 text-sm shadow-sm ${isFollowingSeller
+                        ? 'bg-gray-50 border-gray-200 text-gray-600'
+                        : 'bg-white border-gray-900 text-gray-900'
+                        }`}
+                >
+                    {isFollowingSeller ? (
+                        <>
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            Takiptesin
+                        </>
+                    ) : (
+                        <>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Takip Et
+                        </>
+                    )}
+                </button>
+                <button
+                    onClick={() => setShowMessageModal(true)}
+                    className="flex-1 bg-red-600 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-red-600/20 text-sm"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                    Mesaj Gönder
+                </button>
+            </div>
         </div>
     );
 };

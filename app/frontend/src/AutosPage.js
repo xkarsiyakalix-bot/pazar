@@ -51,6 +51,34 @@ function AutosPage() {
         const saved = localStorage.getItem('favorites');
         return saved ? JSON.parse(saved) : [];
     });
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+    const getActiveFilterCount = () => {
+        let count = 0;
+        if (selectedBrands.length > 0) count++;
+        if (selectedModels.length > 0) count++;
+        if (kmFrom || kmTo) count++;
+        if (damagedVehicle) count++;
+        if (undamagedVehicle) count++;
+        if (yearFrom || yearTo) count++;
+        if (powerFrom || powerTo) count++;
+        if (automaticTransmission) count++;
+        if (manualTransmission) count++;
+        if (huDate) count++;
+        if (priceFrom || priceTo) count++;
+        if (Object.values(vehicleTypes).some(v => v)) count++;
+        if (Object.values(doorCounts).some(v => v)) count++;
+        if (Object.values(emissionBadges).some(v => v)) count++;
+        if (Object.values(emissionClasses).some(v => v)) count++;
+        if (Object.values(interiorMaterials).some(v => v)) count++;
+        if (Object.values(exteriorColors).some(v => v)) count++;
+        if (Object.values(features).some(v => v)) count++;
+        if (Object.values(offerType).some(v => v)) count++;
+        if (Object.values(sellerType).some(v => v)) count++;
+        if (Object.values(locations).some(v => v)) count++;
+        if (Object.values(fuelTypes).some(v => v)) count++;
+        return count;
+    };
 
     const enrichListingData = (l) => {
         // Specific enrichment for known IDs with missing data
@@ -885,33 +913,100 @@ function AutosPage() {
         return new Date(b.created_at) - new Date(a.created_at);
     });
 
+
     return (
         <div className="min-h-screen bg-gray-50">
             <CategorySEO category="Otomobil, Bisiklet & Tekne" subCategory="Otomobiller" itemCount={statsListings.length} />
-            <div className="max-w-[1400px] mx-auto px-4 py-6">
-                <div className="flex gap-6">
-                    {/* Brand Filter Sidebar */}
-                    <aside className="w-96 flex-shrink-0 bg-white rounded-2xl shadow-lg p-6 h-fit border border-gray-100">
-                        {/* Category Navigation */}
-                        <div className="mb-6 pb-6 border-b border-gray-200">
-                            <h3 className="font-bold text-gray-900 mb-3 text-base">{t.filters.categories}</h3>
-                            <button
-                                onClick={() => navigate('/search')}
-                                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
-                            >
-                                <span>{t.filters.allCategories}</span>
-                                <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <div className="max-w-[1400px] mx-auto px-4 py-8">
+                {/* Mobile/Tablet Filter Button */}
+                <div className="xl:hidden mb-6">
+                    <button
+                        onClick={() => setShowMobileFilters(true)}
+                        className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 text-gray-800 rounded-2xl shadow-md border border-gray-100 transition-all active:scale-[0.98]"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-red-50 rounded-xl">
+                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                                 </svg>
-                            </button>
+                            </div>
+                            <span className="font-bold text-base">Filtrele & Kategoriler</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {getActiveFilterCount() > 0 && (
+                                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-red-600 text-white text-xs font-bold rounded-full">
+                                    {getActiveFilterCount()} aktif
+                                </span>
+                            )}
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+                </div>
 
-                            <div className="space-y-2 mt-3">
+                <div className="flex flex-col xl:flex-row gap-8">
+                    {/* Sidebar - Desktop and Mobile Drawer */}
+                    <aside className={`
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        ${showMobileFilters ? 'block' : 'hidden xl:block'}
+                    `}>
+                        {/* Mobile Overlay Backdrop */}
+                        <div
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm xl:hidden animate-in fade-in duration-300"
+                            onClick={() => setShowMobileFilters(false)}
+                        />
+
+                        {/* Sidebar Content Column */}
+                        <div className={`
+                            relative w-[320px] sm:w-[380px] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-none p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 ml-auto xl:ml-0 border border-gray-100
+                            ${showMobileFilters ? 'animate-in slide-in-from-right duration-300' : ''}
+                        `}>
+                            {/* Mobile Header */}
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
+                                <h3 className="font-bold text-gray-900 text-lg">Filtreleme</h3>
                                 <button
-                                    onClick={() => navigate(getCategoryPath('Otomobil, Bisiklet & Tekne'))}
-                                    className="text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group ml-4"
-                                    style={{ width: 'calc(100% - 1rem)' }}
+                                    onClick={() => setShowMobileFilters(false)}
+                                    className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
                                 >
-                                    <span>{getCategoryTranslation('Auto, Rad & Boot')}</span>
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Categories Section - Keep it inside for consistency */}
+                            <div className="mb-8">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">{t.common.categories}</h3>
+                                <div className="space-y-1">
+                                    <button
+                                        onClick={() => navigate('/Otomobil-Bisiklet-Tekne')}
+                                        className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-lg">🚗</span>
+                                            <span className="text-sm font-medium">Otomobil, Bisiklet & Tekne</span>
+                                        </div>
+                                        <svg className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                    <div className="ml-8 p-2 rounded-lg bg-red-50 text-red-700 text-sm font-bold border border-red-100">
+                                        Otomobiller
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Original Sidebar Content Starts Here */}
+                            {/* Category Navigation */}
+                            <div className="mb-6 pb-6 border-b border-gray-200">
+                                <h3 className="font-bold text-gray-900 mb-3 text-base">{t.filters.categories}</h3>
+                                <button
+                                    onClick={() => navigate('/search')}
+                                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
+                                >
+                                    <span>{t.filters.allCategories}</span>
                                     <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
@@ -935,678 +1030,656 @@ function AutosPage() {
                                     </button>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Aktuelle Suche */}
-                        {(selectedBrands.length > 0 || selectedModels.length > 0) && (
-                            <div className="mb-6 pb-6 border-b border-gray-200">
-                                <h3 className="font-bold text-gray-900 mb-3 text-lg">{t.filters.currentSearch || 'Aktuelle Suche'}</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {/* Brands */}
-                                    {selectedBrands.map(brand => (
-                                        <div key={`summary-brand-${brand}`} className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
-                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t.filters.brand}:</span>
-                                            <span className="text-sm text-red-600 font-bold">{brand}</span>
-                                            <button
-                                                onClick={() => toggleBrand(brand)}
-                                                className="ml-1 text-red-300 hover:text-red-500 transition-colors"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
+                            {/* Aktuelle Suche */}
+                            {(selectedBrands.length > 0 || selectedModels.length > 0) && (
+                                <div className="mb-6 pb-6 border-b border-gray-200">
+                                    <h3 className="font-bold text-gray-900 mb-3 text-lg">{t.filters.currentSearch || 'Aktuelle Suche'}</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {/* Brands */}
+                                        {selectedBrands.map(brand => (
+                                            <div key={`summary-brand-${brand}`} className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
+                                                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t.filters.brand}:</span>
+                                                <span className="text-sm text-red-600 font-bold">{brand}</span>
+                                                <button
+                                                    onClick={() => toggleBrand(brand)}
+                                                    className="ml-1 text-red-300 hover:text-red-500 transition-colors"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {/* Models */}
+                                        {selectedModels.map(model => (
+                                            <div key={`summary-model-${model}`} className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
+                                                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t.filters.model}:</span>
+                                                <span className="text-sm text-red-600 font-bold">{model}</span>
+                                                <button
+                                                    onClick={() => toggleModel(model)}
+                                                    className="ml-1 text-red-300 hover:text-red-500 transition-colors"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+
+                            {/* Marke Filter */}
+                            <h3 className="font-bold text-gray-900 mb-5 text-lg">{t.filters.brand}</h3>
+                            <div className="space-y-1 max-h-96 overflow-y-auto pr-2 mb-6">
+                                {sortedCarBrands.map((brand) => {
+                                    const brandCount = getBrandCount(brand.name);
+                                    const isBrandSelected = selectedBrands.includes(brand.name);
+                                    const isAnyModelSelected = isAnyModelOfBrandSelected(brand.name);
+
+                                    return (
+                                        <div key={brand.name} className="brand-group">
+                                            <div className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors group ${isBrandSelected ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
+                                                <label className="flex items-center flex-1 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isBrandSelected}
+                                                        onChange={() => toggleBrand(brand.name)}
+                                                        className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer focus:ring-red-500"
+                                                    />
+                                                    <span className={`ml-3 text-sm transition-colors ${isBrandSelected ? 'text-red-600 font-bold' : 'text-gray-700 group-hover:text-red-500'}`}>
+                                                        {brand.name}
+                                                    </span>
+                                                </label>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-xs ${isBrandSelected ? 'text-red-500' : 'text-gray-400'}`}>
+                                                        ({brandCount.toLocaleString('tr-TR')})
+                                                    </span>
+                                                    {brand.subModels && (
+                                                        <div className={`p-1 rounded hover:bg-red-100 transition-colors cursor-pointer ${isAnyModelSelected ? 'text-red-600' : 'text-gray-400'}`}>
+                                                            <svg
+                                                                className={`w-4 h-4 transition-transform ${isBrandSelected ? 'rotate-180' : ''}`}
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Sub-models */}
+                                            {brand.subModels && isBrandSelected && (
+                                                <div className="ml-7 mt-2 mb-3 space-y-1 border-l-2 border-red-100 pl-4">
+                                                    {brand.subModels.map((model) => {
+                                                        const modelCount = getModelCount(model.name);
+                                                        const isModelSelected = selectedModels.includes(model.name);
+                                                        return (
+                                                            <label
+                                                                key={model.name}
+                                                                className={`flex items-center justify-between px-2 py-1.5 rounded cursor-pointer transition-colors group ${isModelSelected ? 'bg-red-50/50' : 'hover:bg-gray-50'}`}
+                                                            >
+                                                                <div className="flex items-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={isModelSelected}
+                                                                        onChange={() => toggleModel(model.name)}
+                                                                        className="w-3.5 h-3.5 text-red-500 border-gray-300 rounded cursor-pointer focus:ring-red-500"
+                                                                    />
+                                                                    <span className={`ml-3 text-sm transition-colors ${isModelSelected ? 'text-red-600 font-semibold' : 'text-gray-600 group-hover:text-red-500'}`}>
+                                                                        {model.name}
+                                                                    </span>
+                                                                </div>
+                                                                <span className={`text-xs font-medium ${isModelSelected ? 'text-red-400' : 'text-gray-400'}`}>
+                                                                    ({modelCount.toLocaleString('tr-TR')})
+                                                                </span>
+                                                            </label>
+                                                        )
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
-                                    ))}
-                                    {/* Models */}
-                                    {selectedModels.map(model => (
-                                        <div key={`summary-model-${model}`} className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
-                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t.filters.model}:</span>
-                                            <span className="text-sm text-red-600 font-bold">{model}</span>
-                                            <button
-                                                onClick={() => toggleModel(model)}
-                                                className="ml-1 text-red-300 hover:text-red-500 transition-colors"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    ))}
+                                    )
+                                })}
+                            </div>
+
+                            {/* Kilometerstand Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.mileage}</h4>
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (km)</label>
+                                        <input
+                                            type="number"
+                                            value={kmFrom}
+                                            onChange={(e) => setKmFrom(e.target.value)}
+                                            placeholder={`${t.common.example || 'örn.'} 0`}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (km)</label>
+                                        <input
+                                            type="number"
+                                            value={kmTo}
+                                            onChange={(e) => setKmTo(e.target.value)}
+                                            placeholder={`${t.common.example || 'örn.'} 150000`}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        )}
 
-                        {/* Load More Button */}
-                        {hasMore && !loading && filteredListings.length > 0 && (
-                            <div className="mt-8 flex justify-center">
-                                <button
-                                    onClick={loadMore}
-                                    className="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
-                                >
-                                    {t.filters.loadMore || 'Mehr anzeigen'}
-                                </button>
+                            {/* Fahrzeugzustand Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.condition}</h4>
+                                <div className="space-y-3">
+                                    <label className="flex items-center justify-between cursor-pointer group">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={damagedVehicle}
+                                                onChange={(e) => setDamagedVehicle(e.target.checked)}
+                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                            />
+                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                {t.autos?.damaged || 'Beschädigtes Fahrzeug'}
+                                            </span>
+                                        </div>
+                                        <span className="text-xs text-gray-400">
+                                            ({getFilterCount('condition', 'defekt').toLocaleString('tr-TR')})
+                                        </span>
+                                    </label>
+                                    <label className="flex items-center justify-between cursor-pointer group">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={undamagedVehicle}
+                                                onChange={(e) => setUndamagedVehicle(e.target.checked)}
+                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                            />
+                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                {t.autos?.undamaged || 'Unbeschädigtes Fahrzeug'}
+                                            </span>
+                                        </div>
+                                        <span className="text-xs text-gray-400">
+                                            ({getUndamagedCount().toLocaleString('tr-TR')})
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
-                        )}
-                        {loading && page > 1 && (
-                            <div className="mt-8 flex justify-center">
-                                <LoadingSpinner size="small" />
+
+                            {/* Erstzulassungsjahr Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.year}</h4>
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.from}</label>
+                                        <input
+                                            type="number"
+                                            value={yearFrom}
+                                            onChange={(e) => setYearFrom(e.target.value)}
+                                            placeholder={`${t.common.example || 'örn.'} 2015`}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.to}</label>
+                                        <input
+                                            type="number"
+                                            value={yearTo}
+                                            onChange={(e) => setYearTo(e.target.value)}
+                                            placeholder={`${t.common.example || 'örn.'} 2024`}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                        )}
 
-                        {/* Autos Header */}
-                        <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-200">
-                            <h3 className="font-bold text-gray-900 text-lg">{getCategoryTranslation('Autos')}</h3>
-                            <span className="text-gray-500 font-medium">{statsListings.length.toLocaleString('tr-TR')} {t.filters.ads}</span>
-                        </div>
-
-                        {/* Marke Filter */}
-                        <h3 className="font-bold text-gray-900 mb-5 text-lg">{t.filters.brand}</h3>
-                        <div className="space-y-1 max-h-96 overflow-y-auto pr-2 mb-6">
-                            {sortedCarBrands.map((brand) => {
-                                const brandCount = getBrandCount(brand.name);
-                                const isBrandSelected = selectedBrands.includes(brand.name);
-                                const isAnyModelSelected = isAnyModelOfBrandSelected(brand.name);
-
-                                return (
-                                    <div key={brand.name} className="brand-group">
-                                        <div className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors group ${isBrandSelected ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
-                                            <label className="flex items-center flex-1 cursor-pointer">
+                            {/* Kraftstoffart Filter */}
+                            <div className="pt-6 border-t border-gray-200">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.fuel}</h4>
+                                <div className="space-y-2">
+                                    {fuelTypeOptions.map((fuel) => (
+                                        <label key={fuel.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
                                                 <input
                                                     type="checkbox"
-                                                    checked={isBrandSelected}
-                                                    onChange={() => toggleBrand(brand.name)}
-                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer focus:ring-red-500"
+                                                    checked={fuelTypes[fuel.key]}
+                                                    onChange={() => toggleFuelType(fuel.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className={`ml-3 text-sm transition-colors ${isBrandSelected ? 'text-red-600 font-bold' : 'text-gray-700 group-hover:text-red-500'}`}>
-                                                    {brand.name}
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {fuel.displayLabel || fuel.label}
                                                 </span>
-                                            </label>
-                                            <div className="flex items-center gap-2">
-                                                <span className={`text-xs ${isBrandSelected ? 'text-red-500' : 'text-gray-400'}`}>
-                                                    ({brandCount.toLocaleString('tr-TR')})
-                                                </span>
-                                                {brand.subModels && (
-                                                    <div className={`p-1 rounded hover:bg-red-100 transition-colors cursor-pointer ${isAnyModelSelected ? 'text-red-600' : 'text-gray-400'}`}>
-                                                        <svg
-                                                            className={`w-4 h-4 transition-transform ${isBrandSelected ? 'rotate-180' : ''}`}
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                        </svg>
-                                                    </div>
-                                                )}
                                             </div>
-                                        </div>
-
-                                        {/* Sub-models */}
-                                        {brand.subModels && isBrandSelected && (
-                                            <div className="ml-7 mt-2 mb-3 space-y-1 border-l-2 border-red-100 pl-4">
-                                                {brand.subModels.map((model) => {
-                                                    const modelCount = getModelCount(model.name);
-                                                    const isModelSelected = selectedModels.includes(model.name);
-                                                    return (
-                                                        <label
-                                                            key={model.name}
-                                                            className={`flex items-center justify-between px-2 py-1.5 rounded cursor-pointer transition-colors group ${isModelSelected ? 'bg-red-50/50' : 'hover:bg-gray-50'}`}
-                                                        >
-                                                            <div className="flex items-center">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={isModelSelected}
-                                                                    onChange={() => toggleModel(model.name)}
-                                                                    className="w-3.5 h-3.5 text-red-500 border-gray-300 rounded cursor-pointer focus:ring-red-500"
-                                                                />
-                                                                <span className={`ml-3 text-sm transition-colors ${isModelSelected ? 'text-red-600 font-semibold' : 'text-gray-600 group-hover:text-red-500'}`}>
-                                                                    {model.name}
-                                                                </span>
-                                                            </div>
-                                                            <span className={`text-xs font-medium ${isModelSelected ? 'text-red-400' : 'text-gray-400'}`}>
-                                                                ({modelCount.toLocaleString('tr-TR')})
-                                                            </span>
-                                                        </label>
-                                                    )
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            })}
-                        </div>
-
-                        {/* Kilometerstand Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.mileage}</h4>
-                            <div className="flex gap-2">
-                                <div className="flex-1">
-                                    <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (km)</label>
-                                    <input
-                                        type="number"
-                                        value={kmFrom}
-                                        onChange={(e) => setKmFrom(e.target.value)}
-                                        placeholder={`${t.common.example || 'örn.'} 0`}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
-                                    />
-                                </div>
-                                <div className="flex-1">
-                                    <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (km)</label>
-                                    <input
-                                        type="number"
-                                        value={kmTo}
-                                        onChange={(e) => setKmTo(e.target.value)}
-                                        placeholder={`${t.common.example || 'örn.'} 150000`}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
-                                    />
+                                            <span className="text-xs text-gray-400">
+                                                ({fuel.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Fahrzeugzustand Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.condition}</h4>
-                            <div className="space-y-3">
-                                <label className="flex items-center justify-between cursor-pointer group">
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={damagedVehicle}
-                                            onChange={(e) => setDamagedVehicle(e.target.checked)}
-                                            className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                        />
-                                        <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                            {t.autos?.damaged || 'Beschädigtes Fahrzeug'}
-                                        </span>
-                                    </div>
-                                    <span className="text-xs text-gray-400">
-                                        ({getFilterCount('condition', 'defekt').toLocaleString('tr-TR')})
-                                    </span>
-                                </label>
-                                <label className="flex items-center justify-between cursor-pointer group">
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={undamagedVehicle}
-                                            onChange={(e) => setUndamagedVehicle(e.target.checked)}
-                                            className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                        />
-                                        <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                            {t.autos?.undamaged || 'Unbeschädigtes Fahrzeug'}
-                                        </span>
-                                    </div>
-                                    <span className="text-xs text-gray-400">
-                                        ({getUndamagedCount().toLocaleString('tr-TR')})
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-
-                        {/* Erstzulassungsjahr Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.year}</h4>
-                            <div className="flex gap-2">
-                                <div className="flex-1">
-                                    <label className="block text-sm text-gray-600 mb-1">{t.filters.from}</label>
-                                    <input
-                                        type="number"
-                                        value={yearFrom}
-                                        onChange={(e) => setYearFrom(e.target.value)}
-                                        placeholder={`${t.common.example || 'örn.'} 2015`}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
-                                    />
-                                </div>
-                                <div className="flex-1">
-                                    <label className="block text-sm text-gray-600 mb-1">{t.filters.to}</label>
-                                    <input
-                                        type="number"
-                                        value={yearTo}
-                                        onChange={(e) => setYearTo(e.target.value)}
-                                        placeholder={`${t.common.example || 'örn.'} 2024`}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Kraftstoffart Filter */}
-                        <div className="pt-6 border-t border-gray-200">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.fuel}</h4>
-                            <div className="space-y-2">
-                                {fuelTypeOptions.map((fuel) => (
-                                    <label key={fuel.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={fuelTypes[fuel.key]}
-                                                onChange={() => toggleFuelType(fuel.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {fuel.displayLabel || fuel.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({fuel.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Leistung Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.power} ({t.filters.bg || 'BG'})</h4>
-                            <div className="flex gap-2">
-                                <div className="flex-1">
-                                    <label className="block text-sm text-gray-600 mb-1">{t.filters.from} ({t.filters.bg || 'BG'})</label>
-                                    <input
-                                        type="number"
-                                        value={powerFrom}
-                                        onChange={(e) => setPowerFrom(e.target.value)}
-                                        placeholder={`${t.common.example || 'örn.'} 50`}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
-                                    />
-                                </div>
-                                <div className="flex-1">
-                                    <label className="block text-sm text-gray-600 mb-1">{t.filters.to} ({t.filters.bg || 'BG'})</label>
-                                    <input
-                                        type="number"
-                                        value={powerTo}
-                                        onChange={(e) => setPowerTo(e.target.value)}
-                                        placeholder={`${t.common.example || 'örn.'} 300`}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Getriebe Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.transmission}</h4>
-                            <div className="space-y-2">
-                                <label className="flex items-center justify-between cursor-pointer group">
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={automaticTransmission}
-                                            onChange={(e) => setAutomaticTransmission(e.target.checked)}
-                                            className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                        />
-                                        <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                            {t.autos?.transmission?.automatic || 'Automatik'}
-                                        </span>
-                                    </div>
-                                    <span className="text-xs text-gray-400">
-                                        ({getFilterCount('getriebe', 'Automatik').toLocaleString('tr-TR')})
-                                    </span>
-                                </label>
-                                <label className="flex items-center justify-between cursor-pointer group">
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={manualTransmission}
-                                            onChange={(e) => setManualTransmission(e.target.checked)}
-                                            className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                        />
-                                        <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                            {t.autos?.transmission?.manual || 'Manuell'}
-                                        </span>
-                                    </div>
-                                    <span className="text-xs text-gray-400">
-                                        ({getFilterCount('getriebe', 'Manuell').toLocaleString('tr-TR')})
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-
-                        {/* Fahrzeugtyp Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.vehicleType}</h4>
-                            <div className="space-y-2">
-                                {vehicleTypeOptions.map((vehicle) => (
-                                    <label key={vehicle.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={vehicleTypes[vehicle.key]}
-                                                onChange={() => toggleVehicleType(vehicle.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {vehicle.displayLabel || vehicle.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({vehicle.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Anzahl Türen Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.doorCount}</h4>
-                            <div className="space-y-2">
-                                {doorCountOptions.map((door) => (
-                                    <label key={door.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={doorCounts[door.key]}
-                                                onChange={() => toggleDoorCount(door.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {door.displayLabel || door.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({door.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* HU mind. gültig Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.inspection || 'HU mind. gültig'}</h4>
-                            <input
-                                type="month"
-                                value={huDate}
-                                onChange={(e) => setHuDate(e.target.value)}
-                                placeholder="AA/YYYY"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
-                            />
-                        </div>
-
-                        {/* Umweltplakette Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.emissionBadge}</h4>
-                            <div className="space-y-2">
-                                {emissionBadgeOptions.map((badge) => (
-                                    <label key={badge.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={emissionBadges[badge.key]}
-                                                onChange={() => toggleEmissionBadge(badge.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {badge.displayLabel || badge.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({badge.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Schadstoffklasse Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.emissionClass}</h4>
-                            <div className="space-y-2">
-                                {emissionClassOptions.map((euroClass) => (
-                                    <label key={euroClass.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={emissionClasses[euroClass.key]}
-                                                onChange={() => toggleEmissionClass(euroClass.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {euroClass.displayLabel || euroClass.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({euroClass.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Material Innenausstattung Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.interiorMaterial}</h4>
-                            <div className="space-y-2">
-                                {interiorMaterialOptions.map((material) => (
-                                    <label key={material.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={interiorMaterials[material.key]}
-                                                onChange={() => toggleInteriorMaterial(material.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {material.displayLabel || material.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({material.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Außenfarbe Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.exteriorColor}</h4>
-                            <div className="space-y-2">
-                                {exteriorColorOptions.map((color) => (
-                                    <label key={color.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={exteriorColors[color.key]}
-                                                onChange={() => toggleExteriorColor(color.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {color.displayLabel || color.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({color.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Preis Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.price}</h4>
-                            <div className="flex items-center gap-2">
-                                <div className="flex gap-2 flex-1">
+                            {/* Leistung Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.power} ({t.filters.bg || 'BG'})</h4>
+                                <div className="flex gap-2">
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (₺)</label>
+                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.from} ({t.filters.bg || 'BG'})</label>
                                         <input
-                                            type="text"
-                                            value={formatPrice(inputPriceFrom)}
-                                            onChange={(e) => setInputPriceFrom(e.target.value.replace(/\D/g, ''))}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
-                                            placeholder={`${t.common.example || 'örn.'} 5.000`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
+                                            type="number"
+                                            value={powerFrom}
+                                            onChange={(e) => setPowerFrom(e.target.value)}
+                                            placeholder={`${t.common.example || 'örn.'} 50`}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (₺)</label>
+                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.to} ({t.filters.bg || 'BG'})</label>
                                         <input
-                                            type="text"
-                                            value={formatPrice(inputPriceTo)}
-                                            onChange={(e) => setInputPriceTo(e.target.value.replace(/\D/g, ''))}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
-                                            placeholder={`${t.common.example || 'örn.'} 50.000`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
+                                            type="number"
+                                            value={powerTo}
+                                            onChange={(e) => setPowerTo(e.target.value)}
+                                            placeholder={`${t.common.example || 'örn.'} 300`}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
                                         />
                                     </div>
                                 </div>
-                                <div className="pt-6">
-                                    <button
-                                        onClick={handleApplyPrice}
-                                        className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[42px] w-[42px] flex items-center justify-center border border-gray-200"
-                                        title={t.filters.apply || "Uygula"}
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                        </svg>
-                                    </button>
+                            </div>
+
+                            {/* Getriebe Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.transmission}</h4>
+                                <div className="space-y-2">
+                                    <label className="flex items-center justify-between cursor-pointer group">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={automaticTransmission}
+                                                onChange={(e) => setAutomaticTransmission(e.target.checked)}
+                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                            />
+                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                {t.autos?.transmission?.automatic || 'Automatik'}
+                                            </span>
+                                        </div>
+                                        <span className="text-xs text-gray-400">
+                                            ({getFilterCount('getriebe', 'Automatik').toLocaleString('tr-TR')})
+                                        </span>
+                                    </label>
+                                    <label className="flex items-center justify-between cursor-pointer group">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={manualTransmission}
+                                                onChange={(e) => setManualTransmission(e.target.checked)}
+                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                            />
+                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                {t.autos?.transmission?.manual || 'Manuell'}
+                                            </span>
+                                        </div>
+                                        <span className="text-xs text-gray-400">
+                                            ({getFilterCount('getriebe', 'Manuell').toLocaleString('tr-TR')})
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.exteriorFeatures || 'Dış Donanım'}</h4>
-                            <div className="space-y-2">
-                                {exteriorFeatures.map((feature) => (
-                                    <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={features[feature.key]}
-                                                onChange={() => toggleFeature(feature.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {feature.displayLabel || feature.label}
+                            {/* Fahrzeugtyp Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.vehicleType}</h4>
+                                <div className="space-y-2">
+                                    {vehicleTypeOptions.map((vehicle) => (
+                                        <label key={vehicle.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={vehicleTypes[vehicle.key]}
+                                                    onChange={() => toggleVehicleType(vehicle.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {vehicle.displayLabel || vehicle.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({vehicle.count.toLocaleString('tr-TR')})
                                             </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({feature.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.interiorFeatures || 'İç Donanım'}</h4>
-                            <div className="space-y-2">
-                                {interiorFeatures.map((feature) => (
-                                    <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={features[feature.key]}
-                                                onChange={() => toggleFeature(feature.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {feature.displayLabel || feature.label}
+                            {/* Anzahl Türen Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.doorCount}</h4>
+                                <div className="space-y-2">
+                                    {doorCountOptions.map((door) => (
+                                        <label key={door.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={doorCounts[door.key]}
+                                                    onChange={() => toggleDoorCount(door.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {door.displayLabel || door.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({door.count.toLocaleString('tr-TR')})
                                             </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({feature.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.safetyFeatures || 'Güvenlik'}</h4>
-                            <div className="space-y-2">
-                                {safetyFeatures.map((feature) => (
-                                    <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={features[feature.key]}
-                                                onChange={() => toggleFeature(feature.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {feature.displayLabel || feature.label}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({feature.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
+                            {/* HU mind. gültig Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.inspection || 'HU mind. gültig'}</h4>
+                                <input
+                                    type="month"
+                                    value={huDate}
+                                    onChange={(e) => setHuDate(e.target.value)}
+                                    placeholder="AA/YYYY"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                />
                             </div>
-                        </div>
 
-                        {/* Angebotstyp Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.offerType}</h4>
-                            <div className="space-y-2">
-                                {offerTypeOptions.map((type) => (
-                                    <label key={type.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={offerType[type.key]}
-                                                onChange={() => toggleOfferType(type.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {type.displayLabel || type.label}
+                            {/* Umweltplakette Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.emissionBadge}</h4>
+                                <div className="space-y-2">
+                                    {emissionBadgeOptions.map((badge) => (
+                                        <label key={badge.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={emissionBadges[badge.key]}
+                                                    onChange={() => toggleEmissionBadge(badge.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {badge.displayLabel || badge.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({badge.count.toLocaleString('tr-TR')})
                                             </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({type.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Anbieter Filter */}
-                        <div className="pt-6 border-t border-gray-200 mb-6">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.sellerType}</h4>
-                            <div className="space-y-2">
-                                {sellerTypeOptions.map((type) => (
-                                    <label key={type.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={sellerType[type.key]}
-                                                onChange={() => toggleSellerType(type.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {type.displayLabel || type.label}
+                            {/* Schadstoffklasse Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.emissionClass}</h4>
+                                <div className="space-y-2">
+                                    {emissionClassOptions.map((euroClass) => (
+                                        <label key={euroClass.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={emissionClasses[euroClass.key]}
+                                                    onChange={() => toggleEmissionClass(euroClass.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {euroClass.displayLabel || euroClass.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({euroClass.count.toLocaleString('tr-TR')})
                                             </span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({type.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Ort Filter */}
-                        <div className="pt-6 border-t border-gray-200">
-                            <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.location}</h4>
-                            <div className="space-y-2">
-                                {locationOptions.map((location) => (
-                                    <label key={location.key} className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={locations[location.key]}
-                                                onChange={() => toggleLocation(location.key)}
-                                                className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
-                                            />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {location.displayLabel || location.label}
+                            {/* Material Innenausstattung Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.interiorMaterial}</h4>
+                                <div className="space-y-2">
+                                    {interiorMaterialOptions.map((material) => (
+                                        <label key={material.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={interiorMaterials[material.key]}
+                                                    onChange={() => toggleInteriorMaterial(material.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {material.displayLabel || material.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({material.count.toLocaleString('tr-TR')})
                                             </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Außenfarbe Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.exteriorColor}</h4>
+                                <div className="space-y-2">
+                                    {exteriorColorOptions.map((color) => (
+                                        <label key={color.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={exteriorColors[color.key]}
+                                                    onChange={() => toggleExteriorColor(color.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {color.displayLabel || color.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({color.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Preis Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.price}</h4>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex gap-2 flex-1">
+                                        <div className="flex-1">
+                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (₺)</label>
+                                            <input
+                                                type="text"
+                                                value={formatPrice(inputPriceFrom)}
+                                                onChange={(e) => setInputPriceFrom(e.target.value.replace(/\D/g, ''))}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
+                                                placeholder={`${t.common.example || 'örn.'} 5.000`}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
+                                            />
                                         </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({location.count.toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ))}
+                                        <div className="flex-1">
+                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (₺)</label>
+                                            <input
+                                                type="text"
+                                                value={formatPrice(inputPriceTo)}
+                                                onChange={(e) => setInputPriceTo(e.target.value.replace(/\D/g, ''))}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
+                                                placeholder={`${t.common.example || 'örn.'} 50.000`}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="pt-6">
+                                        <button
+                                            onClick={handleApplyPrice}
+                                            className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[42px] w-[42px] flex items-center justify-center border border-gray-200"
+                                            title={t.filters.apply || "Uygula"}
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.exteriorFeatures || 'Dış Donanım'}</h4>
+                                <div className="space-y-2">
+                                    {exteriorFeatures.map((feature) => (
+                                        <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={features[feature.key]}
+                                                    onChange={() => toggleFeature(feature.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {feature.displayLabel || feature.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({feature.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.interiorFeatures || 'İç Donanım'}</h4>
+                                <div className="space-y-2">
+                                    {interiorFeatures.map((feature) => (
+                                        <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={features[feature.key]}
+                                                    onChange={() => toggleFeature(feature.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {feature.displayLabel || feature.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({feature.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.safetyFeatures || 'Güvenlik'}</h4>
+                                <div className="space-y-2">
+                                    {safetyFeatures.map((feature) => (
+                                        <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={features[feature.key]}
+                                                    onChange={() => toggleFeature(feature.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {feature.displayLabel || feature.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({feature.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Angebotstyp Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.offerType}</h4>
+                                <div className="space-y-2">
+                                    {offerTypeOptions.map((type) => (
+                                        <label key={type.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={offerType[type.key]}
+                                                    onChange={() => toggleOfferType(type.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {type.displayLabel || type.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({type.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Anbieter Filter */}
+                            <div className="pt-6 border-t border-gray-200 mb-6">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.sellerType}</h4>
+                                <div className="space-y-2">
+                                    {sellerTypeOptions.map((type) => (
+                                        <label key={type.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={sellerType[type.key]}
+                                                    onChange={() => toggleSellerType(type.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {type.displayLabel || type.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({type.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Ort Filter */}
+                            <div className="pt-6 border-t border-gray-200">
+                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.location}</h4>
+                                <div className="space-y-2">
+                                    {locationOptions.map((location) => (
+                                        <label key={location.key} className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={locations[location.key]}
+                                                    onChange={() => toggleLocation(location.key)}
+                                                    className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
+                                                />
+                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                    {location.displayLabel || location.label}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({location.count.toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </aside>
@@ -1735,11 +1808,11 @@ function AutosPage() {
                             />
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="w-full">
 
 
                             {/* Listings */}
-                            <div className="mt-8">
+                            <div className="mt-8 px-0 sm:px-4 md:px-0">
                                 <h3 className="text-xl font-bold text-gray-900 mb-4">
                                     {t.autos?.currentAds || 'Güncel İlanlar'} ({filteredListings.length})
                                 </h3>
@@ -1922,6 +1995,22 @@ function AutosPage() {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                )}
+                                {/* Load More Button */}
+                                {hasMore && !loading && filteredListings.length > 0 && (
+                                    <div className="mt-8 flex justify-center">
+                                        <button
+                                            onClick={loadMore}
+                                            className="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                                        >
+                                            {t.filters.loadMore || 'Mehr anzeigen'}
+                                        </button>
+                                    </div>
+                                )}
+                                {loading && page > 1 && (
+                                    <div className="mt-8 flex justify-center">
+                                        <LoadingSpinner size="small" />
                                     </div>
                                 )}
                             </div>

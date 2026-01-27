@@ -6,6 +6,29 @@ const MobileBottomNavigation = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
+    const [unreadCount, setUnreadCount] = React.useState(0);
+
+    // Fetch unread message count
+    React.useEffect(() => {
+        const fetchUnreadCount = async () => {
+            if (user) {
+                try {
+                    const { getUnreadCount } = await import('../api/messages');
+                    const count = await getUnreadCount();
+                    setUnreadCount(count);
+                } catch (error) {
+                    console.error('Error fetching unread count:', error);
+                }
+            }
+        };
+
+        if (user) {
+            fetchUnreadCount();
+            // Refresh every 30 seconds
+            const interval = setInterval(fetchUnreadCount, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [user]);
 
     const navItems = [
         {
@@ -64,6 +87,11 @@ const MobileBottomNavigation = () => {
                         >
                             <div className="relative">
                                 {item.icon(isActive)}
+                                {item.id === 'messages' && unreadCount > 0 && (
+                                    <span className="absolute -top-1.5 -right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-white shadow-sm">
+                                        {unreadCount}
+                                    </span>
+                                )}
                             </div>
                             {!item.isSpecial && (
                                 <span className={`text-[10px] mt-1 font-medium truncate w-full px-1 text-center ${isActive ? 'text-red-600' : 'text-gray-500'}`}>

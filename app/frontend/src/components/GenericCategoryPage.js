@@ -37,6 +37,7 @@ const GenericCategoryPage = ({
     const [isSaved, setIsSaved] = useState(false);
     const [savedSearchId, setSavedSearchId] = useState(null);
     const [savingSearch, setSavingSearch] = useState(false);
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     // 1. Derive active filters directly from URL
     const getActiveFiltersFromURL = () => {
@@ -671,304 +672,359 @@ const GenericCategoryPage = ({
 
             <CategorySEO category={category} subCategory={subCategory} itemCount={listings.length} />
             <div className="max-w-[1400px] mx-auto px-4 py-6">
-                <div className="flex gap-6">
-                    {/* Left Sidebar - Filter Panel */}
-                    <aside className="w-96 flex-shrink-0 bg-white rounded-2xl shadow-lg p-6 h-fit sticky top-6">
-                        {/* Category Navigation */}
-                        <div className="mb-6 pb-6 border-b border-gray-200">
-                            <h3 className="font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent mb-3 text-base">{t.filters.categories}</h3>
-                            <button
-                                onClick={() => navigate('/Butun-Kategoriler')}
-                                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
-                            >
-                                <span>{t.filters.allCategories}</span>
-                                <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                {/* Mobile/Tablet Filter Button - Prominent at top */}
+                <div className="xl:hidden mb-6">
+                    <button
+                        onClick={() => setShowMobileFilters(true)}
+                        className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 text-gray-800 rounded-2xl shadow-md border border-gray-100 transition-all active:scale-[0.98]"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-red-50 rounded-xl">
+                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                                 </svg>
-                            </button>
+                            </div>
+                            <span className="font-bold text-base">Filtrele & Kategoriler</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {getActiveFilterCount() > 0 && (
+                                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-red-600 text-white text-xs font-bold rounded-full">
+                                    {getActiveFilterCount()} aktif
+                                </span>
+                            )}
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+                </div>
 
-                            <div className="space-y-2 mt-3">
+                <div className="flex flex-col xl:flex-row gap-6">
+                    {/* Filter Sidebar - Responsive Drawer for Mobile/Tablet */}
+                    <aside className={`
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        ${showMobileFilters ? 'block' : 'hidden xl:block'}
+                    `}>
+                        {/* Mobile Overlay Backdrop */}
+                        <div
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm xl:hidden animate-in fade-in duration-300"
+                            onClick={() => setShowMobileFilters(false)}
+                        />
+
+                        {/* Sidebar Content Column */}
+                        <div className={`
+                            relative w-[320px] sm:w-[380px] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 ml-auto xl:ml-0
+                            ${showMobileFilters ? 'animate-in slide-in-from-right duration-300' : ''}
+                        `}>
+                            {/* Mobile Header */}
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
+                                <h3 className="font-bold text-gray-900 text-lg">{t.filters.filtering || "Filtreleme"}</h3>
                                 <button
-                                    onClick={() => {
-                                        navigate(getCategoryPath(category));
-                                    }}
-                                    className={`text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ml-4 ${subCategory ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'}`}
-                                    style={{ width: 'calc(100% - 1rem)' }}
+                                    onClick={() => setShowMobileFilters(false)}
+                                    className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
                                 >
-                                    <span>{getCategoryTranslation(category)}</span>
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            {/* Category Navigation */}
+                            <div className="mb-6 pb-6 border-b border-gray-200">
+                                <h3 className="font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent mb-3 text-base">{t.filters.categories}</h3>
+                                <button
+                                    onClick={() => navigate('/Butun-Kategoriler')}
+                                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
+                                >
+                                    <span>{t.filters.allCategories}</span>
                                     <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 </button>
-                                {subCategory && (
-                                    <div
-                                        className="text-left px-3 py-2 rounded-lg text-sm transition-all bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md flex items-center justify-between ml-8"
-                                        style={{ width: 'calc(100% - 2rem)' }}
+
+                                <div className="space-y-2 mt-3">
+                                    <button
+                                        onClick={() => {
+                                            navigate(getCategoryPath(category));
+                                        }}
+                                        className={`text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ml-4 ${subCategory ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'}`}
+                                        style={{ width: 'calc(100% - 1rem)' }}
                                     >
-                                        <span>{getCategoryTranslation(subCategory)}</span>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                // Navigate back to main category
-                                                navigate(getCategoryPath(category));
-                                            }}
-                                            className="text-white hover:text-pink-200 transition-colors"
-                                            title={t.common.close || "Kategoriyi Kapat"}
+                                        <span>{getCategoryTranslation(category)}</span>
+                                        <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                    {subCategory && (
+                                        <div
+                                            className="text-left px-3 py-2 rounded-lg text-sm transition-all bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md flex items-center justify-between ml-8"
+                                            style={{ width: 'calc(100% - 2rem)' }}
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                )}
-                                {!subCategory && subCategories && subCategories.length > 0 && (
-                                    <div className="space-y-1 pt-3 border-t border-gray-200 mt-3">
-                                        {subCategories.map(sub => {
-                                            const count = getSubcategoryCount(sub.name);
-
-                                            return (
-                                                <button
-                                                    key={sub.name}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        navigate(sub.route);
-                                                    }}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${sub.name === 'Alle'
-                                                        ? 'bg-gray-200 text-gray-900 font-medium'
-                                                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-red-600'
-                                                        }`}
-                                                >
-                                                    <span>{getCategoryTranslation(sub.name)}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
-                                                        <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                        </svg>
-                                                    </div>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-200">
-                            <h3 className="font-bold text-gray-900 text-lg">{getCategoryTranslation(pageTitle || subCategory || category)}</h3>
-                            <span className="text-gray-500 font-medium">{getStaticTotalCount()} {t.filters.ads}</span>
-                        </div>
-
-                        {/* Active Filters Display */}
-
-
-
-                        {Object.entries(filterConfig).map(([key, config]) => (
-                            <div key={key} className="mb-6 pb-6 border-b border-gray-200 last:border-0">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h4 className="font-bold text-gray-900 text-base">{getGenericTranslation(config.label)}</h4>
-                                    {((config.type === 'multiselect' && activeFilters[key]?.length > 0) ||
-                                        (config.type === 'range' && (activeFilters[`${key}From`] || activeFilters[`${key}To`])) ||
-                                        (config.type !== 'multiselect' && config.type !== 'range' && activeFilters[key])) && (
+                                            <span>{getCategoryTranslation(subCategory)}</span>
                                             <button
-                                                onClick={() => clearFilter(key)}
-                                                className="text-xs text-red-600 hover:text-red-700 font-medium"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // Navigate back to main category
+                                                    navigate(getCategoryPath(category));
+                                                }}
+                                                className="text-white hover:text-pink-200 transition-colors"
+                                                title={t.common.close || "Kategoriyi Kapat"}
                                             >
-                                                {t.common.delete}
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
                                             </button>
-                                        )}
+                                        </div>
+                                    )}
+                                    {!subCategory && subCategories && subCategories.length > 0 && (
+                                        <div className="space-y-1 pt-3 border-t border-gray-200 mt-3">
+                                            {subCategories.map(sub => {
+                                                const count = getSubcategoryCount(sub.name);
+
+                                                return (
+                                                    <button
+                                                        key={sub.name}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigate(sub.route);
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${sub.name === 'Alle'
+                                                            ? 'bg-gray-200 text-gray-900 font-medium'
+                                                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-red-600'
+                                                            }`}
+                                                    >
+                                                        <span>{getCategoryTranslation(sub.name)}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
+                                                            <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
-
-                                {config.type === 'select' || config.type === 'radio' ? (
-                                    <div className="space-y-2 pr-2">
-                                        {config.options.map((option) => {
-                                            const optionValue = typeof option === 'string' ? option : option.value;
-                                            const optionLabel = typeof option === 'string' ? option : option.label;
-                                            const count = getFilterCount(key, optionValue);
-                                            const isChecked = activeFilters[key] === optionValue;
-
-                                            return (
-                                                <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            name={key}
-                                                            value={optionValue}
-                                                            checked={isChecked}
-                                                            onChange={() => handleFilterChange(key, isChecked ? '' : optionValue)}
-                                                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                                                        />
-                                                        <span className="text-sm text-gray-700 group-hover:text-red-600">{option.displayLabel || getGenericTranslation(optionLabel)}</span>
-                                                    </div>
-                                                    <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
-                                                </label>
-                                            );
-                                        })}
-
-                                    </div>
-                                ) : config.type === 'multiselect' ? (
-                                    <div className="space-y-2 pr-2">
-                                        {config.options.map((option) => {
-                                            const optionValue = typeof option === 'string' ? option : option.value;
-                                            const optionLabel = typeof option === 'string' ? option : option.label;
-                                            const count = getFilterCount(key, optionValue);
-                                            const isSelected = activeFilters[key] && activeFilters[key].includes(optionValue);
-
-                                            return (
-                                                <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="checkbox"
-                                                            name={key}
-                                                            value={optionValue}
-                                                            checked={isSelected}
-                                                            onChange={() => handleFilterChange(key, optionValue)}
-                                                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                                                        />
-                                                        <span className={`text-sm group-hover:text-red-600 transition-colors ${isSelected ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
-                                                            {option.displayLabel || getGenericTranslation(optionLabel)}
-                                                        </span>
-                                                    </div>
-                                                    <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
-                                                </label>
-                                            );
-                                        })}
-                                    </div>
-                                ) : config.type === 'range' ? (
-                                    <div className="flex items-end gap-2">
-                                        <div className="grid grid-cols-2 gap-2 flex-1">
-                                            <div>
-                                                <input
-                                                    type="text"
-                                                    value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}From`]) : (localFilters[`${key}From`] || '')}
-                                                    onChange={(e) => {
-                                                        const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
-                                                        handleRangeChange(`${key}From`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
-                                                    }}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            const from = localFilters[`${key}From`];
-                                                            const to = localFilters[`${key}To`];
-                                                            updateURL({
-                                                                [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
-                                                                [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
-                                                            });
-                                                        }
-                                                    }}
-                                                    placeholder={t.filters.from}
-                                                    className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                                                />
-                                            </div>
-                                            <div>
-                                                <input
-                                                    type="text"
-                                                    value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}To`]) : (localFilters[`${key}To`] || '')}
-                                                    onChange={(e) => {
-                                                        const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
-                                                        handleRangeChange(`${key}To`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
-                                                    }}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            const from = localFilters[`${key}From`];
-                                                            const to = localFilters[`${key}To`];
-                                                            updateURL({
-                                                                [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
-                                                                [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
-                                                            });
-                                                        }
-                                                    }}
-                                                    placeholder={t.filters.to}
-                                                    className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                                                />
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => {
-                                                const from = localFilters[`${key}From`];
-                                                const to = localFilters[`${key}To`];
-                                                updateURL({
-                                                    [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
-                                                    [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
-                                                });
-                                            }}
-                                            className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[38px] w-[38px] flex items-center justify-center border border-gray-200"
-                                            title={t.filters.apply || "Uygula"}
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                ) : config.type === 'checkbox' ? (
-                                    <label className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={activeFilters[key]}
-                                                onChange={(e) => handleFilterChange(key, e.target.checked)}
-                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                                            />
-                                            <span className="text-sm text-gray-700 group-hover:text-red-600 font-medium">Aktif</span>
-                                        </div>
-                                        <span className="text-xs text-gray-400">
-                                            ({getFilterCount(key, true).toLocaleString('tr-TR')})
-                                        </span>
-                                    </label>
-                                ) : config.type === 'month' ? (() => {
-                                    const fullValue = activeFilters[key] || '';
-                                    const [currYear, currMonth] = fullValue.split('-');
-                                    const months = [
-                                        { v: '01', l: t.filters?.months?.['01'] || 'Ocak' }, { v: '02', l: t.filters?.months?.['02'] || 'Şubat' }, { v: '03', l: t.filters?.months?.['03'] || 'Mart' },
-                                        { v: '04', l: t.filters?.months?.['04'] || 'Nisan' }, { v: '05', l: t.filters?.months?.['05'] || 'Mayıs' }, { v: '06', l: t.filters?.months?.['06'] || 'Haziran' },
-                                        { v: '07', l: t.filters?.months?.['07'] || 'Temmuz' }, { v: '08', l: t.filters?.months?.['08'] || 'Ağustos' }, { v: '09', l: t.filters?.months?.['09'] || 'Eylül' },
-                                        { v: '10', l: t.filters?.months?.['10'] || 'Ekim' }, { v: '11', l: t.filters?.months?.['11'] || 'Kasım' }, { v: '12', l: t.filters?.months?.['12'] || 'Aralık' }
-                                    ];
-                                    const currentYear = new Date().getFullYear();
-                                    const years = Array.from({ length: 11 }, (_, i) => currentYear + i);
-
-                                    return (
-                                        <div className="flex gap-2">
-                                            <select
-                                                value={currMonth || ''}
-                                                onChange={(e) => {
-                                                    const newMonth = e.target.value;
-                                                    const year = currYear || currentYear;
-                                                    updateURL({ [key]: newMonth ? `${year}-${newMonth}` : year });
-                                                }}
-                                                className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
-                                            >
-                                                <option value="">{t.filters.month || 'Ay'}</option>
-                                                {months.map(m => (
-                                                    <option key={m.v} value={m.v}>{m.l}</option>
-                                                ))}
-                                            </select>
-                                            <select
-                                                value={currYear || ''}
-                                                onChange={(e) => {
-                                                    const newYear = e.target.value;
-                                                    if (!newYear) {
-                                                        updateURL({ [key]: '' });
-                                                    } else {
-                                                        updateURL({ [key]: currMonth ? `${newYear}-${currMonth}` : newYear });
-                                                    }
-                                                }}
-                                                className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
-                                            >
-                                                <option value="">{t.filters.year || 'Yıl'}</option>
-                                                {years.map(y => (
-                                                    <option key={y} value={y}>{y}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    );
-                                })() : null}
                             </div>
-                        ))}
+
+                            <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-200">
+                                <h3 className="font-bold text-gray-900 text-lg">{getCategoryTranslation(pageTitle || subCategory || category)}</h3>
+                                <span className="text-gray-500 font-medium">{getStaticTotalCount()} {t.filters.ads}</span>
+                            </div>
+
+                            {/* Active Filters Display */}
+
+
+
+                            {Object.entries(filterConfig).map(([key, config]) => (
+                                <div key={key} className="mb-6 pb-6 border-b border-gray-200 last:border-0">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="font-bold text-gray-900 text-base">{getGenericTranslation(config.label)}</h4>
+                                        {((config.type === 'multiselect' && activeFilters[key]?.length > 0) ||
+                                            (config.type === 'range' && (activeFilters[`${key}From`] || activeFilters[`${key}To`])) ||
+                                            (config.type !== 'multiselect' && config.type !== 'range' && activeFilters[key])) && (
+                                                <button
+                                                    onClick={() => clearFilter(key)}
+                                                    className="text-xs text-red-600 hover:text-red-700 font-medium"
+                                                >
+                                                    {t.common.delete}
+                                                </button>
+                                            )}
+                                    </div>
+
+                                    {config.type === 'select' || config.type === 'radio' ? (
+                                        <div className="space-y-2 pr-2">
+                                            {config.options.map((option) => {
+                                                const optionValue = typeof option === 'string' ? option : option.value;
+                                                const optionLabel = typeof option === 'string' ? option : option.label;
+                                                const count = getFilterCount(key, optionValue);
+                                                const isChecked = activeFilters[key] === optionValue;
+
+                                                return (
+                                                    <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="radio"
+                                                                name={key}
+                                                                value={optionValue}
+                                                                checked={isChecked}
+                                                                onChange={() => handleFilterChange(key, isChecked ? '' : optionValue)}
+                                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                                            />
+                                                            <span className="text-sm text-gray-700 group-hover:text-red-600">{option.displayLabel || getGenericTranslation(optionLabel)}</span>
+                                                        </div>
+                                                        <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
+                                                    </label>
+                                                );
+                                            })}
+
+                                        </div>
+                                    ) : config.type === 'multiselect' ? (
+                                        <div className="space-y-2 pr-2">
+                                            {config.options.map((option) => {
+                                                const optionValue = typeof option === 'string' ? option : option.value;
+                                                const optionLabel = typeof option === 'string' ? option : option.label;
+                                                const count = getFilterCount(key, optionValue);
+                                                const isSelected = activeFilters[key] && activeFilters[key].includes(optionValue);
+
+                                                return (
+                                                    <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="checkbox"
+                                                                name={key}
+                                                                value={optionValue}
+                                                                checked={isSelected}
+                                                                onChange={() => handleFilterChange(key, optionValue)}
+                                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                                            />
+                                                            <span className={`text-sm group-hover:text-red-600 transition-colors ${isSelected ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
+                                                                {option.displayLabel || getGenericTranslation(optionLabel)}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : config.type === 'range' ? (
+                                        <div className="flex items-end gap-2">
+                                            <div className="grid grid-cols-2 gap-2 flex-1">
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}From`]) : (localFilters[`${key}From`] || '')}
+                                                        onChange={(e) => {
+                                                            const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
+                                                            handleRangeChange(`${key}From`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                const from = localFilters[`${key}From`];
+                                                                const to = localFilters[`${key}To`];
+                                                                updateURL({
+                                                                    [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                                                    [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
+                                                                });
+                                                            }
+                                                        }}
+                                                        placeholder={t.filters.from}
+                                                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}To`]) : (localFilters[`${key}To`] || '')}
+                                                        onChange={(e) => {
+                                                            const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
+                                                            handleRangeChange(`${key}To`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                const from = localFilters[`${key}From`];
+                                                                const to = localFilters[`${key}To`];
+                                                                updateURL({
+                                                                    [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                                                    [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
+                                                                });
+                                                            }
+                                                        }}
+                                                        placeholder={t.filters.to}
+                                                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    const from = localFilters[`${key}From`];
+                                                    const to = localFilters[`${key}To`];
+                                                    updateURL({
+                                                        [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                                        [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
+                                                    });
+                                                }}
+                                                className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[38px] w-[38px] flex items-center justify-center border border-gray-200"
+                                                title={t.filters.apply || "Uygula"}
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    ) : config.type === 'checkbox' ? (
+                                        <label className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={activeFilters[key]}
+                                                    onChange={(e) => handleFilterChange(key, e.target.checked)}
+                                                    className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                                />
+                                                <span className="text-sm text-gray-700 group-hover:text-red-600 font-medium">Aktif</span>
+                                            </div>
+                                            <span className="text-xs text-gray-400">
+                                                ({getFilterCount(key, true).toLocaleString('tr-TR')})
+                                            </span>
+                                        </label>
+                                    ) : config.type === 'month' ? (() => {
+                                        const fullValue = activeFilters[key] || '';
+                                        const [currYear, currMonth] = fullValue.split('-');
+                                        const months = [
+                                            { v: '01', l: t.filters?.months?.['01'] || 'Ocak' }, { v: '02', l: t.filters?.months?.['02'] || 'Şubat' }, { v: '03', l: t.filters?.months?.['03'] || 'Mart' },
+                                            { v: '04', l: t.filters?.months?.['04'] || 'Nisan' }, { v: '05', l: t.filters?.months?.['05'] || 'Mayıs' }, { v: '06', l: t.filters?.months?.['06'] || 'Haziran' },
+                                            { v: '07', l: t.filters?.months?.['07'] || 'Temmuz' }, { v: '08', l: t.filters?.months?.['08'] || 'Ağustos' }, { v: '09', l: t.filters?.months?.['09'] || 'Eylül' },
+                                            { v: '10', l: t.filters?.months?.['10'] || 'Ekim' }, { v: '11', l: t.filters?.months?.['11'] || 'Kasım' }, { v: '12', l: t.filters?.months?.['12'] || 'Aralık' }
+                                        ];
+                                        const currentYear = new Date().getFullYear();
+                                        const years = Array.from({ length: 11 }, (_, i) => currentYear + i);
+
+                                        return (
+                                            <div className="flex gap-2">
+                                                <select
+                                                    value={currMonth || ''}
+                                                    onChange={(e) => {
+                                                        const newMonth = e.target.value;
+                                                        const year = currYear || currentYear;
+                                                        updateURL({ [key]: newMonth ? `${year}-${newMonth}` : year });
+                                                    }}
+                                                    className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                                >
+                                                    <option value="">{t.filters.month || 'Ay'}</option>
+                                                    {months.map(m => (
+                                                        <option key={m.v} value={m.v}>{m.l}</option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    value={currYear || ''}
+                                                    onChange={(e) => {
+                                                        const newYear = e.target.value;
+                                                        if (!newYear) {
+                                                            updateURL({ [key]: '' });
+                                                        } else {
+                                                            updateURL({ [key]: currMonth ? `${newYear}-${currMonth}` : newYear });
+                                                        }
+                                                    }}
+                                                    className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                                >
+                                                    <option value="">{t.filters.year || 'Yıl'}</option>
+                                                    {years.map(y => (
+                                                        <option key={y} value={y}>{y}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        );
+                                    })() : null}
+                                </div>
+                            ))}
+                        </div>
                     </aside>
 
                     {/* Right Side - Banner + Listings */}
                     <div className="flex-1">
                         {/* Banner */}
-                        <div className={`rounded-2xl shadow-xl p-8 mb-6 relative overflow-hidden ${!bannerConfig.bgImage ? (bannerConfig.bgColor || 'bg-gradient-to-r from-red-500 to-rose-600') : ''}`}>
+                        <div className={`rounded-2xl shadow-xl p-4 sm:p-8 mb-6 relative overflow-hidden ${!bannerConfig.bgImage ? (bannerConfig.bgColor || 'bg-gradient-to-r from-red-500 to-rose-600') : ''}`}>
                             {bannerConfig.bgImage && (
                                 <>
                                     <div
@@ -1003,7 +1059,7 @@ const GenericCategoryPage = ({
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="hidden lg:flex items-center gap-6 text-white">
+                                    <div className="hidden xl:flex items-center gap-6 text-white">
                                         <div className="text-center">
                                             <div className="text-3xl font-bold">{getStaticTotalCount()}</div>
                                             <div className="text-sm opacity-80">{t.common?.listingsCount || 'İlan'}</div>
@@ -1024,12 +1080,14 @@ const GenericCategoryPage = ({
                             />
                         </div>
 
-                        {/* Listings */}
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-2xl font-bold text-gray-900">
-                                    {getTotalCount()} {t.common?.listingsCount || 'İlan'}
-                                </h2>
+                        <div className="w-full">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:px-0">
+                                <div className="flex items-center justify-between w-full">
+                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                                        {getTotalCount()} {t.common?.listingsCount || 'İlan'}
+                                    </h2>
+                                </div>
+
                                 <button
                                     onClick={async () => {
                                         if (savingSearch) return;
@@ -1096,7 +1154,7 @@ const GenericCategoryPage = ({
                                     <p className="text-gray-500 text-lg">{t.common?.noListings || 'İlan bulunamadı'}</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="space-y-4 md:px-0">
                                     {sortedListings.map((listing) => (
                                         <HorizontalListingCard
                                             key={listing.id}

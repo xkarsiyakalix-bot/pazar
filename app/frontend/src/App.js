@@ -18,6 +18,7 @@ import {
   ListingGrid,
   Gallery
 } from './components.js';
+import BannerSlider from './components/BannerSlider';
 
 // Non-critical components - lazy load
 const CategoryGallery = React.lazy(() => import('./components.js').then(m => ({ default: m.CategoryGallery })));
@@ -34,7 +35,6 @@ const RealEstateLegalPage = React.lazy(() => import('./components.js').then(m =>
 const VehicleLegalPage = React.lazy(() => import('./components.js').then(m => ({ default: m.VehicleLegalPage })));
 
 // Components from individual files
-const BannerSlider = React.lazy(() => import('./components/BannerSlider'));
 const ReservationButton = React.lazy(() => import('./ReservationButton'));
 const StorePage = React.lazy(() => import('./components/Store/StorePage'));
 const SmartRoute = React.lazy(() => import('./SmartRoute'));
@@ -709,7 +709,7 @@ function App() {
             <Route path="/" element={
               <>
                 <SEO />
-                <main className="max-w-[1400px] mx-auto px-2 sm:px-4 py-4 sm:py-6 flex gap-4 sm:gap-6">
+                <main className="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 sm:py-6 flex gap-4 sm:gap-6">
                   {/* Sidebar - Hidden on mobile */}
                   <div className="hidden lg:block">
                     <CategorySidebar

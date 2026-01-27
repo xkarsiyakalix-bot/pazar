@@ -6,8 +6,8 @@ import { useAuth } from './contexts/AuthContext';
 import { ReservationButton } from './ReservationButton';
 import { ProductSEO } from './SEO';
 import { getOptimizedImageUrl } from './utils/imageUtils';
-import RatingDisplay from './components/RatingDisplay';
-import RatingsList from './components/RatingsList';
+import RatingDisplay from './components/RatingDisplay.js';
+import RatingsList from './components/RatingsList.js';
 import { t, getCategoryTranslation } from './translations';
 import { FashionFields } from './components/AddListing/FashionFields';
 import { RealEstateFields } from './components/AddListing/RealEstateFields';
@@ -25,7 +25,7 @@ import { useIsMobile } from './hooks/useIsMobile';
 import { getRatings, getUserAverageRating } from './api/ratings';
 import { Breadcrumb } from './components/Breadcrumb';
 import { searchApi } from './api/search';
-import LoadingSpinner from './components/LoadingSpinner';
+import LoadingSpinner from './components/LoadingSpinner.js';
 
 export const LazyImage = ({ src, alt, className, imgClassName, ...props }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -384,6 +384,8 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
   const [notifications, setNotifications] = React.useState([]);
   const [notificationDropdownOpen, setNotificationDropdownOpen] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState(null);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const location = useLocation();
 
   // Fetch user profile for display name
   React.useEffect(() => {
@@ -488,13 +490,68 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
           >
             <img
               src="/logo_exvitrin_2026.png"
-              alt="ExVitrin"
+              alt="ExVitrin Logo"
+              width="120"
+              height="48"
               className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110"
+              decoding="async"
             />
             <span className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent tracking-tight">
               exvitrin
             </span>
           </div>
+
+          {/* Mobile Profile Settings Icon (Only on mobile and only on profile page) */}
+          {isMobile && user && location.pathname === '/profile' && (
+            <div className="relative">
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className="p-2 text-neutral-500 hover:text-neutral-700 bg-neutral-100 rounded-lg transition-all"
+                aria-label="Profile Settings"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+
+              {isSettingsOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsSettingsOpen(false)}
+                  ></div>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-neutral-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <button
+                      onClick={() => {
+                        setIsSettingsOpen(false);
+                        navigate('/settings');
+                      }}
+                      className="w-full text-left px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-3 border-b border-neutral-50"
+                    >
+                      <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      {t.nav.settings}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsSettingsOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      {t.nav.logout}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center gap-3">
@@ -2579,6 +2636,10 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
     }
   }, [locationObj.pathname, locationObj.search, setSearchTerm, setSelectedCategory, setSelectedDistance, setLocation]);
 
+  if (isMobile && locationObj.pathname !== '/') {
+    return null;
+  }
+
   return (
     <section className="bg-gradient-to-r from-red-500 to-rose-600 py-4 sm:py-8 relative overflow-visible z-40">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30"></div>
@@ -2602,16 +2663,15 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
             className="flex-1 flex items-center gap-1 sm:gap-2 bg-white rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-xl hover:shadow-2xl transition-shadow duration-300"
           >
             {/* Search Icon - Submit Button */}
-            {!isMobile && (
-              <button
-                type="submit"
-                className="p-1 sm:p-2 cursor-pointer hover:bg-gray-50 rounded-full transition-colors focus:outline-none"
-              >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-            )}
+            <button
+              type="submit"
+              className="p-1 sm:p-2 cursor-pointer hover:bg-gray-50 rounded-full transition-colors focus:outline-none"
+              aria-label="Arama Yap"
+            >
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
 
             {/* Search Input Container */}
             <div className="flex-1 relative">
@@ -2636,6 +2696,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                   // Enter is handled by form submit
                 }}
                 className="w-full px-1 sm:px-2 py-2 border-none outline-none text-gray-700 placeholder-gray-400 text-sm sm:text-base"
+                aria-label="Arama kutusu"
               />
 
               {/* Recent Searches & Suggestions Dropdown */}
@@ -2740,7 +2801,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               >
                 <span className="hidden lg:inline">{selectedCategory}</span>
                 <span className="lg:hidden">Kategori</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -2794,8 +2855,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
             </div>
 
             {/* Location Input */}
-            <div className="relative hidden sm:flex items-center border-l border-gray-200 group" ref={locationDropdownRef}>
-              <div className="pl-3 text-gray-400 group-focus-within:text-red-500 transition-colors">
+            <div className="relative flex items-center border-l border-gray-200 group" ref={locationDropdownRef}>
+              <div className="pl-2 sm:pl-3 text-gray-400 group-focus-within:text-red-500 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -2803,11 +2864,11 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               </div>
               <input
                 type="text"
-                placeholder="Şehir veya konum"
+                placeholder="Konum"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 onFocus={() => setShowLocationDropdown(true)}
-                className="w-32 md:w-40 px-2 py-2 text-sm text-gray-700 focus:outline-none placeholder-gray-400 bg-transparent"
+                className="w-20 xs:w-24 sm:w-32 md:w-40 px-1 sm:px-2 py-2 text-xs sm:text-sm text-gray-700 focus:outline-none placeholder-gray-400 bg-transparent"
               />
               <button
                 type="button"
@@ -2815,6 +2876,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 disabled={isLocating}
                 className={`p-1 mr-1 rounded-md transition-all ${isLocating ? 'animate-pulse text-red-500' : 'text-gray-400 hover:text-red-500 hover:bg-gray-100'}`}
                 title="Konumumu Bul"
+                aria-label="Mevcut Konumumu Kullan"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="8" />
@@ -3921,9 +3983,9 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                 onClick={prevSlide}
                 disabled={currentIndex === 0}
                 className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
-                aria-label="Previous items"
+                aria-label="Önceki"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -3931,9 +3993,9 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                 onClick={nextSlide}
                 disabled={currentIndex >= maxIndex}
                 className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
-                aria-label="Next items"
+                aria-label="Sonraki"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -4187,7 +4249,7 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
             {t.topAds.placeAd}
           </button>
           {galleryItems.length > 0 && (
-            <div className="flex gap-1 sm:gap-2">
+            <div className="hidden md:flex gap-1 sm:gap-2">
               <button
                 onClick={prevSlide}
                 disabled={currentIndex === 0}
@@ -4224,14 +4286,22 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
           </div>
         ) : (
           <div
-            className="flex transition-transform duration-300 ease-in-out gap-2 sm:gap-3"
-            style={{ transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)` }}
+            className="flex md:transition-transform md:duration-300 md:ease-in-out gap-2 sm:gap-3 overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory scrollbar-hide"
+            style={{
+              transform: window.innerWidth >= 768 ? `translateX(-${currentIndex * (100 / itemsPerView)}%)` : 'none',
+              scrollSnapType: 'x mandatory',
+              WebkitOverflowScrolling: 'touch'
+            }}
           >
             {galleryItems.map((item) => (
               <div
                 key={item.id}
-                className="gallery-item flex-shrink-0"
-                style={{ width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView === 2 ? 8 : 12) / itemsPerView}px)` }}
+                className="gallery-item flex-shrink-0 snap-start"
+                style={{
+                  width: window.innerWidth < 768
+                    ? 'calc(50% - 4px)'
+                    : `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView === 2 ? 8 : 12) / itemsPerView}px)`
+                }}
               >
                 <ListingCard
                   listing={item}
@@ -4393,21 +4463,29 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div className="fixed inset-0 z-[200] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div className="flex items-start sm:items-center justify-center min-h-screen pt-10 sm:pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={onClose}></div>
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div className="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-[95%] sm:max-w-xl sm:w-full relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none z-10"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start">
+            <div className="sm:flex sm:items-start text-center">
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                <h3 className="text-xl leading-8 font-bold text-gray-900 pr-8" id="modal-title">
                   {t.sellerProfile.message} - {sellerName}
                 </h3>
                 {listingTitle && (
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Konu: {listingTitle}
+                    <p className="text-sm font-medium text-red-600">
+                      📅 {listingTitle}
                     </p>
                   </div>
                 )}
@@ -4438,8 +4516,8 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
                     <textarea
                       id="modal-message"
                       required
-                      rows={4}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                      rows={6}
+                      className="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-3 px-4 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-all"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                     />
@@ -4449,7 +4527,7 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
                       type="submit"
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-base font-medium text-white hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
                     >
-                      {t.productDetail.send}
+                      {t.productDetail.message}
                     </button>
                     <button
                       type="button"
@@ -6930,67 +7008,64 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={onClose}>
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-6 text-white flex justify-between items-center">
+        <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 sm:p-6 text-white flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-black flex items-center gap-2">
-              <span className="bg-red-500 text-white p-1.5 rounded-lg">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h2 className="text-lg sm:text-2xl font-black flex items-center gap-2">
+              <span className="bg-red-500 text-white p-1 sm:p-1.5 rounded-lg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </span>
-              Görünürlüğü Maksimuma Çıkar
+              Görünürlüğü Artır
             </h2>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Görünürlüğü artırılan ilan: <span className="text-white">{listing.title}</span></p>
+            <p className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5 sm:mt-1">İlan: <span className="text-white">{listing.title}</span></p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button onClick={onClose} className="p-1 sm:p-2 hover:bg-white/10 rounded-full transition-colors">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6">
           <div className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-gray-50 border-b-2 border-gray-100">
-                  <tr className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-                    <th className="px-6 py-4 w-16">Seç</th>
-                    <th className="px-6 py-4">İlanı Öne Çıkan</th>
-                    <th className="px-6 py-4">Etki</th>
-                    <th className="px-6 py-4">Süre</th>
-                    <th className="px-6 py-4 text-right w-32">Fiyat</th>
+                  <tr className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500">
+                    <th className="px-3 sm:px-6 py-3 sm:py-4 w-12 sm:w-16">Seç</th>
+                    <th className="px-2 sm:px-4 py-3 sm:py-4">Paket Detayı</th>
+                    <th className="px-3 sm:px-6 py-3 sm:py-4">Süre</th>
+                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-right w-24 sm:w-32">Fiyat</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 text-sm">
+                <tbody className="divide-y divide-gray-100 text-xs sm:text-sm">
                   {promotionPackages.map((pkg, idx) => (
                     <tr
                       key={pkg.id}
                       onClick={() => togglePromotionSelection(pkg.id)}
                       className={`hover:bg-red-50/40 transition-all cursor-pointer group ${idx % 2 !== 0 ? 'bg-gray-50/30' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50' : ''}`}
                     >
-                      <td className="px-6 py-5">
-                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500 scale-110 shadow-lg shadow-red-200' : 'border-gray-200 bg-white group-hover:border-red-300'}`}>
+                      <td className="px-3 sm:px-6 py-3 sm:py-5">
+                        <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500 scale-110 shadow-lg shadow-red-200' : 'border-gray-200 bg-white group-hover:border-red-300'}`}>
                           {selectedPromotions.includes(pkg.id) && (
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" />
                             </svg>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5">
-                        <div className="font-black text-gray-900 group-hover:text-red-600 transition-colors uppercase tracking-tight">{pkg.name}</div>
+                      <td className="px-2 sm:px-4 py-3 sm:py-5">
+                        <div className="font-bold sm:font-black text-gray-900 group-hover:text-red-600 transition-colors uppercase tracking-tight">{pkg.name}</div>
+                        <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 leading-tight italic font-medium">{pkg.effect}</div>
                       </td>
-                      <td className="px-6 py-5">
-                        <p className="text-gray-500 font-medium leading-relaxed">{pkg.effect}</p>
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
-                          {pkg.duration === 1 ? 'bir kez' : `${pkg.duration} Gün`}
+                      <td className="px-3 sm:px-6 py-3 sm:py-5">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600">
+                          {pkg.duration === 1 ? '1x' : `${pkg.duration}G`}
                         </span>
                       </td>
-                      <td className="px-6 py-5 text-right font-black text-red-600 text-lg tabular-nums">
-                        {pkg.price} ₺
+                      <td className="px-3 sm:px-6 py-3 sm:py-5 text-right font-black text-red-600 text-sm sm:text-xl tabular-nums">
+                        {pkg.price}₺
                       </td>
                     </tr>
                   ))}
@@ -7001,26 +7076,26 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
         </div>
 
         {/* Footer / Cart Summary */}
-        <div className={`p-6 bg-white border-t-2 border-gray-100 transition-all duration-500 ${selectedPromotions.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-70 grayscale pointer-events-none'}`}>
-          <div className="bg-gray-900 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
-            <div className="flex items-center gap-6">
-              <div className={`bg-red-500 text-white p-3 rounded-xl ${selectedPromotions.length > 0 ? 'animate-bounce shadow-lg shadow-red-500/50' : ''}`}>
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className={`p-4 sm:p-6 bg-white border-t-2 border-gray-100 transition-all duration-500 ${selectedPromotions.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-70 grayscale pointer-events-none'}`}>
+          <div className="bg-gray-900 rounded-2xl p-4 sm:p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-2xl">
+            <div className="flex items-center gap-4 sm:gap-6">
+              <div className={`bg-red-500 text-white p-2 sm:p-3 rounded-xl ${selectedPromotions.length > 0 ? 'animate-bounce shadow-lg shadow-red-500/50' : ''}`}>
+                <svg className="w-5 h-5 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
               <div className="text-center sm:text-left">
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500 mb-1">Seçiminiz: {selectedPromotions.length} Paket</div>
-                <div className="text-3xl font-black tracking-tight tabular-nums">Toplam: {calculateTotal()} ₺</div>
+                <div className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-red-500 mb-0.5 sm:mb-1">{selectedPromotions.length} Paket Seçildi</div>
+                <div className="text-xl sm:text-3xl font-black tracking-tight tabular-nums">Toplam: {calculateTotal()}₺</div>
               </div>
             </div>
             <button
               onClick={handlePromotionPurchase}
               disabled={selectedPromotions.length === 0}
-              className="w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-black text-xl shadow-xl shadow-red-500/30 hover:shadow-red-500/50 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 group"
+              className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-bold sm:font-black text-base sm:text-xl shadow-xl shadow-red-500/30 hover:shadow-red-500/50 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 sm:gap-3 group"
             >
               Şimdi Satın Al
-              <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </button>
@@ -7201,19 +7276,20 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
   return (
     <>
       <div
-        className={`${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'bg-purple-50/30 border-purple-400 border-[2px] shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005]' : 'bg-white'} border ${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'border-purple-200' : 'border-gray-200'} rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer`}
+        className={`${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'bg-purple-50/30 border-purple-400 border-[2px] shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005]' : 'bg-white'} border-y sm:border ${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'border-purple-200' : 'border-gray-200'} border-x-0 sm:border-x rounded-none sm:rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer`}
         onClick={() => navigate(`/product/${listing.id}`)}
       >
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-row">
           {/* Image Section - Compact Size */}
-          <div className="md:w-60 h-44 md:h-48 relative group flex-shrink-0 bg-gray-100">
+          <div className="w-40 sm:w-48 md:w-60 h-32 sm:h-40 md:h-48 relative group flex-shrink-0 bg-gray-100">
             <img
               src={Array.isArray(listing?.images) && listing.images.length > 0
                 ? listing.images[0]
                 : listing?.image || 'https://via.placeholder.com/300x200?text=No+Image'}
-              alt={listing?.title}
+              alt={listing?.title || 'İlan Resmi'}
               className="w-full h-full object-cover transition-transform duration-300"
               loading="lazy"
+              decoding="async"
             />
             {/* RESERVIERT Badge - always on top */}
             {isReserved && (
@@ -7286,12 +7362,12 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
             </button>
           </div>
 
-          <div className="flex-1 p-3 flex flex-col justify-between h-44 md:h-48">
+          <div className={`flex-1 p-2 sm:p-3 flex flex-col justify-between ${isOwnListing ? 'h-auto min-h-[128px]' : 'h-32'} sm:h-40 md:h-48`}>
             <div>
-              <h4 className="text-base font-bold text-gray-900 mb-0.5 line-clamp-1 group-hover:text-red-600 transition-colors">
+              <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-0.5 line-clamp-1 group-hover:text-red-600 transition-colors">
                 {listing?.title}
               </h4>
-              <p className="text-sm text-gray-600 mb-1 line-clamp-1">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1 line-clamp-1">
                 {listing?.description || 'Açıklama mevcut değil'}
               </p>
             </div>
@@ -7331,9 +7407,9 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                 if (attrs.length === 0) return null;
 
                 return (
-                  <div className="flex flex-wrap gap-1.5 mb-2">
+                  <div className="flex flex-wrap gap-1 mb-1.5">
                     {attrs.slice(0, 4).map((attr, idx) => (
-                      <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-bold rounded-md border border-gray-200 uppercase tracking-tighter">
+                      <span key={idx} className="px-1.5 py-0.5 bg-gray-100 text-gray-500 text-[9px] sm:text-[10px] font-bold rounded-md border border-gray-200 uppercase tracking-tighter">
                         {attr}
                       </span>
                     ))}
@@ -7342,7 +7418,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               })()}
             </div>
 
-            <div className="text-base font-bold text-gray-900 mb-1">
+            <div className="text-sm sm:text-base font-bold text-gray-900 mb-1">
               {!hidePrice && listing?.category !== 'Jobs' && listing?.category !== 'İş İlanları' && (
                 listing?.price_type === 'giveaway' || listing?.price === 0
                   ? 'Ücretsiz'
@@ -7352,7 +7428,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               )}
             </div>
 
-            <div className="flex items-center text-sm text-gray-700 gap-3 pt-1.5 border-t border-gray-200 mt-1">
+            <div className="flex items-center text-xs sm:text-sm text-gray-700 gap-2 sm:gap-3 pt-1.5 border-t border-gray-200 mt-1">
               {isOwnListing ? (
                 // Own listings: Show stats
                 <div className="flex items-center gap-3 ml-auto text-xs text-gray-400">
@@ -7490,7 +7566,7 @@ export const ListingCountdown = ({ expiryDate, onExpire }) => {
 
     return (
       <div className="flex flex-col items-center">
-        <div className="text-lg sm:text-xl font-black text-white">
+        <div className="text-[10px] sm:text-lg font-black text-white">
           {day} {month} {year}
         </div>
       </div>
@@ -7499,7 +7575,7 @@ export const ListingCountdown = ({ expiryDate, onExpire }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className={`text-lg sm:text-xl font-black tabular-nums transition-colors duration-300 ${isLastDay ? 'text-red-500 animate-pulse' : 'text-white'}`}>
+      <div className={`text-[10px] sm:text-lg font-black tabular-nums transition-colors duration-300 ${isLastDay ? 'text-red-500 animate-pulse' : 'text-white'}`}>
         {String(timeLeft.hours).padStart(2, '0')}:
         {String(timeLeft.minutes).padStart(2, '0')}:
         {String(timeLeft.seconds).padStart(2, '0')}
@@ -7922,6 +7998,198 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   );
 };
 
+const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleReserveDetail, handleExtendDetail, handleDeleteDetail, promotionPackages, selectedPromotions, togglePromotionSelection, calculateTotal, handlePromotionPurchase, navigate, setPrintHideContact, t }) => {
+  return (
+    <>
+      <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-3 sm:p-6 text-white">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          <div className="space-y-1">
+            <h2 className="text-base sm:text-2xl font-black flex items-center gap-1.5 sm:gap-2">
+              <span className="bg-red-500 text-white p-1 rounded-lg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </span>
+              {t.productDetail.ownerDashboard.title}
+            </h2>
+            <p className="text-gray-400 text-[10px] sm:text-xs font-medium uppercase tracking-wider">{t.productDetail.ownerDashboard.subtitle}</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 sm:gap-8">
+            <div className="text-center group cursor-help">
+              <div className="text-xl sm:text-3xl font-black text-white group-hover:text-red-400 transition-colors">{(listing.views || 0).toLocaleString('tr-TR')}</div>
+              <div className="text-[10px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.visits}</div>
+            </div>
+            <div className="w-px h-8 sm:h-10 bg-gray-700" />
+            <div className="text-center group cursor-help">
+              <div className="text-xl sm:text-3xl font-black text-white group-hover:text-red-400 transition-colors">{(favoriteCount || 0).toLocaleString('tr-TR')}</div>
+              <div className="text-[10px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.wishlist}</div>
+            </div>
+            <div className="w-px h-8 sm:h-10 bg-gray-700" />
+            {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
+              <>
+                <div className="text-center">
+                  <ListingCountdown
+                    expiryDate={new Date(listing.promotion_expiry)}
+                    onExpire={() => { }}
+                  />
+                  <div className="text-[6px] sm:text-[10px] font-bold text-yellow-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.activePromotion}</div>
+                </div>
+                <div className="w-px h-8 sm:h-10 bg-gray-700" />
+              </>
+            )}
+            <div className="text-center">
+              <ListingCountdown
+                expiryDate={listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 90 * 24 * 60 * 60 * 1000)}
+                onExpire={() => { }}
+              />
+              <div className="text-[10px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.adExpiry}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-2 sm:p-4 bg-gray-50/50">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4 sm:mb-6">
+          <button
+            onClick={handleEditDetail}
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-lg transition-all group"
+          >
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-red-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span className="text-xs sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.edit}</span>
+          </button>
+
+          <button
+            onClick={handleReserveDetail}
+            className={`flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border ${listing.reserved_by ? 'border-orange-500 bg-orange-50' : 'border-gray-200'} hover:border-blue-500 hover:shadow-lg transition-all group`}
+          >
+            <svg className={`w-5 h-5 sm:w-5 sm:h-5 ${listing.reserved_by ? 'text-orange-500' : 'text-gray-400'} group-hover:text-blue-500 mb-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center">{listing.reserved_by ? t.productDetail.ownerDashboard.unreserve : t.productDetail.ownerDashboard.reserve}</span>
+          </button>
+
+          <button
+            onClick={handleExtendDetail}
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all group relative"
+          >
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-green-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center leading-none">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[10px] text-green-600 font-black">(3,49₺)</span></span>
+          </button>
+
+          <button
+            onClick={handleDeleteDetail}
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-red-600 hover:shadow-lg transition-all group"
+          >
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-red-600 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span className="text-xs sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.delete}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setPrintHideContact(true);
+              setTimeout(() => window.print(), 100);
+            }}
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-purple-500 hover:shadow-lg transition-all group"
+          >
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-purple-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center leading-none">İlanı Yazdır</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/my-invoices')}
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-lg transition-all group"
+          >
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-red-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span className="text-xs sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.invoices}</span>
+          </button>
+        </div>
+
+        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 overflow-hidden shadow-inner">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-gray-100/80">
+                <tr className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500">
+                  <th className="px-3 sm:px-6 py-3 w-8 sm:w-10">#</th>
+                  <th className="px-3 sm:px-6 py-3">{t.productDetail.ownerDashboard.highlightTitle}</th>
+                  <th className="px-3 sm:px-6 py-3 hidden sm:table-cell">{t.productDetail.ownerDashboard.effect}</th>
+                  <th className="px-3 sm:px-6 py-3">{t.productDetail.ownerDashboard.duration}</th>
+                  <th className="px-3 sm:px-6 py-3 text-right">{t.productDetail.ownerDashboard.price}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-[11px] sm:text-sm">
+                {promotionPackages.map((pkg, idx) => (
+                  <tr
+                    key={pkg.id}
+                    onClick={() => togglePromotionSelection(pkg.id)}
+                    className={`hover:bg-red-50/30 transition-colors group cursor-pointer ${idx % 2 !== 0 ? 'bg-red-50/10' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50' : ''}`}
+                  >
+                    <td className="px-3 sm:px-6 py-3">
+                      <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-all ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500' : 'border-gray-300 bg-white'}`}>
+                        {selectedPromotions.includes(pkg.id) && (
+                          <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-3">
+                      <div className="font-black text-gray-900 group-hover:text-red-500 transition-colors text-xs sm:text-base">{pkg.name}</div>
+                      <div className="text-[10px] text-gray-400 sm:hidden mt-1 leading-relaxed">{pkg.effect}</div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-500 font-medium hidden sm:table-cell">{pkg.effect}</td>
+                    <td className="px-3 sm:px-6 py-3 font-bold text-gray-600 whitespace-nowrap">{pkg.duration === 1 ? t.productDetail.ownerDashboard.once : `${pkg.duration} Gün`}</td>
+                    <td className="px-3 sm:px-6 py-3 text-right font-black text-red-600 whitespace-nowrap">{pkg.price}₺</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {selectedPromotions.length > 0 && (
+            <div className="p-2 sm:p-6 bg-gray-900 text-white border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-6">
+                <div className="bg-red-500 text-white p-1 rounded-lg animate-bounce hidden sm:block">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-[7px] font-black uppercase tracking-widest text-gray-400">Seçilen: {selectedPromotions.length}</div>
+                  <div className="text-base sm:text-2xl font-black">{t.productDetail.ownerDashboard.totalPrice}: {calculateTotal()} ₺</div>
+                </div>
+              </div>
+              <button
+                onClick={() => handlePromotionPurchase()}
+                className="w-full sm:w-auto px-4 sm:px-10 py-2 sm:py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-black text-[10px] sm:text-lg shadow-xl shadow-red-600/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                {t.productDetail.ownerDashboard.buyNow}
+                <svg className="w-3.5 h-3.5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          <div className="bg-gray-50 px-4 sm:px-6 py-1.5 sm:py-3 text-[6px] sm:text-[10px] font-bold text-gray-400 text-right uppercase tracking-[0.1em] sm:tracking-[0.2em]">
+            {t.productDetail.ownerDashboard.vatIncluded}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
 export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -7967,6 +8235,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const [sellerRating, setSellerRating] = useState(null);
   const [sellerRatings, setSellerRatings] = useState([]);
   const [selectedPromotions, setSelectedPromotions] = useState([]);
+  const [showMobileStats, setShowMobileStats] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const { user } = useAuth();
   const isMobile = useIsMobile();
 
@@ -8649,7 +8919,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         }
       `}</style>
 
-      <div className={`min-h-screen bg-gray-50 no-print ${isMobile ? 'pb-32' : ''}`}>
+      <div className={`min-h-screen bg-gray-50 no-print ${isMobile ? 'pb-48' : ''}`}>
         {listing && <ProductSEO product={listing} />}
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
           <div className="mb-3 sm:mb-4 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm overflow-x-auto no-print">
@@ -8681,195 +8951,93 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
           {/* Owner Dashboard Overlay */}
           {isOwnListing && (
-            <div className="mb-6 bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-red-500/20 no-print">
-              <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 sm:p-6 text-white">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="space-y-1">
-                    <h2 className="text-xl sm:text-2xl font-black flex items-center gap-2">
-                      <span className="bg-red-500 text-white p-1.5 rounded-lg">
+            <div className="mb-6 no-print">
+              {isMobile ? (
+                <>
+                  <button
+                    onClick={() => setShowMobileStats(true)}
+                    className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 rounded-xl shadow-lg border-2 border-red-500/30 flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="bg-red-500 text-white p-2 rounded-lg">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </span>
-                      {t.productDetail.ownerDashboard.title}
-                    </h2>
-                    <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t.productDetail.ownerDashboard.subtitle}</p>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-4 sm:gap-8">
-                    <div className="text-center group cursor-help">
-                      <div className="text-2xl sm:text-3xl font-black text-white group-hover:text-red-400 transition-colors">{(listing.views || 0).toLocaleString('tr-TR')}</div>
-                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.visits}</div>
-                    </div>
-                    <div className="w-px h-10 bg-gray-700 hidden sm:block" />
-                    <div className="text-center group cursor-help">
-                      <div className="text-2xl sm:text-3xl font-black text-white group-hover:text-red-400 transition-colors">{(favoriteCount || 0).toLocaleString('tr-TR')}</div>
-                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.wishlist}</div>
-                    </div>
-                    <div className="w-px h-10 bg-gray-700 hidden sm:block" />
-                    {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
-                      <div className="text-center">
-                        <ListingCountdown
-                          expiryDate={new Date(listing.promotion_expiry)}
-                          onExpire={() => {
-                            // Optional: refresh or handle expiry
-                          }}
-                        />
-                        <div className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.activePromotion}</div>
+                      <div className="text-left">
+                        <div className="font-black text-sm uppercase tracking-wider">İlan Yönetimi</div>
+                        <div className="text-[10px] text-gray-400 font-bold uppercase">Ayarlar, İstatistikler & Paketler</div>
                       </div>
-                    )}
-                    {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
-                      <div className="w-px h-10 bg-gray-700 hidden sm:block" />
-                    )}
-                    <div className="text-center">
-                      <ListingCountdown
-                        expiryDate={listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 90 * 24 * 60 * 60 * 1000)}
-                        onExpire={() => {
-                          // Optional: refresh or handle expiry
-                        }}
-                      />
-                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.adExpiry}</div>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-3 sm:p-4 bg-gray-50/50">
-                <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-2 mb-6">
-                  <button
-                    onClick={handleEditDetail}
-                    className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-lg transition-all group"
-                  >
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-red-500 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                     </svg>
-                    <span className="text-[10px] sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.edit}</span>
                   </button>
 
-                  <button
-                    onClick={handleReserveDetail}
-                    className={`flex flex-col items-center justify-center p-3 bg-white rounded-xl border ${listing.reserved_by ? 'border-orange-500 bg-orange-50' : 'border-gray-200'} hover:border-blue-500 hover:shadow-lg transition-all group`}
-                  >
-                    <svg className={`w-5 h-5 ${listing.reserved_by ? 'text-orange-500' : 'text-gray-400'} group-hover:text-blue-500 mb-1.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-[10px] sm:text-xs font-bold text-gray-700 text-center">{listing.reserved_by ? t.productDetail.ownerDashboard.unreserve : t.productDetail.ownerDashboard.reserve}</span>
-                  </button>
-
-                  <button
-                    onClick={handleExtendDetail}
-                    className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all group relative"
-                  >
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-green-500 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span className="text-[10px] sm:text-xs font-bold text-gray-700 text-center leading-none">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[9px] text-green-600 font-black">(3,49₺)</span></span>
-                  </button>
-
-                  <button
-                    onClick={handleDeleteDetail}
-                    className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-gray-200 hover:border-red-600 hover:shadow-lg transition-all group"
-                  >
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-red-600 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    <span className="text-[10px] sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.delete}</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setPrintHideContact(true);
-                      setTimeout(() => window.print(), 100);
-                    }}
-                    className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-gray-200 hover:border-purple-500 hover:shadow-lg transition-all group"
-                  >
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-purple-500 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    <span className="text-[10px] sm:text-xs font-bold text-gray-700 text-center leading-none">{t.productDetail.ownerDashboard.printFlyer.split(' ').slice(0, 1).join(' ')}<br /><span className="text-[9px]">{t.productDetail.ownerDashboard.printFlyer.split(' ').slice(1).join(' ')}</span></span>
-                  </button>
-
-                  <button
-                    onClick={() => navigate('/my-invoices')}
-                    className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-lg transition-all group"
-                  >
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-red-500 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="text-[10px] sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.invoices}</span>
-                  </button>
-
-                </div>
-
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead className="bg-gray-100">
-                        <tr className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-                          <th className="px-6 py-4 w-10">Select</th>
-                          <th className="px-6 py-4">{t.productDetail.ownerDashboard.highlightTitle}</th>
-                          <th className="px-6 py-4">{t.productDetail.ownerDashboard.effect}</th>
-                          <th className="px-6 py-4">{t.productDetail.ownerDashboard.duration}</th>
-                          <th className="px-6 py-4 text-right w-32">{t.productDetail.ownerDashboard.price}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 text-sm">
-                        {promotionPackages.map((pkg, idx) => (
-                          <tr
-                            key={pkg.id}
-                            onClick={() => togglePromotionSelection(pkg.id)}
-                            className={`hover:bg-red-50/30 transition-colors group cursor-pointer ${idx % 2 !== 0 ? 'bg-red-50/10' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50' : ''}`}
-                          >
-                            <td className="px-6 py-4">
-                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500' : 'border-gray-300 bg-white'}`}>
-                                {selectedPromotions.includes(pkg.id) && (
-                                  <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 font-black text-gray-900 group-hover:text-red-500">{pkg.name}</td>
-                            <td className="px-6 py-4 text-gray-500 font-medium">{pkg.effect}</td>
-                            <td className="px-6 py-4 font-bold text-gray-600">{pkg.duration === 1 ? t.productDetail.ownerDashboard.once : `${pkg.duration} ${t.productDetail.ownerDashboard.days}`}</td>
-                            <td className="px-6 py-4 text-right font-black text-red-600">{pkg.price} ₺</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Promotion Cart Summary */}
-                  {selectedPromotions.length > 0 && (
-                    <div className="p-6 bg-gray-900 text-white border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                      <div className="flex items-center gap-6">
-                        <div className="bg-red-500 text-white p-2 rounded-lg animate-bounce">
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  {showMobileStats && (
+                    <div className="fixed inset-0 z-[200] bg-gray-100 overflow-y-auto">
+                      <div className="sticky top-0 z-[210] bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center shadow-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="bg-red-500 text-white p-1 rounded-lg">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            </svg>
+                          </span>
+                          <h2 className="text-sm font-black text-gray-900 uppercase tracking-tight">İlan Yönetimi</h2>
+                        </div>
+                        <button
+                          onClick={() => setShowMobileStats(false)}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-600 p-1.5 rounded-full transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                           </svg>
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Seçilen Paketler: {selectedPromotions.length}</div>
-                          <div className="text-2xl font-black">{t.productDetail.ownerDashboard.totalPrice}: {calculateTotal()} ₺</div>
+                        </button>
+                      </div>
+                      <div className="p-2 pb-10">
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+                          <DashboardContent
+                            listing={listing}
+                            favoriteCount={favoriteCount}
+                            handleEditDetail={handleEditDetail}
+                            handleReserveDetail={handleReserveDetail}
+                            handleExtendDetail={handleExtendDetail}
+                            handleDeleteDetail={handleDeleteDetail}
+                            promotionPackages={promotionPackages}
+                            selectedPromotions={selectedPromotions}
+                            togglePromotionSelection={togglePromotionSelection}
+                            calculateTotal={calculateTotal}
+                            handlePromotionPurchase={handlePromotionPurchase}
+                            navigate={navigate}
+                            setPrintHideContact={setPrintHideContact}
+                            t={t}
+                          />
                         </div>
                       </div>
-                      <button
-                        onClick={() => handlePromotionPurchase()}
-                        className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-black text-lg shadow-xl shadow-red-600/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
-                      >
-                        {t.productDetail.ownerDashboard.buyNow}
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                      </button>
                     </div>
                   )}
-
-                  <div className="bg-gray-50 px-6 py-3 text-[10px] font-bold text-gray-400 text-right uppercase tracking-[0.2em]">
-                    {t.productDetail.ownerDashboard.vatIncluded}
-                  </div>
+                </>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-red-500/20">
+                  <DashboardContent
+                    listing={listing}
+                    favoriteCount={favoriteCount}
+                    handleEditDetail={handleEditDetail}
+                    handleReserveDetail={handleReserveDetail}
+                    handleExtendDetail={handleExtendDetail}
+                    handleDeleteDetail={handleDeleteDetail}
+                    promotionPackages={promotionPackages}
+                    selectedPromotions={selectedPromotions}
+                    togglePromotionSelection={togglePromotionSelection}
+                    calculateTotal={calculateTotal}
+                    handlePromotionPurchase={handlePromotionPurchase}
+                    navigate={navigate}
+                    setPrintHideContact={setPrintHideContact}
+                    t={t}
+                  />
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -8878,10 +9046,19 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Ürün Resmi */}
               <div className="bg-white rounded-lg shadow-lg overflow-hidden relative hover:shadow-xl transition-shadow duration-300 z-0">
-                {/* Inner panel for main image */}
-                {/* Inner panel for main image */}
-                <div className="bg-white rounded-lg overflow-hidden shadow-inner p-3">
-                  <div className="relative w-full h-[525px] bg-gray-50 flex items-center justify-center rounded-lg overflow-hidden border border-gray-100">
+                <div className="bg-white rounded-lg overflow-hidden shadow-inner p-1.5 sm:p-3">
+                  <div className="relative w-full h-[250px] sm:h-[525px] bg-gray-50 flex items-center justify-center rounded-lg overflow-hidden border border-gray-100">
+                    {isMobile && (
+                      <button
+                        onClick={() => navigate(-1)}
+                        className="absolute left-2 top-2 z-30 text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] active:scale-90 transition-all no-print"
+                        aria-label="Geri"
+                      >
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                    )}
                     <img
                       src={(listing.images && listing.images[activeImage]) || listing.image}
                       alt={listing.title}
@@ -8971,8 +9148,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         <button
                           key={index}
                           onClick={() => setActiveImage(index)}
-                          className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === index ? 'border-red-500' : 'border-transparent hover:border-gray-200'
-                            }`}
+                          className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === index ? 'border-red-500' : 'border-transparent hover:border-gray-200'}`}
                         >
                           <img
                             src={img}
@@ -8987,27 +9163,46 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     </div>
                   )}
                 </div>
-                {/* Favori Kalp Butonu */}
-                {!isOwnListing && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite && toggleFavorite(listing.id);
-                    }}
-                    className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
-                    title={favorite ? 'Aus Merkliste entfernen' : 'Zur Merkliste hinzufügen'}
-                  >
-                    {favorite ? (
-                      <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                {/* Üst Araçlar - Mobil Paylaş ve Favori */}
+                <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5">
+                  {/* Paylaş Butonu */}
+                  {isMobile && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowShareModal(true);
+                      }}
+                      className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 flex items-center justify-center text-gray-600"
+                      title="Paylaş"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                       </svg>
-                    ) : (
-                      <svg className="w-6 h-6 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                    )}
-                  </button>
-                )}
+                    </button>
+                  )}
+
+                  {/* Favori Kalp Butonu */}
+                  {!isOwnListing && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite && toggleFavorite(listing.id);
+                      }}
+                      className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 flex items-center justify-center"
+                      title={favorite ? 'Aus Merkliste entfernen' : 'Zur Merkliste hinzufügen'}
+                    >
+                      {favorite ? (
+                        <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
 
               <ImageLightbox
@@ -10354,75 +10549,6 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </>
                 )}
 
-                {/* Çizgi - Nachricht Ayırıcı */}
-                <div className="border-t border-gray-200 my-6"></div>
-
-                {/* İlan Mesaj Paneli */}
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">{t.productDetail.messageToSeller}</h2>
-                  <form onSubmit={handleSendMessage} className="space-y-4">
-                    <div>
-                      <label className="block text-sm text-gray-600 mb-1" htmlFor="contactName">
-                        {t.addListing.name}
-                      </label>
-                      <input
-                        type="text"
-                        id="contactName"
-                        value={contactName}
-                        onChange={(e) => setContactName(e.target.value)}
-                        placeholder={t.addListing.name}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-600 mb-1" htmlFor="contactPhone">
-                        {t.addListing.phoneNumber}
-                      </label>
-                      <input
-                        type="tel"
-                        id="contactPhone"
-                        value={contactPhone}
-                        onChange={(e) => setContactPhone(e.target.value)}
-                        placeholder="+49 ..."
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-600 mb-1" htmlFor="contactMessage">
-                        {t.addListing.description}
-                      </label>
-                      <textarea
-                        id="contactMessage"
-                        value={contactMessage}
-                        onChange={(e) => setContactMessage(e.target.value)}
-                        placeholder={t.productDetail.writeMessage}
-                        rows={4}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
-                        required
-                      />
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <button
-                        type="submit"
-                        className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                      >
-                        {t.productDetail.send}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setContactName('');
-                          setContactPhone('');
-                          setContactMessage('');
-                        }}
-                        className="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors"
-                      >
-                        {t.addListing.reset}
-                      </button>
-                    </div>
-                  </form>
-                </div>
               </div>
 
               {/* Satıcının Diğer Ürünleri */}
@@ -10506,25 +10632,58 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
             {/* Sağ Taraf - Satıcı Profili */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-lg p-6 sticky top-4">
+              <div className={`bg-white rounded-lg shadow-lg p-6 sticky top-4 ${isMobile ? 'pb-24' : ''}`}>
                 {/* Satıcı Profil Bilgileri */}
-                <div className="flex flex-col items-center gap-4 mb-4 pb-4 border-b text-center">
-                  <img
-                    key={seller.store_logo || seller.avatar_url || 'default-avatar'}
-                    src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.full_name || 'User') + '&background=ef4444&color=fff&size=200'}
-                    alt={seller.full_name}
-                    className="w-24 h-24 rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity border-4 border-gray-100"
-                    onClick={() => {
-                      if (seller.is_pro || seller.is_commercial || (seller.subscription_tier && seller.subscription_tier !== 'free')) {
-                        navigate(`/store/${seller.id}`);
-                      } else {
-                        navigate(`/seller/${seller.user_number || sellerProfile?.user_number}`);
-                      }
-                    }}
-                  />
-                  <div className="flex-1 w-full">
+                <div className="flex flex-row items-start gap-4 mb-4 pb-4 border-b text-left">
+                  <div className="flex flex-col items-center gap-3 flex-shrink-0">
+                    <div className="relative inline-block">
+                      <img
+                        key={seller.store_logo || seller.avatar_url || 'default-avatar'}
+                        src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.full_name || 'User') + '&background=ef4444&color=fff&size=200'}
+                        alt={seller.full_name}
+                        className="w-24 h-24 rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity border-4 border-gray-100 shadow-sm"
+                        onClick={() => {
+                          if (seller.is_pro || seller.is_commercial || (seller.subscription_tier && seller.subscription_tier !== 'free')) {
+                            navigate(`/store/${seller.id}`);
+                          } else {
+                            navigate(`/seller/${seller.user_number || sellerProfile?.user_number}`);
+                          }
+                        }}
+                      />
+                      {seller.is_pro && (
+                        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full border-2 border-white shadow-lg z-10">
+                          PRO
+                        </div>
+                      )}
+                    </div>
+                    {/* Satıcıyı Takip Et Butonu - Moved under Logo on Mobile */}
+                    <button
+                      onClick={async () => {
+                        setFollowLoading(true);
+                        await toggleFollowSeller(listing.user_id);
+                        setFollowLoading(false);
+                      }}
+                      disabled={followLoading}
+                      className={`w-full py-1.5 px-3 rounded-lg text-[10px] font-bold transition-all border flex items-center justify-center gap-1.5 ${isSellerFollowed(listing.user_id) ? 'bg-green-50 border-green-500 text-green-700' : 'bg-gray-50 border-gray-200 text-gray-700 hovr:bg-gray-100'
+                        } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {followLoading ? (
+                        <LoadingSpinner size="small" />
+                      ) : (
+                        <>
+                          <svg className={`w-3.5 h-3.5 ${isSellerFollowed(listing.user_id) ? 'text-green-500' : 'text-blue-500'}`} fill={isSellerFollowed(listing.user_id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          {isSellerFollowed(listing.user_id) ? t.productDetail.followingSeller : t.productDetail.followSeller}
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="flex-1 min-w-0 pt-1">
                     <div
-                      className="font-semibold text-xl text-gray-900 cursor-pointer hover:text-red-500 transition-colors mb-2"
+                      className="font-bold text-lg sm:text-xl text-gray-900 cursor-pointer hover:text-red-500 transition-colors mb-2 truncate"
                       onClick={() => {
                         if (seller.is_pro || seller.is_commercial || (seller.subscription_tier && seller.subscription_tier !== 'free')) {
                           navigate(`/store/${seller.id}`);
@@ -10536,108 +10695,57 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.contact_name || seller.full_name || t.productDetail.unknownSeller}
                     </div>
 
-                    {/* Enhanced Seller Badges */}
-                    <div className="flex flex-wrap justify-center gap-2 mb-4">
-                      {seller.is_pro && (
-                        <div className="bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg border-2 border-white hover:bg-red-700 transition-colors flex items-center gap-1">
-                          <span>⭐ PRO MAĞAZA</span>
-                        </div>
-                      )}
-                      {(seller.is_commercial || sellerProfile?.seller_type === 'Gewerblicher Nutzer' || (seller && seller.seller_type === 'commercial')) && (
-                        <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg border-2 border-white hover:bg-blue-700 transition-colors flex items-center gap-1">
-                          <span>🏢 KURUMSAL SATICI</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {(seller.is_pro || seller.is_commercial || sellerProfile?.seller_type === 'Gewerblicher Nutzer' || (seller && seller.seller_type === 'commercial')) && (
-                      <a
-                        href={`/store/${seller.id}`}
-                        className="w-full mb-3 py-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xs font-bold rounded-lg hover:from-black hover:to-gray-900 transition-all shadow-sm flex items-center justify-center gap-2"
-                      >
-                        🏪 MAĞAZAYI ZİYARET ET
-                      </a>
-                    )}
-
                     {/* City Location */}
                     {(listing.city || listing.address) && (
-                      <div className="flex items-center justify-center gap-1.5 mb-2">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <div className="flex items-center gap-1.5 mb-2 text-sm text-gray-600">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span className="text-sm text-gray-600">
-                          {listing.city || ''}
-                        </span>
+                        <span className="font-medium">{listing.city || ''}</span>
                       </div>
                     )}
 
                     {!isCommercial && (
-                      <div className="text-xs uppercase tracking-wide text-red-500 font-semibold mb-2">{sellerTypeLabel}</div>
+                      <div className="text-xs uppercase tracking-wide text-red-500 font-black mb-2">{sellerTypeLabel}</div>
                     )}
 
                     {/* Last Seen Indicator */}
-                    <div className="flex items-center justify-center gap-1.5 mb-2">
+                    <div className="flex items-center gap-1.5 mb-2 text-sm">
                       <div className={`w-2 h-2 rounded-full ${seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="font-bold text-gray-700">
                         {formatLastSeen(seller.last_seen)}
                       </span>
                     </div>
 
-                    <div className="text-xs text-gray-500 font-medium">{t.productDetail.memberSince} {activeSinceDisplay}</div>
+                    <div className="text-xs text-gray-500 font-bold lowercase mb-2">
+                      {t.productDetail.memberSince} <span className="capitalize">{activeSinceDisplay}</span>
+                    </div>
 
                     {/* Seller Rating */}
                     {sellerRating && (
-                      <div className="mt-3">
+                      <div className="mt-2 flex justify-start scale-110 origin-left">
                         <RatingDisplay
                           userRating={sellerRating}
                           showDetails={false}
                           size="small"
-                          center={true}
+                          center={false}
                         />
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Satıcıyı Takip Et Butonu */}
-                <button
-                  onClick={async () => {
-                    setFollowLoading(true);
-                    await toggleFollowSeller(listing.user_id);
-                    setFollowLoading(false);
-                  }}
-                  disabled={followLoading}
-                  className={`w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 flex items-center justify-center gap-2 ${isSellerFollowed(listing.user_id) ? 'bg-green-50 border-green-500 text-green-700' : ''
-                    } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {followLoading ? (
-                    <>
-                      <LoadingSpinner size="small" />
-                      {t.productDetail.loading}
-                    </>
-                  ) : (
-                    <>
-                      <svg className={`w-5 h-5 ${isSellerFollowed(listing.user_id) ? 'text-green-500' : 'text-blue-500'}`} fill={isSellerFollowed(listing.user_id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      {isSellerFollowed(listing.user_id) ? t.productDetail.followingSeller : t.productDetail.followSeller}
-                    </>
-                  )}
-                </button>
-
-
-                {/* Mesaj Gönderme Butonu */}
+                {/* Mesaj Gönderme Butonu - Hidden on Mobile per previous request */}
                 <button
                   type="button"
                   onClick={() => setShowMessageModal(true)}
-                  className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 flex items-center justify-center gap-2"
+                  className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
-                  {t.productDetail.send}
+                  {t.productDetail.message}
                 </button>
 
                 {/* Telefon Butonu */}
@@ -10645,7 +10753,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   <button
                     type="button"
                     onClick={() => setShowPhone(true)}
-                    className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 flex items-center justify-center gap-2"
+                    className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -10655,7 +10763,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 ) : (
                   <a
                     href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
-                    className="w-full border border-gray-300 hover:bg-green-50 hover:border-green-500 text-gray-700 hover:text-green-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 flex items-center justify-center gap-2"
+                    className="w-full border border-gray-300 hover:bg-green-50 hover:border-green-500 text-gray-700 hover:text-green-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -10686,8 +10794,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   listingTitle={listing.title}
                 />
 
-                {/* Teilen & Drucken */}
-                <div className="mt-4 space-y-3 pt-4 border-t border-gray-100 no-print">
+                {/* Teilen & Drucken - Hidden on mobile */}
+                <div className="mt-4 space-y-3 pt-4 border-t border-gray-100 no-print hidden sm:block">
                   <div className="pt-2">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-1">{t.productDetail.share}</p>
                     <div className="flex gap-2">
@@ -10792,103 +10900,111 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               </div>
             </div>
           </div>
-        </div>
 
 
 
-        {/* Report Modal */}
-        <ReportModal
-          isOpen={showReportModal}
-          onClose={() => setShowReportModal(false)}
-          onSubmit={handleReportSubmit}
-          reason={reportReason}
-          setReason={setReportReason}
-          description={reportDescription}
-          setDescription={setReportDescription}
-        />
+          {/* Report Modal */}
+          <ReportModal
+            isOpen={showReportModal}
+            onClose={() => setShowReportModal(false)}
+            onSubmit={handleReportSubmit}
+            reason={reportReason}
+            setReason={setReportReason}
+            description={reportDescription}
+            setDescription={setReportDescription}
+          />
 
-        {/* Seller's Recent Listings */}
-        {sellerRecentListings.length > 0 && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Bu Satıcının Diğer İlanları
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {sellerRecentListings.map(item => (
-                <ListingCard
-                  key={item.id}
-                  listing={item}
-                  toggleFavorite={toggleFavorite}
-                  isFavorite={isFavorite}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+          {/* Share Modal */}
+          <ShareModal
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+            url={window.location.href}
+            title={listing?.title}
+          />
 
-        {/* Category Related Listings */}
-        {categoryListings.length > 0 && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-              {listing?.category} Kategorisindeki Benzer İlanlar
-            </h2>
-            <div className="grid grid-cols-1 gap-4 sm:gap-6">
-              {categoryListings.map(item => (
-                <HorizontalListingCard
-                  key={item.id}
-                  listing={item}
-                  toggleFavorite={toggleFavorite}
-                  isFavorite={isFavorite}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        {/* Mobile Sticky Contact Buttons */}
-        {isMobile && !isOwnListing && (
-          <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 flex gap-3 pb-safe no-print">
-            <button
-              id="mobile-contact-message"
-              onClick={() => setShowMessageModal(true)}
-              className="flex-1 bg-red-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              {t.productDetail.send}
-            </button>
-            {(!showPhone) ? (
-              <button
-                id="mobile-contact-phone-reveal"
-                onClick={() => setShowPhone(true)}
-                className="flex-1 bg-white border-2 border-green-600 text-green-700 font-bold py-3.5 px-4 rounded-xl shadow-md hover:bg-green-50 transition-all flex items-center justify-center gap-2"
-              >
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          {/* Seller's Recent Listings */}
+          {sellerRecentListings.length > 0 && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                {t.productDetail.call}
-              </button>
-            ) : (
-              <a
-                id="mobile-contact-call"
-                href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
-                className="flex-1 bg-green-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                Bu Satıcının Diğer İlanları
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                {sellerRecentListings.map(item => (
+                  <ListingCard
+                    key={item.id}
+                    listing={item}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Category Related Listings */}
+          {categoryListings.length > 0 && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                {listing?.category} Kategorisindeki Benzer İlanlar
+              </h2>
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                {categoryListings.map(item => (
+                  <HorizontalListingCard
+                    key={item.id}
+                    listing={item}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Mobile Sticky Contact Buttons */}
+          {isMobile && !isOwnListing && (
+            <div className="fixed bottom-12 left-0 right-0 z-[100] bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 flex gap-3 pb-safe no-print">
+              <button
+                id="mobile-contact-message"
+                onClick={() => setShowMessageModal(true)}
+                className="flex-1 bg-red-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                {listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}
-              </a>
-            )}
-          </div>
-        )}
-      </div>
+                {t.productDetail.message}
+              </button>
+              {(!showPhone) ? (
+                <button
+                  id="mobile-contact-phone-reveal"
+                  onClick={() => setShowPhone(true)}
+                  className="flex-1 bg-white border-2 border-green-600 text-green-700 font-bold py-3.5 px-4 rounded-xl shadow-md hover:bg-green-50 transition-all flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {t.productDetail.call}
+                </button>
+              ) : (
+                <a
+                  id="mobile-contact-call"
+                  href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
+                  className="flex-1 bg-green-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div >
     </>
   );
 };
@@ -11898,9 +12014,9 @@ export const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-12 pb-8 mt-16">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
+        <div className="flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
           {/* ExVitrin */}
-          <div>
+          <div className="hidden md:block">
             <h3 className="text-white font-semibold mb-4">ExVitrin</h3>
             <ul className="space-y-2 text-sm">
               <li><a href="/hakkimizda" className="hover:text-white transition-colors">{t.footer.aboutUs}</a></li>
@@ -11914,7 +12030,7 @@ export const Footer = () => {
 
 
           {/* Für Unternehmen */}
-          <div>
+          <div className="hidden md:block">
             <h3 className="text-white font-semibold mb-4">{t.footer.forCompanies}</h3>
             <ul className="space-y-2 text-sm">
 
@@ -11926,7 +12042,7 @@ export const Footer = () => {
 
 
           {/* Allgemein + Logo + Social Media */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center md:items-start gap-6">
             <div className="flex items-center gap-3">
               <img src="/logo_exvitrin_2026.png" alt="ExVitrin" className="h-12 w-auto" />
               <span className="text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent tracking-tight">
@@ -11985,6 +12101,92 @@ export const Footer = () => {
 };
 
 // Report Modal Component
+const ShareModal = ({ isOpen, onClose, url, title }) => {
+  if (!isOpen) return null;
+
+  const shareOptions = [
+    {
+      name: 'Facebook',
+      icon: (
+        <svg className="w-6 h-6 fill-currentColor" viewBox="0 0 24 24">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+        </svg>
+      ),
+      color: 'bg-[#1877F2]',
+      onClick: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank')
+    },
+    {
+      name: 'WhatsApp',
+      icon: (
+        <svg className="w-6 h-6 fill-currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+        </svg>
+      ),
+      color: 'bg-[#25D366]',
+      onClick: () => {
+        const text = `${title} ilanını ExVitrin'de keşfedin!`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+      }
+    },
+    {
+      name: 'X (Twitter)',
+      icon: (
+        <svg className="w-6 h-6 fill-currentColor" viewBox="0 0 1200 1227">
+          <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+        </svg>
+      ),
+      color: 'bg-black',
+      onClick: () => {
+        const text = `${title} ilanını ExVitrin'de keşfedin!`;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+      }
+    },
+    {
+      name: 'Bağlantı',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+        </svg>
+      ),
+      color: 'bg-gray-500',
+      onClick: () => {
+        navigator.clipboard.writeText(url).then(() => {
+          alert('Bağlantı panoya kopyalandı!');
+          onClose();
+        });
+      }
+    }
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[1000] flex items-start justify-end p-4 bg-black/20 backdrop-blur-[2px]" onClick={onClose}>
+      <div
+        className="bg-white w-64 rounded-2xl overflow-hidden shadow-2xl transition-all mt-16 animate-in slide-in-from-top-4 duration-200"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="p-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+          <h3 className="text-sm font-bold text-gray-900">İlanı Paylaş</h3>
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
+            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="p-4 grid grid-cols-2 gap-3">
+          {shareOptions.map((opt, i) => (
+            <button key={i} onClick={opt.onClick} className="flex items-center gap-3 p-2 rounded-xl border border-gray-50 hover:bg-gray-50 active:scale-95 transition-all w-full text-left">
+              <div className={`${opt.color} w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0`}>
+                {React.cloneElement(opt.icon, { className: 'w-4 h-4 fill-currentColor' })}
+              </div>
+              <span className="text-[11px] font-bold text-gray-700 leading-tight">{opt.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const ReportModal = ({ isOpen, onClose, onSubmit, reason, setReason, description, setDescription }) => {
   if (!isOpen) return null;
 
