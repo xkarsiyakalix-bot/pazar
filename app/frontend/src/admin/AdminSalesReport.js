@@ -228,39 +228,37 @@ const AdminSalesReport = () => {
     }
 
     return (
-        <div className="space-y-8 pb-12">
-            <div className="flex justify-between items-end">
+        <div className="space-y-8 pb-12 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight uppercase italic">Satış Raporları</h1>
-                    <div className="flex items-center gap-2 mt-1">
-                        <p className="text-gray-500 font-medium tracking-wide">Gelir Özeti ve Canlı Analiz</p>
-                        <span className="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded-full font-black border border-red-100">
-                            SON GÜNCELLEME: {lastUpdated.toLocaleTimeString('tr-TR')}
+                    <h1 className="text-3xl font-display font-bold text-neutral-900 tracking-tight">Satış Raporları</h1>
+                    <div className="flex items-center gap-3 mt-1.5">
+                        <p className="text-neutral-500 font-medium tracking-wide">Gelir Özeti ve Canlı Analiz</p>
+                        <span className="flex items-center gap-1.5 text-[10px] bg-neutral-100 text-neutral-600 px-2.5 py-1 rounded-full font-bold border border-neutral-200">
+                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                            {lastUpdated.toLocaleTimeString('tr-TR')}
                         </span>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={playNotification}
-                        className="p-3 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition-all shadow-sm"
+                        className="p-3 bg-white border border-neutral-200 text-neutral-500 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-all shadow-sm active:scale-95"
                         title="Ses Testi"
                     >
-                        🔊 TEST
+                        🔊
                     </button>
-                    <div className="hidden sm:flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                    <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-wider bg-white px-3 py-2 rounded-xl border border-neutral-200 shadow-sm">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                        SESLİ BİLDİRİM AKTİF
+                        CANLI AKIŞ
                     </div>
                     <button
                         onClick={() => calculateReport(true)}
                         disabled={isRefreshing}
-                        className="px-6 py-3 bg-white border-2 border-gray-100 rounded-2xl text-sm font-black text-gray-700 hover:border-red-500 transition-all shadow-xl shadow-gray-200/50 flex items-center gap-3 group active:scale-95 disabled:opacity-50"
+                        className="px-5 py-2.5 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-700 hover:border-blue-300 hover:text-blue-600 transition-all shadow-sm hover:shadow active:scale-95 disabled:opacity-50 flex items-center gap-2"
                     >
-                        <div className="relative">
-                            <div className={`w-2.5 h-2.5 bg-green-500 rounded-full ${isRefreshing ? 'animate-spin' : 'group-hover:animate-ping'}`}></div>
-                            {!isRefreshing && <div className="w-2.5 h-2.5 bg-green-500 rounded-full absolute inset-0"></div>}
-                        </div>
-                        {isRefreshing ? 'GÜNCELLENİYOR...' : 'CANLI YENİLE'}
+                        <div className={`w-2 h-2 rounded-full ${isRefreshing ? 'bg-blue-500 animate-spin' : 'bg-blue-500'}`}></div>
+                        {isRefreshing ? 'Yenileniyor...' : 'Yenile'}
                     </button>
                 </div>
             </div>
@@ -293,114 +291,113 @@ const AdminSalesReport = () => {
                     value={stats.total}
                     icon="💰"
                     color="from-purple-500 to-pink-600"
-                    subtitle="Sistem Başlangıcından Beri"
+                    subtitle="Tüm Zamanlar"
                 />
             </div>
 
             {/* Minute-by-Minute Live Graph and Package Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white p-8 rounded-[3rem] shadow-2xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-8">
-                        <div className="flex items-center gap-3 px-4 py-2 bg-red-50 text-red-600 rounded-2xl text-[10px] font-black tracking-[0.2em]">
-                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            CANLI VERİ
+                <div className="lg:col-span-2 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-neutral-100 relative overflow-hidden">
+                    <div className="absolute top-6 right-8">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold tracking-wider border border-red-100">
+                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                            CANLI
                         </div>
                     </div>
 
-                    <div className="mb-10">
-                        <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                            <span className="p-3 bg-red-50 rounded-2xl">📈</span>
+                    <div className="mb-8">
+                        <h3 className="text-xl font-display font-bold text-neutral-900 flex items-center gap-2">
                             Kazanç Analizi
                         </h3>
-                        <p className="text-gray-400 font-bold text-sm ml-16 tracking-tight uppercase opacity-50">Son 60 Dakika Performansı</p>
+                        <p className="text-neutral-400 font-medium text-xs mt-1">Son 60 Dakika Performansı</p>
                     </div>
 
-                    <div className="h-[350px] w-full mt-4">
+                    <div className="h-[300px] w-full mt-4">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={history.minute}>
                                 <defs>
                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
+                                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
                                         <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="10 10" vertical={false} stroke="#f1f5f9" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis
                                     dataKey="time"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
+                                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
                                     interval={9}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
+                                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
                                     tickFormatter={(value) => `${value}₺`}
                                 />
                                 <Tooltip
-                                    cursor={{ stroke: '#ef4444', strokeWidth: 2, strokeDasharray: '5 5' }}
+                                    cursor={{ stroke: '#ef4444', strokeWidth: 1, strokeDasharray: '4 4' }}
                                     contentStyle={{
-                                        borderRadius: '24px',
-                                        border: 'none',
-                                        boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)',
-                                        padding: '20px',
+                                        borderRadius: '12px',
+                                        border: '1px solid #e5e7eb',
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                        padding: '12px',
                                         backgroundColor: 'white'
                                     }}
                                     formatter={(value) => [`${value.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺`, 'Gelir']}
-                                    labelStyle={{ fontWeight: 900, color: '#1e293b', marginBottom: '8px', fontSize: '14px', textTransform: 'uppercase' }}
+                                    labelStyle={{ fontWeight: 700, color: '#1e293b', marginBottom: '4px', fontSize: '12px' }}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="amount"
                                     stroke="#ef4444"
-                                    strokeWidth={6}
+                                    strokeWidth={3}
                                     fillOpacity={1}
                                     fill="url(#colorRevenue)"
-                                    animationDuration={2500}
-                                    animationEasing="ease-in-out"
+                                    animationDuration={1500}
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                <div className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-gray-200/50 border border-gray-100 flex flex-col items-center">
-                    <h3 className="text-xl font-black text-gray-900 mb-2 w-full">Paket Dağılımı</h3>
-                    <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-8 w-full opacity-50 text-left">Gelir Kaynağı Analizi</p>
+                <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-neutral-100 flex flex-col">
+                    <h3 className="text-xl font-display font-bold text-neutral-900 mb-1">Paket Dağılımı</h3>
+                    <p className="text-neutral-400 font-medium text-xs mb-6">Gelir Kaynağı Analizi</p>
 
-                    <div className="h-[250px] w-full">
+                    <div className="h-[220px] w-full flex-shrink-0">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
                                     data={packageStats}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
+                                    innerRadius={55}
+                                    outerRadius={75}
+                                    paddingAngle={4}
                                     dataKey="value"
+                                    stroke="none"
                                 >
                                     {packageStats.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)' }}
+                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                     formatter={(value) => [`${value.toLocaleString('tr-TR')} ₺`, 'Toplam']}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
 
-                    <div className="w-full mt-4 space-y-3 overflow-y-auto max-h-[150px] pr-2 custom-scrollbar">
+                    <div className="flex-1 mt-4 space-y-3 overflow-y-auto pr-1 custom-scrollbar">
                         {packageStats.map((pkg, idx) => (
-                            <div key={pkg.name} className="flex items-center justify-between group">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                                    <span className="text-xs font-black text-gray-700 uppercase italic opacity-70 group-hover:opacity-100 transition-opacity">{pkg.name}</span>
+                            <div key={pkg.name} className="flex items-center justify-between group py-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wide">{pkg.name}</span>
                                 </div>
-                                <span className="text-sm font-black text-gray-900 italic">
+                                <span className="text-sm font-bold text-neutral-900">
                                     {pkg.value.toLocaleString('tr-TR')} ₺
                                 </span>
                             </div>
@@ -412,104 +409,107 @@ const AdminSalesReport = () => {
             {/* Yearly and Monthly Breakdown Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Yearly Breakdown */}
-                <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-                    <div className="p-8 border-b border-gray-50 bg-gray-50/50">
-                        <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                            <span className="p-2 bg-emerald-50 rounded-xl text-xl">📅</span> Yıllık Trend
+                <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
+                    <div className="p-6 border-b border-neutral-50 bg-neutral-50/30">
+                        <h3 className="text-lg font-display font-bold text-neutral-900 flex items-center gap-2">
+                            Yıllık Trend
                         </h3>
                     </div>
-                    <div className="p-8">
-                        <div className="space-y-6">
+                    <div className="p-6 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        <div className="space-y-5">
                             {history.yearly.map((row) => (
                                 <div key={row.year} className="group">
-                                    <div className="flex justify-between items-end mb-3">
-                                        <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
-                                            {row.year} YILI
+                                    <div className="flex justify-between items-end mb-2">
+                                        <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                                            {row.year}
                                         </span>
-                                        <span className="text-xl font-black text-gray-900 italic">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</span>
+                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</span>
                                     </div>
-                                    <div className="h-4 bg-gray-50 rounded-full overflow-hidden border border-gray-100 shadow-inner">
+                                    <div className="h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-1000 ease-out rounded-full shadow-lg shadow-emerald-500/20"
+                                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
                                             style={{ width: `${(row.amount / Math.max(...history.yearly.map(m => m.amount))) * 100}%` }}
                                         ></div>
                                     </div>
                                 </div>
                             ))}
                             {history.yearly.length === 0 && (
-                                <p className="text-center py-12 text-gray-300 font-bold uppercase text-xs tracking-[0.3em]">VERİ KAYDI YOK</p>
+                                <p className="text-center py-8 text-neutral-300 text-xs uppercase tracking-widest font-bold">Veri Yok</p>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* Monthly Breakdown */}
-                <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-                    <div className="p-8 border-b border-gray-50 bg-gray-50/50">
-                        <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                            <span className="p-2 bg-blue-50 rounded-xl text-xl">📊</span> Aylık Trend
+                <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
+                    <div className="p-6 border-b border-neutral-50 bg-neutral-50/30">
+                        <h3 className="text-lg font-display font-bold text-neutral-900 flex items-center gap-2">
+                            Aylık Trend
                         </h3>
                     </div>
-                    <div className="p-8">
-                        <div className="space-y-6">
-                            {history.monthly.map((row, idx) => (
+                    <div className="p-6 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        <div className="space-y-5">
+                            {history.monthly.map((row) => (
                                 <div key={row.month} className="group">
-                                    <div className="flex justify-between items-end mb-3">
-                                        <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                                    <div className="flex justify-between items-end mb-2">
+                                        <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                                             {new Date(row.month + '-01').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
                                         </span>
-                                        <span className="text-xl font-black text-gray-900 italic">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</span>
+                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</span>
                                     </div>
-                                    <div className="h-4 bg-gray-50 rounded-full overflow-hidden border border-gray-100 shadow-inner">
+                                    <div className="h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-1000 ease-out rounded-full shadow-lg shadow-blue-500/20"
+                                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
                                             style={{ width: `${(row.amount / Math.max(...history.monthly.map(m => m.amount))) * 100}%` }}
                                         ></div>
                                     </div>
                                 </div>
                             ))}
                             {history.monthly.length === 0 && (
-                                <p className="text-center py-12 text-gray-300 font-bold uppercase text-xs tracking-[0.3em]">VERİ KAYDI YOK</p>
+                                <p className="text-center py-8 text-neutral-300 text-xs uppercase tracking-widest font-bold">Veri Yok</p>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* Daily Table */}
-                <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden xl:col-span-1">
-                    <div className="p-8 border-b border-gray-50 bg-gray-50/50">
-                        <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                            <span className="p-2 bg-emerald-50 rounded-xl text-xl">📅</span> Günlük Kayıt
+                <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden xl:col-span-1 flex flex-col">
+                    <div className="p-6 border-b border-neutral-50 bg-neutral-50/30">
+                        <h3 className="text-lg font-display font-bold text-neutral-900 flex items-center gap-2">
+                            Günlük Kayıt
                         </h3>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                    <div className="flex-1 overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left">
                             <thead>
-                                <tr className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] border-b border-gray-100">
-                                    <th className="px-10 py-6">Zaman Çizgisi</th>
-                                    <th className="px-10 py-6">Tip</th>
-                                    <th className="px-10 py-6 text-right">Kazanç</th>
+                                <tr className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider bg-neutral-50/30">
+                                    <th className="px-6 py-3">Tarih</th>
+                                    <th className="px-6 py-3">Tip</th>
+                                    <th className="px-6 py-3 text-right">Kazanç</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-neutral-50">
                                 {history.daily.map(row => (
-                                    <tr key={row.date} className="hover:bg-gray-50/80 transition-all duration-300 group">
-                                        <td className="px-10 py-6">
-                                            <div className="font-black text-gray-900 group-hover:text-red-600 transition-colors">
-                                                {new Date(row.date).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'short' })}
+                                    <tr key={row.date} className="hover:bg-neutral-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="font-bold text-neutral-800 text-sm">
+                                                {new Date(row.date).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                            </div>
+                                            <div className="text-[10px] text-neutral-400 font-medium">
+                                                {new Date(row.date).toLocaleDateString('tr-TR', { weekday: 'long' })}
                                             </div>
                                         </td>
-                                        <td className="px-10 py-6">
-                                            <span className="bg-gray-900 text-white px-3 py-1 rounded-xl text-[10px] font-black tracking-widest italic group-hover:bg-red-600 transition-colors">PROMOSYON</span>
+                                        <td className="px-6 py-4">
+                                            <span className="bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">SATIŞ</span>
                                         </td>
-                                        <td className="px-10 py-6 text-right">
-                                            <div className="font-black text-gray-900 text-lg italic">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</div>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</div>
                                         </td>
                                     </tr>
                                 ))}
                                 {history.daily.length === 0 && (
                                     <tr>
-                                        <td colSpan="3" className="px-10 py-20 text-center text-gray-300 font-bold uppercase text-xs tracking-[0.3em]">BOŞ DEPO</td>
+                                        <td colSpan="3" className="px-6 py-12 text-center text-neutral-300 font-bold uppercase text-xs tracking-widest">Kayıt Bulunamadı</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -518,133 +518,82 @@ const AdminSalesReport = () => {
                 </div>
             </div>
 
-            {/* Detailed Yearly-Monthly Breakdown */}
-            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-                <div className="p-8 border-b border-gray-50 bg-gray-50/50">
-                    <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                        <span className="p-2 bg-purple-50 rounded-xl text-xl">🗓️</span> Yıllara Göre Aylık Detay
-                    </h3>
-                </div>
-                <div className="p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {Object.entries(history.detailedYearly)
-                            .sort(([yearA], [yearB]) => yearB.localeCompare(yearA))
-                            .map(([year, months]) => (
-                                <div key={year} className="bg-gray-50/50 rounded-3xl p-6 border border-gray-100 h-full">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h4 className="text-2xl font-black text-gray-900 italic">{year}</h4>
-                                        <span className="bg-emerald-500 text-white px-3 py-1 rounded-xl text-[10px] font-black tracking-widest uppercase">
-                                            TOPLAM: {(Object.values(months).reduce((a, b) => a + b, 0)).toLocaleString('tr-TR')} ₺
-                                        </span>
-                                    </div>
-                                    <div className="space-y-3">
-                                        {['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'].map(m => {
-                                            const amount = months[m] || 0;
-                                            const monthName = new Date(2000, parseInt(m) - 1).toLocaleDateString('tr-TR', { month: 'long' });
-                                            const maxInYear = Math.max(...Object.values(months));
-
-                                            return (
-                                                <div key={m} className="flex flex-col gap-1">
-                                                    <div className="flex justify-between text-[11px] font-black uppercase tracking-wider text-gray-500">
-                                                        <span>{monthName}</span>
-                                                        <span className={amount > 0 ? "text-emerald-600" : "text-gray-300"}>
-                                                            {amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
-                                                        </span>
-                                                    </div>
-                                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                                        <div
-                                                            className={`h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-1000 ${amount === 0 ? 'w-0' : ''}`}
-                                                            style={{ width: amount > 0 ? `${(amount / maxInYear) * 100}%` : '0%' }}
-                                                        ></div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        {Object.keys(history.detailedYearly).length === 0 && (
-                            <div className="col-span-full text-center py-20 text-gray-300 font-bold uppercase text-xs tracking-[0.3em]">
-                                DETAYLI VERİ KAYDI BULUNAMADI
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
             {/* Live Sales Feed */}
-            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-                <div className="p-8 border-b border-gray-50 bg-gray-900 flex justify-between items-center">
-                    <h3 className="text-xl font-black text-white flex items-center gap-3">
-                        <span className="p-2 bg-red-600 rounded-xl text-xl">🔥</span> Canlı Satış Akışı
+            <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
+                <div className="p-6 border-b border-neutral-50 bg-neutral-900 flex justify-between items-center">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <span className="flex items-center justify-center w-8 h-8 bg-neutral-800 rounded-lg text-lg">⚡</span> Canlı Satış Akışı
                     </h3>
                     <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-                        <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">SİSTEM AKTİF</span>
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">CANLI</span>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left">
                         <thead>
-                            <tr className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] border-b border-gray-100">
-                                <th className="px-10 py-6">Tarih / Saat</th>
-                                <th className="px-10 py-6">Kullanıcı</th>
-                                <th className="px-10 py-6">İlan / Paket</th>
-                                <th className="px-10 py-6">Durum</th>
-                                <th className="px-10 py-6 text-right">Tutar</th>
+                            <tr className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider border-b border-neutral-100 bg-neutral-50/50">
+                                <th className="px-8 py-4">Zaman</th>
+                                <th className="px-8 py-4">Kullanıcı</th>
+                                <th className="px-8 py-4">Paket Detayı</th>
+                                <th className="px-8 py-4">Durum</th>
+                                <th className="px-8 py-4 text-right">Tutar</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-neutral-50">
                             {recentSales.map(sale => (
-                                <tr key={sale.id} className="hover:bg-gray-50/80 transition-all duration-300 group">
-                                    <td className="px-10 py-6">
-                                        <div className="font-bold text-gray-900">
+                                <tr key={sale.id} className="group hover:bg-neutral-50/80 transition-colors">
+                                    <td className="px-8 py-4">
+                                        <div className="font-medium text-neutral-900 text-sm">
+                                            {new Date(sale.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                        <div className="text-[10px] text-neutral-400">
                                             {new Date(sale.created_at).toLocaleDateString('tr-TR')}
                                         </div>
-                                        <div className="text-[10px] text-gray-400 font-black">
-                                            {new Date(sale.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                        </div>
                                     </td>
-                                    <td className="px-10 py-6">
-                                        <Link to={`/admin/users?search=${sale.profiles?.user_number}`} className="group/user flex flex-col">
-                                            <div className="font-bold text-gray-900 group-hover/user:text-red-600 transition-colors uppercase tracking-tight italic">
+                                    <td className="px-8 py-4">
+                                        <Link to={`/admin/users?search=${sale.profiles?.user_number}`} className="flex flex-col group/link">
+                                            <div className="font-bold text-neutral-800 group-hover/link:text-blue-600 transition-colors text-sm">
                                                 {sale.profiles?.full_name || 'Bilinmiyor'}
                                             </div>
-                                            <div className="text-[10px] text-gray-400 font-black">
-                                                #{sale.profiles?.user_number}
+                                            <div className="text-[10px] text-neutral-400 font-mono">
+                                                ID: {sale.profiles?.user_number}
                                             </div>
                                         </Link>
                                     </td>
-                                    <td className="px-10 py-6">
+                                    <td className="px-8 py-4">
                                         <div className="flex flex-col gap-1">
                                             {sale.listings ? (
-                                                <Link to={`/product/${sale.listing_id}`} target="_blank" className="font-bold text-xs text-blue-600 hover:underline truncate max-w-[200px]">
+                                                <Link to={`/product/${sale.listing_id}`} target="_blank" className="font-medium text-xs text-neutral-600 hover:text-neutral-900 hover:underline truncate max-w-[200px]">
                                                     {sale.listings.title}
                                                 </Link>
                                             ) : (
-                                                <span className="text-gray-400 text-xs italic">İlan Silinmiş</span>
+                                                <span className="text-neutral-400 text-xs italic">İlan Silinmiş</span>
                                             )}
-                                            <div className="flex items-center gap-2">
-                                                <span className={`w-2 h-2 rounded-full ${sale.package_type === 'galerie' ? 'bg-purple-500' : 'bg-red-500'}`}></span>
-                                                <span className="font-black text-[10px] text-gray-500 uppercase italic">
-                                                    {sale.package_type === 'galerie' ? 'VİTRİN' : sale.package_type === 'z_premium' ? 'PREMIUM' : sale.package_type === 'highlight' ? 'ÖNE ÇIKARILAN' : sale.package_type?.toUpperCase() || 'STANDART'}
+                                            <div className="flex items-center gap-1.5">
+                                                <span className={`w-1.5 h-1.5 rounded-full ${['galerie', 'vitrin'].includes(sale.package_type?.toLowerCase()) ? 'bg-purple-500' : 'bg-red-500'}`}></span>
+                                                <span className="font-bold text-[10px] text-neutral-500 uppercase tracking-wide">
+                                                    {['galerie', 'vitrin'].includes(sale.package_type?.toLowerCase()) ? 'VİTRİN' : sale.package_type === 'z_premium' ? 'PREMIUM' : sale.package_type === 'highlight' ? 'ÖNE ÇIKARILAN' : sale.package_type?.toUpperCase() || 'STANDART'}
                                                 </span>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-10 py-6">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest ${sale.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                                    <td className="px-8 py-4">
+                                        <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase border ${sale.status === 'active' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
                                             {sale.status === 'active' ? 'AKTİF' : 'ÖDENDİ'}
                                         </span>
                                     </td>
-                                    <td className="px-10 py-6 text-right">
-                                        <div className="font-black text-green-600 text-lg">+{parseFloat(sale.price).toLocaleString('tr-TR')} ₺</div>
+                                    <td className="px-8 py-4 text-right">
+                                        <div className="font-black text-neutral-900 text-base">+{parseFloat(sale.price).toLocaleString('tr-TR')} ₺</div>
                                     </td>
                                 </tr>
                             ))}
                             {recentSales.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" className="px-10 py-20 text-center text-gray-300 font-bold uppercase text-xs tracking-[0.3em]">HENÜZ SATIŞ GERÇEKLEŞMEDİ</td>
+                                    <td colSpan="5" className="px-8 py-16 text-center text-neutral-400 font-medium text-sm">Henüz satış verisi yok</td>
                                 </tr>
                             )}
                         </tbody>
@@ -656,29 +605,29 @@ const AdminSalesReport = () => {
 };
 
 const ReportCard = ({ title, value, icon, color, subtitle }) => (
-    <div className="relative group">
-        <div className={`absolute inset-0 bg-gradient-to-r ${color} rounded-[2rem] blur-2xl opacity-10 group-hover:opacity-25 transition-opacity duration-500`}></div>
-        <div className="relative bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/30 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-5 translate-x-4 -translate-y-4">
-                <span className="text-[120px] font-black">{icon}</span>
-            </div>
+    <div className="relative group bg-white p-6 rounded-2xl border border-neutral-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${color} opacity-5 rounded-bl-[100px] -mr-6 -mt-6 transition-transform group-hover:scale-110`}></div>
 
-            <div className="flex justify-between items-start mb-6">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-3xl text-white shadow-xl shadow-gray-200`}>
-                    {icon}
-                </div>
-                <div className="text-right">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">{title}</p>
-                    <p className="text-xs text-gray-500 font-bold italic">{subtitle}</p>
+        <div className="relative flex justify-between items-start mb-4">
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-2xl text-white shadow-lg`}>
+                {icon}
+            </div>
+            <div className="text-right">
+                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">{title}</p>
+                <div className="flex items-baseline justify-end gap-1">
+                    <span className="text-2xl font-display font-black text-neutral-900 tracking-tight">
+                        {value.toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    </span>
+                    <span className="text-sm font-bold text-neutral-400">₺</span>
                 </div>
             </div>
+        </div>
 
-            <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-black text-gray-900 tracking-tighter italic">
-                    {value.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
-                </span>
-                <span className="text-xl font-black text-red-500 tracking-widest uppercase">₺</span>
-            </div>
+        <div className="relative">
+            <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
+                <span className="w-1 h-1 rounded-full bg-neutral-300"></span>
+                {subtitle}
+            </p>
         </div>
     </div>
 );

@@ -1418,6 +1418,16 @@ export const t = {
         vehicleDisclaimer: 'ARAÇ ALIM-SATIMI HAKKINDA UYARI: Araç satın alırken mutlaka tramer kaydını, araç geçmişini, kaza kayıtlarını ve tüm resmi belgelerini kontrol ediniz. ExVitrin, araçların teknik durumu, kilometre bilgisi, kaza geçmişi veya satıcı beyanlarının doğruluğundan sorumlu değildir. Ticari satıcılardan yapılan alımlarda tüketici haklarınızı biliniz. Platform sadece ilan yayınlama hizmeti sunmakta olup, alım-satım işlemlerinde taraf değildir.'
     },
 
+    days: {
+        mon: 'Pazartesi',
+        tue: 'Salı',
+        wed: 'Çarşamba',
+        thu: 'Perşembe',
+        fri: 'Cuma',
+        sat: 'Cumartesi',
+        sun: 'Pazar',
+    },
+
     // Contact
     contact: {
         title: 'İletişim',

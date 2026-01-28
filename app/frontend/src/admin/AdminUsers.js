@@ -96,169 +96,217 @@ const AdminUsers = () => {
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
     const paginatedUsers = filteredUsers.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-    if (loading) {
-        return <div className="p-8 text-center">Kullanıcılar yükleniyor...</div>;
-    }
+    if (loading) return (
+        <div className="flex items-center justify-center min-h-[400px]">
+            <div className="w-12 h-12 rounded-full border-4 border-neutral-200 border-t-red-500 animate-spin"></div>
+        </div>
+    );
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <h2 className="text-xl font-bold text-gray-900">Kullanıcı Yönetimi</h2>
+        <div className="space-y-6 animate-fade-in pb-12">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div>
+                    <h1 className="text-3xl font-display font-bold text-neutral-900 tracking-tight">Kullanıcı Yönetimi</h1>
+                    <p className="text-neutral-500 font-medium mt-1">Sistemdeki tüm kullanıcıları görüntüleyin ve yönetin</p>
+                </div>
 
-                <div className="w-full sm:w-auto">
+                <div className="relative group w-full md:w-96">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="w-5 h-5 text-neutral-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
                     <input
                         type="text"
-                        placeholder="İsim veya e-posta ile ara..."
+                        placeholder="İsim, e-posta veya ID ile ara..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-80 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="block w-full pl-10 pr-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm placeholder-neutral-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all shadow-sm group-hover:border-neutral-300"
                     />
                 </div>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 text-gray-500 font-medium text-xs uppercase tracking-wider">
-                        <tr>
-                            <th className="px-6 py-4">Kullanıcı</th>
-                            <th className="px-6 py-4">ID'ler</th>
-                            <th className="px-6 py-4">Paket</th>
-                            <th className="px-6 py-4">Durum</th>
-                            <th className="px-6 py-4">Kayıt Tarihi</th>
-                            <th className="px-6 py-4 text-right">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {paginatedUsers.map(user => (
-                            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                            {user.avatar_url ? (
-                                                <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span className="text-gray-500 font-bold">{user.full_name?.charAt(0) || '?'}</span>
-                                            )}
+            <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-neutral-50/50 border-b border-neutral-100 text-neutral-500 font-bold text-[11px] uppercase tracking-wider">
+                            <tr>
+                                <th className="px-6 py-4">Kullanıcı Profili</th>
+                                <th className="px-6 py-4">Sistem ID'leri</th>
+                                <th className="px-6 py-4">Abonelik & Tür</th>
+                                <th className="px-6 py-4 text-center">Hesap Durumu</th>
+                                <th className="px-6 py-4">Kayıt Tarihi</th>
+                                <th className="px-6 py-4 text-right">Hızlı İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-neutral-50">
+                            {paginatedUsers.map(user => (
+                                <tr key={user.id} className="hover:bg-neutral-50/80 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neutral-100 to-neutral-200 border border-neutral-200 p-0.5 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                {user.avatar_url ? (
+                                                    <img src={user.avatar_url} alt="" className="w-full h-full object-cover rounded-full" />
+                                                ) : (
+                                                    <span className="text-sm font-bold text-neutral-500">{user.full_name?.charAt(0) || '?'}</span>
+                                                )}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="font-bold text-neutral-900 text-sm truncate">{user.full_name || 'İsimsiz Kullanıcı'}</div>
+                                                <div className="text-xs text-neutral-400 truncate">{user.email}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="font-medium text-gray-900">{user.full_name || 'Bilinmiyor'}</div>
-                                            <div className="text-xs text-gray-500">{user.email}</div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col gap-0.5">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-[10px] font-bold text-neutral-400 uppercase">NO:</span>
+                                                <span className="font-mono text-sm font-medium text-neutral-700">{user.user_number || '-'}</span>
+                                            </div>
+                                            <span className="font-mono text-[10px] text-neutral-300" title={user.id}>ID: {user.id?.substring(0, 8)}...</span>
                                         </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex flex-col">
-                                        <span className="font-mono font-bold text-gray-900">#{user.user_number || '-'}</span>
-                                        <span className="font-mono text-[10px] text-gray-400" title={user.id}>{user.id?.substring(0, 8)}...</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 text-sm font-medium">
-                                    <div className={`flex flex-col gap-1`}>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] w-fit font-bold uppercase ${user.subscription_tier === 'unlimited' ? 'bg-purple-100 text-purple-700' :
-                                            user.subscription_tier === 'pack2' ? 'bg-red-100 text-red-700' :
-                                                user.subscription_tier === 'pack1' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-gray-100 text-gray-600'
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col gap-1.5 items-start">
+                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${user.subscription_tier === 'unlimited' ? 'bg-purple-50 text-purple-700 border-purple-100' :
+                                                    user.subscription_tier === 'pack2' ? 'bg-red-50 text-red-700 border-red-100' :
+                                                        user.subscription_tier === 'pack1' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                                            'bg-neutral-100 text-neutral-600 border-neutral-200'
+                                                }`}>
+                                                {user.subscription_tier === 'unlimited' ? 'Sınırsız' :
+                                                    user.subscription_tier === 'pack2' ? 'Pro Paket' :
+                                                        user.subscription_tier === 'pack1' ? 'Başlangıç' : 'Standart'}
+                                            </span>
+                                            <div className="flex items-center gap-1.5">
+                                                {user.is_commercial ? (
+                                                    <span className="flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                                                        🏢 Kurumsal
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[10px] font-medium text-neutral-400 px-1.5">Bireysel</span>
+                                                )}
+                                                {user.is_pro && <span className="text-[10px] font-bold text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">⭐ PRO</span>}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${user.status === 'banned'
+                                                ? 'bg-red-50 text-red-700 border-red-100'
+                                                : 'bg-green-50 text-green-700 border-green-100'
                                             }`}>
-                                            {user.subscription_tier || 'free'}
+                                            <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${user.status === 'banned' ? 'bg-red-500' : 'bg-green-500'
+                                                }`}></span>
+                                            {user.status === 'banned' ? 'Engelli' : 'Aktif'}
                                         </span>
-                                        <span className={`text-[11px] ${user.is_commercial ? 'text-blue-600 font-bold' : 'text-gray-400'}`}>
-                                            {user.is_commercial ? 'Kurumsal' : 'Bireysel'}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${user.status === 'banned'
-                                        ? 'bg-red-100 text-red-800'
-                                        : 'bg-green-100 text-green-800'
-                                        }`}>
-                                        {user.status === 'banned' ? 'Engellendi' : 'Aktif'}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-500">
-                                    {new Date(user.created_at).toLocaleDateString('tr-TR')}
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <button
-                                            onClick={() => setSelectedUser(user)}
-                                            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
-                                        >
-                                            Detaylar
-                                        </button>
-                                        <button
-                                            onClick={() => handleTogglePro(user)}
-                                            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${user.is_pro
-                                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
-                                            title={user.is_pro ? 'PRO Statüsünü Kaldır' : 'PRO Yap'}
-                                        >
-                                            ⭐
-                                        </button>
-                                        <button
-                                            onClick={() => handleToggleStatus(user)}
-                                            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${user.status === 'banned'
-                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                : 'bg-red-100 text-red-700 hover:bg-red-200'
-                                                }`}
-                                        >
-                                            {user.status === 'banned' ? 'Engeli Kaldır' : 'Engelle'}
-                                        </button>
-                                        {!user.is_admin && user.user_number !== 1001 && (
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-medium text-neutral-600">
+                                                {new Date(user.created_at).toLocaleDateString('tr-TR')}
+                                            </span>
+                                            <span className="text-xs text-neutral-400">
+                                                {new Date(user.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                             <button
-                                                onClick={async () => {
-                                                    if (window.confirm(`${user.email} kullanıcısını yönetici yapmak istiyor musunuz?`)) {
-                                                        try {
-                                                            const { error } = await supabase.from('profiles').update({ is_admin: true }).eq('id', user.id);
-                                                            if (error) throw error;
+                                                onClick={() => setSelectedUser(user)}
+                                                className="p-2 text-neutral-400 bg-white border border-neutral-200 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 rounded-xl transition-all shadow-sm"
+                                                title="Detayları Görüntüle"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                            </button>
 
-                                                            alert('Kullanıcı yönetici yapıldı! Yöneticiler sayfasından yönetebilirsiniz.');
-                                                            setUsers(users.map(u => u.id === user.id ? { ...u, is_admin: true } : u));
-                                                        } catch (error) {
-                                                            console.error('Error making admin:', error);
-                                                            if (error.message?.includes('Could not find the') || error.message?.includes('is_admin')) {
-                                                                alert('HATA: "is_admin" kolonu hala görünmüyor.\n\nLÜTFEN MANUEL EKLEYİN:\n1. Supabase Panelinde "Table Editor"e gidin.\n2. "profiles" tablosunu açın.\n3. "New Column" (veya +) butonuna basın.\n4. Name: is_admin\n5. Type: Boolean\n6. Default Value: FALSE\n7. Save\'e basın.');
-                                                            } else {
+                                            <button
+                                                onClick={() => handleTogglePro(user)}
+                                                className={`p-2 rounded-xl transition-all shadow-sm border ${user.is_pro
+                                                        ? 'text-amber-500 bg-amber-50 border-amber-100 hover:bg-amber-100'
+                                                        : 'text-neutral-400 bg-white border-neutral-200 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-100'
+                                                    }`}
+                                                title={user.is_pro ? 'PRO Statüsünü Kaldır' : 'PRO Yap'}
+                                            >
+                                                <svg className="w-4 h-4" fill={user.is_pro ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleToggleStatus(user)}
+                                                className={`p-2 rounded-xl transition-all shadow-sm border ${user.status === 'banned'
+                                                        ? 'text-green-600 bg-green-50 border-green-100 hover:bg-green-100'
+                                                        : 'text-neutral-400 bg-white border-neutral-200 hover:text-red-600 hover:bg-red-50 hover:border-red-100'
+                                                    }`}
+                                                title={user.status === 'banned' ? 'Engeli Kaldır' : 'Kullanıcıyı Engelle'}
+                                            >
+                                                {user.status === 'banned' ? (
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                ) : (
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                                )}
+                                            </button>
+
+                                            {!user.is_admin && user.user_number !== 1001 && (
+                                                <button
+                                                    onClick={async () => {
+                                                        if (window.confirm(`${user.email} kullanıcısını yönetici yapmak istiyor musunuz?`)) {
+                                                            try {
+                                                                const { error } = await supabase.from('profiles').update({ is_admin: true }).eq('id', user.id);
+                                                                if (error) throw error;
+                                                                alert('Kullanıcı yönetici yapıldı! Yöneticiler sayfasından yönetebilirsiniz.');
+                                                                setUsers(users.map(u => u.id === user.id ? { ...u, is_admin: true } : u));
+                                                            } catch (error) {
+                                                                console.error('Error making admin:', error);
                                                                 alert('Hata: ' + error.message);
                                                             }
                                                         }
-                                                    }
-                                                }}
-                                                className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 transition-colors"
-                                                title="Yönetici Yap"
-                                            >
-                                                🛡️
-                                            </button>
-                                        )}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                                                    }}
+                                                    className="p-2 text-neutral-400 bg-white border border-neutral-200 hover:text-purple-600 hover:bg-purple-50 hover:border-purple-100 rounded-xl transition-all shadow-sm"
+                                                    title="Yönetici Yap"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {paginatedUsers.length === 0 && (
+                                <tr>
+                                    <td colSpan="6" className="px-6 py-16 text-center text-neutral-400">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center">
+                                                <svg className="w-8 h-8 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                            </div>
+                                            <p className="font-medium">Kriterlere uygun kullanıcı bulunamadı.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
-            {/* Pagination */}
-            <div className="p-4 border-t border-gray-200 flex justify-between items-center">
-                <div className="text-sm text-gray-500">
-                    Gösterilen: {(page - 1) * itemsPerPage + 1} - {Math.min(page * itemsPerPage, filteredUsers.length)} / {filteredUsers.length}
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
-                    >
-                        Geri
-                    </button>
-                    <button
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
-                    >
-                        İleri
-                    </button>
-                </div>
+                {totalPages > 1 && (
+                    <div className="p-4 border-t border-neutral-100 flex justify-between items-center bg-neutral-50/30">
+                        <div className="text-xs font-bold text-neutral-400 uppercase tracking-wide px-2">
+                            Gösterilen: {(page - 1) * itemsPerPage + 1} - {Math.min(page * itemsPerPage, filteredUsers.length)} / {filteredUsers.length}
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                            >
+                                Önceki
+                            </button>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className="px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                            >
+                                Sonraki
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* User Details Modal */}

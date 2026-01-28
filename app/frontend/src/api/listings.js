@@ -58,13 +58,12 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
     const cachedData = getCache(cacheKey);
 
     if (cachedData) {
-        console.log('Serving listings from cache');
         return cachedData;
     }
 
     let query = supabase
         .from('listings')
-        .select('*', options.count ? { count: 'exact' } : {})
+        .select(filters.select || '*', options.count ? { count: 'exact' } : {})
         .eq('status', 'active')
         .or(`expiry_date.gt.${new Date().toISOString()},expiry_date.is.null`);
 

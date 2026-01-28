@@ -5600,8 +5600,8 @@ export const AddListing = () => {
       let uploadedUrls = [];
 
       if (newFiles.length > 0) {
-        const { uploadListingImages } = await import('./api/images');
-        uploadedUrls = await uploadListingImages(user.id, newFiles);
+        const { uploadListingImages } = await import('./api/storage');
+        uploadedUrls = await uploadListingImages(newFiles, user.id);
       }
 
       let uploadedIdx = 0;
@@ -11843,6 +11843,46 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                             </div>
                             <a href={`http://${seller.website}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-red-600 transition-colors">
                               {seller.website}
+                            </a>
+                          </div>
+                        )}
+                        {seller.instagram_url && (
+                          <div className="flex items-center gap-3 group">
+                            <div className="w-8 h-8 rounded-lg bg-pink-50 flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-sm">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3.941" /></svg>
+                            </div>
+                            <a href={`https://${seller.instagram_url.includes('instagram.com') ? seller.instagram_url : `instagram.com/${seller.instagram_url.replace('@', '')}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-pink-600 transition-colors">
+                              Instagram
+                            </a>
+                          </div>
+                        )}
+                        {seller.facebook_url && (
+                          <div className="flex items-center gap-3 group">
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                            </div>
+                            <a href={`https://${seller.facebook_url.includes('facebook.com') ? seller.facebook_url : `facebook.com/${seller.facebook_url}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-blue-600 transition-colors">
+                              Facebook
+                            </a>
+                          </div>
+                        )}
+                        {seller.twitter_url && (
+                          <div className="flex items-center gap-3 group">
+                            <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-900 group-hover:bg-neutral-900 group-hover:text-white transition-all shadow-sm">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 1200 1227"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" /></svg>
+                            </div>
+                            <a href={`https://${seller.twitter_url.includes('twitter.com') || seller.twitter_url.includes('x.com') ? seller.twitter_url : `x.com/${seller.twitter_url}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-neutral-900 transition-colors">
+                              X / Twitter
+                            </a>
+                          </div>
+                        )}
+                        {seller.tiktok_url && (
+                          <div className="flex items-center gap-3 group">
+                            <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-all shadow-sm">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 2.76 3.48 2.53 1.2-.13 2.18-.84 2.66-1.89.2-.41.28-.85.28-1.31-.04-3.56-.01-7.11-.02-10.67z" /></svg>
+                            </div>
+                            <a href={`https://${seller.tiktok_url.includes('tiktok.com') ? seller.tiktok_url : `tiktok.com/@${seller.tiktok_url.replace('@', '')}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-black transition-colors">
+                              TikTok
                             </a>
                           </div>
                         )}

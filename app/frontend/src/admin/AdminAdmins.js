@@ -95,105 +95,149 @@ const AdminAdmins = () => {
         }
     };
 
+
+    if (loading) return (
+        <div className="flex items-center justify-center min-h-[400px]">
+            <div className="w-12 h-12 rounded-full border-4 border-neutral-200 border-t-red-500 animate-spin"></div>
+        </div>
+    );
+
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h2 className="text-xl font-bold text-gray-900">Yöneticiler</h2>
+        <div className="space-y-6 animate-fade-in pb-12">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div>
+                    <h1 className="text-3xl font-display font-bold text-neutral-900 tracking-tight">Yöneticiler</h1>
+                    <p className="text-neutral-500 font-medium mt-1">Sistem yöneticilerini ve yetkilerini düzenleyin</p>
+                </div>
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                    className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200 hover:shadow-red-300 active:scale-95"
                 >
-                    + Yeni Yönetici Ekle
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                    Yeni Yönetici Ekle
                 </button>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 text-gray-500 font-medium text-xs uppercase">
-                        <tr>
-                            <th className="px-6 py-4">Kullanıcı</th>
-                            <th className="px-6 py-4">Durum</th>
-                            <th className="px-6 py-4 text-right">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {admins.map(admin => (
-                            <tr key={admin.id}>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
-                                            {admin.email?.[0]?.toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium text-gray-900">{admin.full_name}</div>
-                                            <div className="text-gray-500 text-sm">{admin.email}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-bold">Admin</span>
-                                    {admin.user_number === 1001 && <span className="ml-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-bold">Süper Admin</span>}
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    {admin.user_number !== 1001 && (
-                                        <button
-                                            onClick={() => handleToggleAdmin(admin, false)}
-                                            className="text-red-600 hover:text-red-800 text-sm font-medium"
-                                        >
-                                            Yöneticilikten Çıkar
-                                        </button>
-                                    )}
-                                </td>
+            <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-neutral-50/50 border-b border-neutral-100 text-neutral-500 font-bold text-[11px] uppercase tracking-wider">
+                            <tr>
+                                <th className="px-6 py-4">Yönetici Profili</th>
+                                <th className="px-6 py-4">Yetki Seviyesi</th>
+                                <th className="px-6 py-4 text-right">İşlemler</th>
                             </tr>
-                        ))}
-                        {admins.length === 0 && !loading && (
-                            <tr><td colSpan="3" className="p-8 text-center text-gray-500">Yönetici bulunamadı.</td></tr>
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-neutral-50">
+                            {admins.map(admin => (
+                                <tr key={admin.id} className="hover:bg-neutral-50/80 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neutral-100 to-neutral-200 border border-neutral-200 p-0.5 flex items-center justify-center overflow-hidden">
+                                                {admin.avatar_url ? (
+                                                    <img src={admin.avatar_url} alt="" className="w-full h-full object-cover rounded-full" />
+                                                ) : (
+                                                    <span className="text-sm font-bold text-neutral-500">{admin.email?.[0]?.toUpperCase()}</span>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-neutral-900 text-sm">{admin.full_name || 'İsimsiz Yönetici'}</div>
+                                                <div className="text-xs text-neutral-400">{admin.email}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {admin.user_number === 1001 ? (
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-amber-50 text-amber-700 border border-amber-100">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                Süper Yönetici
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-purple-50 text-purple-700 border border-purple-100">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                                Admin
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        {admin.user_number !== 1001 && (
+                                            <button
+                                                onClick={() => handleToggleAdmin(admin, false)}
+                                                className="px-4 py-2 bg-white text-red-600 border border-red-100 hover:bg-red-50 hover:border-red-200 rounded-xl text-xs font-bold transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                                            >
+                                                Yöneticiliği Kaldır
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                            {admins.length === 0 && !loading && (
+                                <tr><td colSpan="3" className="p-8 text-center text-neutral-400 font-medium">Yönetici bulunamadı.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Add Admin Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
-                        <h3 className="text-lg font-bold mb-4">Yeni Yönetici Ekle</h3>
-                        <p className="text-sm text-gray-500 mb-4">E-posta adresi ile kullanıcı arayın.</p>
+                <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+                    <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg mx-4 border border-neutral-100 transform transition-all scale-100">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 className="text-xl font-display font-bold text-neutral-900">Yeni Yönetici Ekle</h3>
+                                <p className="text-sm text-neutral-500 mt-1">E-posta adresi ile kullanıcı arayıp yetki verin.</p>
+                            </div>
+                            <button onClick={() => setShowAddModal(false)} className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-full text-neutral-400 transition-colors">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
 
-                        <input
-                            type="text"
-                            className="w-full border p-2 rounded mb-4"
-                            placeholder="ornek@email.com"
-                            value={searchQuery}
-                            onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                searchUsers(e.target.value);
-                            }}
-                        />
+                        <div className="relative mb-6">
+                            <input
+                                type="text"
+                                className="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500 transition-all font-medium"
+                                placeholder="kullanici@ornek.com"
+                                value={searchQuery}
+                                autoFocus
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    searchUsers(e.target.value);
+                                }}
+                            />
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                        </div>
 
-                        <div className="max-h-60 overflow-y-auto space-y-2 mb-4">
-                            {searching && <div className="text-center text-gray-400">Aranıyor...</div>}
+                        <div className="max-h-60 overflow-y-auto custom-scrollbar space-y-2 mb-2">
+                            {searching && (
+                                <div className="text-center py-8">
+                                    <div className="inline-block w-6 h-6 border-2 border-neutral-200 border-t-red-500 rounded-full animate-spin"></div>
+                                </div>
+                            )}
                             {searchResults.map(user => (
-                                <div key={user.id} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded border border-transparent hover:border-gray-200">
-                                    <div className="text-sm">
-                                        <div className="font-bold">{user.email}</div>
-                                        <div className="text-gray-500">{user.full_name}</div>
+                                <div key={user.id} className="flex justify-between items-center p-3 hover:bg-neutral-50 rounded-xl border border-transparent hover:border-neutral-100 transition-all group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-500">
+                                            {user.email?.[0]?.toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-sm text-neutral-900">{user.email}</div>
+                                            <div className="text-xs text-neutral-500">{user.full_name || 'İsimsiz'}</div>
+                                        </div>
                                     </div>
                                     <button
                                         onClick={() => handleToggleAdmin(user, true)}
-                                        className="bg-green-600 text-white text-xs px-3 py-1 rounded hover:bg-green-700"
+                                        className="px-3 py-1.5 bg-neutral-900 text-white text-xs font-bold rounded-lg hover:bg-black transition-colors"
                                     >
                                         Ekle
                                     </button>
                                 </div>
                             ))}
                             {searchQuery.length > 2 && searchResults.length === 0 && !searching && (
-                                <div className="text-center text-gray-500 text-sm">Kullanıcı bulunamadı.</div>
+                                <div className="text-center py-8 text-neutral-400 text-sm font-medium">Kriterlere uygun kullanıcı bulunamadı.</div>
                             )}
-                        </div>
-
-                        <div className="flex justify-end">
-                            <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-700">Kapat</button>
                         </div>
                     </div>
                 </div>

@@ -54,6 +54,7 @@ const BannerSlider = () => {
                         alt={slide.title.replace('\n', ' ')}
                         className="w-full h-full object-cover"
                         loading={index === 0 ? 'eager' : 'lazy'}
+                        {...(index === 0 ? { fetchpriority: "high" } : {})}
                     />
 
                     {/* Overlay Gradient */}

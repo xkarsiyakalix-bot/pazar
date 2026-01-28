@@ -49,8 +49,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['Outfit', 'Inter', 'sans-serif'],
+        sans: ['Nunito Sans', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Rubik', 'Outfit', 'Inter', 'sans-serif'],
       },
       boxShadow: {
         'premium': '0 10px 40px -10px rgba(220, 38, 38, 0.2)',

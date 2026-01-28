@@ -10,14 +10,12 @@ import { favoritesApi } from './api/favorites';
 import { getFollowing, followUser, unfollowUser } from './api/follows';
 
 // Critical components - static import for immediate availability
-import {
-  Header,
-  SearchSection,
-  Footer,
-  CategorySidebar,
-  ListingGrid,
-  Gallery
-} from './components.js';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { SearchSection } from './components/SearchSection';
+import { ListingGrid } from './components/ListingGrid';
+import { CategorySidebar } from './components/CategorySidebar';
+import { Gallery } from './components/Gallery';
 import BannerSlider from './components/BannerSlider';
 
 // Non-critical components - lazy load

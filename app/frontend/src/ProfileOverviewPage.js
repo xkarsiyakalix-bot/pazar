@@ -93,8 +93,8 @@ const ProfileOverviewPage = () => {
                                 {/* Left Side (Mobile) / Top Side (Desktop) */}
                                 <div className="flex flex-col items-center flex-shrink-0">
                                     <div className="w-14 h-14 sm:w-24 sm:h-24 bg-gradient-to-r from-red-600 to-pink-600 rounded-full flex items-center justify-center mb-1 sm:mb-4 overflow-hidden shadow-sm">
-                                        {profile?.avatar_url ? (
-                                            <img src={profile.avatar_url} alt="Profil" className="w-full h-full object-cover" />
+                                        {profile?.store_logo || profile?.avatar_url ? (
+                                            <img src={profile.store_logo || profile.avatar_url} alt="Profil" className="w-full h-full object-cover" />
                                         ) : (
                                             <svg className="w-7 h-7 sm:w-12 sm:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

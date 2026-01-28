@@ -144,10 +144,14 @@ const StorePage = ({ sellerId: propSellerId }) => {
         return acc;
     }, {});
 
+    const freeListingsCount = listings.filter(l => l.price === 0 || l.price_type === 'giveaway').length;
+
     // Filter listings
     const filteredListings = selectedCategory === 'All'
         ? listings
-        : listings.filter(l => l.category === selectedCategory);
+        : selectedCategory === 'Free'
+            ? listings.filter(l => l.price === 0 || l.price_type === 'giveaway')
+            : listings.filter(l => l.category === selectedCategory);
 
     // Sort listings: Premium (z_premium) first, then z_multi_bump, then is_top, then highlighted, then newest
     const sortedListings = [...filteredListings].sort((a, b) => {
@@ -399,7 +403,15 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             <div className="pb-0.5 md:pb-1 flex flex-wrap gap-1.5 md:gap-2 justify-end">
                                 <div className="flex gap-1.5 md:gap-2">
                                     <button
-                                        onClick={() => window.open(storeInfo.facebook_url || 'https://facebook.com/exvitrin', '_blank')}
+                                        onClick={() => {
+                                            const url = storeInfo.facebook_url;
+                                            if (url) {
+                                                const finalUrl = url.includes('facebook.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://facebook.com/${url}`;
+                                                window.open(finalUrl, '_blank');
+                                            } else {
+                                                window.open('https://facebook.com/exvitrin', '_blank');
+                                            }
+                                        }}
                                         className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
                                         title={storeInfo.facebook_url ? "Facebook Sayfamız" : "Facebook"}
                                     >
@@ -408,7 +420,15 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         </svg>
                                     </button>
                                     <button
-                                        onClick={() => window.open(storeInfo.instagram_url || 'https://instagram.com/exvitrin', '_blank')}
+                                        onClick={() => {
+                                            const url = storeInfo.instagram_url;
+                                            if (url) {
+                                                const finalUrl = url.includes('instagram.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://instagram.com/${url.replace('@', '')}`;
+                                                window.open(finalUrl, '_blank');
+                                            } else {
+                                                window.open('https://instagram.com/exvitrin', '_blank');
+                                            }
+                                        }}
                                         className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
                                         title={storeInfo.instagram_url ? "Instagram Sayfamız" : "Instagram"}
                                     >
@@ -417,7 +437,15 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         </svg>
                                     </button>
                                     <button
-                                        onClick={() => window.open(storeInfo.twitter_url || 'https://x.com/exvitrin', '_blank')}
+                                        onClick={() => {
+                                            const url = storeInfo.twitter_url;
+                                            if (url) {
+                                                const finalUrl = (url.includes('twitter.com') || url.includes('x.com')) ? (url.startsWith('http') ? url : `https://${url}`) : `https://x.com/${url}`;
+                                                window.open(finalUrl, '_blank');
+                                            } else {
+                                                window.open('https://x.com/exvitrin', '_blank');
+                                            }
+                                        }}
                                         className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/20"
                                         title={storeInfo.twitter_url ? "X (Twitter) Sayfamız" : "X (Twitter)"}
                                     >
@@ -426,7 +454,15 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         </svg>
                                     </button>
                                     <button
-                                        onClick={() => window.open(storeInfo.tiktok_url || 'https://tiktok.com/@exvitrin', '_blank')}
+                                        onClick={() => {
+                                            const url = storeInfo.tiktok_url;
+                                            if (url) {
+                                                const finalUrl = url.includes('tiktok.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://tiktok.com/@${url.replace('@', '')}`;
+                                                window.open(finalUrl, '_blank');
+                                            } else {
+                                                window.open('https://tiktok.com/@exvitrin', '_blank');
+                                            }
+                                        }}
                                         className="w-8 h-8 md:w-10 md:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg md:rounded-xl flex items-center justify-center text-white transition-all hover:scale-110 shadow-lg border border-white/10"
                                         title={storeInfo.tiktok_url ? "TikTok Sayfamız" : "TikTok"}
                                     >
@@ -700,6 +736,21 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                             {listings.length}
                                         </span>
                                     </button>
+
+                                    {freeListingsCount > 0 && (
+                                        <button
+                                            onClick={() => setSelectedCategory('Free')}
+                                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group ${selectedCategory === 'Free'
+                                                ? 'bg-green-50 text-green-600 font-bold'
+                                                : 'text-gray-600 hover:bg-green-50/50 hover:text-green-700'
+                                                }`}
+                                        >
+                                            <span className="text-sm font-medium">🎁 Ücretsiz İlanlar</span>
+                                            <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === 'Free' ? 'bg-green-200 text-green-700' : 'bg-green-100 text-green-600'}`}>
+                                                {freeListingsCount}
+                                            </span>
+                                        </button>
+                                    )}
                                     {Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).map(([category, count]) => (
                                         <button
                                             key={category}
@@ -838,9 +889,11 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                     </h3>
                                                     <div className="mt-auto">
                                                         <p className="text-base sm:text-2xl font-black text-gray-700 mb-1 sm:mb-3">
-                                                            {listing.price !== null && listing.price !== undefined
-                                                                ? `${listing.price.toLocaleString('tr-TR')} ₺`
-                                                                : 'Fiyat Belirtilmemiş'}
+                                                            {listing.price_type === 'giveaway' || listing.price === 0
+                                                                ? 'Ücretsiz'
+                                                                : listing.price !== null && listing.price !== undefined
+                                                                    ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
+                                                                    : t.addListing.options.negotiable}
                                                         </p>
                                                         <div className="flex items-center justify-between text-[10px] sm:text-xs text-gray-500 pt-2 sm:pt-3 border-t border-gray-50">
                                                             <span className="truncate mr-2">{listing.city || listing.location}</span>
