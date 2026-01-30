@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LoadingSpinner from './components/LoadingSpinner';
+import { trackVisit } from './api/analytics';
 
 
 import './App.css';
@@ -259,6 +260,9 @@ function ScrollToTop() {
     if (navigationType !== 'POP') {
       window.scrollTo(0, 0);
     }
+
+    // Track the visit
+    trackVisit(pathname);
   }, [pathname, navigationType]);
 
   return null;

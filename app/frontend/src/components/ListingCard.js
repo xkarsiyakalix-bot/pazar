@@ -25,7 +25,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         : "w-full h-28 object-cover group-hover:scale-105 transition-transform duration-500";
 
     // Determine card styles based on promotion Type
-    let cardClasses = "listing-card border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative hover:-translate-y-0.5 bg-white flex flex-col h-full ";
+    let cardClasses = "listing-card border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative bg-white flex flex-col h-full ";
 
     const pkgType = listing?.package_type?.toLowerCase();
 

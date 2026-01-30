@@ -4,6 +4,7 @@ import { fetchListings } from '../api/listings';
 import { supabase } from '../lib/supabase';
 import { generateListingNumber } from '../components';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { getVisitStats } from '../api/analytics';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
@@ -12,7 +13,10 @@ const AdminDashboard = () => {
         totalUsers: 0,
         onlineUsers: 0,
         newUsersToday: 0,
-        newListingsToday: 0
+        newListingsToday: 0,
+        totalVisitorsToday: 0,
+        loggedInUsersToday: 0,
+        guestsToday: 0
     });
     const [recentListings, setRecentListings] = useState([]);
     const [recentPromotions, setRecentPromotions] = useState([]);
@@ -41,7 +45,8 @@ const AdminDashboard = () => {
                 { count: newListingsCount },
                 { data: listings, error: listingsError },
                 { data: allPromotions, error: allPromotionsError },
-                { data: promotions, error: promotionsError }
+                { data: promotions, error: promotionsError },
+                visitStats
             ] = await Promise.all([
                 supabase.from('listings').select('*', { count: 'exact', head: true }),
                 supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
@@ -54,7 +59,8 @@ const AdminDashboard = () => {
                     *,
                     listings (title, listing_number),
                     profiles (full_name, user_number)
-                `).order('created_at', { ascending: false }).limit(5)
+                `).order('created_at', { ascending: false }).limit(5),
+                getVisitStats()
             ]);
 
             // We no longer rely on profiles 'last_seen' for total online count
@@ -69,7 +75,10 @@ const AdminDashboard = () => {
                 totalUsers: usersCount || 0,
                 onlineUsers: realtimeOnlineCount, // This will be updated by the presence effect
                 newUsersToday: newUsersCount || 0,
-                newListingsToday: newListingsCount || 0
+                newListingsToday: newListingsCount || 0,
+                totalVisitorsToday: visitStats.totalVisitorsToday,
+                loggedInUsersToday: visitStats.loggedInUsersToday,
+                guestsToday: visitStats.guestsToday
             });
 
             // Calculate Revenue
@@ -238,6 +247,31 @@ const AdminDashboard = () => {
                     value={stats.onlineUsers}
                     icon="🟢"
                     gradient="from-teal-400 to-emerald-500"
+                    iconColor="text-white"
+                />
+            </div>
+
+            {/* Daily Traffic Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StatsCard
+                    title="Günlük Toplam Ziyaretçi"
+                    value={stats.totalVisitorsToday}
+                    icon="📊"
+                    gradient="from-blue-600 to-blue-800"
+                    iconColor="text-white"
+                />
+                <StatsCard
+                    title="Kayıtlı Kullanıcı Girişi"
+                    value={stats.loggedInUsersToday}
+                    icon="👤"
+                    gradient="from-indigo-500 to-purple-600"
+                    iconColor="text-white"
+                />
+                <StatsCard
+                    title="Misafir Ziyaretçi"
+                    value={stats.guestsToday}
+                    icon="👻"
+                    gradient="from-slate-400 to-slate-600"
                     iconColor="text-white"
                 />
             </div>

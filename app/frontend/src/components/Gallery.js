@@ -124,12 +124,18 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                 )}
             </div>
 
-            <div className={`relative ${isMobile ? '' : 'overflow-hidden'}`}>
+            <div className={`relative ${isMobile ? '-mx-4' : 'overflow-hidden'}`}>
                 <div
-                    className={`flex transition-transform duration-500 ease-in-out ${isMobile ? 'overflow-x-auto snap-x snap-mandatory scrollbar-hide' : ''}`}
-                    style={isMobile ? { gap: '0.5rem' } : {
+                    className={`flex ${isMobile ? 'overflow-x-auto snap-x snap-mandatory scrollbar-none items-stretch pb-4' : 'transition-transform duration-500 ease-in-out items-stretch'}`}
+                    style={isMobile ? {
+                        gap: '1rem',
+                        WebkitOverflowScrolling: 'touch',
+                        paddingLeft: '1rem',
+                        paddingRight: '1rem',
+                        touchAction: 'pan-y'
+                    } : {
                         transform: `translateX(-${currentPage * (100 / itemsPerPage)}%)`,
-                        gap: '0.5rem'
+                        gap: '1.25rem'
                     }}
                 >
                     {loading ? (

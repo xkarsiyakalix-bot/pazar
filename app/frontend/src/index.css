@@ -88,6 +88,27 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Touch Device Protections */
+@media (hover: none) {
+
+    button:hover,
+    .cursor-pointer:hover,
+    a:hover,
+    .listing-card:hover {
+        transform: none !important;
+    }
+}
+
+/* Utility for hiding scrollbars while maintaining functionality */
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 /* Selection */
 ::selection {
     @apply bg-primary-200 text-primary-900;
