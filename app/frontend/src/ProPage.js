@@ -185,7 +185,7 @@ function ProPage() {
                                     <h3 className="text-2xl font-bold mb-2">{pkg.name}</h3>
                                     <p className="text-white/90 mb-6">{pkg.subtitle}</p>
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-5xl font-bold">{pkg.price}₺</span>
+                                        <span className="text-5xl font-bold">{pkg.price} TL</span>
                                         <span className="text-white/80">{t.pro.packages.perMonth}</span>
                                     </div>
                                     <p className="text-sm text-white/80 mt-2">{t.pro.packages.upTo.replace('{count}', selectedAds)}</p>
@@ -285,7 +285,7 @@ function ProPage() {
                                 <p className="text-lg mb-2">{t.pro.cta.selected}</p>
                                 <p className="text-3xl font-bold mb-2">{selectedPackage}</p>
                                 <p className="text-xl">
-                                    {packages.find(p => p.name === selectedPackage)?.price}₺ {t.pro.packages.perMonth}
+                                    {packages.find(p => p.name === selectedPackage)?.price} TL {t.pro.packages.perMonth}
                                 </p>
                                 <p className="text-sm text-red-100 mt-2">
                                     {t.pro.cta.ads.replace('{count}', selectedAds)}

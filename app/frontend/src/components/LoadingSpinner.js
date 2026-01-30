@@ -3,26 +3,22 @@ import React from 'react';
 export const LoadingSpinner = ({ size = 'medium', className = '' }) => {
     const sizeClasses = {
         small: 'h-8 w-8',
-        medium: 'h-16 w-16',
-        large: 'h-24 w-24'
+        medium: 'h-20 w-20',
+        large: 'h-32 w-32'
     };
 
     const sz = sizeClasses[size] || sizeClasses.medium;
 
     return (
         <div className={`flex items-center justify-center ${className}`}>
-            <div className={`relative ${sz} animate-logo-pulse`}>
-                {/* Base semi-transparent logo */}
+            <div className={`relative ${sz}`}>
                 <img
-                    src="/logo_exvitrin_2026_cropped.png"
-                    alt="Loading..."
-                    className="w-full h-full object-contain opacity-20"
-                />
-                {/* Shimmering 'Light' Layer */}
-                <img
-                    src="/logo_exvitrin_2026_cropped.png"
-                    alt=""
-                    className="absolute top-0 left-0 w-full h-full object-contain animate-logo-shimmer"
+                    src="/logo_exvitrin_new.png"
+                    alt="Yükleniyor..."
+                    className="w-full h-full object-contain animate-pulse"
+                    style={{
+                        animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }}
                 />
             </div>
         </div>

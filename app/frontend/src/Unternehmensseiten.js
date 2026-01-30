@@ -342,7 +342,7 @@ const Unternehmensseiten = () => {
                                     <div className="flex items-center gap-3">
                                         {/* Min Price */}
                                         <div className="flex-1">
-                                            <label className="block text-xs font-medium text-gray-700 mb-1">En Az Fiyat (₺)</label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">En Az Fiyat (TL)</label>
                                             <input
                                                 type="number"
                                                 value={minPrice}
@@ -357,7 +357,7 @@ const Unternehmensseiten = () => {
 
                                         {/* Max Price */}
                                         <div className="flex-1">
-                                            <label className="block text-xs font-medium text-gray-700 mb-1">En Fazla Fiyat (₺)</label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">En Fazla Fiyat (TL)</label>
                                             <input
                                                 type="number"
                                                 value={maxPrice}
@@ -385,7 +385,7 @@ const Unternehmensseiten = () => {
                                     <button
                                         onClick={() => {
                                             const priceText = minPrice || maxPrice
-                                                ? `${minPrice || '0'}₺ - ${maxPrice || '∞'}₺`
+                                                ? `${minPrice || '0'} TL - ${maxPrice || '∞'} TL`
                                                 : 'Tüm Fiyatlar';
                                             setSelectedPreis(priceText);
                                             setShowPreisDropdown(false);
@@ -510,13 +510,9 @@ const Unternehmensseiten = () => {
 
                                 {/* Location */}
                                 <div className="flex items-center gap-1 text-gray-500 text-xs mb-2">
-                                    <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <circle cx="12" cy="12" r="8" />
-                                        <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
-                                        <line x1="12" y1="2" x2="12" y2="4" />
-                                        <line x1="12" y1="20" x2="12" y2="22" />
-                                        <line x1="2" y1="12" x2="4" y2="12" />
-                                        <line x1="20" y1="12" x2="22" y2="12" />
+                                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                     <span className="line-clamp-1">
                                         {company.city || 'Türkei'}
@@ -527,7 +523,7 @@ const Unternehmensseiten = () => {
                                 <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                                     <div className="flex items-center gap-1">
                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 010.707 0.293l5.414 5.414a1 1 0 010.293 0.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                         <span>{company.totalListings || 0} İlan</span>
                                     </div>

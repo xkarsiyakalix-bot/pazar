@@ -2,59 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
+import { getCommonFilters, getConditionFilter, getShippingFilter } from './config/filterConfigs';
 
 const ElektronikPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
-        versand: {
-            label: 'Versand',
-            type: 'multiselect',
-            options: [
-                'Versand möglich',
-                'Nur Abholung'
-            ],
-            field: 'versand_art'
-        },
-        zustand: {
-            label: 'Zustand',
-            type: 'multiselect',
-            options: [
-                { value: 'neu', label: 'Neu' },
-                { value: 'sehr_gut', label: 'Sehr Gut' },
-                { value: 'gut', label: 'Gut' },
-                { value: 'in_ordnung', label: 'In Ordnung' },
-                { value: 'defekt', label: 'Defekt' }
-            ],
-            field: 'condition'
-        },
-        price: {
-            label: 'Preis',
-            type: 'range',
-            field: 'price'
-        },
-        offerType: {
-            label: 'Angebotstyp',
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: 'Angebote' },
-                { value: 'Gesuche', label: 'Gesuche' }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: 'Anbieter',
-            type: 'multiselect',
-            options: [
-                { value: 'Privatnutzer', label: 'Privat' },
-                { value: 'Gewerblicher Nutzer', label: 'Gewerblich' }
-            ],
-            field: 'seller_type'
-        },
-        federalState: {
-            label: 'Ort',
-            type: 'multiselect',
-            options: getTurkishCities(),
-            field: 'federal_state'
-        }
+        ...getCommonFilters(),
+        ...getConditionFilter(),
+        ...getShippingFilter()
     };
 
     const subcategories = [

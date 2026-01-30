@@ -333,7 +333,7 @@ const AdminSalesReport = () => {
                                     axisLine={false}
                                     tickLine={false}
                                     tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }}
-                                    tickFormatter={(value) => `${value}₺`}
+                                    tickFormatter={(value) => `${value} TL`}
                                 />
                                 <Tooltip
                                     cursor={{ stroke: '#ef4444', strokeWidth: 1, strokeDasharray: '4 4' }}
@@ -344,7 +344,7 @@ const AdminSalesReport = () => {
                                         padding: '12px',
                                         backgroundColor: 'white'
                                     }}
-                                    formatter={(value) => [`${value.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺`, 'Gelir']}
+                                    formatter={(value) => [`${value.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL`, 'Gelir']}
                                     labelStyle={{ fontWeight: 700, color: '#1e293b', marginBottom: '4px', fontSize: '12px' }}
                                 />
                                 <Area
@@ -384,7 +384,7 @@ const AdminSalesReport = () => {
                                 </Pie>
                                 <Tooltip
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(value) => [`${value.toLocaleString('tr-TR')} ₺`, 'Toplam']}
+                                    formatter={(value) => [`${value.toLocaleString('tr-TR')} TL`, 'Toplam']}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
@@ -398,7 +398,7 @@ const AdminSalesReport = () => {
                                     <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wide">{pkg.name}</span>
                                 </div>
                                 <span className="text-sm font-bold text-neutral-900">
-                                    {pkg.value.toLocaleString('tr-TR')} ₺
+                                    {pkg.value.toLocaleString('tr-TR')} TL
                                 </span>
                             </div>
                         ))}
@@ -423,7 +423,7 @@ const AdminSalesReport = () => {
                                         <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                                             {row.year}
                                         </span>
-                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</span>
+                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
                                     </div>
                                     <div className="h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                                         <div
@@ -455,7 +455,7 @@ const AdminSalesReport = () => {
                                         <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                                             {new Date(row.month + '-01').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
                                         </span>
-                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</span>
+                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
                                     </div>
                                     <div className="h-2.5 bg-neutral-100 rounded-full overflow-hidden">
                                         <div
@@ -503,7 +503,7 @@ const AdminSalesReport = () => {
                                             <span className="bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">SATIŞ</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</div>
+                                            <div className="font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</div>
                                         </td>
                                     </tr>
                                 ))}
@@ -587,7 +587,7 @@ const AdminSalesReport = () => {
                                         </span>
                                     </td>
                                     <td className="px-8 py-4 text-right">
-                                        <div className="font-black text-neutral-900 text-base">+{parseFloat(sale.price).toLocaleString('tr-TR')} ₺</div>
+                                        <div className="font-black text-neutral-900 text-base">+{parseFloat(sale.price).toLocaleString('tr-TR')} TL</div>
                                     </td>
                                 </tr>
                             ))}
@@ -618,7 +618,7 @@ const ReportCard = ({ title, value, icon, color, subtitle }) => (
                     <span className="text-2xl font-display font-black text-neutral-900 tracking-tight">
                         {value.toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
-                    <span className="text-sm font-bold text-neutral-400">₺</span>
+                    <span className="text-sm font-bold text-neutral-400"> TL</span>
                 </div>
             </div>
         </div>

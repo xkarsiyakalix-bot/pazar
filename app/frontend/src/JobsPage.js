@@ -1,9 +1,11 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
+import { getCommonFilters } from './config/filterConfigs';
 
 const JobsPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
+        ...getCommonFilters(),
         workingTime: {
             label: 'Çalışma Süresi',
             type: 'multiselect',
@@ -17,30 +19,6 @@ const JobsPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Saatlik Ücret',
             type: 'range',
             field: 'hourly_wage'
-        },
-        offerType: {
-            label: 'Teklif Türü',
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: 'Teklifler' },
-                { value: 'Gesuche', label: 'Arayanlar' }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: 'Sağlayıcı',
-            type: 'multiselect',
-            options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
-            ],
-            field: 'seller_type'
-        },
-        federalState: {
-            label: 'Şehir',
-            type: 'multiselect',
-            options: getTurkishCities(),
-            field: 'federal_state'
         }
     };
 

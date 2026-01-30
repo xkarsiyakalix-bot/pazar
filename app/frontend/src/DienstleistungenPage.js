@@ -1,6 +1,7 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
+import { getCommonFilters } from './config/filterConfigs';
 
 const DienstleistungenPage = ({ toggleFavorite, isFavorite }) => {
     const subCategories = [
@@ -18,35 +19,7 @@ const DienstleistungenPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     const filterConfig = {
-        price: {
-            label: 'Fiyat',
-            type: 'range',
-            field: 'price'
-        },
-        offerType: {
-            label: 'İlan Türü',
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: 'Satıcı',
-            type: 'multiselect',
-            options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
-            ],
-            field: 'seller_type'
-        },
-        federalState: {
-            label: 'Şehir',
-            type: 'multiselect',
-            options: getTurkishCities(),
-            field: 'federal_state'
-        }
+        ...getCommonFilters()
     };
 
     const bannerConfig = {

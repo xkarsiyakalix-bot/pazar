@@ -23,7 +23,7 @@ import { PetFields } from './components/AddListing/PetFields';
 import PromotionModal from './components/Account/PromotionModal';
 import { useIsMobile } from './hooks/useIsMobile';
 import { getRatings, getUserAverageRating } from './api/ratings';
-import { Breadcrumb } from './components/Breadcrumb';
+export { Breadcrumb } from './components/Breadcrumb';
 import { searchApi } from './api/search';
 import LoadingSpinner from './components/LoadingSpinner.js';
 
@@ -510,7 +510,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                 aria-label="Profile Settings"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </button>
@@ -530,7 +530,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                       className="w-full text-left px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-3 border-b border-neutral-50"
                     >
                       <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       {t.nav.settings}
@@ -567,7 +567,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                     title="Admin Panel"
                   >
                     <svg className="w-6 h-6 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-0.133-2.052-0.382-3.016z" />
                     </svg>
                   </button>
                 )}
@@ -610,7 +610,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                   className="p-3 text-neutral-600 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300 relative focus:outline-none group"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-0.214 1.055-0.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                   {notificationCount > 0 ? (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse shadow-glow">
@@ -638,7 +638,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                       {notifications.length === 0 ? (
                         <div className="p-8 text-center text-gray-500">
                           <svg className="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-0.214 1.055-0.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                           </svg>
                           <p className="text-sm">Henüz bildirim yok</p>
                         </div>
@@ -665,7 +665,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                 {notification.type === 'price_drop' ? (
                                   <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h0.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                     </svg>
                                   </div>
                                 ) : notification.type === 'new_listing' ? (
@@ -677,7 +677,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                 ) : (
                                   <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-0.214 1.055-0.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                   </div>
                                 )}
@@ -815,7 +815,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                       className="w-full text-left px-4 py-3 text-neutral-700 hover:bg-neutral-100 rounded-lg font-medium flex items-center gap-3"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                       {t.nav.messages}
                     </button>
@@ -875,9 +875,9 @@ export const Checkout = ({ cartItems, setCartItems }) => {
   const total = cartItems.reduce((sum, item) => {
     if (!item.price) return sum;
     const priceStr = String(item.price);
-    // Almanca format: 1.800,50 ₺ → 1800.50
-    // Önce ₺ ve boşlukları temizle, sonra binlik ayırıcı noktaları kaldır, virgülü noktaya çevir
-    const cleanPrice = priceStr.replace('₺', '').replace(/\s/g, '').trim();
+    // Almanca format: 1.800,50 TL → 1800.50
+    // Önce TL ve boşlukları temizle, sonra binlik ayırıcı noktaları kaldır, virgülü noktaya çevir
+    const cleanPrice = priceStr.replace(' TL', '').replace(/\s/g, '').trim();
     const price = parseFloat(cleanPrice.replace(/\./g, '').replace(',', '.')) || 0;
     return sum + (price * (item.quantity || 1));
   }, 0);
@@ -909,7 +909,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
       orderId: `ORD-${Date.now()}`,
       email: formData.email,
       items: cartItems,
-      total: `${total.toFixed(2).replace('.', ',')} ₺`,
+      total: `${total.toFixed(2).replace('.', ',')} TL`,
       customerName: `${formData.firstName} ${formData.lastName}`,
       address: `${formData.address}, ${formData.zip} ${formData.city}`
     };
@@ -1124,7 +1124,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                               {seller.level === 'Gewerblich' && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                                   <svg className="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-0.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-0.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-0.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-0.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                   </svg>
                                   Pro
                                 </span>
@@ -1141,7 +1141,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
                                   >
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    <path d="M9.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-0.364 1.118l1.07 3.292c.3.921-0.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-0.784.57-1.838-0.197-1.539-1.118l1.07-3.292a1 1 0 00-0.364-1.118L2.98 8.72c-0.783-0.57-0.38-1.81.588-1.81h3.461a1 1 0 00.951-0.69l1.07-3.292z" />
                                   </svg>
                                 ))}
                               </div>
@@ -1215,7 +1215,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                                     type="button"
                                   >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                   </button>
                                 </div>
@@ -1223,10 +1223,10 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                               <div className="font-semibold text-red-600 text-sm whitespace-nowrap flex-shrink-0">
                                 {(() => {
                                   const priceStr = String(item.price);
-                                  const cleanPrice = priceStr.replace('₺', '').replace(/\s/g, '').trim();
+                                  const cleanPrice = priceStr.replace(' TL', '').replace(/\s/g, '').trim();
                                   const unitPrice = parseFloat(cleanPrice.replace(/\./g, '').replace(',', '.')) || 0;
                                   const totalPrice = unitPrice * (item.quantity || 1);
-                                  return totalPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₺';
+                                  return totalPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
                                 })()}
                               </div>
                             </div>
@@ -1242,11 +1242,11 @@ export const Checkout = ({ cartItems, setCartItems }) => {
                         <span className="font-semibold text-gray-900">
                           {items.reduce((sum, item) => {
                             const priceStr = String(item.price);
-                            // Almanca format: 1.800,50 ₺ → 1800.50
-                            const cleanPrice = priceStr.replace('₺', '').replace(/\s/g, '').trim();
+                            // Almanca format: 1.800,50 TL → 1800.50
+                            const cleanPrice = priceStr.replace(' TL', '').replace(/\s/g, '').trim();
                             const price = parseFloat(cleanPrice.replace(/\./g, '').replace(',', '.')) || 0;
                             return sum + (price * (item.quantity || 1));
-                          }, 0).toFixed(2).replace('.', ',')} ₺
+                          }, 0).toFixed(2).replace('.', ',')} TL
                         </span>
                       </div>
                     </div>
@@ -1258,7 +1258,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
             <div className="border-t pt-4 space-y-2">
               <div className="flex justify-between text-gray-600">
                 <span>{t.checkout.subtotal}</span>
-                <span>{total.toFixed(2).replace('.', ',')} ₺</span>
+                <span>{total.toFixed(2).replace('.', ',')} TL</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>{t.checkout.shipping}</span>
@@ -1266,7 +1266,7 @@ export const Checkout = ({ cartItems, setCartItems }) => {
               </div>
               <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t">
                 <span>{t.checkout.total}</span>
-                <span>{total.toFixed(2).replace('.', ',')} ₺</span>
+                <span>{total.toFixed(2).replace('.', ',')} TL</span>
               </div>
             </div>
 
@@ -1432,10 +1432,10 @@ export const MyListings = () => {
                 {listing.price_type === 'giveaway' || listing.price === 0
                   ? t.addListing.options.givingAway
                   : typeof listing.price === 'number'
-                    ? `${listing.price.toLocaleString('tr-TR')} ₺`
-                    : listing.price?.toString().includes('₺')
+                    ? `${listing.price.toLocaleString('tr-TR')} TL`
+                    : listing.price?.toString().includes(' TL')
                       ? listing.price
-                      : `${listing.price} ₺`}
+                      : `${listing.price} TL`}
               </span>
               <p className="text-gray-500 text-sm mb-2">{listing.city || listing.location}</p>
 
@@ -2917,7 +2917,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 className="px-3 py-2 border-l border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-1 focus:outline-none"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-0.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-0.553-0.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
                 {selectedDistance}
               </button>
@@ -3011,7 +3011,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               </button>
               <button onClick={() => { navigate('/messages'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <span className="flex-1">{t.nav.messages}</span>
                 {unreadCount > 0 && (
@@ -3028,7 +3028,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               </button>
               <button onClick={() => { navigate('/settings'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 {t.nav.settings}
@@ -3040,7 +3040,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 className="block w-full text-left px-3 py-2.5 mx-2 my-2 rounded-lg bg-gradient-premium text-white font-semibold transition-all hover:shadow-premium-lg transform hover:-translate-y-0.5 flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  <path d="M9.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-0.364 1.118l1.07 3.292c.3.921-0.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-0.784.57-1.838-0.197-1.539-1.118l1.07-3.292a1 1 0 00-0.364-1.118L2.98 8.72c-0.783-0.57-0.38-1.81.588-1.81h3.461a1 1 0 00.951-0.69l1.07-3.292z" />
                 </svg>
                 {t.nav.proPage}
               </button>
@@ -3146,6 +3146,7 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     // Immobilien
     'Geçici Konaklama & Paylaşımlı Ev': 'Gecici-Konaklama-Paylasimli-Ev',
     'Geçici Konaklama & Paylaşımlı Oda': 'Gecici-Konaklama-Paylasimli-Ev',
+    'Gecici Konaklamalar': 'Gecici-Konaklama-Paylasimli-Ev',
     'Konteyner': 'Konteyner',
     'Satılık Daireler': 'Satilik-Daireler',
     'Satılık Daire': 'Satilik-Daireler',
@@ -3158,8 +3159,10 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     'Arsa & Bahçe': 'Arsa-Bahce',
     'Satılık Evler': 'Satilik-Evler',
     'Satılık Müstakil Ev': 'Satilik-Evler',
+    'Satılık Ev': 'Satilik-Evler',
     'Kiralık Evler': 'Kiralik-Evler',
     'Kiralık Müstakil Ev': 'Kiralik-Evler',
+    'Kiralık Ev': 'Kiralik-Evler',
     'Kiralık Daireler': 'Kiralik-Daireler',
     'Kiralık Daire': 'Kiralik-Daireler',
     'Yeni Projeler': 'Yeni-Projeler',
@@ -3177,7 +3180,7 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     'Yapı Market & Tadilat': 'Ev-Tadilati',
     'Mutfak & Yemek Odası': 'Mutfak-Yemek-Odasi',
     'Lamba & Aydınlatma': 'Lamba-Aydinlatma',
-    'Aydınlatma': 'Lamba-Aydinlatma', // Alias for breadcrumb fix
+    'Aydınlatma': 'Lamba-Aydinlatma',
     'Yatak Odası': 'Yatak-Odasi',
     'Oturma Odası': 'Oturma-Odasi',
     'Diğer Ev & Bahçe': 'Diger-Ev-Bahce',
@@ -3245,9 +3248,8 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
 
     // İş İlanları
     'Mesleki Eğitim': 'Mesleki-Egitim',
-    'Eğitim / Meslek Eğitimi': 'Mesleki-Egitim',  // Variant name
     'İnşaat, Zanaat & Üretim': 'Insaat-Sanat-Uretim',
-    'İnşaat, El Sanatları & Üretim': 'Insaat-Sanat-Uretim', // Fix for broken link
+    'İnşaat, El Sanatları & Üretim': 'Insaat-Sanat-Uretim',
     'Büro İşleri & Yönetim': 'Buroarbeit-Yonetim',
     'Büroarbeit & Yönetim': 'Buroarbeit-Yonetim',
     'Ofis İşleri & Yönetim': 'Buroarbeit-Yonetim',
@@ -3295,33 +3297,27 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     'Hediye Kartları': 'Hediye-Kartlari',
     'Hediye Çekleri': 'Hediye-Kartlari',
     'Çocuk': 'Cocuk',
-    'Çocuk Etkinlikleri': 'Cocuk',  // DB variant
+    'Çocuk Etkinlikleri': 'Cocuk',
     'Konserler': 'Konserler',
     'Spor': 'Spor',
-    'Spor Etkinlikleri': 'Spor',  // DB variant
+    'Spor Etkinlikleri': 'Spor',
     'Tiyatro & Müzikal': 'Tiyatro-Muzikal',
     'Diğer Biletler': 'Diger-Biletler',
 
     // Hizmetler
     'Otomobil, Bisiklet & Tekne Servisi': 'Otomobil-Bisiklet-Tekne-Servisi',
-    'Oto, Bisiklet & Tekne Servisi': 'Otomobil-Bisiklet-Tekne-Servisi',  // Legacy name
-    'Otomobil, Bisiklet & Tekne': 'Otomobil-Bisiklet-Tekne-Servisi',  // Short form
     'Yaşlı Bakımı': 'Yasli-Bakimi',
     'Bebek Bakıcısı & Kreş': 'Babysitter-Cocuk-Bakimi',
     'Babysitter & Çocuk Bakımı': 'Babysitter-Cocuk-Bakimi',
-    'Babysitter/-in & Kinderbetreuung': 'Babysitter-Cocuk-Bakimi',  // German
     'Elektronik': 'Elektronik',
-    'Elektronik Servisler': 'Elektronik-Hizmetler',  // Legacy/variant name
+    'Elektronik Servisler': 'Elektronik-Hizmetler',
     'Ev & Bahçe': 'Ev-Bahce',
-    'Ev & Bahçe Hizmetleri': 'Ev-Hizmetleri',  // Services subcategory under Ev & Bahçe
-    'Ev Hizmetleri': 'Ev-Hizmetleri',  // Another variant
+    'Ev & Bahçe Hizmetleri': 'Ev-Hizmetleri',
+    'Ev Hizmetleri': 'Ev-Hizmetleri',
     'Sanatçılar & Müzisyenler': 'Sanatcilar-Muzisyenler',
-    'Sanatçı & Müzisyen': 'Sanatcilar-Muzisyenler',  // Singular form
     'Seyahat & Etkinlik': 'Seyahat-Etkinlik',
     'Hayvan Bakımı & Eğitimi': 'Hayvan-Bakimi-Egitimi',
-    'Evcil Hayvan Bakımı & Eğitim': 'Hayvan-Bakimi-Egitimi',
     'Taşımacılık & Nakliye': 'Tasimacilik-Nakliye',
-    'Nakliye & Taşıma': 'Tasimacilik-Nakliye',
     'Diğer Hizmetler': 'Diger-Hizmetler',
 
     // Ücretsiz & Takas
@@ -3329,7 +3325,7 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     'Ödünç Verme': 'Kiralama',
     'Kiralama': 'Kiralama',
     'Ücretsiz': 'Ucretsiz',
-    'Ücretsiz Verilecekler': 'Ucretsiz',  // Legacy name compatibility
+    'Ücretsiz Verilecekler': 'Ucretsiz',
 
     // Eğitim & Kurslar
     'Bilgisayar Kursları': 'Bilgisayar-Kurslari',
@@ -3349,14 +3345,26 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     'Diğer Eğitim & Kurslar': 'Diger-Dersler-Kurslar',
 
     // Komşu Yardımı
-    'Komşu Yardımı': 'Komsu-Yardimi',
     'Komşu Yardımı': 'Komsu-Yardimi'
   };
 
-  const catSlug = mainMappings[categoryName] || categoryName;
-  if (!subcategoryName) return `/${catSlug}`;
+  const slugify = (text) => {
+    const trMap = {
+      'ç': 'c', 'Ç': 'C', 'ğ': 'g', 'Ğ': 'G', 'ş': 's', 'Ş': 'S',
+      'ı': 'i', 'İ': 'I', 'ö': 'o', 'Ö': 'O', 'ü': 'u', 'Ü': 'U'
+    };
+    for (let key in trMap) {
+      text = text.replace(new RegExp(key, 'g'), trMap[key]);
+    }
+    return text.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+  };
 
-  const subSlug = subMappings[subcategoryName] || subcategoryName.replace(/\s+/g, '-');
+  const catSlug = mainMappings[categoryName] || slugify(categoryName);
+  if (!subcategoryName || subcategoryName === 'Tümü' || subcategoryName === 'Alle' || subcategoryName === 'Tüm' || subcategoryName === categoryName) {
+    return `/${catSlug}`;
+  }
+
+  const subSlug = subMappings[subcategoryName] || slugify(subcategoryName);
   return `/${catSlug}/${subSlug}`;
 };
 
@@ -3489,7 +3497,7 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
 
             {/* Subcategories */}
             {category.subcategories && expandedCategories.includes(category.name) && (
-              <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-100 pl-2">
+              <div className="ml-4 mt-1 space-y-1 pl-2">
                 {/* Main Category Link inside subcategories */}
                 <button
                   onClick={() => {
@@ -3558,31 +3566,31 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   const isMiniJob = listing.sub_category === 'Yarı Zamanlı & Ek İşler' || listing.sub_category === 'Staj';
   const displayImage = isMiniJob ? '/favicon.png' : imageUrl;
   const imageClasses = isMiniJob
-    ? "w-full h-32 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-    : "w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500";
+    ? "w-full h-28 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+    : "w-full h-28 object-cover group-hover:scale-105 transition-transform duration-500";
 
   // Determine card styles based on promotion Type
-  let cardClasses = "listing-card rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group relative hover:-translate-y-1 bg-white ";
+  let cardClasses = "listing-card border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative hover:-translate-y-0.5 bg-white flex flex-col h-full ";
 
   const pkgType = listing?.package_type?.toLowerCase();
 
   if (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType)) {
-    cardClasses += "border-[3px] border-purple-500 ring-4 ring-purple-100 shadow-[0_0_20px_rgba(147,51,234,0.3)] bg-purple-50/20 scale-[1.01] ";
+    cardClasses += "border-2 border-purple-500 ring-2 ring-purple-100 bg-purple-50/20 scale-[1.01] ";
   } else if (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType)) {
-    cardClasses += "border-2 border-amber-400 ring-4 ring-amber-50/50 bg-amber-50/10 ";
+    cardClasses += "border-2 border-amber-400 ring-2 ring-amber-50/50 bg-amber-50/10 ";
   } else if (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing.is_multi_bump) {
-    cardClasses += "border-2 border-orange-400 ring-4 ring-orange-50/50 bg-orange-50/10 ";
+    cardClasses += "border-2 border-orange-400 ring-2 ring-orange-50/50 bg-orange-50/10 ";
   } else if (listing.is_highlighted || pkgType === 'highlight' || pkgType === 'budget') {
-    cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 shadow-yellow-100 ";
+    cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 ";
   }
 
   return (
     <div className={cardClasses} onClick={() => navigate(`/product/${listing.id}`)}>
-      <div className="relative overflow-hidden rounded-t-xl bg-gray-100 h-32" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+      <div className="relative overflow-hidden rounded-t-lg bg-gray-100 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
         {!imageLoaded && !isMiniJob && (
           <div className="absolute inset-0 animate-pulse bg-gray-200 flex items-center justify-center">
             <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
         )}
@@ -3676,35 +3684,61 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         )}
       </div>
 
-      <div className="p-2">
-        <h3 className="text-xs font-semibold text-gray-800 mb-1.5 line-clamp-2 group-hover:text-red-600 transition-colors">
-          {listing.title}
-        </h3>
+      <div className="p-2.5 flex flex-col justify-between flex-grow min-h-[140px]">
+        <div>
+          <h3 className="text-[12px] font-bold text-gray-900 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors leading-snug">
+            {listing.title}
+          </h3>
 
-        <div className="mb-1.5">
-          <span className="text-base font-bold text-gray-900">
-            {!hidePrice && listing.sub_category !== 'Eğitim / Meslek Eğitimi' && listing.sub_category !== 'İnşaat, Zanaat & Üretim' && listing.category !== 'İş İlanları' && (
-              listing.price_type === 'giveaway' || listing.price === 0
-                ? 'Ücretsiz'
-                : listing.price
-                  ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
-                  : t.addListing.options.negotiable
+          {/* Key Attributes - Mini Chips */}
+          {(() => {
+            const attrs = [];
+            if (listing.erstzulassung) attrs.push(listing.erstzulassung);
+            if (listing.kilometerstand) attrs.push(`${Math.round(listing.kilometerstand / 1000)}k km`);
+            if (listing.rooms) attrs.push(`${listing.rooms} Oda`);
+            if (listing.living_space) attrs.push(`${listing.living_space}m²`);
+            if (listing.brand && attrs.length < 2) attrs.push(listing.brand);
+
+            if (attrs.length === 0) return null;
+            return (
+              <div className="flex flex-wrap gap-1 mb-2">
+                {attrs.slice(0, 2).map((attr, idx) => (
+                  <span key={idx} className="text-[9px] text-gray-500 bg-gray-50 px-1 py-0 rounded border border-gray-100 font-medium">
+                    {attr}
+                  </span>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+
+        <div className="mt-auto">
+          <div className="mb-1.5 pt-2 border-t border-gray-50">
+            <span className="text-sm font-black text-gray-900">
+              {!hidePrice && listing.sub_category !== 'Eğitim / Meslek Eğitimi' && listing.sub_category !== 'İnşaat, Zanaat & Üretim' && listing.category !== 'İş İlanları' && (
+                listing.price_type === 'giveaway' || listing.price === 0
+                  ? 'Ücretsiz'
+                  : listing.price
+                    ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
+                    : t.addListing.options.negotiable
+              )}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between text-[13px] text-gray-500 pt-1.5 border-t border-gray-100">
+            {listing.city && (
+              <div className="flex items-center gap-0.5 truncate max-w-[60%]">
+                <svg className="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="truncate">{listing.city}</span>
+              </div>
             )}
-          </span>
-          {listing.city && (
-            <div className="text-xs text-gray-700 mt-1 flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              {listing.city}
-            </div>
-          )}
-          {listing.date && (
-            <div className="text-xs text-gray-700 mt-1 text-right absolute bottom-2 right-2">
-              {listing.date}
-            </div>
-          )}
+            <span className="flex-shrink-0 text-gray-400 text-[12px]">
+              {listing.date || (listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR') : '')}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -4279,7 +4313,7 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
         {galleryItems.length === 0 ? (
           <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg sm:rounded-xl p-8 sm:p-12 text-center">
             <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-0.707.293l-2.414 2.414a1 1 0 01-0.707.293h-3.172a1 1 0 01-0.707-0.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
             <p className="text-sm sm:text-base text-gray-500 font-medium">{t.topAds.noAds}</p>
             <p className="text-xs sm:text-sm text-gray-400 mt-1 sm:mt-2">{t.topAds.checkBackLater}</p>
@@ -4717,13 +4751,9 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
 
                 {/* Location */}
                 <div className="flex items-center gap-1 text-gray-500 text-xs mb-2">
-                  <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="8" />
-                    <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
-                    <line x1="12" y1="2" x2="12" y2="4" />
-                    <line x1="12" y1="20" x2="12" y2="22" />
-                    <line x1="2" y1="12" x2="4" y2="12" />
-                    <line x1="20" y1="12" x2="22" y2="12" />
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span className="line-clamp-1">
                     {company.address
@@ -5830,7 +5860,7 @@ export const AddListing = () => {
       <div className="max-w-3xl mx-auto px-4 py-10">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-semibold mb-6">{isEditMode ? t.addListing.editTitle : t.addListing.title}</h1>
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm text-gray-600 mb-1">{t.addListing.offerType}</label>
               <div className="flex gap-4">
@@ -6457,7 +6487,7 @@ export const AddListing = () => {
                       className={`flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 ${priceType === 'giveaway' ? 'bg-gray-100 text-gray-400' : ''}`}
                       placeholder={priceType === 'giveaway' ? '' : (priceType === 'negotiable' ? t.addListing.optionalPricePlaceholder : t.addListing.pricePlaceholder)}
                     />
-                    <span className="text-gray-600 font-medium">₺</span>
+                    <span className="text-gray-600 font-medium"> TL</span>
                   </div>
                 </div>
                 <div>
@@ -6493,7 +6523,7 @@ export const AddListing = () => {
                 placeholder={t.addListing.descriptionPlaceholder}
               />
             </div>
-            <div>
+            <div className="order-first md:order-none">
               <label className="block text-sm text-gray-600 mb-2">{t.addListing.images} (max. 20)</label>
               <div className="relative">
                 <input
@@ -6510,7 +6540,7 @@ export const AddListing = () => {
                 >
                   <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                     <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div className="text-center">
@@ -6572,7 +6602,7 @@ export const AddListing = () => {
                           {/* Drag handle icon */}
                           <div className="text-gray-400 cursor-grab active:cursor-grabbing">
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"></path>
+                              <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-0.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"></path>
                             </svg>
                           </div>
 
@@ -6642,7 +6672,7 @@ export const AddListing = () => {
                             title={t.addListing.remove}
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                           </button>
                         </li>
@@ -6911,22 +6941,41 @@ const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, currentInde
         </button>
       )}
 
-      {/* Image */}
-      <div className="relative max-w-7xl max-h-screen flex flex-col items-center">
-        <img
-          src={currentImage}
-          alt={altText}
-          className="max-w-full max-h-[85vh] object-contain cursor-default"
-          onClick={(e) => e.stopPropagation()}
-        />
-
-        {/* Image Counter */}
-        {hasMultipleImages && (
-          <div className="mt-4 text-white text-sm bg-black/50 px-4 py-2 rounded-full">
-            {currentImageIndex + 1} / {images.length}
+      {/* Image - Swipeable Container */}
+      <div
+        className="relative w-full h-[85vh] flex overflow-x-auto snap-x snap-mandatory scrollbar-none"
+        onClick={(e) => e.stopPropagation()}
+        onScroll={(e) => {
+          const scrollLeft = e.target.scrollLeft;
+          const width = e.target.clientWidth;
+          const newIndex = Math.round(scrollLeft / width);
+          if (newIndex !== currentImageIndex && onNavigate) {
+            onNavigate(newIndex);
+          }
+        }}
+        ref={(el) => {
+          if (el && el.scrollLeft !== currentImageIndex * el.clientWidth) {
+            el.scrollLeft = currentImageIndex * el.clientWidth;
+          }
+        }}
+      >
+        {(images && images.length > 0 ? images : [imageSrc]).map((img, idx) => (
+          <div key={idx} className="w-full h-full flex-shrink-0 flex items-center justify-center snap-center">
+            <img
+              src={img}
+              alt={`${altText} ${idx + 1}`}
+              className="max-w-full max-h-full object-contain cursor-default"
+            />
           </div>
-        )}
+        ))}
       </div>
+
+      {/* Image Counter */}
+      {hasMultipleImages && (
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-full z-10">
+          {currentImageIndex + 1} / {images.length}
+        </div>
+      )}
 
       {/* Next Button */}
       {hasMultipleImages && (
@@ -6952,11 +7001,11 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
   if (!isOpen) return null;
 
   const promotionPackages = [
-    { id: 'bump', name: 'Yukarı Çıkar', price: '4,99', duration: 1, effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
-    { id: 'highlight', name: 'Öne Çıkan', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
-    { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '16,99', duration: 7, effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
-    { id: 'z_premium', name: 'Premium', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
-    { id: 'galerie', name: 'Vitrin', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
+    { id: 'bump', name: 'Yukarı Çıkar', price: '9,99', duration: 1, durationLabel: 'bir kerelik', effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
+    { id: 'highlight', name: 'Öne Çıkan', price: '79,99', duration: 7, durationLabel: '7 Gün', effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
+    { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '99,99', duration: 7, durationLabel: '7 Gün', effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
+    { id: 'z_premium', name: 'Premium', price: '129,99', duration: 7, durationLabel: '7 Gün', effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
+    { id: 'galerie', name: 'Vitrin', price: '199,99', duration: 10, durationLabel: '10 Gün', effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
   ];
 
   const togglePromotionSelection = (pkgId) => {
@@ -6980,7 +7029,7 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
     const totalStr = calculateTotal();
     const names = packagesToPurchase.map(p => p.name).join(', ');
 
-    if (window.confirm(`${names} toplam ${totalStr}₺ karşılığında satın alınsın mı?\n\nÜcret hesabınızdan düşülecektir.`)) {
+    if (window.confirm(`${names} toplam ${totalStr} TL karşılığında satın alınsın mı?\n\nÜcret hesabınızdan düşülecektir.`)) {
       try {
         const { purchasePromotion } = await import('./api/promotions');
 
@@ -7061,11 +7110,11 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
                       </td>
                       <td className="px-3 sm:px-6 py-3 sm:py-5">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600">
-                          {pkg.duration === 1 ? '1x' : `${pkg.duration}G`}
+                          {pkg.durationLabel || (pkg.duration === 1 ? '1x' : `${pkg.duration}G`)}
                         </span>
                       </td>
                       <td className="px-3 sm:px-6 py-3 sm:py-5 text-right font-black text-red-600 text-sm sm:text-xl tabular-nums">
-                        {pkg.price}₺
+                        {pkg.price} TL
                       </td>
                     </tr>
                   ))}
@@ -7081,12 +7130,12 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
             <div className="flex items-center gap-4 sm:gap-6">
               <div className={`bg-red-500 text-white p-2 sm:p-3 rounded-xl ${selectedPromotions.length > 0 ? 'animate-bounce shadow-lg shadow-red-500/50' : ''}`}>
                 <svg className="w-5 h-5 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-0.63.63-0.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
               <div className="text-center sm:text-left">
                 <div className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-red-500 mb-0.5 sm:mb-1">{selectedPromotions.length} Paket Seçildi</div>
-                <div className="text-xl sm:text-3xl font-black tracking-tight tabular-nums">Toplam: {calculateTotal()}₺</div>
+                <div className="text-xl sm:text-3xl font-black tracking-tight tabular-nums">Toplam: {calculateTotal()} TL</div>
               </div>
             </div>
             <button
@@ -7227,7 +7276,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
 
   const handleExtend = async (e) => {
     e.stopPropagation();
-    if (window.confirm(t.productDetail.ownerDashboard.extendConfirm.replace('{price}', '3,49₺'))) {
+    if (window.confirm(t.productDetail.ownerDashboard.extendConfirm.replace('{price}', '9,99 TL'))) {
       try {
         const { purchasePromotion } = await import('./api/promotions');
 
@@ -7272,11 +7321,15 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
   };
 
   const isReserved = listing?.reserved_by;
+  const isVitrin = listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase());
 
   return (
     <>
       <div
-        className={`${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'bg-purple-50/30 border-purple-400 border-[2px] shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005]' : 'bg-white'} border-y sm:border ${(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) ? 'border-purple-200' : 'border-gray-200'} border-x-0 sm:border-x rounded-none sm:rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer`}
+        className={`${isVitrin
+          ? 'bg-purple-50/30 border-purple-400 border-2 shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005] rounded-xl mx-0.5 sm:mx-0'
+          : 'bg-white border-y border-gray-200 border-x-0 sm:border sm:rounded-lg'
+          } transition-all duration-300 cursor-pointer hover:shadow-lg overflow-hidden`}
         onClick={() => navigate(`/product/${listing.id}`)}
       >
         <div className="flex flex-row">
@@ -7423,7 +7476,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                 listing?.price_type === 'giveaway' || listing?.price === 0
                   ? 'Ücretsiz'
                   : listing?.price
-                    ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
+                    ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
                     : t.addListing.options.negotiable
               )}
             </div>
@@ -7788,212 +7841,194 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   };
 
   return (
-    <div className="hidden print:block print-flyer bg-white text-gray-900 font-sans relative overflow-visible box-border border-0 p-8 max-w-[21cm] mx-auto">
-      {/* Header with Title and Price - Compact */}
-      <div className="flex justify-between items-start border-b-4 border-red-600 pb-4 mb-6">
-        <div className="flex-1 pr-4">
-          <h1 className="text-2xl font-black uppercase tracking-tight leading-tight mb-1">
-            {listing.title}
-          </h1>
-          <div className="text-[12px] text-gray-500 font-bold uppercase tracking-widest">
-            No: {listing.listing_number || (listing.id && listing.id.slice(0, 8)) || '---'} | {new Date().toLocaleDateString('tr-TR')}
-          </div>
-        </div>
-        <div className="bg-red-600 text-white px-6 py-4 rounded-xl text-center shadow-lg flex-shrink-0 min-w-[150px]">
-          <div className="text-[12px] font-bold uppercase tracking-widest leading-none mb-2 opacity-90">Fiyat</div>
-          <div className="text-5xl font-black tabular-nums leading-none">
-            {listing.category !== 'Jobs' && listing.category !== 'İş İlanları' && (
-              listing.price_type === 'giveaway' || listing.price === 0
-                ? 'Ücretsiz'
-                : `${listing.price || '---'}₺`
-            )}
-          </div>
-          {listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">{t.addListing.options.negotiable}</div>}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-12 gap-8">
-        {/* Main Content Area */}
-        <div className="col-span-12">
-          <div className="grid grid-cols-12 gap-8 mb-6">
-            <div className="col-span-7">
-              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm max-h-[400px]">
-                <img src={displayImage} alt={listing.title} className="w-full h-full object-cover" />
-              </div>
+    <div className="hidden print:block print-flyer bg-white text-gray-900 font-sans relative overflow-visible box-border border-0 p-0 max-w-[21cm] mx-auto">
+      <div className="flex-grow">
+        {/* Header with Title and Price - Compact */}
+        <div className="flex justify-between items-start border-b-4 border-red-600 pb-4 mb-6 pt-1">
+          <div className="flex-1 pr-4">
+            <h1 className="text-2xl font-black uppercase tracking-tight leading-tight mb-1">
+              {listing.title}
+            </h1>
+            <div className="text-[12px] text-gray-500 font-bold uppercase tracking-widest">
+              No: {listing.listing_number || (listing.id && listing.id.slice(0, 8)) || '---'} | {new Date().toLocaleDateString('tr-TR')}
             </div>
-            <div className="col-span-5 flex flex-col gap-4">
-              {/* Kontakt Section */}
-              <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                <h3 className="text-sm font-black uppercase tracking-tight mb-3 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  {t.common.contact}
-                </h3>
-                <div className="space-y-2.5">
-                  <div>
-                    <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.seller}</div>
-                    <div className="text-sm font-black truncate">{listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common.privateSeller}</div>
-                  </div>
-
-                  {!hideContact && (
-                    <div>
-                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common.phone}</div>
-                      <div className="text-lg font-black text-red-600">
-                        {listing.show_phone_number === true ? (listing.contact_phone || sellerProfile?.phone || t.common.notSpecified) : t.common.notSpecified}
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common.location}</div>
-                    <div className="text-[11px] font-bold leading-tight">
-                      <div className="text-gray-900 line-clamp-1">{listing.show_location === true && listing.address ? listing.address : ''}</div>
-                      <div className="text-gray-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* QR Code Section */}
-              {!hideContact && (
-                <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-center">
-                  <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mb-1">Detaylı Bilgi İçin Tara</div>
-                  <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center p-1">
-                    <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
-                  </div>
-                  <div className="text-[8px] font-black text-red-600 uppercase">exvitrin.com</div>
-                </div>
+          </div>
+          <div className="bg-red-600 text-white px-6 py-4 rounded-xl text-center shadow-lg flex-shrink-0 min-w-[150px]">
+            <div className="text-[12px] font-bold uppercase tracking-widest leading-none mb-2 opacity-90">Fiyat</div>
+            <div className="text-5xl font-black tabular-nums leading-none">
+              {listing.category !== 'Jobs' && listing.category !== 'İş İlanları' && (
+                listing.price_type === 'giveaway' || listing.price === 0
+                  ? 'Ücretsiz'
+                  : `${listing.price || '---'} TL`
               )}
             </div>
+            {listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">{t.addListing.options.negotiable}</div>}
           </div>
+        </div>
 
-          <div className="mb-6">
-            <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-2">
-              {t.productDetail.description}
-            </h2>
-
-            {/* 5199 Animal Law Disclaimer for Pets category */}
-            {(listing.category === 'haustiere' || listing.category === 'Evcil Hayvanlar') && (
-              <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
-                <div className="flex gap-3">
-                  <svg className="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  <p className="text-xs text-red-800 leading-relaxed font-medium">
-                    {t.footer.animalLawDisclaimer}
-                  </p>
+        <div className="grid grid-cols-12 gap-8">
+          {/* Main Content Area */}
+          <div className="col-span-12">
+            <div className="grid grid-cols-12 gap-8 mb-6">
+              <div className="col-span-7">
+                <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm max-h-[400px]">
+                  <img src={displayImage} alt={listing.title} className="w-full h-full object-cover" />
                 </div>
               </div>
-            )}
+              <div className="col-span-5 flex flex-col gap-4">
+                {/* Kontakt Section */}
+                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                  <h3 className="text-sm font-black uppercase tracking-tight mb-3 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    {t.common.contact}
+                  </h3>
+                  <div className="space-y-2.5">
+                    <div>
+                      <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.seller}</div>
+                      <div className="text-sm font-black truncate">{listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common.privateSeller}</div>
+                    </div>
 
-            {/* Real Estate Disclaimer */}
-            {(listing.category === 'immobilien' || listing.category === 'Emlak') && (
-              <div className="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-                <div className="flex gap-3">
-                  <svg className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  <p className="text-xs text-blue-800 leading-relaxed font-medium">
-                    {t.footer.realEstateDisclaimer}
-                  </p>
+                    {!hideContact && (
+                      <div>
+                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common.phone}</div>
+                        <div className="text-lg font-black text-red-600">
+                          {listing.show_phone_number === true ? (listing.contact_phone || sellerProfile?.phone || t.common.notSpecified) : t.common.notSpecified}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common.location}</div>
+                      <div className="text-[11px] font-bold leading-tight">
+                        <div className="text-gray-900 line-clamp-1">{listing.show_location === true && listing.address ? listing.address : ''}</div>
+                        <div className="text-gray-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Vehicle Disclaimer */}
-            {(listing.category === 'auto, rad & boot' || listing.category === 'Otomobil, Bisiklet & Tekne') && (
-              <div className="mb-4 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-lg">
-                <div className="flex gap-3">
-                  <svg className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <p className="text-xs text-orange-800 leading-relaxed font-medium">
-                    {t.footer.vehicleDisclaimer}
-                  </p>
-                </div>
+                {/* QR Code Section */}
+                {!hideContact && (
+                  <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-center">
+                    <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mb-1">Detaylı Bilgi İçin Tara</div>
+                    <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center p-1">
+                      <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
+                    </div>
+                    <div className="text-[8px] font-black text-red-600 uppercase">exvitrin.com</div>
+                  </div>
+                )}
               </div>
-            )}
-
-            <div className="text-[13px] text-gray-700 whitespace-pre-wrap leading-relaxed">
-              {listing.description}
             </div>
-          </div>
 
-          {/* Technical Details Grid */}
-          <div className="mb-6">
-            <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-3">
-              {t.productDetail.details}
-            </h2>
-            <div className="grid grid-cols-2 gap-x-12 gap-y-1">
-              {/* Common Fields */}
-              {renderDetailRow(t.productDetail.condition, translateVal(listing.condition))}
-              {renderDetailRow(t.addListing.brand, listing.marke || listing.car_brand || listing.brand || listing.carBrand)}
-              {renderDetailRow(t.productDetail.model, listing.modell || listing.car_model || listing.carModel)}
+            <div className="mb-6">
+              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-2">
+                {t.productDetail.description}
+              </h2>
 
-              {/* Car Specific */}
-              {renderDetailRow(t.productDetail.mileage, (listing.kilometerstand || listing.kilometer || listing.kilometerStand) ? `${(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km` : null)}
-              {renderDetailRow(t.productDetail.firstRegistration, listing.erstzulassung || listing.bj)}
-              {renderDetailRow(t.productDetail.fuelType, listing.kraftstoff || listing.fuel_type)}
-              {renderDetailRow(t.productDetail.power, (listing.leistung || listing.power) ? `${listing.leistung || listing.power} PS` : null)}
-              {renderDetailRow(t.productDetail.transmission, listing.getriebe)}
-              {renderDetailRow(t.productDetail.exteriorColor, translateVal(listing.exterior_color))}
-              {renderDetailRow(t.productDetail.interiorMaterial, translateVal(listing.interior_material))}
-              {renderDetailRow(t.productDetail.huUntil, listing.hu)}
 
-              {/* Real Estate Specific */}
-              {renderDetailRow(t.productDetail.propertyType, translateVal(listing.wohnungstyp || listing.haustyp || listing.objektart))}
-              {renderDetailRow(t.productDetail.livingSpace, listing.living_space ? `${listing.living_space} m²` : null)}
-              {renderDetailRow(t.productDetail.rooms, listing.rooms)}
-              {renderDetailRow(t.productDetail.floor, listing.floor)}
-              {renderDetailRow(t.productDetail.constructionYear, listing.construction_year)}
-              {renderDetailRow(t.productDetail.plotArea, listing.plot_area ? `${listing.plot_area} m²` : null)}
-              {renderDetailRow(t.productDetail.availableFrom, listing.available_from)}
 
-              {/* Pet Specific */}
-              {renderDetailRow(t.productDetail.art, listing.katzen_art || listing.dog_art || listing.pet_art || listing.art)}
-              {renderDetailRow(t.productDetail.age, listing.katzen_alter || listing.pet_age || listing.alter)}
-              {renderDetailRow(t.productDetail.vaccinatedAndChipped, listing.katzen_geimpft || listing.vaccinated)}
-              {renderDetailRow(t.productDetail.officialPermission, listing.katzen_erlaubnis || listing.permission)}
-
-              {/* Clothes Specific */}
-              {renderDetailRow(t.addListing.size, listing.size || listing.baby_kinderkleidung_size || listing.baby_kinderschuhe_size || listing.damenbekleidung_size)}
-              {renderDetailRow(t.addListing.color, listing.color || listing.baby_kinderkleidung_color || listing.baby_kinderschuhe_color || listing.damenbekleidung_color)}
-
-              {/* Item Art (General) */}
-              {renderDetailRow(t.productDetail.art, listing.audio_hifi_art || listing.dienstleistungen_elektronik_art || listing.foto_art || listing.handy_telefon_art || listing.haushaltsgeraete_art || listing.konsolen_art || listing.notebooks_art || listing.pc_zubehoer_software_art || listing.pcs_art || listing.tablets_reader_art || listing.tv_video_art || listing.videospiele_art || listing.art_type || listing.autoteile_art || listing.boote_art || listing.motorrad_art || listing.wohnwagen_art || listing.beauty_gesundheit_art || listing.damenbekleidung_art || listing.gartenzubehoer_art || listing.kueche_esszimmer_art || listing.heimwerken_art || listing.schlafzimmer_art || listing.bike_art || listing.wohnzimmer_art)}
+              <div className="text-[13px] text-gray-700 whitespace-pre-wrap leading-relaxed">
+                {listing.description}
+              </div>
             </div>
-          </div>
 
-          {/* Amenities & Features */}
-          {(listing.car_amenities?.length > 0 || listing.amenities?.length > 0 || listing.general_features?.length > 0) && (
+            {/* Technical Details Grid */}
             <div className="mb-6">
               <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-3">
-                {t.productDetail.amenities} & {t.productDetail.features}
+                {t.productDetail.details}
               </h2>
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
-                {[...(listing.car_amenities || []), ...(listing.amenities || []), ...(listing.general_features || [])].map((item, i) => (
-                  <div key={i} className="flex items-center gap-1.5 text-[11px] font-bold text-gray-700">
-                    <svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {translateVal(item)}
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 gap-x-12 gap-y-1">
+                {/* Common Fields */}
+                {renderDetailRow(t.productDetail.condition, translateVal(listing.condition))}
+                {renderDetailRow(t.addListing.brand, listing.marke || listing.car_brand || listing.brand || listing.carBrand)}
+                {renderDetailRow(t.productDetail.model, listing.modell || listing.car_model || listing.carModel)}
+
+                {/* Car Specific */}
+                {renderDetailRow(t.productDetail.mileage, (listing.kilometerstand || listing.kilometer || listing.kilometerStand) ? `${(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km` : null)}
+                {renderDetailRow(t.productDetail.firstRegistration, listing.erstzulassung || listing.bj)}
+                {renderDetailRow(t.productDetail.fuelType, listing.kraftstoff || listing.fuel_type)}
+                {renderDetailRow(t.productDetail.power, (listing.leistung || listing.power) ? `${listing.leistung || listing.power} PS` : null)}
+                {renderDetailRow(t.productDetail.transmission, listing.getriebe)}
+                {renderDetailRow(t.productDetail.exteriorColor, translateVal(listing.exterior_color))}
+                {renderDetailRow(t.productDetail.interiorMaterial, translateVal(listing.interior_material))}
+                {renderDetailRow(t.productDetail.huUntil, listing.hu)}
+
+                {/* Real Estate Specific */}
+                {renderDetailRow(t.productDetail.propertyType, translateVal(listing.wohnungstyp || listing.haustyp || listing.objektart))}
+                {renderDetailRow(t.productDetail.livingSpace, listing.living_space ? `${listing.living_space} m²` : null)}
+                {renderDetailRow(t.productDetail.rooms, listing.rooms)}
+                {renderDetailRow(t.productDetail.floor, listing.floor)}
+                {renderDetailRow(t.productDetail.constructionYear, listing.construction_year)}
+                {renderDetailRow(t.productDetail.plotArea, listing.plot_area ? `${listing.plot_area} m²` : null)}
+                {renderDetailRow(t.productDetail.availableFrom, listing.available_from)}
+
+                {/* Pet Specific */}
+                {renderDetailRow(t.productDetail.art, listing.katzen_art || listing.dog_art || listing.pet_art || listing.art)}
+                {renderDetailRow(t.productDetail.age, listing.katzen_alter || listing.pet_age || listing.alter)}
+                {renderDetailRow(t.productDetail.vaccinatedAndChipped, listing.katzen_geimpft || listing.vaccinated)}
+                {renderDetailRow(t.productDetail.officialPermission, listing.katzen_erlaubnis || listing.permission)}
+
+                {/* Clothes Specific */}
+                {renderDetailRow(t.addListing.size, listing.size || listing.baby_kinderkleidung_size || listing.baby_kinderschuhe_size || listing.damenbekleidung_size)}
+                {renderDetailRow(t.addListing.color, listing.color || listing.baby_kinderkleidung_color || listing.baby_kinderschuhe_color || listing.damenbekleidung_color)}
+
+                {/* Item Art (General) */}
+                {renderDetailRow(t.productDetail.art, listing.audio_hifi_art || listing.dienstleistungen_elektronik_art || listing.foto_art || listing.handy_telefon_art || listing.haushaltsgeraete_art || listing.konsolen_art || listing.notebooks_art || listing.pc_zubehoer_software_art || listing.pcs_art || listing.tablets_reader_art || listing.tv_video_art || listing.videospiele_art || listing.art_type || listing.autoteile_art || listing.boote_art || listing.motorrad_art || listing.wohnwagen_art || listing.beauty_gesundheit_art || listing.damenbekleidung_art || listing.gartenzubehoer_art || listing.kueche_esszimmer_art || listing.heimwerken_art || listing.schlafzimmer_art || listing.bike_art || listing.wohnzimmer_art)}
               </div>
             </div>
-          )}
 
-          {/* Internal Branding */}
-          <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
-            <div className="flex items-center gap-1">
-              <span className="text-red-600 text-[10px] font-black">ExVitrin</span>
-              <span>{t.common.onlineMarketplace}</span>
+            {/* Amenities & Features */}
+            {(listing.car_amenities?.length > 0 || listing.amenities?.length > 0 || listing.general_features?.length > 0) && (
+              <div className="mb-6">
+                <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-3">
+                  {t.productDetail.amenities} & {t.productDetail.features}
+                </h2>
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  {[...(listing.car_amenities || []), ...(listing.amenities || []), ...(listing.general_features || [])].map((item, i) => (
+                    <div key={i} className="flex items-center gap-1.5 text-[11px] font-bold text-gray-700">
+                      <svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {translateVal(item)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Internal Branding */}
+            <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
+              <div className="flex items-center gap-1">
+                <span className="text-red-600 text-[10px] font-black">ExVitrin</span>
+                <span>{t.common.onlineMarketplace}</span>
+              </div>
+              <div>www.exvitrin.com</div>
             </div>
-            <div>www.exvitrin.com</div>
           </div>
         </div>
       </div>
+
+      {/* Tear-off Tabs (Kesilecek İletişim Bilgileri) */}
+      {!hideContact && listing.show_phone_number === true && (listing.contact_phone || sellerProfile?.phone) && (
+        <div className="pt-8 border-t-2 border-dashed border-gray-300 relative flex justify-between min-h-[100px] mb-2">
+          {/* Dikey Kesme Çizgileri */}
+          <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-between pointer-events-none">
+            {[...Array(11)].map((_, i) => (
+              <div key={i} className="border-l-2 border-dashed border-gray-200 h-full"></div>
+            ))}
+          </div>
+
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="flex-1 flex flex-col items-center justify-center py-2 z-10 overflow-hidden">
+              <div className="[writing-mode:vertical-rl] rotate-180 text-base font-black text-gray-900 whitespace-nowrap tracking-tight">
+                {listing.contact_phone || sellerProfile?.phone}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -8076,9 +8111,9 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
             className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all group relative"
           >
             <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-green-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-0.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center leading-none">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[10px] text-green-600 font-black">(3,49₺)</span></span>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center leading-none">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[10px] text-green-600 font-black">(9,99 TL)</span></span>
           </button>
 
           <button
@@ -8086,7 +8121,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
             className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-red-600 hover:shadow-lg transition-all group"
           >
             <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-red-600 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
             <span className="text-xs sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.delete}</span>
           </button>
@@ -8149,7 +8184,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
                     </td>
                     <td className="px-3 sm:px-6 py-3 text-gray-500 font-medium hidden sm:table-cell">{pkg.effect}</td>
                     <td className="px-3 sm:px-6 py-3 font-bold text-gray-600 whitespace-nowrap">{pkg.duration === 1 ? t.productDetail.ownerDashboard.once : `${pkg.duration} Gün`}</td>
-                    <td className="px-3 sm:px-6 py-3 text-right font-black text-red-600 whitespace-nowrap">{pkg.price}₺</td>
+                    <td className="px-3 sm:px-6 py-3 text-right font-black text-red-600 whitespace-nowrap">{pkg.price} TL</td>
                   </tr>
                 ))}
               </tbody>
@@ -8161,12 +8196,12 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
               <div className="flex items-center gap-3 sm:gap-6">
                 <div className="bg-red-500 text-white p-1 rounded-lg animate-bounce hidden sm:block">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-0.63.63-0.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
                 <div>
                   <div className="text-[7px] font-black uppercase tracking-widest text-gray-400">Seçilen: {selectedPromotions.length}</div>
-                  <div className="text-base sm:text-2xl font-black">{t.productDetail.ownerDashboard.totalPrice}: {calculateTotal()} ₺</div>
+                  <div className="text-base sm:text-2xl font-black">{t.productDetail.ownerDashboard.totalPrice}: {calculateTotal()} TL</div>
                 </div>
               </div>
               <button
@@ -8207,6 +8242,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const [sellerLoading, setSellerLoading] = useState(true);
 
   const [activeImage, setActiveImage] = useState(0);
+  const galleryRef = useRef(null);
   const [showPhone, setShowPhone] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [currentStock, setCurrentStock] = useState(1); // Initialize with a default, will be updated by useEffect
@@ -8241,11 +8277,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const isMobile = useIsMobile();
 
   const promotionPackages = [
-    { id: 'bump', name: 'Yukarı Çıkar', price: '4,99', duration: 1, effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
-    { id: 'highlight', name: 'Öne Çıkan', price: '9,99', duration: 7, effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
-    { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '16,99', duration: 7, effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
-    { id: 'z_premium', name: 'Premium', price: '19,99', duration: 7, effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
-    { id: 'galerie', name: 'Vitrin', price: '59,99', duration: 10, effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
+    { id: 'bump', name: 'Yukarı Çıkar', price: '9,99', duration: 1, durationLabel: 'bir kerelik', effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
+    { id: 'highlight', name: 'Öne Çıkan', price: '79,99', duration: 7, durationLabel: '7 Gün', effect: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.' },
+    { id: 'multi-bump', name: 'Tekrarlı Yukarı Çıkarma', price: '99,99', duration: 7, durationLabel: '7 Gün', effect: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.' },
+    { id: 'z_premium', name: 'Premium', price: '129,99', duration: 7, durationLabel: '7 Gün', effect: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!' },
+    { id: 'galerie', name: 'Vitrin', price: '199,99', duration: 10, durationLabel: '10 Gün', effect: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!' },
   ];
 
   // Fetch listing from Supabase
@@ -8357,6 +8393,29 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  // Sync gallery scroll with activeImage state
+  useEffect(() => {
+    if (galleryRef.current && !isMobile) {
+      const width = galleryRef.current.clientWidth;
+      galleryRef.current.scrollTo({
+        left: activeImage * width,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeImage, isMobile]);
+
+  // Handle scroll events to update activeImage index
+  const handleGalleryScroll = (e) => {
+    if (isMobile) {
+      const scrollLeft = e.target.scrollLeft;
+      const width = e.target.clientWidth;
+      const newIndex = Math.round(scrollLeft / width);
+      if (newIndex !== activeImage) {
+        setActiveImage(newIndex);
+      }
+    }
+  };
 
   // Auto-fill contact form with user profile data
   useEffect(() => {
@@ -8770,8 +8829,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   };
 
   const handleExtendDetail = async () => {
-    // Note: Price updated to 3.99 for 90 days
-    if (window.confirm(t.productDetail.ownerDashboard.extendConfirm.replace('{price}', '3,49₺'))) {
+    // Note: Price updated to 9,99 for 90 days
+    if (window.confirm(t.productDetail.ownerDashboard.extendConfirm.replace('{price}', '9,99 TL'))) {
       try {
         const { purchasePromotion } = await import('./api/promotions');
 
@@ -8837,7 +8896,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     const totalStr = packagesToPurchase.reduce((acc, p) => acc + parseFloat(p.price.replace(',', '.')), 0).toFixed(2).replace('.', ',');
     const names = packagesToPurchase.map(p => p.name).join(', ');
 
-    if (window.confirm(`${names} toplam ${totalStr}₺ karşılığında satın alınsın mı?\n\nÜcret hesabınızdan düşülecektir.`)) {
+    if (window.confirm(`${names} toplam ${totalStr} TL karşılığında satın alınsın mı?\n\nÜcret hesabınızdan düşülecektir.`)) {
       try {
         const { purchasePromotion } = await import('./api/promotions');
 
@@ -8899,22 +8958,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             display: none !important;
           }
 
-          /* The Flyer - Full Content Multi-page 지원 */
           .print-flyer {
-            display: block !important;
-            visibility: visible !important;
-            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
-            height: auto !important;
+            min-height: 285mm !important;
             margin: 0 !important;
-            padding: 15mm !important;
+            padding: 10mm 15mm !important;
             background: white !important;
             box-sizing: border-box !important;
+            z-index: 9999 !important;
           }
 
           #root, .App {
             height: auto !important;
             min-height: 0 !important;
+            display: block !important;
           }
         }
       `}</style>
@@ -8961,7 +9023,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div className="flex items-center gap-3">
                       <span className="bg-red-500 text-white p-2 rounded-lg">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </span>
@@ -8981,7 +9043,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         <div className="flex items-center gap-2">
                           <span className="bg-red-500 text-white p-1 rounded-lg">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             </svg>
                           </span>
                           <h2 className="text-sm font-black text-gray-900 uppercase tracking-tight">İlan Yönetimi</h2>
@@ -9045,9 +9107,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             {/* Sol Taraf - Ürün Açıklaması */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Ürün Resmi */}
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden relative hover:shadow-xl transition-shadow duration-300 z-0">
-                <div className="bg-white rounded-lg overflow-hidden shadow-inner p-1.5 sm:p-3">
-                  <div className="relative w-full h-[250px] sm:h-[525px] bg-gray-50 flex items-center justify-center rounded-lg overflow-hidden border border-gray-100">
+              <div className="bg-transparent sm:bg-white rounded-none sm:rounded-lg shadow-none sm:shadow-lg overflow-hidden relative hover:shadow-xl transition-shadow duration-300 z-0 -mx-2 sm:mx-0">
+                <div className="bg-transparent sm:bg-white rounded-none sm:rounded-lg overflow-hidden shadow-none sm:shadow-inner p-0 sm:p-3">
+                  <div className="relative w-full h-[300px] sm:h-[525px] bg-gray-50 flex items-center justify-center rounded-none sm:rounded-lg overflow-hidden border-0 sm:border border-gray-100">
                     {isMobile && (
                       <button
                         onClick={() => navigate(-1)}
@@ -9059,21 +9121,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </svg>
                       </button>
                     )}
-                    <img
-                      src={(listing.images && listing.images[activeImage]) || listing.image}
-                      alt={listing.title}
-                      className="w-full h-full object-cover z-10"
-                      onClick={() => setShowLightbox(true)}
-                    />
+                    <div
+                      ref={galleryRef}
+                      onScroll={handleGalleryScroll}
+                      className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory scrollbar-none z-10"
+                      style={{ scrollBehavior: 'smooth' }}
+                    >
+                      {(listing.images && listing.images.length > 0 ? listing.images : [listing.image]).map((img, index) => (
+                        <div key={index} className="w-full h-full flex-shrink-0 snap-center">
+                          <img
+                            src={img}
+                            alt={listing.title}
+                            className="w-full h-full object-cover"
+                            onClick={() => setShowLightbox(true)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
                     {listing.images && listing.images.length > 0 && (
                       <div className="absolute bottom-3 right-3 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-medium z-20 backdrop-blur-sm">
                         {t.productDetail.imageCount.replace('{current}', activeImage + 1).replace('{total}', listing.images.length)}
                       </div>
                     )}
 
-
-                    {/* Navigation Arrows */}
-                    {listing.images && listing.images.length > 1 && (
+                    {/* Navigation Arrows - Hidden on mobile, shown on desktop */}
+                    {listing.images && listing.images.length > 1 && !isMobile && (
                       <>
                         {/* Previous Button */}
                         <button
@@ -9176,7 +9249,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       title="Paylaş"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-0.482-0.114-0.938-0.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                       </svg>
                     </button>
                   )}
@@ -9216,7 +9289,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               />
 
               {/* Birleştirilmiş İlan Bilgileri Paneli */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="bg-transparent sm:bg-white rounded-none sm:rounded-lg shadow-none sm:shadow-lg px-4 sm:p-6 py-6">
                 {/* Ürün Başlığı ve Bilgileri */}
                 <div className="space-y-6">
                   {/* Başlık ve Fiyat - Üst Kısım - Back to top per user request */}
@@ -9224,14 +9297,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     {/* Fiyat - En Üstte */}
                     {listing.sub_category !== 'Ausbildung' && listing.sub_category !== 'Bau, Handwerk & Produktion' && listing.category !== 'Jobs' && (
                       <div className="mb-4">
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
+                        <div className="text-lg sm:text-2xl font-normal sm:font-bold text-gray-900 mb-1">
                           {listing.price_type === 'giveaway' || listing.price === 0
                             ? t.productDetail.giveaway
                             : typeof listing.price === 'number'
-                              ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' ' + t.productDetail.negotiable : ''}`
-                              : listing.price?.toString().includes('₺')
+                              ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' ' + t.productDetail.negotiable : ''}`
+                              : listing.price?.toString().includes(' TL')
                                 ? listing.price
-                                : listing.price ? `${listing.price} ₺${listing.price_type === 'negotiable' ? ' ' + t.productDetail.negotiable : ''}` : t.productDetail.negotiable}
+                                : listing.price ? `${listing.price} TL${listing.price_type === 'negotiable' ? ' ' + t.productDetail.negotiable : ''}` : t.productDetail.negotiable}
                         </div>
                         {listing.stock && (
                           <div className="text-sm text-gray-500">
@@ -9253,15 +9326,39 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                     {/* Başlık */}
                     <div>
-                      <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                      <h1 className="text-sm sm:text-lg font-normal sm:font-bold text-gray-900 leading-tight">
                         {listing.title}
                       </h1>
+
+                      {/* Mobil için Hızlı Bilgi Çubuğu (Konum ve Tarih) */}
+                      {isMobile && (
+                        <div className="mt-3 flex justify-between items-center text-[13px] text-gray-600 font-medium border-t border-gray-50 pt-3 w-full">
+                          <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>
+                              {listing.district ? `${listing.district}, ` : ''}
+                              {listing.city || t.common.notAvailable}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>
+                              {listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {/* General Info Grid - Below Title/Price */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b border-gray-100 mb-12">
-                    <div className="flex justify-between">
+                    <div className="hidden md:flex justify-between">
                       <span className="text-gray-500">{t.productDetail.postedOn}</span>
                       <span className="font-semibold text-gray-900">
                         {listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
@@ -9286,7 +9383,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <span className="text-gray-500">{t.productDetail.listingId}</span>
                       <span className="font-semibold text-gray-900">{generateListingNumber(listing)}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="hidden md:flex justify-between">
                       <span className="text-gray-500">{t.productDetail.location}</span>
                       <div className="text-right">
                         <span className="font-semibold text-gray-900 block">
@@ -9349,7 +9446,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-0.63.63-0.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         Sepete Ekle
                       </button>
@@ -10357,13 +10454,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.warm_rent && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.warmRent}</span>
-                          <span className="font-semibold text-gray-900">{listing.warm_rent.toLocaleString('tr-TR')} ₺</span>
+                          <span className="font-semibold text-gray-900">{listing.warm_rent.toLocaleString('tr-TR')} TL</span>
                         </div>
                       )}
                       {listing.price_per_sqm && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.pricePerSqm}</span>
-                          <span className="font-semibold text-gray-900">{listing.price_per_sqm.toLocaleString('tr-TR')} ₺/m²</span>
+                          <span className="font-semibold text-gray-900">{listing.price_per_sqm.toLocaleString('tr-TR')} TL/m²</span>
                         </div>
                       )}
                       {listing.plot_area && (
@@ -10743,7 +10840,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   {t.productDetail.message}
                 </button>
@@ -10756,7 +10853,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     {t.productDetail.call}
                   </button>
@@ -10766,7 +10863,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     className="w-full border border-gray-300 hover:bg-green-50 hover:border-green-500 text-gray-700 hover:text-green-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     {listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}
                   </a>
@@ -10808,7 +10905,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         title="Facebook"
                       >
                         <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
-                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                       </button>
                       <button
@@ -10821,7 +10918,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         title="WhatsApp"
                       >
                         <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
-                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+                          <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967-0.273-0.099-0.471-0.148-0.67.15-0.197.297-0.767.966-0.94 1.164-0.173.199-0.347.223-0.644.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458.13-0.606.134-0.133.298-0.347.446-0.52.149-0.174.198-0.298.298-0.497.099-0.198.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52.074-0.792.372-0.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-0.085 1.758-0.719 2.006-1.413.248-0.694.248-1.289.173-1.413-0.074-0.124-0.272-0.198-0.57-0.347m-5.421 7.403h-0.004a9.27 9.27 0 01-4.723-1.292l-0.339-0.202-3.51.92 1.017-3.65-0.213-0.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
                         </svg>
                       </button>
                       <button
@@ -10870,7 +10967,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-gray-700"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
                     </svg>
                     {t.productDetail.report}
                   </button>
@@ -10924,14 +11021,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
           {/* Seller's Recent Listings */}
           {sellerRecentListings.length > 0 && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+            <div className="mt-12">
+              <h2 className="text-base md:text-xl font-bold text-gray-900 mb-6">
                 Bu Satıcının Diğer İlanları
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-6">
                 {sellerRecentListings.map(item => (
                   <ListingCard
                     key={item.id}
@@ -10946,16 +11040,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
           {/* Category Related Listings */}
           {categoryListings.length > 0 && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
+            <div className="mt-12 mb-12">
+              <h2 className="text-base md:text-xl font-bold text-gray-900 mb-6">
                 {listing?.category} Kategorisindeki Benzer İlanlar
               </h2>
-              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-6">
                 {categoryListings.map(item => (
-                  <HorizontalListingCard
+                  <ListingCard
                     key={item.id}
                     listing={item}
                     toggleFavorite={toggleFavorite}
@@ -10971,10 +11062,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               <button
                 id="mobile-contact-message"
                 onClick={() => setShowMessageModal(true)}
-                className="flex-1 bg-red-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2"
+                className="flex-1 bg-red-600 text-white font-bold text-sm py-3.5 px-4 rounded-xl shadow-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 {t.productDetail.message}
               </button>
@@ -10982,10 +11073,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <button
                   id="mobile-contact-phone-reveal"
                   onClick={() => setShowPhone(true)}
-                  className="flex-1 bg-white border-2 border-green-600 text-green-700 font-bold py-3.5 px-4 rounded-xl shadow-md hover:bg-green-50 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 bg-white border-2 border-green-600 text-green-700 font-bold text-sm py-3.5 px-4 rounded-xl shadow-md hover:bg-green-50 transition-all flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   {t.productDetail.call}
                 </button>
@@ -10993,10 +11084,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <a
                   id="mobile-contact-call"
                   href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
-                  className="flex-1 bg-green-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 bg-green-600 text-white font-bold text-sm py-3.5 px-4 rounded-xl shadow-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   {listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}
                 </a>
@@ -11102,7 +11193,7 @@ export const AllCategories = ({ setSelectedCategory }) => {
 };
 
 // Seller Profile Component
-export const SellerProfile = () => {
+export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
   const { sellerId } = useParams();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState(t.sellerProfile.all);
@@ -11155,7 +11246,8 @@ export const SellerProfile = () => {
     loadSellerData();
   }, [sellerId]);
 
-  // Load seller ratings
+  const [showMessageModal, setShowMessageModal] = useState(false);
+
   useEffect(() => {
     if (sellerId) {
       const loadRatings = async () => {
@@ -11173,6 +11265,17 @@ export const SellerProfile = () => {
       loadRatings();
     }
   }, [sellerId]);
+
+  const handleModalSubmit = async (message) => {
+    try {
+      const { sendMessage } = await import('./api/messages');
+      await sendMessage(seller.id, message, null);
+      alert(t.sellerProfile.messageSuccess);
+      setShowMessageModal(false);
+    } catch (error) {
+      alert(t.sellerProfile.messageError);
+    }
+  };
 
   if (!seller) return <div className="p-8">{t.sellerProfile.sellerNotFound}</div>;
 
@@ -11241,7 +11344,7 @@ export const SellerProfile = () => {
                 {seller.rating > 0 && (
                   <div className="flex items-center gap-1">
                     <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-0.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                     </svg>
                     {seller.rating} ({seller.totalRatings} {t.productDetail.ratings})
                   </div>
@@ -11279,7 +11382,7 @@ export const SellerProfile = () => {
             <div className="mb-4">
               <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
                 <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  <path d="M9.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-0.363 1.118l1.518 4.674c.3.922-0.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-0.783.57-1.838-0.197-1.538-1.118l1.518-4.674a1 1 0 00-0.363-1.118l-3.976-2.888c-0.784-0.57-0.38-1.81.588-1.81h4.914a1 1 0 00.951-0.69l1.519-4.674z" />
                 </svg>
                 Satıcı Değerlendirmeleri
               </h2>
@@ -11360,691 +11463,409 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
 
   const { sellerId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  // IMPORTANT: All hooks must be called at the top, before any conditional returns
-  const { user } = useAuth(); // Get current user for isOwnProfile check
-
-  // State for seller data
   const [seller, setSeller] = useState(null);
   const [sellerListings, setSellerListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(t.sellerProfile.all);
-  const [activeTab, setActiveTab] = useState('listings'); // Tab state for own profile
+  const [activeTab, setActiveTab] = useState('listings');
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
   const [ratings, setRatings] = useState([]);
   const [averageRating, setAverageRating] = useState({ average: 0, count: 0 });
-  const [isRatingLoading, setIsRatingLoading] = useState(false);
 
-  // Initialize states
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Check if current user is viewing their own profile
-  // IMPORTANT: This must be defined BEFORE any conditional returns
-  // Compare user.id with seller.id (both are UUIDs)
   const isOwnProfile = user && seller && user.id === seller.id;
 
-  // Fetch seller profile and listings from Supabase
   useEffect(() => {
     const loadSellerData = async () => {
       if (!sellerId) return;
-
       try {
         setLoading(true);
-        setError(null); // Clear previous errors
-        console.log('=== LOADING SELLER DATA ===');
-        console.log('Seller ID/Number:', sellerId);
-
-        // Check if sellerId is a UUID (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sellerId);
-
         let profile;
         if (isUUID) {
-          // Fetch by UUID
-          console.log('Fetching profile by UUID');
           const { fetchUserProfile } = await import('./api/profile');
           profile = await fetchUserProfile(sellerId);
         } else {
-          // Fetch by user_number
-          console.log('Fetching profile by user_number');
           const { fetchUserProfileByNumber } = await import('./api/profile');
           profile = await fetchUserProfileByNumber(sellerId);
         }
 
-        console.log('Fetched seller profile:', profile);
+        if (!profile) throw new Error('Profile not found');
+        setSeller(profile);
 
-        if (!profile) {
-          throw new Error('Profile not found');
-        }
-        setSeller(profile); // Set seller state
-
-        // Fetch seller's listings using the UUID from the fetched profile
-        console.log('Fetching listings for seller ID:', profile.id); // Use profile.id
         const { fetchUserListings } = await import('./api/listings');
-        const userListings = await fetchUserListings(profile.id); // Use profile.id
-        console.log('Fetched seller listings:', userListings);
-        setSellerListings(userListings || []); // Set sellerListings state
-      } catch (error) {
-        console.error('Error loading seller data:', error);
-        console.error('Error details:', error.message, error.stack);
-        setSeller(null);
-        setSellerListings([]);
-        setError(t.sellerProfile.sellerNotFound);
+        const listings = await fetchUserListings(profile.id);
+        setSellerListings(listings);
+
+        const { getFollowersCount } = await import('./api/follows');
+        const count = await getFollowersCount(profile.id);
+        setFollowersCount(count);
+
+        const { fetchUserRatings } = await import('./api/ratings');
+        const ratingData = await fetchUserRatings(profile.id);
+        setRatings(ratingData);
+
+        if (ratingData.length > 0) {
+          const avg = ratingData.reduce((acc, r) => acc + r.rating, 0) / ratingData.length;
+          setAverageRating({ average: avg.toFixed(1), count: ratingData.length });
+        }
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
     loadSellerData();
   }, [sellerId]);
 
-  // Fetch ratings and average rating
-  useEffect(() => {
-    const fetchRatings = async () => {
-      // We need the seller's UUID, which might not be immediate if we fetched by user_number
-      // But loadSellerData should set it in 'seller'
-      if (!seller?.id) return;
-
-      setIsRatingLoading(true);
-      try {
-        const [ratingsData, avgData] = await Promise.all([
-          getRatings(seller.id),
-          getUserAverageRating(seller.id)
-        ]);
-        setRatings(ratingsData);
-        setAverageRating(avgData);
-      } catch (error) {
-        console.error('Error fetching ratings:', error);
-      } finally {
-        setIsRatingLoading(false);
-      }
-    };
-
-    fetchRatings();
-  }, [seller?.id]);
-
-  // Load follower/following counts
-  useEffect(() => {
-    const loadFollowCounts = async () => {
-      if (!seller?.id) return;
-
-      try {
-        const { getFollowersCount, getFollowingCount } = await import('./api/follows');
-        const [followers, following] = await Promise.all([
-          getFollowersCount(seller.id),
-          getFollowingCount(seller.id)
-        ]);
-        setFollowersCount(followers);
-        setFollowingCount(following);
-      } catch (error) {
-        console.error('Error loading follow counts:', error);
-      }
-    };
-
-    loadFollowCounts();
-  }, [seller?.id]);
-
-  // Scroll to top when page loads
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [sellerId]);
-
-  const handleModalSubmit = async (data) => {
+  const handleModalSubmit = async (message) => {
     try {
       const { sendMessage } = await import('./api/messages');
-      // Send message to seller without listing ID (general inquiry)
-      await sendMessage(seller.id, data.message, null);
+      await sendMessage(seller.id, message, null);
       alert(t.sellerProfile.messageSuccess);
       setShowMessageModal(false);
     } catch (error) {
-      console.error('Error sending message:', error);
       alert(t.sellerProfile.messageError);
     }
   };
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner size="medium" className="mb-4" />
-          <p className="text-gray-600">{t.sellerProfile.loadingSeller}</p>
-        </div>
-      </div>
-    );
-  }
 
-  // Show error if seller not found
-  if (!seller) {
-    return (
-      <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.sellerProfile.sellerNotFound}</h2>
-          <p className="text-gray-600 mb-4">{t.sellerProfile.sellerDoesNotExist}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-          >
-            {t.sellerProfile.backToHome}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
-  // Satıcının ilanlarını filtrele
-  // const sellerListings = mockListings.filter(l => String(l.sellerId) === sellerId); // This line is now handled by state
-
-  // Satıcının ilanlarına göre kategorileri belirle
   const sellerCategories = sellerListings.reduce((acc, listing) => {
     const cat = listing.category;
     acc[cat] = (acc[cat] || 0) + 1;
     return acc;
   }, {});
 
-  // Filter listings by selected category
   const filteredListings = selectedCategory === t.sellerProfile.all
     ? sellerListings
     : sellerListings.filter(l => l.category === selectedCategory);
 
-  if (!seller) {
-    return <div className="p-8 text-center">{t.sellerProfile.sellerNotFound}</div>;
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#FDFDFF]"><LoadingSpinner /></div>;
+  if (!seller) return <div className="min-h-screen flex items-center justify-center bg-[#FDFDFF]"><div className="text-neutral-400 font-bold">{t.sellerProfile.sellerNotFound}</div></div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#FDFDFF]">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 text-red-500 hover:text-red-600 flex items-center gap-2"
+          className="mb-8 group flex items-center gap-2 text-neutral-400 hover:text-red-500 transition-all duration-300 font-bold text-sm uppercase tracking-widest"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-neutral-100 flex items-center justify-center group-hover:bg-red-50 group-hover:border-red-100 transition-all">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </div>
           {t.productDetail.back}
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar - Seller Info & Categories */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Seller Profile Card */}
-            <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-              {/* Profile Picture - Centered at top */}
-              <div className="mb-4">
-                <img
-                  src={seller.store_logo || seller.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.full_name || 'User')}&background=ef4444&color=fff&size=200`}
-                  alt={seller.full_name}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-gray-100 mx-auto shadow-md"
-                />
-              </div>
-
-              {/* Seller Name */}
-              <div className="mb-3">
-                <h2 className="text-2xl font-bold text-gray-900">{seller.full_name || t.productDetail.unknownSeller}</h2>
-              </div>
-
-              {/* User Type Badge */}
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${(seller.sellerType || seller.seller_type) === 'Gewerblicher Nutzer'
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'bg-gray-100 text-gray-800'
-                  }`}>
-                  {(seller.sellerType || seller.seller_type) === 'Gewerblicher Nutzer' ? t.addListing.commercial : t.addListing.private}
-                </span>
-              </div>
-
-              {/* Member Status & Since */}
-              <div className="flex flex-col items-center gap-1 mb-4">
-                <div className="flex items-center gap-1.5">
-                  <div className={`w-2 h-2 rounded-full ${seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                  <span className="text-sm font-bold text-gray-700">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
+            <div className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-neutral-100/50 p-8 text-center relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-red-50 to-rose-50 opacity-40 -z-0"></div>
+              <div className="relative z-10">
+                <div className="mb-6 relative inline-block">
+                  <div className="absolute -inset-2 bg-gradient-to-tr from-red-500 to-rose-500 rounded-full opacity-10 group-hover:opacity-20 transition-opacity blur-md"></div>
+                  <img
+                    src={seller.store_logo || seller.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.full_name || 'User')}&background=ef4444&color=fff&size=200`}
+                    alt={seller.full_name}
+                    className="w-28 h-28 rounded-2xl object-cover border-4 border-white mx-auto shadow-2xl relative z-10 group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                  {seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 && (
+                    <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full z-20 shadow-sm"></div>
+                  )}
+                </div>
+                <div className="mb-4">
+                  <h2 className="text-3xl font-display font-black text-neutral-900 tracking-tight leading-tight">
+                    {seller.full_name || t.productDetail.unknownSeller}
+                  </h2>
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${(seller.sellerType || seller.seller_type) === 'Gewerblicher Nutzer'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
+                      : 'bg-neutral-900 text-white shadow-lg shadow-neutral-100'
+                      }`}>
+                      {(seller.sellerType || seller.seller_type) === 'Gewerblicher Nutzer' ? t.addListing.commercial : t.addListing.private}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-1 mb-6">
+                  <div className="flex items-center gap-2 text-sm font-bold text-neutral-500 uppercase tracking-tight">
                     {formatLastSeen(seller.last_seen)}
-                  </span>
-                </div>
-                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">{t.sellerProfile.memberSince} {seller.created_at ? new Date(seller.created_at).getFullYear() : 'N/A'}</p>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-center">
-                    <div className="text-lg font-extrabold text-gray-900">{sellerListings.length}</div>
-                    <div className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">{t.sellerProfile.listings}</div>
                   </div>
-                  <div className="text-center border-l border-gray-200">
-                    <div className="text-lg font-extrabold text-gray-900">{followersCount}</div>
-                    <div className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">{t.sellerProfile.followers}</div>
+                  <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">{t.sellerProfile.memberSince} {seller.created_at ? new Date(seller.created_at).getFullYear() : 'N/A'}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-neutral-50/50 rounded-2xl p-4 border border-neutral-100 transition-colors hover:bg-white hover:border-red-100 group/stat">
+                    <div className="text-2xl font-black text-neutral-900 group-hover/stat:text-red-500 transition-colors">{sellerListings.length}</div>
+                    <div className="text-[10px] text-neutral-400 uppercase font-black tracking-widest">{t.sellerProfile.listings}</div>
+                  </div>
+                  <div className="bg-neutral-50/50 rounded-2xl p-4 border border-neutral-100 transition-colors hover:bg-white hover:border-red-100 group/stat">
+                    <div className="text-2xl font-black text-neutral-900 group-hover/stat:text-red-500 transition-colors">{followersCount}</div>
+                    <div className="text-[10px] text-neutral-400 uppercase font-black tracking-widest">{t.sellerProfile.followers}</div>
                   </div>
                 </div>
-              </div>
-
-              {/* Action Buttons - Only show for other users' profiles */}
-              {!isOwnProfile && (
-                <div className="space-y-3">
-                  <button
-                    onClick={async () => {
-                      setFollowLoading(true);
-                      await toggleFollowSeller(seller.id);
-                      // Refresh follower count after follow/unfollow
-                      try {
-                        const { getFollowersCount } = await import('./api/follows');
-                        const newCount = await getFollowersCount(seller.id);
-                        setFollowersCount(newCount);
-                      } catch (error) {
-                        console.error('Error refreshing follower count:', error);
-                      }
-                      setFollowLoading(false);
-                    }}
-                    disabled={followLoading}
-                    className={`w-full font-bold py-3 px-4 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 transform active:scale-95 ${isSellerFollowed(seller.id)
-                      ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                      : 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-red-200'
-                      } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    {followLoading ? (
-                      <>
-                        <LoadingSpinner size="small" />
-                        <span>{t.sellerProfile.loading}</span>
-                      </>
-                    ) : (
-                      <>
-                        {isSellerFollowed(seller.id) ? (
-                          <>
-                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>{t.sellerProfile.followed}</span>
-                          </>
+                {!isOwnProfile && (
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={async () => {
+                        setFollowLoading(true);
+                        await toggleFollowSeller(seller.id);
+                        try {
+                          const { getFollowersCount } = await import('./api/follows');
+                          const newCount = await getFollowersCount(seller.id);
+                          setFollowersCount(newCount);
+                        } catch (error) {
+                          console.error('Error refreshing follower count:', error);
+                        }
+                        setFollowLoading(false);
+                      }}
+                      disabled={followLoading}
+                      className={`w-full font-black py-4 px-6 rounded-2xl shadow-xl transition-all duration-300 flex items-center justify-center gap-3 transform active:scale-[0.98] ${isSellerFollowed(seller.id)
+                        ? 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                        : 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-red-200'
+                        } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {followLoading ? <LoadingSpinner size="small" /> : (
+                        isSellerFollowed(seller.id) ? (
+                          <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg><span>{t.sellerProfile.followed}</span></>
                         ) : (
-                          <>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                            </svg>
-                            <span>{t.sellerProfile.follow}</span>
-                          </>
-                        )}
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setShowMessageModal(true)}
-                    className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    {t.sellerProfile.message}
-                  </button>
-                </div>
-              )}
+                          <><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg><span>{t.sellerProfile.follow}</span></>
+                        )
+                      )}
+                    </button>
+                    <button
+                      onClick={() => setShowMessageModal(true)}
+                      className="w-full bg-white border-2 border-neutral-100 hover:border-neutral-200 text-neutral-900 font-bold py-3.5 px-6 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h0.01M12 10h0.01M16 10h0.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                      {t.sellerProfile.message}
+                    </button>
+                  </div>
+                )}
 
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-3 text-center">Profili Paylaş</p>
-                <div className="flex justify-center gap-3">
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-                    }}
-                    className="w-10 h-10 bg-[#1877F2] text-white rounded-xl flex items-center justify-center hover:opacity-90 hover:scale-110 transition-all shadow-md"
-                    title="Facebook"
-                  >
-                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      const text = `${seller.full_name} profilini ExVitrin'de keşfedin!`;
-                      window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-                    }}
-                    className="w-10 h-10 bg-[#25D366] text-white rounded-xl flex items-center justify-center hover:opacity-90 hover:scale-110 transition-all shadow-md"
-                    title="WhatsApp"
-                  >
-                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      const text = `${seller.full_name} profilini ExVitrin'de keşfedin!`;
-                      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-                    }}
-                    className="w-10 h-10 bg-zinc-700 text-white rounded-xl flex items-center justify-center hover:bg-zinc-800 hover:scale-110 transition-all shadow-md border border-zinc-600"
-                    title="X"
-                  >
-                    <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 1200 1227">
-                      <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href).then(() => {
-                        alert('Bağlantı panoya kopyalandı!');
-                      });
-                    }}
-                    className="w-10 h-10 bg-gray-100 text-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-200 hover:scale-110 transition-all shadow-md"
-                    title="Bağlantıyı Kopyala"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                    </svg>
-                  </button>
+                {/* Profile Share Section Inside Card */}
+                <div className="mt-8 pt-8 border-t border-neutral-50 flex flex-col items-center">
+                  <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em] mb-4">{t.sellerProfile.shareProfile || 'Profili Paylaş'}</p>
+                  <div className="flex justify-center gap-3">
+                    {[
+                      { icon: <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>, color: 'bg-[#1877F2]', action: 'facebook' },
+                      { icon: <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967-0.273-0.099-0.471-0.148-0.67.15-0.197.297-0.767.966-0.94 1.164-0.173.199-0.347.223-0.644.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458.13-0.606.134-0.133.298-0.347.446-0.52.149-0.174.198-0.298.298-0.497.099-0.198.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52.074-0.792.372-0.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-0.085 1.758-0.719 2.006-1.413.248-0.694.248-1.289.173-1.413-0.074-0.124-0.272-0.198-0.57-0.347m-5.421 7.403h-0.004a9.27 9.27 0 01-4.723-1.292l-0.339-0.202-3.51.92 1.017-3.65-0.213-0.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" /></svg>, color: 'bg-[#25D366]', action: 'whatsapp' },
+                      { icon: <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 1200 1227"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" /></svg>, color: 'bg-[#1DA1F2]', action: 'twitter' },
+                      { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>, color: 'bg-neutral-500', action: 'copy' },
+                    ].map((social, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          const url = window.location.href;
+                          if (social.action === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                          if (social.action === 'whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, '_blank');
+                          if (social.action === 'twitter') window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`, '_blank');
+                          if (social.action === 'copy') {
+                            navigator.clipboard.writeText(url).then(() => alert('Link kopyalandı!'));
+                          }
+                        }}
+                        className={`w-9 h-9 ${social.color} text-white rounded-xl flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-neutral-200`}
+                      >
+                        {social.icon}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Tab Navigation */}
-            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-6">
-              <h3 className="font-semibold text-gray-900 mb-4 pb-2 border-b">
-                {isOwnProfile ? t.sellerProfile.myProfile : t.sellerProfile.stats}
-              </h3>
+            <div className="bg-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-neutral-100/50 p-6">
+              <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em] mb-4">{t.sellerProfile.categories}</p>
               <nav className="space-y-1">
-                {[
-                  { id: 'listings', name: t.sellerProfile.listings },
-                  { id: 'ratings', name: t.sellerProfile.reviews }
-                ].concat(isOwnProfile ? [
-                  { id: 'favorites', name: t.nav.favorites },
-                  { id: 'messages', name: t.nav.messages },
-                  { id: 'following', name: t.sellerProfile.following },
-                  { id: 'settings', name: t.nav.settings }
-                ] : []).map(tab => (
+                <button
+                  onClick={() => setSelectedCategory(t.sellerProfile.all)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === t.sellerProfile.all
+                    ? 'bg-red-50 text-red-600 font-black'
+                    : 'text-neutral-500 hover:bg-neutral-50 font-bold'
+                    }`}
+                >
+                  <span className="text-sm font-bold">{t.sellerProfile.all}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${selectedCategory === t.sellerProfile.all ? 'bg-red-200 text-red-700' : 'bg-neutral-100 text-neutral-400'}`}>
+                    {sellerListings.length}
+                  </span>
+                </button>
+                {Object.entries(sellerCategories).map(([catName, count]) => (
                   <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${activeTab === tab.id
-                      ? 'bg-red-50 text-red-600 font-semibold'
-                      : 'text-gray-700 hover:bg-gray-50'
+                    key={catName}
+                    onClick={() => setSelectedCategory(catName)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === catName
+                      ? 'bg-red-50 text-red-600 font-black'
+                      : 'text-neutral-500 hover:bg-neutral-50 font-bold'
                       }`}
                   >
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">{tab.name}</span>
-                      {tab.id === 'ratings' && averageRating.count > 0 && (
-                        <span className="bg-gray-100 px-2 py-0.5 rounded-full text-[10px] text-gray-500">
-                          {averageRating.count}
-                        </span>
-                      )}
-                    </div>
+                    <span className="text-sm font-bold truncate pr-2">{catName}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${selectedCategory === catName ? 'bg-red-200 text-red-700' : 'bg-neutral-100 text-neutral-400'}`}>
+                      {count}
+                    </span>
                   </button>
                 ))}
               </nav>
             </div>
 
-            {/* Categories - Only show when not in own profile or when viewing listings */}
-            {(!isOwnProfile || activeTab === 'listings') && (
-              <div className="bg-white rounded-lg shadow-sm p-4 sticky top-6">
-                <h3 className="font-semibold text-gray-900 mb-4 pb-2 border-b">{t.sellerProfile.categories}</h3>
-                <ul className="space-y-2">
-                  <li
-                    onClick={() => setSelectedCategory(t.sellerProfile.all)}
-                    className={`flex justify-between items-center font-medium cursor-pointer transition-colors ${selectedCategory === t.sellerProfile.all ? 'text-red-500' : 'text-gray-600 hover:text-red-500'}`}
-                  >
-                    <span>{t.sellerProfile.all}</span>
-                    <span className="bg-gray-100 px-2 py-0.5 rounded-full text-xs text-gray-600">{sellerListings.length}</span>
-                  </li>
-                  {Object.entries(sellerCategories).map(([catName, count]) => (
-                    <li
-                      key={catName}
-                      onClick={() => setSelectedCategory(catName)}
-                      className={`flex justify-between items-center cursor-pointer transition-colors ${selectedCategory === catName ? 'text-red-500 font-medium' : 'text-gray-600 hover:text-red-500'}`}
-                    >
-                      <span>{catName}</span>
-                      <span className="bg-gray-100 px-2 py-0.5 rounded-full text-xs text-gray-600">{count}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+
           </div>
 
-          {/* Right Side - Tab Content */}
-          <div className="lg:col-span-3">
-            {/* Listings Tab */}
-            {activeTab === 'listings' && (
-              <div>
-                {/* Seller Info Panel */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 font-sans">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                      <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">{t.sellerProfile.contact}</h2>
-                      <div className="space-y-3">
-                        {seller.phone && (
-                          <div className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                              </svg>
-                            </div>
-                            <span className="text-sm font-semibold text-gray-700">{seller.phone}</span>
-                          </div>
-                        )}
-                        {seller.address && (
-                          <div className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                              </svg>
-                            </div>
-                            <span className="text-sm font-semibold text-gray-700">
-                              {seller.street ? `${seller.street}, ` : ''}{seller.city}
-                            </span>
-                          </div>
-                        )}
-                        {seller.website && (
-                          <div className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-all shadow-sm">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                              </svg>
-                            </div>
-                            <a href={`http://${seller.website}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-red-600 transition-colors">
-                              {seller.website}
-                            </a>
-                          </div>
-                        )}
-                        {seller.instagram_url && (
-                          <div className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-pink-50 flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-sm">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3.941" /></svg>
-                            </div>
-                            <a href={`https://${seller.instagram_url.includes('instagram.com') ? seller.instagram_url : `instagram.com/${seller.instagram_url.replace('@', '')}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-pink-600 transition-colors">
-                              Instagram
-                            </a>
-                          </div>
-                        )}
-                        {seller.facebook_url && (
-                          <div className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-                            </div>
-                            <a href={`https://${seller.facebook_url.includes('facebook.com') ? seller.facebook_url : `facebook.com/${seller.facebook_url}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-blue-600 transition-colors">
-                              Facebook
-                            </a>
-                          </div>
-                        )}
-                        {seller.twitter_url && (
-                          <div className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-900 group-hover:bg-neutral-900 group-hover:text-white transition-all shadow-sm">
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 1200 1227"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" /></svg>
-                            </div>
-                            <a href={`https://${seller.twitter_url.includes('twitter.com') || seller.twitter_url.includes('x.com') ? seller.twitter_url : `x.com/${seller.twitter_url}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-neutral-900 transition-colors">
-                              X / Twitter
-                            </a>
-                          </div>
-                        )}
-                        {seller.tiktok_url && (
-                          <div className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-all shadow-sm">
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 2.76 3.48 2.53 1.2-.13 2.18-.84 2.66-1.89.2-.41.28-.85.28-1.31-.04-3.56-.01-7.11-.02-10.67z" /></svg>
-                            </div>
-                            <a href={`https://${seller.tiktok_url.includes('tiktok.com') ? seller.tiktok_url : `tiktok.com/@${seller.tiktok_url.replace('@', '')}`}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 hover:text-black transition-colors">
-                              TikTok
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+          <div className="lg:col-span-8 flex flex-col gap-8">
+            <div className="bg-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-neutral-100/50 p-2 flex gap-2">
+              {[
+                { id: 'listings', label: t.sellerProfile.listings, icon: '📦' },
+                { id: 'ratings', label: t.sellerProfile.reviews, icon: '⭐' },
+                ...(isOwnProfile ? [
+                  { id: 'following', label: t.sellerProfile.following, icon: '👥' },
+                  { id: 'settings', label: t.nav.settings, icon: '⚙️' }
+                ] : [])
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
+                    ? 'bg-neutral-900 text-white shadow-xl shadow-neutral-200'
+                    : 'text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50'
+                    }`}
+                >
+                  <span className="text-lg">{tab.icon}</span>
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              ))}
+            </div>
 
-                    <div className="space-y-4">
-                      <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">{t.sellerProfile.stats}</h2>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col items-center justify-center shadow-inner group hover:bg-white hover:border-red-100 transition-all duration-300">
-                          <div className="text-2xl font-black text-gray-900 group-hover:text-red-600 transition-colors">{followingCount}</div>
-                          <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">{t.sellerProfile.following}</div>
+            <div className="bg-white rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.03)] border border-neutral-100/50 p-4 sm:p-8 min-h-[600px]">
+              {activeTab === 'listings' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-neutral-50 pb-4">
+                    <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight">
+                      {selectedCategory === t.sellerProfile.all ? t.sellerProfile.activeListings : selectedCategory}
+                    </h3>
+                  </div>
+                  <div className="flex flex-col gap-6">
+                    {filteredListings.length > 0 ? (
+                      filteredListings.map(listing => (
+                        <div key={listing.id} className="transform hover:-translate-y-1 transition-transform duration-300">
+                          <HorizontalListingCard
+                            listing={listing}
+                            toggleFavorite={toggleFavorite}
+                            isFavorite={isFavorite}
+                            isOwnListing={isOwnProfile}
+                            compact={true}
+                          />
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col items-center justify-center shadow-inner group hover:bg-white hover:border-red-100 transition-all duration-300">
-                          <div className="text-2xl font-black text-gray-900 group-hover:text-red-600 transition-colors">{sellerListings.filter(l => l.status === 'active').length}</div>
-                          <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">{t.sellerProfile.activeListings}</div>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200 mb-4 text-4xl">📭</div>
+                        <p className="text-neutral-400 font-bold">{t.sellerProfile.listingsNotFound || 'Henüz ilan bulunmuyor.'}</p>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
+              )}
 
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">{t.sellerProfile.activeListings}</h2>
-                  <div className="grid grid-cols-1 gap-4">
-                    {filteredListings.map(listing => (
-                      <HorizontalListingCard
-                        key={listing.id}
-                        listing={listing}
-                        toggleFavorite={toggleFavorite}
-                        isFavorite={isFavorite}
-                        isOwnListing={isOwnProfile}
-                        compact={true}
-                      />
-                    ))}
-                  </div>
-                  {filteredListings.length === 0 && (
-                    <div className="text-center py-12 text-gray-500">
-                      {t.sellerProfile.all} {t.sellerProfile.listings.toLowerCase()} bulunamadı.
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Ratings Tab */}
-            {activeTab === 'ratings' && (
-              <div className="space-y-6">
-                {/* Rating Summary Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                  <div className="flex flex-col md:flex-row items-center gap-12">
+              {activeTab === 'ratings' && (
+                <div className="space-y-10">
+                  <div className="bg-neutral-50/50 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-12 border border-neutral-100">
                     <div className="text-center">
-                      <div className="text-6xl font-black text-gray-900 mb-2">
+                      <div className="text-7xl font-black text-neutral-900 leading-none mb-2">
                         {averageRating.average}
-                        <span className="text-2xl text-gray-400 font-normal ml-1">/ 5</span>
+                        <span className="text-2xl text-neutral-300 font-normal ml-2">/ 5</span>
                       </div>
-                      <div className="flex items-center justify-center gap-1 mb-3 text-2xl">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span
-                            key={star}
-                            className={`${star <= Math.round(averageRating.average) ? 'text-yellow-400' : 'text-gray-200'} drop-shadow-sm`}
-                          >
-                            ★
-                          </span>
+                      <div className="flex items-center justify-center gap-1 mb-4 text-2xl">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <span key={s} className={`${s <= Math.round(averageRating.average) ? 'text-yellow-400' : 'text-neutral-200'}`}>★</span>
                         ))}
                       </div>
-                      <div className="text-sm font-bold text-gray-500 uppercase tracking-widest bg-gray-50 px-4 py-1.5 rounded-full inline-block">
+                      <div className="inline-block px-4 py-1 bg-white rounded-full text-[10px] font-black text-neutral-400 uppercase tracking-widest border border-neutral-100">
                         {averageRating.count} {t.sellerProfile.reviews}
                       </div>
                     </div>
-
-                    <div className="flex-1 w-full space-y-3">
+                    <div className="flex-1 w-full max-w-sm space-y-3">
                       {[5, 4, 3, 2, 1].map((star) => {
                         const count = ratings.filter(r => r.rating === star).length;
                         const percentage = averageRating.count > 0 ? (count / averageRating.count) * 100 : 0;
                         return (
                           <div key={star} className="flex items-center gap-4 group">
-                            <span className="text-sm font-bold text-gray-600 w-16 whitespace-nowrap group-hover:text-red-600 transition-colors uppercase tracking-tighter">
-                              {star} {t.sellerProfile.listings.includes('İlan') ? 'Yıldız' : 'Stars'}
-                            </span>
-                            <div className="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                              <div
-                                className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full shadow-sm group-hover:from-red-500 group-hover:to-red-600 transition-all duration-500"
-                                style={{ width: `${percentage}%` }}
-                              />
+                            <span className="text-xs font-black text-neutral-400 w-12 tracking-tighter uppercase group-hover:text-neutral-900 transition-colors">{star} Yıldız</span>
+                            <div className="flex-1 h-3 bg-white rounded-full overflow-hidden border border-neutral-100 shadow-inner">
+                              <div className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full group-hover:from-red-500 group-hover:to-rose-500 transition-all duration-500" style={{ width: `${percentage}%` }} />
                             </div>
-                            <span className="text-sm font-black text-gray-400 w-8 text-right group-hover:text-gray-900 transition-colors">
-                              {count}
-                            </span>
+                            <span className="text-xs font-black text-neutral-300 w-8 text-right group-hover:text-neutral-900 transition-colors">{count}</span>
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                </div>
-
-                {/* Reviews List */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="px-8 py-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                    <h3 className="text-lg font-bold text-gray-900 uppercase tracking-wider">{t.sellerProfile.reviews}</h3>
-                  </div>
-                  <div className="divide-y divide-gray-50">
+                  <div className="divide-y divide-neutral-50">
                     {ratings.length > 0 ? (
                       ratings.map((review) => (
-                        <div key={review.id} className="p-8 hover:bg-gray-50/50 transition-all duration-300">
-                          <div className="flex items-start gap-4">
+                        <div key={review.id} className="py-8 first:pt-0 group">
+                          <div className="flex gap-4">
                             <img
                               src={review.rater?.avatar_url || review.rater?.store_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.rater?.full_name || 'U')}&background=f3f4f6&color=4b5563&bold=true`}
                               alt={review.rater?.full_name}
-                              className="w-12 h-12 rounded-xl object-cover shadow-sm border-2 border-white ring-1 ring-gray-100"
+                              className="w-14 h-14 rounded-2xl object-cover shadow-sm border border-neutral-100 flex-shrink-0"
                             />
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1">
                               <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                                <h4 className="font-bold text-gray-900 truncate">{review.rater?.full_name}</h4>
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                  {new Date(review.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                </span>
+                                <h5 className="font-black text-neutral-900 tracking-tight">{review.rater?.full_name}</h5>
+                                <span className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
                               </div>
                               <div className="flex items-center gap-1 mb-3">
                                 {[1, 2, 3, 4, 5].map((star) => (
-                                  <span
-                                    key={star}
-                                    className={`text-sm ${star <= review.rating ? 'text-yellow-400' : 'text-gray-200'}`}
-                                  >
-                                    ★
-                                  </span>
+                                  <span key={star} className={`text-sm ${star <= review.rating ? 'text-yellow-400' : 'text-neutral-200'}`}>★</span>
                                 ))}
                               </div>
-                              {review.comment && (
-                                <p className="text-gray-600 leading-relaxed text-sm italic font-medium">
-                                  "{review.comment}"
-                                </p>
-                              )}
+                              {review.comment && <p className="text-neutral-600 text-sm italic">"{review.comment}"</p>}
                             </div>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-20 px-8">
-                        <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 mx-auto mb-4">
-                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                          </svg>
-                        </div>
-                        <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">{t.sellerProfile.noRatingsYet}</p>
+                      <div className="text-center py-20 bg-neutral-50 rounded-[2rem] border-2 border-dashed border-neutral-100">
+                        <p className="text-neutral-400 font-bold uppercase tracking-widest text-sm">{t.sellerProfile.noRatingsYet}</p>
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
-            )}
-          </div >
+              )}
 
-          <MessageModal
-            isOpen={showMessageModal}
-            onClose={() => setShowMessageModal(false)}
-            onSubmit={handleModalSubmit}
-            sellerName={seller.full_name || t.sellerProfile.message}
-            listingTitle={t.sellerProfile.inquiryToSeller}
-          />
-        </div >
-      </div >
+              {isOwnProfile && activeTab === 'following' && (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200 mb-4 text-4xl">👥</div>
+                  <h3 className="text-xl font-black text-neutral-900 mb-4">Takip Ettiklerim</h3>
+                  <p className="text-neutral-400 font-bold mb-6">Bu özellik henüz geliştirilme aşamasındadır.</p>
+                  <button onClick={() => navigate('/following')} className="px-8 py-3 bg-neutral-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Takip Ettiklerime Git</button>
+                </div>
+              )}
+
+              {isOwnProfile && activeTab === 'settings' && (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200 mb-4 text-4xl">⚙️</div>
+                  <h3 className="text-xl font-black text-neutral-900 mb-4">Profil Ayarları</h3>
+                  <button onClick={() => navigate('/settings')} className="px-8 py-3 bg-neutral-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Ayarlara Git</button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <MessageModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        onSubmit={handleModalSubmit}
+        sellerName={seller.full_name || t.sellerProfile.message}
+        listingTitle={t.sellerProfile.inquiryToSeller}
+      />
     </div >
   );
 };
@@ -12056,10 +11877,11 @@ export const Footer = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
           {/* ExVitrin */}
-          <div className="hidden md:block">
+          <div>
             <h3 className="text-white font-semibold mb-4">ExVitrin</h3>
             <ul className="space-y-2 text-sm">
               <li><a href="/hakkimizda" className="hover:text-white transition-colors">{t.footer.aboutUs}</a></li>
+
               <li><a href="/mobile-apps" className="hover:text-white transition-colors">{t.footer.mobileApps}</a></li>
               <li><a href="/hayvan-haklari-ve-yasal-uyari" className="hover:text-white transition-colors">{t.footer.animalLawLink}</a></li>
               <li><a href="/emlak-ilanlari-yasal-uyari" className="hover:text-white transition-colors">{t.footer.realEstateLawLink}</a></li>
@@ -12070,7 +11892,7 @@ export const Footer = () => {
 
 
           {/* Für Unternehmen */}
-          <div className="hidden md:block">
+          <div>
             <h3 className="text-white font-semibold mb-4">{t.footer.forCompanies}</h3>
             <ul className="space-y-2 text-sm">
 
@@ -12090,42 +11912,44 @@ export const Footer = () => {
               </span>
             </div>
 
+
+
             {/* Social Media Icons */}
             <div className="flex gap-4">
               {/* Facebook */}
               <a href="https://facebook.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Facebook">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
               </a>
               {/* Instagram */}
               <a href="https://instagram.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Instagram">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  <path d="M12 2.163c3.204 0 3.584 0.012 4.85 0.07 3.252 0.148 4.771 1.691 4.919 4.919 0.058 1.265 0.069 1.645 0.069 4.849 0 3.205-0.012 3.584-0.069 4.849-0.149 3.225-1.664 4.771-4.919 4.919-1.266 0.058-1.644 0.07-4.85 0.07-3.204 0-3.584-0.012-4.849-0.07-3.26-0.149-4.771-1.699-4.919-4.92-0.058-1.265-0.07-1.644-0.07-4.849 0-3.204 0.013-3.583 0.07-4.849 0.149-3.227 1.664-4.771 4.919-4.919 1.266-0.057 1.645-0.069 4.849-0.069zm0-2.163c-3.259 0-3.667 0.014-4.947 0.072-4.358 0.2-6.78 2.618-6.98 6.98-0.059 1.281-0.073 1.689-0.073 4.948 0 3.259 0.014 3.668 0.072 4.948 0.2 4.358 2.618 6.78 6.98 6.98 1.281 0.058 1.689 0.072 4.948 0.072 3.259 0 3.668-0.014 4.948-0.072 4.354-0.2 6.782-2.618 6.979-6.98 0.059-1.28 0.073-1.689 0.073-4.948 0-3.259-0.014-3.667-0.072-4.947-0.196-4.354-2.617-6.78-6.979-6.98-1.281-0.059-1.69-0.073-4.949-0.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-0.796 0-1.441 0.645-1.441 1.44s0.645 1.44 1.441 1.44c0.795 0 1.439-0.645 1.439-1.44s-0.644-1.44-1.439-1.44z" />
                 </svg>
               </a>
               {/* YouTube */}
               <a href="https://youtube.com/@exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="YouTube">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-0.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-0.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
               </a>
               {/* TikTok */}
               <a href="https://www.tiktok.com/@exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="TikTok">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                  <path d="M12.525.02c1.31-0.02 2.61-0.01 3.91-0.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-0.05-2.89-0.35-4.2-0.97-0.57-0.26-1.1-0.59-1.62-0.93-0.01 2.92.01 5.84-0.02 8.75-0.08 1.4-0.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-0.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-0.02-0.5-0.03-1-0.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-0.04 2.96-0.04 4.44-0.99-0.32-2.15-0.23-3.02.37-0.63.41-1.11 1.04-1.36 1.75-0.21.51-0.15 1.07-0.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-0.01 2.19-0.66 2.77-1.61.19-0.33.4-0.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-0.01-8.05.02-12.07z" />
                 </svg>
               </a>
               {/* Pinterest */}
               <a href="https://pinterest.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Pinterest">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
+                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-0.105-0.949-0.199-2.403.041-3.439.219-0.937 1.406-5.957 1.406-5.957s-0.359-0.72-0.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-0.653 2.567-0.992 3.992-0.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-0.09.375-0.293 1.199-0.334 1.363-0.053.225-0.172.271-0.401.165-1.495-0.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-0.629-2.758-1.379l-0.749 2.848c-0.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
                 </svg>
               </a>
               {/* Threads */}
               <a href="https://threads.net/@exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Threads">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.704-1.8 0-3.19-.65-4.14-1.93C6.87 14.79 6.3 12.96 6.3 10.77c0-2.19.57-4.02 1.69-5.44.95-1.28 2.34-1.93 4.14-1.93 1.8 0 3.19.65 4.14 1.93.95 1.28 1.42 3.11 1.42 5.44 0 .94-.06 1.76-.18 2.46.49.28.88.61 1.17.99.58.76.87 1.71.87 2.84 0 1.27-.38 2.37-1.14 3.29-1.76 2.12-4.29 3.19-7.54 3.19zm.014-2.717c1.08 0 1.898-.31 2.438-.93.54-.62.81-1.54.81-2.76 0-.81-.15-1.54-.45-2.19-.3-.65-.75-1.17-1.35-1.56-.6-.39-1.35-.59-2.25-.59-1.08 0-1.898.31-2.438.93-.54.62-.81 1.54-.81 2.76 0 1.22.27 2.14.81 2.76.54.62 1.358.93 2.438.93z" />
+                  <path d="M12.186 24h-0.007c-3.581-0.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-0.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h0.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-0.02 4.358-0.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-0.31-0.71-0.873-1.3-1.634-1.75-0.192 1.352-0.622 2.446-1.284 3.272-0.886 1.102-2.14 1.704-3.73 1.704-1.8 0-3.19-0.65-4.14-1.93C6.87 14.79 6.3 12.96 6.3 10.77c0-2.19.57-4.02 1.69-5.44.95-1.28 2.34-1.93 4.14-1.93 1.8 0 3.19.65 4.14 1.93.95 1.28 1.42 3.11 1.42 5.44 0 .94-0.06 1.76-0.18 2.46.49.28.88.61 1.17.99.58.76.87 1.71.87 2.84 0 1.27-0.38 2.37-1.14 3.29-1.76 2.12-4.29 3.19-7.54 3.19zm.014-2.717c1.08 0 1.898-0.31 2.438-0.93.54-0.62.81-1.54.81-2.76 0-0.81-0.15-1.54-0.45-2.19-0.3-0.65-0.75-1.17-1.35-1.56-0.6-0.39-1.35-0.59-2.25-0.59-1.08 0-1.898.31-2.438.93-0.54.62-0.81 1.54-0.81 2.76 0 1.22.27 2.14.81 2.76.54.62 1.358.93 2.438.93z" />
                 </svg>
               </a>
             </div>
@@ -12149,7 +11973,7 @@ const ShareModal = ({ isOpen, onClose, url, title }) => {
       name: 'Facebook',
       icon: (
         <svg className="w-6 h-6 fill-currentColor" viewBox="0 0 24 24">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
         </svg>
       ),
       color: 'bg-[#1877F2]',
@@ -12159,7 +11983,7 @@ const ShareModal = ({ isOpen, onClose, url, title }) => {
       name: 'WhatsApp',
       icon: (
         <svg className="w-6 h-6 fill-currentColor" viewBox="0 0 24 24">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+          <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967-0.273-0.099-0.471-0.148-0.67.15-0.197.297-0.767.966-0.94 1.164-0.173.199-0.347.223-0.644.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458.13-0.606.134-0.133.298-0.347.446-0.52.149-0.174.198-0.298.298-0.497.099-0.198.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52.074-0.792.372-0.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-0.085 1.758-0.719 2.006-1.413.248-0.694.248-1.289.173-1.413-0.074-0.124-0.272-0.198-0.57-0.347m-5.421 7.403h-0.004a9.27 9.27 0 01-4.723-1.292l-0.339-0.202-3.51.92 1.017-3.65-0.213-0.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
         </svg>
       ),
       color: 'bg-[#25D366]',
@@ -12333,7 +12157,7 @@ export const AnimalProtectionPage = () => {
         <div className="bg-red-600 px-8 py-10 text-white text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6">
             <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
           <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-4">
@@ -12377,7 +12201,7 @@ export const AnimalProtectionPage = () => {
 
           <section className="bg-blue-50 rounded-2xl p-6 text-sm text-blue-800 flex gap-4">
             <svg className="w-6 h-6 shrink-0 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h0.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <p>
               Herhangi bir yasa dışı durum veya kanun aykırılık tespit ettiğiniz ilanları platformumuzun "İlanı Bildir" özelliğini kullanarak tarafımıza iletebilirsiniz. Gereken durumlarda yetkili mercilerle iş birliği yapılmaktadır.
@@ -12451,7 +12275,7 @@ export const RealEstateLegalPage = () => {
 
           <section className="bg-amber-50 rounded-2xl p-6 text-sm text-amber-800 flex gap-4">
             <svg className="w-6 h-6 shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
             </svg>
             <p>
               Şüpheli veya dolandırıcılık amacı taşıdığını düşündüğünüz emlak ilanlarını "İlanı Bildir" özelliğini kullanarak tarafımıza bildirebilirsiniz.
@@ -12526,7 +12350,7 @@ export const VehicleLegalPage = () => {
 
           <section className="bg-red-50 rounded-2xl p-6 text-sm text-red-800 flex gap-4">
             <svg className="w-6 h-6 shrink-0 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
             </svg>
             <p>
               Yanıltıcı bilgi içeren, sahte belge veya kilometre tahrifi yapılmış araç ilanlarını "İlanı Bildir" özelliğini kullanarak bildirmenizi rica ederiz.

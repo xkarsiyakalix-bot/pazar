@@ -92,7 +92,7 @@ export const emailNotifications = {
     console.log('📧 INVOICE NOTIFICATION EMAIL');
     console.log('To:', invoiceData.email);
     console.log('Subject: Ihre Rechnung von ExVitrin', invoiceData.invoiceNumber);
-    console.log('Total:', invoiceData.amount, '₺');
+    console.log('Total:', invoiceData.amount, ' TL');
 
     showNotification('Rechnung erfolgreich per E-Mail versendet!', 'success');
   },
@@ -233,7 +233,7 @@ export const emailTemplates = {
           
           <div class="invoice-card">
             <div class="invoice-id">${invoiceData.invoiceNumber}</div>
-            <div class="amount">${invoiceData.amount} ₺</div>
+            <div class="amount">${invoiceData.amount} TL</div>
             <p><strong>Paket:</strong> ${invoiceData.packageType}</p>
             <p><strong>Anzeige:</strong> ${invoiceData.listingTitle}</p>
           </div>

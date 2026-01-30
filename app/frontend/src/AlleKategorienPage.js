@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CategoryGallery, HorizontalListingCard, getCategoryPath } from './components';
+import { CategoryGallery, HorizontalListingCard, ListingCard, getCategoryPath } from './components';
 import { getTurkishCities, getCategoryTranslation } from './translations';
 import { fetchListings } from './api/listings';
 import { Breadcrumb } from './components/Breadcrumb';
@@ -144,30 +144,36 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
         let isMounted = true;
 
         const fetchListingsFromSupabase = async () => {
-            // Safety timeout to prevent infinite spinner
-            const safetyTimeout = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 5000));
+            // Increased safety timeout to 30s to accommodate slower Safari/Mobile initializations
+            const safetyTimeout = new Promise(resolve => setTimeout(() => resolve('TIMEOUT'), 30000));
 
             try {
                 setLoading(true);
+                console.log('AlleKategorien - Starting fetch...');
 
-                // Race between fetch and 5s timeout
+                // Race between fetch and 30s timeout
                 const result = await Promise.race([
                     fetchListings({}),
                     safetyTimeout
                 ]);
 
                 if (result === 'TIMEOUT') {
-                    console.warn('AlleKategorien - Fetch timed out, using mock data');
-                    if (isMounted) setListings([]);
+                    console.warn('AlleKategorien - Fetch timed out after 30s');
+                    if (isMounted) {
+                        setListings([]);
+                    }
                 } else {
-                    console.log('AlleKategorien - Fetched listings:', result?.length);
+                    console.log('AlleKategorien - Fetched listings successfully:', result?.length);
                     if (isMounted) setListings(result || []);
                 }
             } catch (error) {
-                console.error('AlleKategorien - Error fetching listings:', error);
+                console.error('AlleKategorien - Error in fetchListingsFromSupabase:', error);
                 if (isMounted) setListings([]);
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                    console.log('AlleKategorien - Loading state set to false');
+                }
             }
         };
 
@@ -299,7 +305,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
     // Generate breadcrumb items
     const breadcrumbItems = [
-        { label: 'Ana Sayfa', path: '/' }
+        { label: 'ExVitrin', path: '/' }
     ];
 
     if (searchTerm) {
@@ -315,36 +321,24 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="max-w-[1400px] mx-auto px-0 sm:px-4 py-6">
-                {/* Breadcrumb */}
-                <Breadcrumb items={breadcrumbItems} />
+            <div className="max-w-[1400px] mx-auto px-4 py-6">
 
-                {/* Mobile/Tablet Filter Button */}
-                <div className="xl:hidden mb-6">
-                    <button
-                        onClick={() => setShowMobileFilters(true)}
-                        className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 text-gray-800 rounded-2xl shadow-md border border-gray-100 transition-all active:scale-[0.98]"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-red-50 rounded-xl">
-                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                </svg>
-                            </div>
-                            <span className="font-bold text-base">Filtrele & Kategoriler</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {(selectedCategory !== 'Tüm Kategoriler' || selectedSubCategory || selectedLocations.length > 0 || priceFrom || priceTo) && (
-                                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-red-600 text-white text-xs font-bold rounded-full">
-                                    Aktif
-                                </span>
-                            )}
-                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </button>
-                </div>
+
+
+                {/* Mobile/Tablet Filter Button - Fixed to left */}
+                <button
+                    onClick={() => setShowMobileFilters(true)}
+                    className="xl:hidden fixed left-4 top-24 z-[1001] w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center group"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    {(selectedCategory !== 'Tüm Kategoriler' || selectedSubCategory || selectedLocations.length > 0 || priceFrom || priceTo) && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                            !
+                        </span>
+                    )}
+                </button>
 
                 <div className="flex flex-col xl:flex-row gap-8">
                     {/* Left Sidebar - Categories & Filters (Drawer on Mobile) */}
@@ -358,11 +352,11 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                             onClick={() => setShowMobileFilters(false)}
                         />
 
-                        {/* Sidebar Content Column */}
+                        {/* Sidebar Content Column - Half screen width on mobile */}
                         <div className={`
-                            relative w-[320px] sm:w-[380px] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
-                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 ml-auto xl:ml-0
-                            ${showMobileFilters ? 'animate-in slide-in-from-right duration-300' : ''}
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0
+                            ${showMobileFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>
                             {/* Mobile Header */}
                             <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
@@ -429,13 +423,13 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                             <button
                                                                 key={sub}
                                                                 onClick={(e) => handleSubCategoryClick(sub, e)}
-                                                                className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors flex justify-between items-center ${selectedSubCategory === sub
-                                                                    ? 'bg-red-50 text-red-600 font-medium'
-                                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedSubCategory === sub
+                                                                    ? 'bg-gradient-to-r from-red-50 to-rose-50 text-red-600 font-bold'
+                                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
                                                                     }`}
                                                             >
                                                                 <span>{getCategoryTranslation(sub)}</span>
-                                                                <span className="text-xs text-gray-400">({subCount})</span>
+                                                                <span className={`text-xs ${selectedSubCategory === sub ? 'text-red-400' : 'text-gray-400'}`}>({subCount})</span>
                                                             </button>
                                                         );
                                                     })}
@@ -543,15 +537,12 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                             </div>
                             <div className="relative z-10">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                                            <span className="text-5xl">🏪</span>
-                                        </div>
-                                        <div>
-                                            <h1 className="text-4xl font-bold text-white mb-1">
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full sm:w-auto text-center sm:text-left">
+                                        <div className="w-full">
+                                            <h1 className="text-2xl sm:text-4xl font-bold text-white mb-0.5 sm:mb-1">
                                                 {searchTerm ? `"${searchTerm}" için arama sonuçları` : 'Tüm Kategoriler'}
                                             </h1>
-                                            <p className="text-white text-lg opacity-90">
+                                            <p className="text-white text-sm sm:text-lg opacity-90 leading-tight">
                                                 {searchTerm
                                                     ? `${filteredListings.length} sonuç bulundu`
                                                     : selectedCategory === 'Tüm Kategoriler'
@@ -596,22 +587,37 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                     <p className="text-gray-500 text-lg">İlan bulunamadı</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4 px-0 sm:px-4 md:px-0">
-                                    {sortedListings.map((listing) => (
-                                        <HorizontalListingCard
-                                            key={listing.id}
-                                            listing={listing}
-                                            toggleFavorite={toggleFavorite}
-                                            isFavorite={isFavorite}
-                                        />
-                                    ))}
-                                </div>
+                                <>
+                                    {/* Mobile: 2-column grid */}
+                                    <div className="grid grid-cols-2 gap-2 px-0 sm:hidden">
+                                        {sortedListings.map((listing) => (
+                                            <ListingCard
+                                                key={listing.id}
+                                                listing={listing}
+                                                toggleFavorite={toggleFavorite}
+                                                isFavorite={isFavorite}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Desktop: Horizontal cards */}
+                                    <div className="hidden sm:block space-y-4 px-0 sm:px-4 md:px-0">
+                                        {sortedListings.map((listing) => (
+                                            <HorizontalListingCard
+                                                key={listing.id}
+                                                listing={listing}
+                                                toggleFavorite={toggleFavorite}
+                                                isFavorite={isFavorite}
+                                            />
+                                        ))}
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 

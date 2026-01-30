@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 const AdminLayout = () => {
@@ -7,6 +8,31 @@ const AdminLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [profile, setProfile] = useState(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (!user) return;
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('admin_role, is_admin, email, user_number')
+                .eq('id', user.id)
+                .single();
+
+            if (!error && data) {
+                setProfile(data);
+
+                // Extra safety: Check if current route is restricted
+                const isSuperAdmin = data.admin_role === 'super_admin' || data.user_number === 1001 || data.email === 'kerem_aydin@aol.com';
+                const restrictedRoutes = ['/admin/sales-reports', '/admin/admins'];
+                if (!isSuperAdmin && restrictedRoutes.includes(location.pathname)) {
+                    navigate('/admin');
+                    alert('Bu sayfaya erişim yetkiniz bulunmamaktadır.');
+                }
+            }
+        };
+        fetchProfile();
+    }, [user, location.pathname, navigate]);
 
     const handleLogout = async () => {
         try {
@@ -17,14 +43,16 @@ const AdminLayout = () => {
         }
     };
 
+    const isSuperAdmin = profile?.admin_role === 'super_admin' || profile?.user_number === 1001 || profile?.email === 'kerem_aydin@aol.com';
+
     const navigation = [
         { name: 'Kontrol Paneli', href: '/admin', icon: '📊' },
         { name: 'Ödemeler', href: '/admin/promotions', icon: '💰' },
         { name: 'İlanlar', href: '/admin/listings', icon: '📝' },
         { name: 'Kullanıcılar', href: '/admin/users', icon: '👥' },
-        { name: 'Yöneticiler', href: '/admin/admins', icon: '🛡️' },
+        ...(isSuperAdmin ? [{ name: 'Yöneticiler', href: '/admin/admins', icon: '🛡️' }] : []),
         { name: 'Kurumsal Satıcılar', href: '/admin/commercial', icon: '🏪' },
-        { name: 'İstatistikler', href: '/admin/sales-reports', icon: '📊' },
+        ...(isSuperAdmin ? [{ name: 'İstatistikler', href: '/admin/sales-reports', icon: '📊' }] : []),
         { name: 'Bildirimler', href: '/admin/reports', icon: '⚠️' },
         { name: 'Ayarlar', href: '/admin/settings', icon: '⚙️' },
     ];
@@ -83,7 +111,9 @@ const AdminLayout = () => {
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-sm font-bold text-neutral-900 truncate">{user?.email}</p>
-                            <p className="text-xs text-neutral-500 font-medium">Süper Yönetici</p>
+                            <p className="text-xs text-neutral-500 font-medium">
+                                {isSuperAdmin ? 'Süper Yönetici' : 'Yönetici'}
+                            </p>
                         </div>
                     </div>
                     <button

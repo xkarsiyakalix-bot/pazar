@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { createPortal } from 'react-dom';
 import { supabase } from '../lib/supabase';
 import { generateListingNumber } from '../components';
@@ -22,6 +23,10 @@ const AdminPromotions = () => {
         if (['highlight', 'budget'].includes(pkg)) return 'Öne Çıkan';
         if (['multi-bump', 'z_multi_bump'].includes(pkg)) return 'Tekrarlı Yukarı Çıkar';
         if (pkg === 'bump') return 'Yukarı Çıkar';
+        if (pkg === 'subscription_unlimited') return 'Sınırsız Abonelik';
+        if (pkg === 'subscription_pack1') return 'Başlangıç Kurumsal';
+        if (pkg === 'subscription_pack2') return 'Pro Kurumsal';
+        if (pkg === 'verlängerung') return 'Uzatma / Yenileme';
         return type || 'Bilinmiyor';
     };
 
@@ -269,7 +274,7 @@ const AdminPromotions = () => {
 
     if (loading) return (
         <div className="flex items-center justify-center min-h-[400px]">
-            <div className="w-12 h-12 rounded-full border-4 border-neutral-200 border-t-red-500 animate-spin"></div>
+            <LoadingSpinner size="medium" />
         </div>
     );
 
@@ -393,7 +398,7 @@ const AdminPromotions = () => {
                                                 {getPackageDisplayName(promo.package_type)}
                                             </span>
 
-                                            {(promo.status === 'active' || promo.status === 'paid') && promo.listings && (
+                                            {(promo.status === 'active' || promo.status === 'paid') && !isExpired(promo) && promo.listings && (
                                                 ((['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase())) && !promo.listings.is_gallery) ||
                                                 ((['top', 'premium', 'z_premium'].includes(promo.package_type?.toLowerCase())) && !promo.listings.is_top)
                                             ) && (
@@ -405,7 +410,7 @@ const AdminPromotions = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <span className="font-bold text-neutral-900 text-sm">
-                                            {promo.price?.toLocaleString('tr-TR')} ₺
+                                            {promo.price?.toLocaleString('tr-TR')} TL
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
@@ -423,7 +428,7 @@ const AdminPromotions = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {(promo.status === 'active' || promo.status === 'paid') && promo.listings && (
+                                            {(promo.status === 'active' || promo.status === 'paid') && !isExpired(promo) && promo.listings && (
                                                 ((['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase())) && !promo.listings.is_gallery) ||
                                                 ((['top', 'premium', 'z_premium'].includes(promo.package_type?.toLowerCase())) && !promo.listings.is_top)
                                             ) && (

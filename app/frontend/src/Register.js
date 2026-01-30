@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
+import { t } from './translations';
 
 function Register() {
     const navigate = useNavigate();
@@ -29,17 +30,17 @@ function Register() {
 
         // Validation
         if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-            setError('Bitte füllen Sie alle Felder aus');
+            setError('Lütfen tüm alanları doldurun');
             return;
         }
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwörter stimmen nicht überein');
+            setError('Şifreler eşleşmiyor');
             return;
         }
 
         if (formData.password.length < 6) {
-            setError('Passwort muss mindestens 6 Zeichen lang sein');
+            setError('Şifre en az 6 karakter olmalıdır');
             return;
         }
 
@@ -49,12 +50,12 @@ function Register() {
             await signUp(formData.email, formData.password, {
                 full_name: formData.name
             });
-            setSuccess('Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mail zur Bestätigung.');
+            setSuccess('Kayıt başarılı! Lütfen onay için e-posta adresinizi kontrol edin.');
             // Redirect to login after 2 seconds
             setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
             console.error('Registration error:', err);
-            setError(err.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+            setError(err.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
         } finally {
             setLoading(false);
         }
@@ -64,8 +65,8 @@ function Register() {
         <div className="min-h-screen bg-gray-50 flex items-start justify-center px-4 pt-12 pb-8">
             <div className="max-w-md w-full">
                 <div className="bg-white rounded-2xl shadow-lg p-8">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Registrieren</h2>
-                    <p className="text-gray-600 mb-8">Erstellen Sie ein kostenloses Konto</p>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">{t.nav.register}</h2>
+                    <p className="text-gray-600 mb-8">Ücretsiz bir hesap oluşturun</p>
 
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
@@ -82,7 +83,7 @@ function Register() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                Name
+                                Ad Soyad
                             </label>
                             <input
                                 type="text"
@@ -91,13 +92,13 @@ function Register() {
                                 value={formData.name}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
-                                placeholder="Max Mustermann"
+                                placeholder="Örn. Ahmet Yılmaz"
                             />
                         </div>
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                E-Mail
+                                E-Posta
                             </label>
                             <input
                                 type="email"
@@ -106,13 +107,13 @@ function Register() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
-                                placeholder="max@example.com"
+                                placeholder="eposta@ornek.com"
                             />
                         </div>
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                                Passwort
+                                Şifre
                             </label>
                             <input
                                 type="password"
@@ -121,13 +122,13 @@ function Register() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
-                                placeholder="Mindestens 6 Zeichen"
+                                placeholder="En az 6 karakter"
                             />
                         </div>
 
                         <div>
                             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                                Passwort bestätigen
+                                Şifreyi Onayla
                             </label>
                             <input
                                 type="password"
@@ -136,7 +137,7 @@ function Register() {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
-                                placeholder="Passwort wiederholen"
+                                placeholder="Şifrenizi tekrar girin"
                             />
                         </div>
 
@@ -145,18 +146,18 @@ function Register() {
                             disabled={loading}
                             className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Wird registriert...' : 'Registrieren'}
+                            {loading ? 'Kayıt yapılıyor...' : t.nav.register}
                         </button>
                     </form>
 
                     <div className="mt-6 text-center">
                         <p className="text-gray-600">
-                            Haben Sie bereits ein Konto?{' '}
+                            Zaten bir hesabınız var mı?{' '}
                             <button
                                 onClick={() => navigate('/login')}
                                 className="text-red-600 hover:text-red-700 font-semibold"
                             >
-                                Jetzt anmelden
+                                {t.nav.login}
                             </button>
                         </p>
                     </div>

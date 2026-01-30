@@ -11,6 +11,7 @@ import { getFollowing, followUser, unfollowUser } from './api/follows';
 
 // Critical components - static import for immediate availability
 import { Header } from './components/Header';
+import PresenceTracker from './components/PresenceTracker';
 import { Footer } from './components/Footer';
 import { SearchSection } from './components/SearchSection';
 import { ListingGrid } from './components/ListingGrid';
@@ -669,11 +670,12 @@ function App() {
       <ScrollToTop />
       <CategorySync setSelectedCategory={setSelectedCategory} />
       <div className="App min-h-screen bg-gray-50">
+        <PresenceTracker />
         <React.Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="text-center">
-              <div className="w-12 h-12 border-4 border-red-100 border-t-red-600 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-600">Yükleniyor...</p>
+              <LoadingSpinner size="large" />
+              <p className="text-gray-600 mt-4">Yükleniyor...</p>
             </div>
           </div>
         }>

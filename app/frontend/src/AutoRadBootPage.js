@@ -1,6 +1,7 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
+import { getCommonFilters, getShippingFilter } from './config/filterConfigs';
 
 const AutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
     const subCategories = [
@@ -18,44 +19,8 @@ const AutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     const filterConfig = {
-        versand: {
-            label: 'Kargo',
-            type: 'multiselect',
-            options: [
-                { value: 'Versand möglich', label: 'Kargo Mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
-            ],
-            field: 'versand_art'
-        },
-        price: {
-            label: 'Fiyat',
-            type: 'range',
-            field: 'price'
-        },
-        offerType: {
-            label: 'İlan Tipi',
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: 'Satıcı',
-            type: 'multiselect',
-            options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
-            ],
-            field: 'seller_type'
-        },
-        federalState: {
-            label: 'Konum',
-            type: 'multiselect',
-            options: getTurkishCities().map(city => ({ value: city, label: city })),
-            field: 'federal_state'
-        }
+        ...getCommonFilters(),
+        ...getShippingFilter()
     };
 
     const bannerConfig = {

@@ -21,31 +21,31 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
     const isMiniJob = listing.sub_category === 'Yarı Zamanlı & Ek İşler' || listing.sub_category === 'Staj';
     const displayImage = isMiniJob ? '/favicon.png' : imageUrl;
     const imageClasses = isMiniJob
-        ? "w-full h-24 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-        : "w-full h-24 object-cover group-hover:scale-105 transition-transform duration-500";
+        ? "w-full h-28 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+        : "w-full h-28 object-cover group-hover:scale-105 transition-transform duration-500";
 
     // Determine card styles based on promotion Type
-    let cardClasses = "listing-card rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group relative hover:-translate-y-1 bg-white ";
+    let cardClasses = "listing-card border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative hover:-translate-y-0.5 bg-white flex flex-col h-full ";
 
     const pkgType = listing?.package_type?.toLowerCase();
 
     if (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType)) {
-        cardClasses += "border-2 border-purple-400 ring-2 ring-purple-50 shadow-[0_0_10px_rgba(147,51,234,0.15)] bg-purple-50/10 ";
+        cardClasses += "border-2 border-purple-500 ring-2 ring-purple-100 bg-purple-50/20 scale-[1.01] ";
     } else if (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType)) {
-        cardClasses += "border-2 border-amber-400 ring-2 ring-amber-50/50 bg-amber-50/5 ";
+        cardClasses += "border-2 border-amber-400 ring-2 ring-amber-50/50 bg-amber-50/10 ";
     } else if (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing.is_multi_bump) {
-        cardClasses += "border-2 border-orange-400 ring-2 ring-orange-50/50 bg-orange-50/5 ";
+        cardClasses += "border-2 border-orange-400 ring-2 ring-orange-50/50 bg-orange-50/10 ";
     } else if (listing.is_highlighted || pkgType === 'highlight' || pkgType === 'budget') {
-        cardClasses += "border border-yellow-400 bg-yellow-50/5 shadow-yellow-50 ";
+        cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 ";
     }
 
     return (
         <div className={cardClasses} onClick={() => navigate(`/product/${listing.id}`)}>
-            <div className="relative overflow-hidden rounded-t-xl bg-gray-100 h-24" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+            <div className="relative overflow-hidden rounded-t-lg bg-gray-100 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
                 {!imageLoaded && !isMiniJob && (
                     <div className="absolute inset-0 animate-pulse bg-gray-200 flex items-center justify-center">
                         <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
                 )}
@@ -137,30 +137,61 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                 )}
             </div>
 
-            <div className="p-2">
-                <h3 className="text-xs font-semibold text-gray-800 mb-1.5 line-clamp-2 group-hover:text-red-600 transition-colors">
-                    {listing.title}
-                </h3>
+            <div className="p-2.5 flex flex-col justify-between flex-grow min-h-[140px]">
+                <div>
+                    <h3 className="text-[12px] font-bold text-gray-900 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors leading-snug">
+                        {listing.title}
+                    </h3>
 
-                <div className="mb-1.5">
-                    <span className="text-base font-bold text-gray-900">
-                        {!hidePrice && listing.sub_category !== 'Eğitim / Meslek Eğitimi' && listing.sub_category !== 'İnşaat, Zanaat & Üretim' && listing.category !== 'İş İlanları' && (
-                            listing.price_type === 'giveaway' || listing.price === 0
-                                ? 'Ücretsiz'
-                                : listing.price
-                                    ? `${listing.price.toLocaleString('tr-TR')} ₺${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
-                                    : t.addListing.options.negotiable
+                    {/* Key Attributes - Mini Chips */}
+                    {(() => {
+                        const attrs = [];
+                        if (listing.erstzulassung) attrs.push(listing.erstzulassung);
+                        if (listing.kilometerstand) attrs.push(`${Math.round(listing.kilometerstand / 1000)}k km`);
+                        if (listing.rooms) attrs.push(`${listing.rooms} Oda`);
+                        if (listing.living_space) attrs.push(`${listing.living_space} m²`);
+                        if (listing.brand && attrs.length < 2) attrs.push(listing.brand);
+
+                        if (attrs.length === 0) return null;
+                        return (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                                {attrs.slice(0, 2).map((attr, idx) => (
+                                    <span key={idx} className="text-[9px] text-gray-500 bg-gray-50 px-1 py-0 rounded border border-gray-100 font-medium">
+                                        {attr}
+                                    </span>
+                                ))}
+                            </div>
+                        );
+                    })()}
+                </div>
+
+                <div className="mt-auto">
+                    <div className="mb-1.5 pt-2 border-t border-gray-50">
+                        <span className="text-sm font-black text-gray-900">
+                            {!hidePrice && listing.sub_category !== 'Eğitim / Meslek Eğitimi' && listing.sub_category !== 'İnşaat, Zanaat & Üretim' && listing.category !== 'İş İlanları' && (
+                                listing.price_type === 'giveaway' || listing.price === 0
+                                    ? 'Ücretsiz'
+                                    : listing.price
+                                        ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
+                                        : t.addListing.options.negotiable
+                            )}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[13px] text-gray-500 pt-1.5 border-t border-gray-100">
+                        {listing.city && (
+                            <div className="flex items-center gap-0.5 truncate max-w-[60%]">
+                                <svg className="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span className="truncate">{listing.city}</span>
+                            </div>
                         )}
-                    </span>
-                    {listing.city && (
-                        <div className="text-xs text-gray-700 mt-1 flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            {listing.city}
-                        </div>
-                    )}
+                        <span className="flex-shrink-0 text-gray-400 text-[12px]">
+                            {listing.date || (listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR') : '')}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

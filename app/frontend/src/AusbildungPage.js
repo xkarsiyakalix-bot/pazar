@@ -14,7 +14,7 @@ const AusbildungPage = ({ toggleFavorite, isFavorite }) => {
             field: 'working_time'
         },
         hourlyWage: {
-            label: 'Saatlik Ücret (₺)',
+            label: 'Saatlik Ücret (TL)',
             type: 'range',
             field: 'hourly_wage'
         },

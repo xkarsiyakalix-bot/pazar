@@ -276,7 +276,7 @@ function MessagesPage() {
 
     return (
         <ProfileLayout>
-            <div className="h-[calc(100vh-100px)] max-w-[1600px] mx-auto bg-white rounded-3xl shadow-xl border border-neutral-100 overflow-hidden flex flex-col md:flex-row">
+            <div className="h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] -mx-4 sm:-mx-6 -mt-8 sm:-mt-12 bg-white flex flex-col md:flex-row overflow-hidden">
 
                 {/* SIDEBAR */}
                 <div className={`w-full md:w-96 bg-neutral-50 flex flex-col border-r border-neutral-100 ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
@@ -311,17 +311,32 @@ function MessagesPage() {
                                         key={idx}
                                         onClick={() => setSelectedConversation(conv)}
                                         className={`group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 ${isSelected
-                                                ? 'bg-white shadow-lg shadow-neutral-100 ring-1 ring-neutral-100'
-                                                : 'hover:bg-white hover:shadow-md hover:shadow-neutral-50'
+                                            ? 'bg-white shadow-lg shadow-neutral-100 ring-1 ring-neutral-100'
+                                            : 'hover:bg-white hover:shadow-md hover:shadow-neutral-50'
                                             }`}
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="relative flex-shrink-0">
-                                                <img
-                                                    src={conv.user.store_logo || conv.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.user.full_name || 'U')}&background=ef4444&color=fff`}
-                                                    alt=""
-                                                    className={`w-12 h-12 rounded-full object-cover ring-2 transition-all ${isSelected ? 'ring-red-100' : 'ring-white'}`}
-                                                />
+                                                <div className="w-14 h-14 rounded-full overflow-hidden bg-neutral-100 ring-2 ring-white flex items-center justify-center">
+                                                    {conv.listing?.images?.[0] ? (
+                                                        <img
+                                                            src={conv.listing.images[0]}
+                                                            alt=""
+                                                            className={`w-full h-full object-cover ${conv.listing?.is_deleted ? 'brightness-[0.4] grayscale-[0.5]' : ''}`}
+                                                        />
+                                                    ) : (
+                                                        <svg className={`w-6 h-6 ${conv.listing?.is_deleted ? 'text-neutral-300 opacity-20' : 'text-neutral-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    )}
+                                                </div>
+                                                {conv.listing?.is_deleted && (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </div>
+                                                )}
                                                 {conv.unreadCount > 0 && (
                                                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 border-2 border-white text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                                                         {conv.unreadCount}
@@ -339,26 +354,21 @@ function MessagesPage() {
                                                 </div>
 
                                                 {conv.listing && (
-                                                    <p className="text-xs font-medium text-red-600 truncate mt-0.5 flex items-center gap-1">
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                                                    <p className="text-[13px] font-medium truncate mt-0.5 text-neutral-800">
+                                                        {conv.listing.is_deleted ? (
+                                                            <span className="text-red-600 font-bold">Silindi • </span>
+                                                        ) : (
+                                                            <span className="text-red-600 font-bold mr-1">İlan: </span>
+                                                        )}
                                                         {conv.listing.title}
                                                     </p>
                                                 )}
 
-                                                <p className={`text-xs truncate mt-1 ${conv.unreadCount > 0 ? 'font-bold text-neutral-800' : 'text-neutral-500'}`}>
-                                                    {conv.lastMessage.sender_id === user?.id && <span className="text-neutral-400">Siz: </span>}
+                                                <p className={`text-sm truncate mt-0.5 ${conv.unreadCount > 0 ? 'font-bold text-neutral-900' : 'text-neutral-500'}`}>
+                                                    {conv.lastMessage.sender_id === user?.id && <span className="text-neutral-400 font-medium">Siz: </span>}
                                                     {conv.lastMessage.content}
                                                 </p>
                                             </div>
-
-                                            {/* Delete Button (Visible on Hover) */}
-                                            <button
-                                                onClick={(e) => handleDeleteConversation(conv, e)}
-                                                className="absolute right-2 bottom-2 p-1.5 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
-                                                title="Sohbeti Sil"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
                                         </div>
                                     </div>
                                 );
@@ -402,7 +412,7 @@ function MessagesPage() {
                                             onClick={() => setIsRatingModalOpen(true)}
                                             className="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-600 rounded-xl font-bold text-sm hover:bg-amber-100 transition-colors"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-0.363 1.118l1.518 4.674c.3.922-0.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-0.783.57-1.838-0.197-1.538-1.118l1.518-4.674a1 1 0 00-0.363-1.118l-3.976-2.888c-0.784-0.57-0.38-1.81.588-1.81h4.914a1 1 0 00.951-0.69l1.519-4.674z"></path></svg>
                                             Puanla
                                         </button>
                                     )}
@@ -419,14 +429,39 @@ function MessagesPage() {
 
                             {/* Listing Context Bar (if exists) */}
                             {selectedConversation.listing && (
-                                <div className="px-6 py-3 bg-neutral-50/50 border-b border-neutral-100 flex items-center justify-between">
+                                <div className={`px-6 py-3 border-b border-neutral-100 flex items-center justify-between ${selectedConversation.listing.is_deleted ? 'bg-neutral-100/50' : 'bg-neutral-50/50'}`}>
                                     <div className="flex items-center gap-3 overflow-hidden">
-                                        <img src={selectedConversation.listing.images?.[0]} className="w-10 h-10 rounded-lg object-cover bg-white border border-neutral-100" alt="" />
+                                        <div className="relative flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-neutral-200">
+                                            <img
+                                                src={selectedConversation.listing.images?.[0] || "https://premium.exvitrin.com/storage/v1/object/public/listing-images/placeholder_listing.png"}
+                                                className={`w-full h-full object-cover ${selectedConversation.listing.is_deleted ? 'grayscale opacity-40' : ''}`}
+                                                alt=""
+                                            />
+                                            {selectedConversation.listing.is_deleted && (
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <svg className="w-6 h-6 text-red-600 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className="min-w-0">
-                                            <p className="text-sm font-bold text-neutral-900 truncate">{selectedConversation.listing.title}</p>
-                                            <p className="text-xs text-neutral-500">İlan No: #{selectedConversation.listing.listing_number || selectedConversation.listing.id.slice(0, 8)}</p>
+                                            <p className={`text-sm font-bold truncate ${selectedConversation.listing.is_deleted ? 'text-neutral-500 italic' : 'text-neutral-900'}`}>
+                                                {selectedConversation.listing.is_deleted ? 'Bu ilan silinmiş' : selectedConversation.listing.title}
+                                            </p>
+                                            <p className="text-xs text-neutral-500">
+                                                {selectedConversation.listing.is_deleted ? 'Artık görüntülenemez' : `İlan No: #${selectedConversation.listing.listing_number || selectedConversation.listing.id.slice(0, 8)}`}
+                                            </p>
                                         </div>
                                     </div>
+                                    {!selectedConversation.listing.is_deleted && (
+                                        <button
+                                            onClick={() => navigate(`/product/${selectedConversation.listing.id}`)}
+                                            className="text-xs font-bold text-red-600 hover:underline"
+                                        >
+                                            İlanı Gör
+                                        </button>
+                                    )}
                                 </div>
                             )}
 

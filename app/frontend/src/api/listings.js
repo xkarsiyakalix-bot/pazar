@@ -171,19 +171,52 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
         'Kadın Ayakkabıları': ['Kadın Ayakkabıları', 'Damenschuhe'],
         'Erkek Ayakkabıları': ['Erkek Ayakkabıları', 'Herrenschuhe'],
         'Çanta & Aksesuarlar': ['Çanta & Aksesuarlar', 'Taschen & Accessoires'],
-        'Saat & Takı': ['Saat & Takı', 'Uhren & Schmuck'],
-        'Güzellik & Sağlık': ['Güzellik & Sağlık', 'Beauty & Gesundheit', 'Kişisel Bakım & Sağlık'],
-        'Diğer Moda & Güzellik': ['Diğer Moda & Güzellik', 'Sonstige Mode & Beauty'],
-
-        // Müzik, Film & Kitap
-        'Kitap & Dergi': ['Kitap & Dergi', 'Bücher & Zeitschriften'],
-        'Kırtasiye': ['Kırtasiye', 'Büro & Schreibwaren'],
-        'Çizgi Romanlar': ['Çizgi Romanlar', 'Comics'],
-        'Ders Kitapları, Okul & Eğitim': ['Ders Kitapları, Okul & Eğitim', 'Fachbücher, Schule & Studium'],
-        'Film & DVD': ['Film & DVD', 'Filme & DVDs'],
-        'Müzik & CD\'ler': ['Müzik & CD\'ler', 'Musik & CDs'],
         'Müzik Enstrümanları': ['Müzik Enstrümanları', 'Musikinstrumente'],
-        'Diğer Müzik, Film & Kitap': ['Diğer Müzik, Film & Kitap', 'Weitere Musik, Filme & Bücher']
+        'Diğer Müzik, Film & Kitap': ['Diğer Müzik, Film & Kitap', 'Weitere Musik, Filme & Bücher'],
+
+        // Emlak (Real Estate)
+        'Kiralık Daire': ['Kiralık Daire', 'Kiralık Daireler', 'Mietwohnungen'],
+        'Kiralık Müstakil Ev': ['Kiralık Müstakil Ev', 'Kiralık Evler', 'Häuser zur Miete'],
+        'Satılık Daire': ['Satılık Daire', 'Satılık Daireler', 'Eigentumswohnungen'],
+        'Satılık Müstakil Ev': ['Satılık Müstakil Ev', 'Satılık Evler', 'Häuser zum Kauf'],
+        'Ticari Emlak': ['Ticari Emlak', 'Gewerbeimmobilien'],
+        'Arsa & Bahçe': ['Arsa & Bahçe', 'Grundstücke & Gärten'],
+        'Garaj & Otopark': ['Garaj & Otopark', 'Garagen & Stellplätze'],
+        'Geçici Konaklama & Paylaşımlı Ev': ['Geçici Konaklama & Paylaşımlı Ev', 'Auf Zeit & WG'],
+        'Tatil Evi & Yurt Dışı Emlak': ['Tatil Evi & Yurt Dışı Emlak', 'Ferien- & Auslandsimmobilien', 'Tatil ve Yurt Dışı Emlak'],
+        'Yeni Projeler': ['Yeni Projeler', 'Neubauprojekte'],
+        'Diğer Emlak': ['Diğer Emlak', 'Weitere Immobilien'],
+        'Kiralık Daireler': ['Kiralık Daire', 'Kiralık Daireler', 'Mietwohnungen'],
+        'Satılık Daireler': ['Satılık Daire', 'Satılık Daireler', 'Eigentumswohnungen'],
+        'Satılık Evler': ['Satılık Müstakil Ev', 'Satılık Evler', 'Häuser zum Kauf'],
+        'Kiralık Evler': ['Kiralık Müstakil Ev', 'Kiralık Evler', 'Häuser zur Miete'],
+
+        // Elektronik
+        'Ses & Hifi': ['Ses & Hifi', 'Audio & Hifi'],
+        'Fotoğraf & Kamera': ['Fotoğraf & Kamera', 'Foto'],
+        'Cep Telefonu & Telefon': ['Cep Telefonu & Telefon', 'Handy & Telefon'],
+        'Ev Aletleri': ['Ev Aletleri', 'Haushaltsgeräte'],
+        'Konsollar': ['Konsollar', 'Konsolen'],
+        'Dizüstü Bilgisayarlar': ['Dizüstü Bilgisayarlar', 'Notebooks'],
+        'Bilgisayarlar': ['Bilgisayarlar', 'PCs'],
+        'Bilgisayar Aksesuarları & Yazılım': ['Bilgisayar Aksesuarları & Yazılım', 'PC-Zubehör & Software'],
+        'Tabletler & E-Okuyucular': ['Tabletler & E-Okuyucular', 'Tablets & Reader'],
+        'TV & Video': ['TV & Video', 'TV & Video'],
+        'Video Oyunları': ['Video Oyunları', 'Videospiele'],
+        'Diğer Elektronik': ['Diğer Elektronik', 'Weitere Elektronik'],
+
+        // Ev & Bahçe
+        'Mutfak & Yemek Odası': ['Mutfak & Yemek Odası', 'Küche & Esszimmer'],
+        'Oturma Odası': ['Oturma Odası', 'Wohnzimmer'],
+        'Yatak Odası': ['Yatak Odası', 'Schlafzimmer'],
+        'Banyo': ['Banyo', 'Badezimmer'],
+        'Ofis': ['Ofis', 'Büro'],
+        'Dekorasyon': ['Dekorasyon', 'Dekoration'],
+        'Bahçe Malzemeleri & Bitkiler': ['Bahçe Malzemeleri & Bitkiler', 'Gartenzubehör & Pflanzen'],
+        'Ev Tekstili': ['Ev Tekstili', 'Heimtextilien'],
+        'Ev Tadilatı': ['Ev Tadilatı', 'Heimwerken'],
+        'Lamba & Aydınlatma': ['Lamba & Aydınlatma', 'Lampen & Licht'],
+        'Diğer Ev & Bahçe': ['Diğer Ev & Bahçe', 'Weiteres Haus & Garten'],
     };
 
     if (filters.subCategory) {
@@ -311,17 +344,12 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
         query = query.range(from, to);
     }
 
-    let timeoutId;
     try {
-        const timeoutPromise = new Promise((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Request timed out')), 15000);
-        });
-
-        const { data, error, count } = await Promise.race([query, timeoutPromise]);
-        if (timeoutId) clearTimeout(timeoutId);
+        console.log('api/listings - Fetching from Supabase...');
+        const { data, error, count } = await query;
 
         if (error) {
-            console.error('Error fetching listings:', error);
+            console.error('api/listings - Supabase error:', error);
             throw error;
         }
 
@@ -570,15 +598,12 @@ export const fetchCategoryCounts = async () => {
             .eq('status', 'active')
             .or(`expiry_date.gt.${new Date().toISOString()},expiry_date.is.null`);
 
-        let timeoutId;
-        const timeoutPromise = new Promise((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Request timed out')), 10000);
-        });
+        const { data, error } = await query;
 
-        const { data, error } = await Promise.race([query, timeoutPromise]);
-        if (timeoutId) clearTimeout(timeoutId);
-
-        if (error) throw error;
+        if (error) {
+            console.error('fetchCategoryCounts - Supabase error:', error);
+            throw error;
+        }
 
         // Transform subcategories to plural forms to match frontend expectations
         const transformedData = (data || []).map(item => {
@@ -740,7 +765,12 @@ export const fetchCategoryStats = async (category, subCategory = null) => {
             'Aksesuarlar': 'Hayvan Aksesuarları'
         };
 
-        const { data, error } = await query;
+        const { data, error } = await Promise.resolve(query);
+
+        if (error) {
+            console.error('fetchCategoryStats - Supabase error:', error);
+            throw error;
+        }
 
         // Transform data to use plural forms for pet subcategories to match frontend expectations
         const transformedData = (data || []).map(item => {

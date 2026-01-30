@@ -170,3 +170,96 @@ input[type="checkbox"]:focus {
 .animate-logo-pulse {
     animation: logoPulse 2s infinite ease-in-out;
 }
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-none {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+/* Modern Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-in {
+    animation-duration: 0.7s;
+    animation-fill-mode: both;
+}
+
+.fade-in {
+    animation-name: fadeIn;
+}
+
+.slide-in-from-left {
+    animation-name: slideInFromLeft;
+}
+
+.slide-in-from-right {
+    animation-name: slideInFromRight;
+}
+
+.zoom-in {
+    animation-name: zoomIn;
+}
+
+/* Pulse Glow Effect */
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 20px 10px rgba(220, 38, 38, 0.1);
+    }
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 3s infinite;
+}

@@ -1,38 +1,11 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
-import { getTurkishCities } from './translations';
+import { getTurkishCities, t } from './translations';
+import { getCommonFilters } from './config/filterConfigs';
 
 const HaustierePage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
-        price: {
-            label: 'Fiyat',
-            type: 'range',
-            field: 'price'
-        },
-        offerType: {
-            label: 'Teklif Türü',
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: 'Satılık/Verilecek' },
-                { value: 'Gesuche', label: 'Aranıyor' }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: 'Satıcı Tipi',
-            type: 'multiselect',
-            options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
-            ],
-            field: 'seller_type'
-        },
-        federalState: {
-            label: 'Şehir',
-            type: 'multiselect',
-            options: getTurkishCities().map(city => ({ value: city, label: city })),
-            field: 'federal_state'
-        }
+        ...getCommonFilters()
     };
 
     const subCategories = [

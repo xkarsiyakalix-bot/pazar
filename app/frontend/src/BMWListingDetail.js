@@ -52,17 +52,39 @@ function BMWListingDetail() {
                     <div className="lg:col-span-2">
                         {/* Image Gallery */}
                         <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
-                            {/* Ana Resim */}
+                            {/* Ana Resim - Swipeable on mobile/desktop */}
                             <div className="relative">
-                                <img
-                                    src={images[activeImageIndex].url}
-                                    alt={images[activeImageIndex].alt}
-                                    className="w-full h-96 object-cover cursor-pointer"
-                                    onClick={() => setIsLightboxOpen(true)}
-                                />
+                                <div
+                                    className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none"
+                                    style={{ scrollBehavior: 'smooth' }}
+                                    onScroll={(e) => {
+                                        const scrollLeft = e.target.scrollLeft;
+                                        const width = e.target.clientWidth;
+                                        const newIndex = Math.round(scrollLeft / width);
+                                        if (newIndex !== activeImageIndex) {
+                                            setActiveImageIndex(newIndex);
+                                        }
+                                    }}
+                                    ref={(el) => {
+                                        if (el && el.scrollLeft !== activeImageIndex * el.clientWidth) {
+                                            el.scrollLeft = activeImageIndex * el.clientWidth;
+                                        }
+                                    }}
+                                >
+                                    {images.map((image, index) => (
+                                        <div key={index} className="w-full flex-shrink-0 snap-center">
+                                            <img
+                                                src={image.url}
+                                                alt={image.alt}
+                                                className="w-full h-96 object-cover cursor-pointer"
+                                                onClick={() => setIsLightboxOpen(true)}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
 
                                 {/* Resim Sayacı */}
-                                <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-lg text-sm">
+                                <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-lg text-sm z-10">
                                     {activeImageIndex + 1} / {images.length}
                                 </div>
 
@@ -70,7 +92,7 @@ function BMWListingDetail() {
                                 {activeImageIndex > 0 && (
                                     <button
                                         onClick={() => setActiveImageIndex(activeImageIndex - 1)}
-                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all"
+                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all z-10 hidden md:block"
                                     >
                                         <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -82,7 +104,7 @@ function BMWListingDetail() {
                                 {activeImageIndex < images.length - 1 && (
                                     <button
                                         onClick={() => setActiveImageIndex(activeImageIndex + 1)}
-                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all"
+                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all z-10 hidden md:block"
                                     >
                                         <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -138,7 +160,7 @@ function BMWListingDetail() {
                                     </button>
                                 </div>
                                 <div className="text-right ml-4">
-                                    <div className="text-3xl font-bold text-red-600">18.500 ₺</div>
+                                    <div className="text-3xl font-bold text-red-600">18.500 TL</div>
                                     <div className="text-sm text-gray-500">Pazarlıklı</div>
                                 </div>
                             </div>
@@ -304,13 +326,9 @@ function BMWListingDetail() {
 
                                     {/* City Location */}
                                     <div className="flex items-center justify-center gap-1.5 mb-2">
-                                        <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="12" cy="12" r="8" />
-                                            <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
-                                            <line x1="12" y1="2" x2="12" y2="4" />
-                                            <line x1="12" y1="20" x2="12" y2="22" />
-                                            <line x1="2" y1="12" x2="4" y2="12" />
-                                            <line x1="20" y1="12" x2="22" y2="12" />
+                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
                                         <span className="text-sm text-gray-600">Münih</span>
                                     </div>
@@ -319,7 +337,7 @@ function BMWListingDetail() {
                                     <div className="text-sm text-gray-600 mb-2">25.11.2020 tarihinden beri aktif</div>
                                     <div className="flex items-center justify-center gap-1">
                                         <svg className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                            <path d="M10 15l-5.878 3.09 1.123-6.545L0.489 6.91l6.572-0.955L10 0l2.939 5.955 6.572 0.955-4.756 4.635 1.123 6.545z" />
                                         </svg>
                                         <span className="text-base font-medium text-gray-700">4.8</span>
                                         <span className="text-sm text-gray-500">(127 Değerlendirme)</span>
@@ -339,7 +357,7 @@ function BMWListingDetail() {
                             {/* Message Button */}
                             <button className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 flex items-center justify-center gap-2">
                                 <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
                                 Mesaj gönder
                             </button>
@@ -347,7 +365,7 @@ function BMWListingDetail() {
                             {/* Phone Button */}
                             <button className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 flex items-center justify-center gap-2">
                                 <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
                                 Ara
                             </button>
@@ -366,7 +384,7 @@ function BMWListingDetail() {
                             <div className="mt-4 space-y-3 pt-4 border-t border-gray-100">
                                 <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-0.482-0.114-0.938-0.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                     </svg>
                                     Paylaş
                                 </button>
@@ -381,7 +399,7 @@ function BMWListingDetail() {
                                 </button>
                                 <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-gray-700">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                     İlanı bildir
                                 </button>
@@ -419,114 +437,112 @@ function BMWListingDetail() {
                 </div>
             </div>
 
-            {/* Satıcının Diğer İlanları - Panel İçinde */}
+            {/* Satıcının Diğer İlanları */}
             <div className="max-w-7xl mx-auto px-4 py-8">
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Max Mustermann'ın Diğer İlanları</h2>
-                    <p className="text-sm text-gray-600 mb-6">Bu satıcının diğer ilanlarını keşfedin</p>
+                <h2 className="text-xl font-bold text-gray-900 mb-2">Max Mustermann'ın Diğer İlanları</h2>
+                <p className="text-sm text-gray-600 mb-6">Bu satıcının diğer ilanlarını keşfedin</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Ilan 1 */}
-                        <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
-                            <div className="relative overflow-hidden">
-                                <img
-                                    src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80"
-                                    alt="BMW 530d"
-                                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                            </div>
-                            <div className="p-4">
-                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW 530d xDrive Touring - M Spor Paket</h3>
-                                <p className="text-xl font-bold text-red-600 mb-3">28.900 ₺</p>
-                                <div className="space-y-1 text-sm text-gray-600">
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                        </svg>
-                                        Münih
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                        </svg>
-                                        92.000 km
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                                        </svg>
-                                        EZ 07/2017
-                                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Ilan 1 */}
+                    <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
+                        <div className="relative overflow-hidden">
+                            <img
+                                src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80"
+                                alt="BMW 530d"
+                                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                        </div>
+                        <div className="p-4">
+                            <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW 530d xDrive Touring - M Spor Paket</h3>
+                            <p className="text-xl font-bold text-red-600 mb-3">28.900 TL</p>
+                            <div className="space-y-1 text-sm text-gray-600">
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                    </svg>
+                                    Münih
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    </svg>
+                                    92.000 km
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                    </svg>
+                                    EZ 07/2017
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Ilan 2 */}
-                        <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
-                            <div className="relative overflow-hidden">
-                                <img
-                                    src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=600&q=80"
-                                    alt="BMW X3"
-                                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                            </div>
-                            <div className="p-4">
-                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW X3 xDrive30d - Panoramik Tavan</h3>
-                                <p className="text-xl font-bold text-red-600 mb-3">32.500 ₺</p>
-                                <div className="space-y-1 text-sm text-gray-600">
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                        </svg>
-                                        Münih
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                        </svg>
-                                        78.000 km
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                                        </svg>
-                                        EZ 04/2018
-                                    </div>
+                    {/* Ilan 2 */}
+                    <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
+                        <div className="relative overflow-hidden">
+                            <img
+                                src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=600&q=80"
+                                alt="BMW X3"
+                                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                        </div>
+                        <div className="p-4">
+                            <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW X3 xDrive30d - Panoramik Tavan</h3>
+                            <p className="text-xl font-bold text-red-600 mb-3">32.500 TL</p>
+                            <div className="space-y-1 text-sm text-gray-600">
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                    </svg>
+                                    Münih
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    </svg>
+                                    78.000 km
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                    </svg>
+                                    EZ 04/2018
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Ilan 3 */}
-                        <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
-                            <div className="relative overflow-hidden">
-                                <img
-                                    src="https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=600&q=80"
-                                    alt="BMW M4"
-                                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                            </div>
-                            <div className="p-4">
-                                <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW M4 Competition - Karbon Paket</h3>
-                                <p className="text-xl font-bold text-red-600 mb-3">65.900 ₺</p>
-                                <div className="space-y-1 text-sm text-gray-600">
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                        </svg>
-                                        Münih
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                        </svg>
-                                        35.000 km
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                                        </svg>
-                                        EZ 11/2020
-                                    </div>
+                    {/* Ilan 3 */}
+                    <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
+                        <div className="relative overflow-hidden">
+                            <img
+                                src="https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=600&q=80"
+                                alt="BMW M4"
+                                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                        </div>
+                        <div className="p-4">
+                            <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2">BMW M4 Competition - Karbon Paket</h3>
+                            <p className="text-xl font-bold text-red-600 mb-3">65.900 TL</p>
+                            <div className="space-y-1 text-sm text-gray-600">
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                    </svg>
+                                    Münih
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    </svg>
+                                    35.000 km
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                    </svg>
+                                    EZ 11/2020
                                 </div>
                             </div>
                         </div>
@@ -536,7 +552,7 @@ function BMWListingDetail() {
 
 
             {/* Ähnliche Anzeigen in dieser Kategorie - Yatay Format (Horizontal Cards) */}
-            < div className="max-w-7xl mx-auto px-4 py-8 bg-gray-50" >
+            <div className="max-w-7xl mx-auto px-4 py-8" >
                 <div className="mb-6">
                     <h2 className="text-xl font-bold text-gray-900 mb-2">Arabalarda Benzer İlanlar</h2>
                     <p className="text-sm text-gray-600">Bu kategorideki diğer ilginç araçlar</p>
@@ -556,7 +572,7 @@ function BMWListingDetail() {
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
                                     <h4 className="text-lg font-bold text-gray-900">Audi A4 2.0 TDI - Bakımlı Durum</h4>
-                                    <span className="text-xl font-bold text-red-600 ml-4">18.500 ₺</span>
+                                    <span className="text-xl font-bold text-red-600 ml-4">18.500 TL</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                     Çok temiz Audi A4 2.0 TDI aracımı satıyorum. Düzenli bakımlı, sigara içilmemiştir.
@@ -584,7 +600,7 @@ function BMWListingDetail() {
                                     <div className="flex items-center text-sm text-gray-600">
                                         <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h0.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h0.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
                                         </svg>
                                         Dizel
                                     </div>
@@ -606,7 +622,7 @@ function BMWListingDetail() {
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
                                     <h4 className="text-lg font-bold text-gray-900">Mercedes C 220d - Full Donanım</h4>
-                                    <span className="text-xl font-bold text-red-600 ml-4">22.900 ₺</span>
+                                    <span className="text-xl font-bold text-red-600 ml-4">22.900 TL</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                     Full paket Mercedes C-Klasse, servis bakımlı, ilk elden.
@@ -654,7 +670,7 @@ function BMWListingDetail() {
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
                                     <h4 className="text-lg font-bold text-gray-900">VW Passat Variant - Station Wagon</h4>
-                                    <span className="text-xl font-bold text-red-600 ml-4">16.800 ₺</span>
+                                    <span className="text-xl font-bold text-red-600 ml-4">16.800 TL</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                     Geniş Passat Variant, aileler için ideal, bakımlı durum.
@@ -702,7 +718,7 @@ function BMWListingDetail() {
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
                                     <h4 className="text-lg font-bold text-gray-900">BMW 520d Touring - M Spor Paket</h4>
-                                    <span className="text-xl font-bold text-red-600 ml-4">24.500 ₺</span>
+                                    <span className="text-xl font-bold text-red-600 ml-4">24.500 TL</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                     M Spor Paketli BMW 5 Serisi Touring, full donanım, bakımlı.
@@ -750,7 +766,7 @@ function BMWListingDetail() {
                             <div className="md:w-3/4 p-4">
                                 <div className="flex justify-between items-start mb-2">
                                     <h4 className="text-lg font-bold text-gray-900">Audi A6 3.0 TDI - Quattro</h4>
-                                    <span className="text-xl font-bold text-red-600 ml-4">28.900 ₺</span>
+                                    <span className="text-xl font-bold text-red-600 ml-4">28.900 TL</span>
                                 </div>
                                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                     Audi A6 Quattro çekiş sistemi, deri döşeme, navigasyon, xenon.

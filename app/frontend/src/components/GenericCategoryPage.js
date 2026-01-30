@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { CategoryGallery, HorizontalListingCard, getCategoryPath } from '../components.js';
+import { CategoryGallery, HorizontalListingCard, ListingCard, getCategoryPath } from '../components.js';
+import { Breadcrumb } from './Breadcrumb';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { LazyImage } from '../LazyLoad';
 import { CategorySEO } from '../SEO';
@@ -8,11 +9,20 @@ import { fetchCategoryStats } from '../api/listings';
 import { useListings } from '../hooks/useListings';
 import { t, getCategoryTranslation, getGenericTranslation } from '../translations';
 import { checkIfSearchIsSaved, createSavedSearch, deleteSavedSearchByUrl } from '../api/savedSearches';
+import { categories as globalCategories } from '../config/categories';
 
 const formatPriceDisplay = (val) => {
     if (!val) return '';
     const numeric = val.toString().replace(/\D/g, '');
     return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+const areSubCategoriesEquivalent = (sub1, sub2) => {
+    if (!sub1 || !sub2) return false;
+    const normalize = (s) => s.toLowerCase().trim()
+        .replace(/&/g, 've')
+        .replace(/  +/g, ' ');
+    return normalize(sub1) === normalize(sub2);
 };
 
 const GenericCategoryPage = ({
@@ -38,6 +48,23 @@ const GenericCategoryPage = ({
     const [savedSearchId, setSavedSearchId] = useState(null);
     const [savingSearch, setSavingSearch] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+    // Resolve subcategories if not provided
+    const resolvedSubCategories = React.useMemo(() => {
+        if (subCategories && subCategories.length > 0) return subCategories;
+
+        // Find main category from global list
+        const mainCat = globalCategories.find(c => c.name === category);
+        if (mainCat && mainCat.subcategories) {
+            const list = mainCat.subcategories.map(name => ({
+                name,
+                route: getCategoryPath(category, name)
+            }));
+            // Add "Tümü" (All) at the beginning
+            return [{ name: 'Tümü', route: getCategoryPath(category) }, ...list];
+        }
+        return [];
+    }, [subCategories, category]);
 
     // 1. Derive active filters directly from URL
     const getActiveFiltersFromURL = () => {
@@ -607,97 +634,251 @@ const GenericCategoryPage = ({
         return active;
     };
 
+    // Helper to render filter inputs (moved from inline to fix syntax and allow responsive control)
+    const renderFilterInput = (key, config) => {
+        if (config.type === 'select' || config.type === 'radio') {
+            return (
+                <div className="space-y-2 pr-2">
+                    {config.options.map((option) => {
+                        const optionValue = typeof option === 'string' ? option : option.value;
+                        const optionLabel = typeof option === 'string' ? option : option.label;
+                        const count = getFilterCount(key, optionValue);
+                        const isChecked = activeFilters[key] === optionValue;
 
+                        return (
+                            <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        name={key}
+                                        value={optionValue}
+                                        checked={isChecked}
+                                        onChange={() => handleFilterChange(key, isChecked ? '' : optionValue)}
+                                        className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                    />
+                                    <span className="text-sm text-gray-700 group-hover:text-red-600">{option.displayLabel || getGenericTranslation(optionLabel)}</span>
+                                </div>
+                                <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
+                            </label>
+                        );
+                    })}
+                </div>
+            );
+        }
 
+        if (config.type === 'multiselect') {
+            return (
+                <div className="space-y-2 pr-2">
+                    {config.options.map((option) => {
+                        const optionValue = typeof option === 'string' ? option : option.value;
+                        const optionLabel = typeof option === 'string' ? option : option.label;
+                        const count = getFilterCount(key, optionValue);
+                        const isSelected = activeFilters[key] && activeFilters[key].includes(optionValue);
 
+                        return (
+                            <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        name={key}
+                                        value={optionValue}
+                                        checked={isSelected}
+                                        onChange={() => handleFilterChange(key, optionValue)}
+                                        className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                    />
+                                    <span className={`text-sm group-hover:text-red-600 transition-colors ${isSelected ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
+                                        {option.displayLabel || getGenericTranslation(optionLabel)}
+                                    </span>
+                                </div>
+                                <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
+                            </label>
+                        );
+                    })}
+                </div>
+            );
+        }
+
+        if (config.type === 'range') {
+            return (
+                <div className="flex items-end gap-2">
+                    <div className="grid grid-cols-2 gap-2 flex-1">
+                        <div>
+                            <input
+                                type="text"
+                                value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}From`]) : (localFilters[`${key}From`] || '')}
+                                onChange={(e) => {
+                                    const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
+                                    handleRangeChange(`${key}From`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        const from = localFilters[`${key}From`];
+                                        const to = localFilters[`${key}To`];
+                                        updateURL({
+                                            [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                            [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
+                                        });
+                                    }
+                                }}
+                                placeholder={t.filters.from}
+                                className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="text"
+                                value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}To`]) : (localFilters[`${key}To`] || '')}
+                                onChange={(e) => {
+                                    const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
+                                    handleRangeChange(`${key}To`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        const from = localFilters[`${key}From`];
+                                        const to = localFilters[`${key}To`];
+                                        updateURL({
+                                            [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                            [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
+                                        });
+                                    }
+                                }}
+                                placeholder={t.filters.to}
+                                className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                            />
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => {
+                            const from = localFilters[`${key}From`];
+                            const to = localFilters[`${key}To`];
+                            updateURL({
+                                [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
+                                [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
+                            });
+                        }}
+                        className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[38px] w-[38px] flex items-center justify-center border border-gray-200"
+                        title={t.filters.apply || "Uygula"}
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </div>
+            );
+        }
+
+        if (config.type === 'checkbox') {
+            return (
+                <label className="flex items-center justify-between cursor-pointer group">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={activeFilters[key]}
+                            onChange={(e) => handleFilterChange(key, e.target.checked)}
+                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                        />
+                        <span className="text-sm text-gray-700 group-hover:text-red-600 font-medium">Aktif</span>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                        ({getFilterCount(key, true).toLocaleString('tr-TR')})
+                    </span>
+                </label>
+            );
+        }
+
+        if (config.type === 'month') {
+            const fullValue = activeFilters[key] || '';
+            const [currYear, currMonth] = fullValue.split('-');
+            const months = [
+                { v: '01', l: t.filters?.months?.['01'] || 'Ocak' }, { v: '02', l: t.filters?.months?.['02'] || 'Şubat' }, { v: '03', l: t.filters?.months?.['03'] || 'Mart' },
+                { v: '04', l: t.filters?.months?.['04'] || 'Nisan' }, { v: '05', l: t.filters?.months?.['05'] || 'Mayıs' }, { v: '06', l: t.filters?.months?.['06'] || 'Haziran' },
+                { v: '07', l: t.filters?.months?.['07'] || 'Temmuz' }, { v: '08', l: t.filters?.months?.['08'] || 'Ağustos' }, { v: '09', l: t.filters?.months?.['09'] || 'Eylül' },
+                { v: '10', l: t.filters?.months?.['10'] || 'Ekim' }, { v: '11', l: t.filters?.months?.['11'] || 'Kasım' }, { v: '12', l: t.filters?.months?.['12'] || 'Aralık' }
+            ];
+            const currentYear = new Date().getFullYear();
+            const years = Array.from({ length: 11 }, (_, i) => currentYear + i);
+
+            return (
+                <div className="flex gap-2">
+                    <select
+                        value={currMonth || ''}
+                        onChange={(e) => {
+                            const newMonth = e.target.value;
+                            const year = currYear || currentYear;
+                            updateURL({ [key]: newMonth ? `${year}-${newMonth}` : year });
+                        }}
+                        className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                    >
+                        <option value="">{t.filters.month || 'Ay'}</option>
+                        {months.map(m => (
+                            <option key={m.v} value={m.v}>{m.l}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={currYear || ''}
+                        onChange={(e) => {
+                            const newYear = e.target.value;
+                            if (!newYear) {
+                                updateURL({ [key]: '' });
+                            } else {
+                                updateURL({ [key]: currMonth ? `${newYear}-${currMonth}` : newYear });
+                            }
+                        }}
+                        className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                    >
+                        <option value="">{t.filters.year || 'Yıl'}</option>
+                        {years.map(y => (
+                            <option key={y} value={y}>{y}</option>
+                        ))}
+                    </select>
+                </div>
+            );
+        }
+
+        return null;
+    };
+    // Generate breadcrumb items
+    const breadcrumbItems = [
+        { label: 'ExVitrin', path: '/' }
+    ];
+
+    if (category) {
+        breadcrumbItems.push({
+            label: getCategoryTranslation(category),
+            path: getCategoryPath(category),
+            isActive: !subCategory
+        });
+    }
+
+    if (subCategory) {
+        breadcrumbItems.push({
+            label: getCategoryTranslation(subCategory),
+            isActive: true
+        });
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Debug Probe - Only visible if ?debug=true is in URL */}
-            {searchParams.get('debug') === 'true' && (
-                <div className="fixed top-0 left-0 w-full h-full bg-white z-[9999] overflow-auto p-10 font-mono text-xs border-4 border-red-500">
-                    <div className="flex justify-between items-center mb-6">
-                        <h1 className="text-2xl font-bold text-red-600">DEBUG MODE</h1>
-                        <button
-                            onClick={() => {
-                                const newParams = new URLSearchParams(searchParams);
-                                newParams.delete('debug');
-                                setSearchParams(newParams);
-                            }}
-                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                        >
-                            Close Debug
-                        </button>
-                    </div>
 
-                    <div className="grid grid-cols-2 gap-6 mb-6">
-                        <div className="bg-blue-50 p-4 rounded border border-blue-200">
-                            <h3 className="font-bold text-lg mb-2">Current Context</h3>
-                            <div><strong>Category Prop:</strong> {category}</div>
-                            <div><strong>SubCategory Prop:</strong> {subCategory || 'NULL'}</div>
-                            <div><strong>Page Title:</strong> {pageTitle}</div>
-                            <div><strong>Active Filters:</strong> {JSON.stringify(activeFilters)}</div>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded border border-green-200">
-                            <h3 className="font-bold text-lg mb-2">Data Stats</h3>
-                            <div><strong>Listings Count (Main):</strong> {listings.length}</div>
-                            <div><strong>Stats Listings Count:</strong> {statsListings.length}</div>
-                            <div><strong>Filtered Listings Count:</strong> {filteredListings.length}</div>
-                            <div><strong>Loading:</strong> {loading ? 'YES' : 'NO'}</div>
-                        </div>
-                    </div>
-
-                    <div className="mb-6">
-                        <h2 className="text-xl font-bold mb-2">Distinct Categories Found (in this view):</h2>
-                        <pre className="bg-gray-100 p-4 rounded overflow-auto">
-                            {JSON.stringify([...new Set(listings.map(l => l.category))], null, 2)}
-                        </pre>
-                    </div>
-
-                    <div className="mb-6">
-                        <h2 className="text-xl font-bold mb-2">Distinct Subcategories Found (in this view):</h2>
-                        <pre className="bg-gray-100 p-4 rounded overflow-auto">
-                            {JSON.stringify([...new Set(listings.map(l => l.sub_category))], null, 2)}
-                        </pre>
-                    </div>
-
-                    <div>
-                        <h2 className="text-xl font-bold mb-2">First 5 Listings (Raw Data):</h2>
-                        <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[500px]">
-                            {JSON.stringify(listings.slice(0, 5), null, 2)}
-                        </pre>
-                    </div>
-                </div>
-            )}
 
             <CategorySEO category={category} subCategory={subCategory} itemCount={listings.length} />
             <div className="max-w-[1400px] mx-auto px-4 py-6">
-                {/* Mobile/Tablet Filter Button - Prominent at top */}
-                <div className="xl:hidden mb-6">
-                    <button
-                        onClick={() => setShowMobileFilters(true)}
-                        className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 text-gray-800 rounded-2xl shadow-md border border-gray-100 transition-all active:scale-[0.98]"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-red-50 rounded-xl">
-                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                </svg>
-                            </div>
-                            <span className="font-bold text-base">Filtrele & Kategoriler</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {getActiveFilterCount() > 0 && (
-                                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-red-600 text-white text-xs font-bold rounded-full">
-                                    {getActiveFilterCount()} aktif
-                                </span>
-                            )}
-                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </button>
-                </div>
+
+
+                {/* Mobile/Tablet Filter Button - Fixed to left */}
+                <button
+                    onClick={() => setShowMobileFilters(true)}
+                    className="xl:hidden fixed left-4 top-24 z-[1001] w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center group"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    {getActiveFilterCount() > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                            {getActiveFilterCount()}
+                        </span>
+                    )}
+                </button>
 
                 <div className="flex flex-col xl:flex-row gap-6">
                     {/* Filter Sidebar - Responsive Drawer for Mobile/Tablet */}
@@ -711,11 +892,11 @@ const GenericCategoryPage = ({
                             onClick={() => setShowMobileFilters(false)}
                         />
 
-                        {/* Sidebar Content Column */}
+                        {/* Sidebar Content Column - Balanced width on mobile */}
                         <div className={`
-                            relative w-[320px] sm:w-[380px] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6
-                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 ml-auto xl:ml-0
-                            ${showMobileFilters ? 'animate-in slide-in-from-right duration-300' : ''}
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0
+                            ${showMobileFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>
                             {/* Mobile Header */}
                             <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
@@ -755,31 +936,16 @@ const GenericCategoryPage = ({
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
-                                    {subCategory && (
-                                        <div
-                                            className="text-left px-3 py-2 rounded-lg text-sm transition-all bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md flex items-center justify-between ml-8"
-                                            style={{ width: 'calc(100% - 2rem)' }}
-                                        >
-                                            <span>{getCategoryTranslation(subCategory)}</span>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    // Navigate back to main category
-                                                    navigate(getCategoryPath(category));
-                                                }}
-                                                className="text-white hover:text-pink-200 transition-colors"
-                                                title={t.common.close || "Kategoriyi Kapat"}
-                                            >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    )}
-                                    {!subCategory && subCategories && subCategories.length > 0 && (
+
+                                    {resolvedSubCategories && resolvedSubCategories.length > 0 && !subCategory && (
                                         <div className="space-y-1 pt-3 border-t border-gray-200 mt-3">
-                                            {subCategories.map(sub => {
+                                            {resolvedSubCategories.map(sub => {
                                                 const count = getSubcategoryCount(sub.name);
+                                                // Check if this subcategory is the active one
+                                                // "Tümü" is active if subCategory prop is null/undefined
+                                                const isActive = (sub.name === 'Tümü' || sub.name === 'Alle')
+                                                    ? !subCategory
+                                                    : areSubCategoriesEquivalent(sub.name, subCategory);
 
                                                 return (
                                                     <button
@@ -788,15 +954,15 @@ const GenericCategoryPage = ({
                                                             e.stopPropagation();
                                                             navigate(sub.route);
                                                         }}
-                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${sub.name === 'Alle'
-                                                            ? 'bg-gray-200 text-gray-900 font-medium'
+                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${isActive
+                                                            ? 'bg-gradient-to-r from-red-50 to-rose-50 text-red-600 font-bold'
                                                             : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-red-600'
                                                             }`}
                                                     >
                                                         <span>{getCategoryTranslation(sub.name)}</span>
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
-                                                            <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <span className={`text-xs ${isActive ? 'text-red-400' : 'text-gray-400'}`}>({count.toLocaleString('tr-TR')})</span>
+                                                            <svg className={`w-4 h-4 transition-colors ${isActive ? 'text-red-500' : 'text-gray-400 group-hover:text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                             </svg>
                                                         </div>
@@ -817,207 +983,29 @@ const GenericCategoryPage = ({
 
 
 
-                            {Object.entries(filterConfig).map(([key, config]) => (
-                                <div key={key} className="mb-6 pb-6 border-b border-gray-200 last:border-0">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h4 className="font-bold text-gray-900 text-base">{getGenericTranslation(config.label)}</h4>
-                                        {((config.type === 'multiselect' && activeFilters[key]?.length > 0) ||
-                                            (config.type === 'range' && (activeFilters[`${key}From`] || activeFilters[`${key}To`])) ||
-                                            (config.type !== 'multiselect' && config.type !== 'range' && activeFilters[key])) && (
-                                                <button
-                                                    onClick={() => clearFilter(key)}
-                                                    className="text-xs text-red-600 hover:text-red-700 font-medium"
-                                                >
-                                                    {t.common.delete}
-                                                </button>
-                                            )}
+                            {/* Category-specific Filters */}
+                            <div className="mt-8 pt-8 border-t border-gray-100">
+                                {Object.entries(filterConfig).map(([key, config]) => (
+                                    <div key={key} className="mb-8 last:mb-0">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h4 className="font-bold text-gray-900 text-sm uppercase tracking-wider">{getGenericTranslation(config.label)}</h4>
+                                            {((config.type === 'multiselect' && activeFilters[key]?.length > 0) ||
+                                                (config.type === 'range' && (activeFilters[`${key}From`] || activeFilters[`${key}To`])) ||
+                                                (config.type !== 'multiselect' && config.type !== 'range' && activeFilters[key])) && (
+                                                    <button
+                                                        onClick={() => clearFilter(key)}
+                                                        className="text-xs text-red-600 hover:text-red-700 font-bold transition-colors"
+                                                    >
+                                                        {t.filters.clear || "Temizle"}
+                                                    </button>
+                                                )}
+                                        </div>
+                                        <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100/50">
+                                            {renderFilterInput(key, config)}
+                                        </div>
                                     </div>
-
-                                    {config.type === 'select' || config.type === 'radio' ? (
-                                        <div className="space-y-2 pr-2">
-                                            {config.options.map((option) => {
-                                                const optionValue = typeof option === 'string' ? option : option.value;
-                                                const optionLabel = typeof option === 'string' ? option : option.label;
-                                                const count = getFilterCount(key, optionValue);
-                                                const isChecked = activeFilters[key] === optionValue;
-
-                                                return (
-                                                    <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
-                                                        <div className="flex items-center gap-2">
-                                                            <input
-                                                                type="radio"
-                                                                name={key}
-                                                                value={optionValue}
-                                                                checked={isChecked}
-                                                                onChange={() => handleFilterChange(key, isChecked ? '' : optionValue)}
-                                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                                                            />
-                                                            <span className="text-sm text-gray-700 group-hover:text-red-600">{option.displayLabel || getGenericTranslation(optionLabel)}</span>
-                                                        </div>
-                                                        <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
-                                                    </label>
-                                                );
-                                            })}
-
-                                        </div>
-                                    ) : config.type === 'multiselect' ? (
-                                        <div className="space-y-2 pr-2">
-                                            {config.options.map((option) => {
-                                                const optionValue = typeof option === 'string' ? option : option.value;
-                                                const optionLabel = typeof option === 'string' ? option : option.label;
-                                                const count = getFilterCount(key, optionValue);
-                                                const isSelected = activeFilters[key] && activeFilters[key].includes(optionValue);
-
-                                                return (
-                                                    <label key={optionValue} className="flex items-center justify-between cursor-pointer group">
-                                                        <div className="flex items-center gap-2">
-                                                            <input
-                                                                type="checkbox"
-                                                                name={key}
-                                                                value={optionValue}
-                                                                checked={isSelected}
-                                                                onChange={() => handleFilterChange(key, optionValue)}
-                                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                                                            />
-                                                            <span className={`text-sm group-hover:text-red-600 transition-colors ${isSelected ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
-                                                                {option.displayLabel || getGenericTranslation(optionLabel)}
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : config.type === 'range' ? (
-                                        <div className="flex items-end gap-2">
-                                            <div className="grid grid-cols-2 gap-2 flex-1">
-                                                <div>
-                                                    <input
-                                                        type="text"
-                                                        value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}From`]) : (localFilters[`${key}From`] || '')}
-                                                        onChange={(e) => {
-                                                            const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
-                                                            handleRangeChange(`${key}From`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
-                                                        }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                const from = localFilters[`${key}From`];
-                                                                const to = localFilters[`${key}To`];
-                                                                updateURL({
-                                                                    [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
-                                                                    [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
-                                                                });
-                                                            }
-                                                        }}
-                                                        placeholder={t.filters.from}
-                                                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <input
-                                                        type="text"
-                                                        value={key === 'price' || key === 'warm_rent' || key === 'hourly_wage' ? formatPriceDisplay(localFilters[`${key}To`]) : (localFilters[`${key}To`] || '')}
-                                                        onChange={(e) => {
-                                                            const isP = key === 'price' || key === 'warm_rent' || key === 'hourly_wage';
-                                                            handleRangeChange(`${key}To`, isP ? e.target.value.replace(/\D/g, '') : e.target.value);
-                                                        }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                const from = localFilters[`${key}From`];
-                                                                const to = localFilters[`${key}To`];
-                                                                updateURL({
-                                                                    [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
-                                                                    [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
-                                                                });
-                                                            }
-                                                        }}
-                                                        placeholder={t.filters.to}
-                                                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    const from = localFilters[`${key}From`];
-                                                    const to = localFilters[`${key}To`];
-                                                    updateURL({
-                                                        [`${key}From`]: from ? from.toString().replace(/\./g, '') : '',
-                                                        [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
-                                                    });
-                                                }}
-                                                className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[38px] w-[38px] flex items-center justify-center border border-gray-200"
-                                                title={t.filters.apply || "Uygula"}
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    ) : config.type === 'checkbox' ? (
-                                        <label className="flex items-center justify-between cursor-pointer group">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={activeFilters[key]}
-                                                    onChange={(e) => handleFilterChange(key, e.target.checked)}
-                                                    className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                                                />
-                                                <span className="text-sm text-gray-700 group-hover:text-red-600 font-medium">Aktif</span>
-                                            </div>
-                                            <span className="text-xs text-gray-400">
-                                                ({getFilterCount(key, true).toLocaleString('tr-TR')})
-                                            </span>
-                                        </label>
-                                    ) : config.type === 'month' ? (() => {
-                                        const fullValue = activeFilters[key] || '';
-                                        const [currYear, currMonth] = fullValue.split('-');
-                                        const months = [
-                                            { v: '01', l: t.filters?.months?.['01'] || 'Ocak' }, { v: '02', l: t.filters?.months?.['02'] || 'Şubat' }, { v: '03', l: t.filters?.months?.['03'] || 'Mart' },
-                                            { v: '04', l: t.filters?.months?.['04'] || 'Nisan' }, { v: '05', l: t.filters?.months?.['05'] || 'Mayıs' }, { v: '06', l: t.filters?.months?.['06'] || 'Haziran' },
-                                            { v: '07', l: t.filters?.months?.['07'] || 'Temmuz' }, { v: '08', l: t.filters?.months?.['08'] || 'Ağustos' }, { v: '09', l: t.filters?.months?.['09'] || 'Eylül' },
-                                            { v: '10', l: t.filters?.months?.['10'] || 'Ekim' }, { v: '11', l: t.filters?.months?.['11'] || 'Kasım' }, { v: '12', l: t.filters?.months?.['12'] || 'Aralık' }
-                                        ];
-                                        const currentYear = new Date().getFullYear();
-                                        const years = Array.from({ length: 11 }, (_, i) => currentYear + i);
-
-                                        return (
-                                            <div className="flex gap-2">
-                                                <select
-                                                    value={currMonth || ''}
-                                                    onChange={(e) => {
-                                                        const newMonth = e.target.value;
-                                                        const year = currYear || currentYear;
-                                                        updateURL({ [key]: newMonth ? `${year}-${newMonth}` : year });
-                                                    }}
-                                                    className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
-                                                >
-                                                    <option value="">{t.filters.month || 'Ay'}</option>
-                                                    {months.map(m => (
-                                                        <option key={m.v} value={m.v}>{m.l}</option>
-                                                    ))}
-                                                </select>
-                                                <select
-                                                    value={currYear || ''}
-                                                    onChange={(e) => {
-                                                        const newYear = e.target.value;
-                                                        if (!newYear) {
-                                                            updateURL({ [key]: '' });
-                                                        } else {
-                                                            updateURL({ [key]: currMonth ? `${newYear}-${currMonth}` : newYear });
-                                                        }
-                                                    }}
-                                                    className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
-                                                >
-                                                    <option value="">{t.filters.year || 'Yıl'}</option>
-                                                    {years.map(y => (
-                                                        <option key={y} value={y}>{y}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        );
-                                    })() : null}
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </aside>
 
@@ -1048,13 +1036,10 @@ const GenericCategoryPage = ({
                             </div>
                             <div className="relative z-10">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                                            <span className="text-5xl">{bannerConfig.icon || '📦'}</span>
-                                        </div>
-                                        <div>
-                                            <h1 className="text-4xl font-bold text-white mb-1">{pageTitle || subCategory || category}</h1>
-                                            <p className="text-white text-lg opacity-90">
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full sm:w-auto text-center sm:text-left">
+                                        <div className="w-full">
+                                            <h1 className="text-2xl sm:text-4xl font-bold text-white mb-0.5 sm:mb-1">{pageTitle || subCategory || category}</h1>
+                                            <p className="text-white text-sm sm:text-lg opacity-90 leading-tight">
                                                 {bannerConfig.description || `${subCategory || category} kategorisini keşfedin`}
                                             </p>
                                         </div>
@@ -1086,63 +1071,63 @@ const GenericCategoryPage = ({
                                     <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                                         {getTotalCount()} {t.common?.listingsCount || 'İlan'}
                                     </h2>
-                                </div>
 
-                                <button
-                                    onClick={async () => {
-                                        if (savingSearch) return;
+                                    <button
+                                        onClick={async () => {
+                                            if (savingSearch) return;
 
-                                        setSavingSearch(true);
-                                        try {
-                                            if (isSaved) {
-                                                // Unsave
-                                                await deleteSavedSearchByUrl(location.pathname + location.search);
-                                                setIsSaved(false);
-                                                setSavedSearchId(null);
-                                            } else {
-                                                // Save
-                                                const searchData = {
-                                                    searchName: `${category}${subCategory ? ' - ' + subCategory : ''}`,
-                                                    category: category,
-                                                    subcategory: subCategory || null,
-                                                    filters: getActiveFiltersFromURL(),
-                                                    searchUrl: location.pathname + location.search
-                                                };
-                                                const result = await createSavedSearch(searchData);
-                                                setIsSaved(true);
-                                                setSavedSearchId(result.id);
+                                            setSavingSearch(true);
+                                            try {
+                                                if (isSaved) {
+                                                    // Unsave
+                                                    await deleteSavedSearchByUrl(location.pathname + location.search);
+                                                    setIsSaved(false);
+                                                    setSavedSearchId(null);
+                                                } else {
+                                                    // Save
+                                                    const searchData = {
+                                                        searchName: `${category}${subCategory ? ' - ' + subCategory : ''}`,
+                                                        category: category,
+                                                        subcategory: subCategory || null,
+                                                        filters: getActiveFiltersFromURL(),
+                                                        searchUrl: location.pathname + location.search
+                                                    };
+                                                    const result = await createSavedSearch(searchData);
+                                                    setIsSaved(true);
+                                                    setSavedSearchId(result.id);
+                                                }
+                                            } catch (error) {
+                                                console.error('Error saving/unsaving search:', error);
+                                                alert('Arama kaydedilirken bir hata oluştu.');
+                                            } finally {
+                                                setSavingSearch(false);
                                             }
-                                        } catch (error) {
-                                            console.error('Error saving/unsaving search:', error);
-                                            alert('Arama kaydedilirken bir hata oluştu.');
-                                        } finally {
-                                            setSavingSearch(false);
-                                        }
-                                    }}
-                                    disabled={savingSearch}
-                                    className={`group flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSaved
-                                        ? 'border-yellow-400 bg-yellow-50 text-yellow-700'
-                                        : 'border-gray-200 hover:border-yellow-400 hover:bg-yellow-50 text-gray-500 hover:text-yellow-700'
-                                        }`}
-                                    title={isSaved ? 'Arama Kaydedildi' : 'Aramayı Kaydet'}
-                                >
-                                    <span className="text-sm font-medium">
-                                        {isSaved ? 'Kaydedildi' : 'Aramayı Kaydet'}
-                                    </span>
-                                    <svg
-                                        className={`w-5 h-5 transition-colors ${isSaved ? 'text-yellow-400 fill-current' : 'text-gray-400 group-hover:text-yellow-400'}`}
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                                        }}
+                                        disabled={savingSearch}
+                                        className={`group flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSaved
+                                            ? 'border-yellow-400 bg-yellow-50 text-yellow-700'
+                                            : 'border-gray-200 hover:border-yellow-400 hover:bg-yellow-50 text-gray-500 hover:text-yellow-700'
+                                            }`}
+                                        title={isSaved ? 'Arama Kaydedildi' : 'Aramayı Kaydet'}
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                                        />
-                                    </svg>
-                                </button>
+                                        <span className="text-sm font-medium">
+                                            {isSaved ? 'Kaydedildi' : 'Aramayı Kaydet'}
+                                        </span>
+                                        <svg
+                                            className={`w-5 h-5 transition-colors ${isSaved ? 'text-yellow-400 fill-current' : 'text-gray-400 group-hover:text-yellow-400'}`}
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M11.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-0.363 1.118l1.518 4.674c.3.922-0.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-0.783.57-1.838-0.197-1.538-1.118l1.518-4.674a1 1 0 00-0.363-1.118l-3.976-2.888c-0.784-0.57-0.38-1.81.588-1.81h4.914a1 1 0 00.951-0.69l1.519-4.674z"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
 
                             {loading ? (
@@ -1154,19 +1139,35 @@ const GenericCategoryPage = ({
                                     <p className="text-gray-500 text-lg">{t.common?.noListings || 'İlan bulunamadı'}</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4 md:px-0">
-                                    {sortedListings.map((listing) => (
-                                        <HorizontalListingCard
-                                            key={listing.id}
-                                            listing={listing}
-                                            toggleFavorite={toggleFavorite}
-                                            isFavorite={isFavorite}
-                                            compact={layoutVariant === 'compact'}
-                                            hidePrice={hidePrice}
-                                            renderCustomFields={renderCustomFields}
-                                        />
-                                    ))}
-                                </div>
+                                <>
+                                    {/* Mobile: 2-column grid */}
+                                    <div className="grid grid-cols-2 gap-2 px-0 sm:hidden">
+                                        {sortedListings.map((listing) => (
+                                            <ListingCard
+                                                key={listing.id}
+                                                listing={listing}
+                                                toggleFavorite={toggleFavorite}
+                                                isFavorite={isFavorite}
+                                                hidePrice={hidePrice}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Desktop: Horizontal cards */}
+                                    <div className="hidden sm:block space-y-4 md:px-0">
+                                        {sortedListings.map((listing) => (
+                                            <HorizontalListingCard
+                                                key={listing.id}
+                                                listing={listing}
+                                                toggleFavorite={toggleFavorite}
+                                                isFavorite={isFavorite}
+                                                compact={layoutVariant === 'compact'}
+                                                hidePrice={hidePrice}
+                                                renderCustomFields={renderCustomFields}
+                                            />
+                                        ))}
+                                    </div>
+                                </>
                             )}
 
                             {/* Load More Button */}
@@ -1189,7 +1190,7 @@ const GenericCategoryPage = ({
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

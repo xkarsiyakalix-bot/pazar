@@ -76,7 +76,7 @@ export const ProductSEO = ({ product }) => {
         "description": product.description,
         "offers": {
             "@type": "Offer",
-            "price": String(product.price || '0').replace('₺', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.'),
+            "price": String(product.price || '0').replace(' TL', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.'),
             "priceCurrency": "TRY",
             "itemCondition": product.condition === 'Yeni' ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
             "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",

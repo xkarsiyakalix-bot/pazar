@@ -29,7 +29,7 @@ const AdminRoute = () => {
                 // Check if user is admin (user_number 1001)
                 const checkPromise = supabase
                     .from('profiles')
-                    .select('user_number, is_admin')
+                    .select('user_number, is_admin, admin_role')
                     .eq('id', user.id)
                     .single();
 
@@ -37,7 +37,7 @@ const AdminRoute = () => {
                 if (timeoutId) clearTimeout(timeoutId);
 
                 // Fallback: Check user email directly from auth metadata
-                const isSuperAdmin = user.email === 'kerem_aydin@aol.com' || profile?.user_number === 1001 || profile?.is_admin === true;
+                const isSuperAdmin = user.email === 'kerem_aydin@aol.com' || profile?.user_number === 1001 || profile?.is_admin === true || profile?.admin_role === 'super_admin' || profile?.admin_role === 'admin';
                 setIsAdmin(isSuperAdmin);
 
                 if (error && !isSuperAdmin) {

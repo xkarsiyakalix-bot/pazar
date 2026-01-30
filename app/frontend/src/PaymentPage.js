@@ -117,7 +117,7 @@ const PaymentPage = () => {
                             <div className="text-lg font-bold text-gray-900">{pkg.name}</div>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-black text-gray-900">{pkg.price} ₺</div>
+                            <div className="text-2xl font-black text-gray-900">{pkg.price} TL</div>
                             <div className="text-xs text-gray-500">/ay</div>
                         </div>
                     </div>
@@ -189,7 +189,7 @@ const PaymentPage = () => {
                                     <span>Ödeme İşleniyor...</span>
                                 </>
                             ) : (
-                                <span>{pkg.price} ₺ Öde ve Aktifleştir</span>
+                                <span>{pkg.price} TL Öde ve Aktifleştir</span>
                             )}
                         </button>
 

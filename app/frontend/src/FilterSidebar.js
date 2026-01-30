@@ -27,7 +27,7 @@ const FilterSidebar = ({
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sticky top-4">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                     <svg className="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-0.293.707l-6.414 6.414a1 1 0 00-0.293.707V17l-4 4v-6.586a1 1 0 00-0.293-0.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
                     Filtrele
                 </h2>
@@ -59,12 +59,12 @@ const FilterSidebar = ({
                         {[
                             { value: 'all', label: 'Tüm fiyatlar' },
                             { value: 'free', label: 'Ücretsiz' },
-                            { value: 'under50', label: '50 ₺ altı' },
-                            { value: 'under100', label: '100 ₺ altı' },
-                            { value: '100-500', label: '100 - 500 ₺' },
-                            { value: '500-1000', label: '500 - 1.000 ₺' },
-                            { value: '1000-5000', label: '1.000 - 5.000 ₺' },
-                            { value: 'over5000', label: '5.000 ₺ üstü' }
+                            { value: 'under50', label: '50 TL altı' },
+                            { value: 'under100', label: '100 TL altı' },
+                            { value: '100-500', label: '100 - 500 TL' },
+                            { value: '500-1000', label: '500 - 1.000 TL' },
+                            { value: '1000-5000', label: '1.000 - 5.000 TL' },
+                            { value: 'over5000', label: '5.000 TL üstü' }
                         ].map(option => (
                             <label key={option.value} className="flex items-center cursor-pointer group">
                                 <input
@@ -115,7 +115,7 @@ const FilterSidebar = ({
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:border-red-400 hover:text-red-600 transition-all flex items-center justify-center gap-2"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-0.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                     Filtreleri temizle
                 </button>

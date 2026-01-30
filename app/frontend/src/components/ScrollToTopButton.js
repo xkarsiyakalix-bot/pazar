@@ -38,13 +38,13 @@ const ScrollToTopButton = () => {
             {isVisible && (
                 <button
                     onClick={scrollToTop}
-                    className="fixed bottom-32 sm:bottom-8 right-6 z-[10000] p-4 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 group"
+                    className="fixed bottom-32 sm:bottom-8 right-6 z-[10000] p-2.5 sm:p-4 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 group"
                     aria-label="Yukarı çık"
                     title="Sayfanın başına dön"
                 >
                     {/* Arrow Up Icon */}
                     <svg
-                        className="w-6 h-6 transform group-hover:-translate-y-1 transition-transform duration-300"
+                        className="w-5 h-5 sm:w-6 sm:h-6 transform group-hover:-translate-y-1 transition-transform duration-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

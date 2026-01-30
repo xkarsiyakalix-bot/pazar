@@ -1,38 +1,11 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities, t } from './translations';
+import { getCommonFilters } from './config/filterConfigs';
 
 const FamilieKindBabyPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
-        price: {
-            label: t.filters.price,
-            type: 'range',
-            field: 'price'
-        },
-        offerType: {
-            label: t.filters.offerType,
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: t.addListing.offering },
-                { value: 'Gesuche', label: t.addListing.searching }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: t.filters.sellerType,
-            type: 'multiselect',
-            options: [
-                { value: 'Privatnutzer', label: t.addListing.private },
-                { value: 'Gewerblicher Nutzer', label: t.addListing.commercial }
-            ],
-            field: 'seller_type'
-        },
-        federalState: {
-            label: t.filters.location,
-            type: 'multiselect',
-            options: getTurkishCities(),
-            field: 'federal_state'
-        }
+        ...getCommonFilters()
     };
 
     const subCategories = [

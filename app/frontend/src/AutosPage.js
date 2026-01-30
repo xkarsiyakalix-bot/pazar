@@ -5,10 +5,11 @@ import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities, isValidTurkishCity, t, getCategoryTranslation } from './translations';
 import { carBrands } from './data/carBrands';
 import { fetchCategoryStats } from './api/listings';
-import { CategoryGallery, getCategoryPath } from './components';
+import { CategoryGallery, getCategoryPath, Breadcrumb } from './components';
 import LoadingSpinner from './components/LoadingSpinner';
 import { CategorySEO } from './SEO';
 import { LazyImage } from './LazyLoad';
+import { categories as globalCategories } from './config/categories';
 
 
 
@@ -913,37 +914,33 @@ function AutosPage() {
         return new Date(b.created_at) - new Date(a.created_at);
     });
 
+    // Generate breadcrumb items
+    const breadcrumbItems = [
+        { label: 'ExVitrin', path: '/' },
+        { label: getCategoryTranslation('Otomobil, Bisiklet & Tekne'), path: getCategoryPath('Otomobil, Bisiklet & Tekne') },
+        { label: getCategoryTranslation('Autos'), isActive: true }
+    ];
 
     return (
         <div className="min-h-screen bg-gray-50">
             <CategorySEO category="Otomobil, Bisiklet & Tekne" subCategory="Otomobiller" itemCount={statsListings.length} />
             <div className="max-w-[1400px] mx-auto px-4 py-8">
-                {/* Mobile/Tablet Filter Button */}
-                <div className="xl:hidden mb-6">
-                    <button
-                        onClick={() => setShowMobileFilters(true)}
-                        className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 text-gray-800 rounded-2xl shadow-md border border-gray-100 transition-all active:scale-[0.98]"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-red-50 rounded-xl">
-                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                </svg>
-                            </div>
-                            <span className="font-bold text-base">Filtrele & Kategoriler</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {getActiveFilterCount() > 0 && (
-                                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-red-600 text-white text-xs font-bold rounded-full">
-                                    {getActiveFilterCount()} aktif
-                                </span>
-                            )}
-                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    </button>
-                </div>
+
+
+                {/* Mobile/Tablet Filter Button - Fixed to left */}
+                <button
+                    onClick={() => setShowMobileFilters(true)}
+                    className="xl:hidden fixed left-4 top-24 z-[1001] w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center group"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    {getActiveFilterCount() > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                            {getActiveFilterCount()}
+                        </span>
+                    )}
+                </button>
 
                 <div className="flex flex-col xl:flex-row gap-8">
                     {/* Sidebar - Desktop and Mobile Drawer */}
@@ -957,11 +954,11 @@ function AutosPage() {
                             onClick={() => setShowMobileFilters(false)}
                         />
 
-                        {/* Sidebar Content Column */}
+                        {/* Sidebar Content Column - Half screen width on mobile */}
                         <div className={`
-                            relative w-[320px] sm:w-[380px] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-none p-6 
-                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 ml-auto xl:ml-0 border border-gray-100
-                            ${showMobileFilters ? 'animate-in slide-in-from-right duration-300' : ''}
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-none p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0 border border-gray-100
+                            ${showMobileFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>
                             {/* Mobile Header */}
                             <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
@@ -976,34 +973,12 @@ function AutosPage() {
                                 </button>
                             </div>
 
-                            {/* Categories Section - Keep it inside for consistency */}
-                            <div className="mb-8">
-                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">{t.common.categories}</h3>
-                                <div className="space-y-1">
-                                    <button
-                                        onClick={() => navigate('/Otomobil-Bisiklet-Tekne')}
-                                        className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors group"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-lg">🚗</span>
-                                            <span className="text-sm font-medium">Otomobil, Bisiklet & Tekne</span>
-                                        </div>
-                                        <svg className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
-                                    <div className="ml-8 p-2 rounded-lg bg-red-50 text-red-700 text-sm font-bold border border-red-100">
-                                        Otomobiller
-                                    </div>
-                                </div>
-                            </div>
-
                             {/* Original Sidebar Content Starts Here */}
                             {/* Category Navigation */}
                             <div className="mb-6 pb-6 border-b border-gray-200">
                                 <h3 className="font-bold text-gray-900 mb-3 text-base">{t.filters.categories}</h3>
                                 <button
-                                    onClick={() => navigate('/search')}
+                                    onClick={() => navigate('/Butun-Kategoriler')}
                                     className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
                                 >
                                     <span>{t.filters.allCategories}</span>
@@ -1011,23 +986,47 @@ function AutosPage() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 </button>
-                                <div
-                                    className="text-left px-3 py-2 rounded-lg text-sm transition-all bg-red-600 text-white shadow-md flex items-center justify-between ml-8"
-                                    style={{ width: 'calc(100% - 2rem)' }}
-                                >
-                                    <span>{getCategoryTranslation('Autos')} ({statsListings.length})</span>
+
+                                <div className="space-y-2 mt-3">
                                     <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
+                                        onClick={() => {
                                             navigate(getCategoryPath('Otomobil, Bisiklet & Tekne'));
                                         }}
-                                        className="text-white hover:text-red-200 transition-colors"
-                                        title={t.common?.closeCategory || "Kategoriyi Kapat"}
+                                        className="text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ml-4 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                        style={{ width: 'calc(100% - 1rem)' }}
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        <span>{getCategoryTranslation('Otomobil, Bisiklet & Tekne')}</span>
+                                        <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
+
+                                    <div className="space-y-1 pt-3 border-t border-gray-200 mt-3">
+                                        {globalCategories.find(c => c.name === 'Otomobil, Bisiklet & Tekne')?.subcategories.map(sub => {
+                                            const isActive = sub === 'Otomobiller';
+                                            const subRoute = getCategoryPath('Otomobil, Bisiklet & Tekne', sub);
+
+                                            return (
+                                                <button
+                                                    key={sub}
+                                                    onClick={() => {
+                                                        navigate(subRoute);
+                                                    }}
+                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${isActive
+                                                        ? 'bg-gradient-to-r from-red-50 to-rose-50 text-red-600 font-bold'
+                                                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-red-600'
+                                                        }`}
+                                                >
+                                                    <span>{getCategoryTranslation(sub)}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <svg className={`w-4 h-4 transition-colors ${isActive ? 'text-red-500' : 'text-gray-400 group-hover:text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                        </svg>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
 
@@ -1499,7 +1498,7 @@ function AutosPage() {
                                 <div className="flex items-center gap-2">
                                     <div className="flex gap-2 flex-1">
                                         <div className="flex-1">
-                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (₺)</label>
+                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (TL)</label>
                                             <input
                                                 type="text"
                                                 value={formatPrice(inputPriceFrom)}
@@ -1510,7 +1509,7 @@ function AutosPage() {
                                             />
                                         </div>
                                         <div className="flex-1">
-                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (₺)</label>
+                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (TL)</label>
                                             <input
                                                 type="text"
                                                 value={formatPrice(inputPriceTo)}
@@ -1694,7 +1693,7 @@ function AutosPage() {
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
                                         <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-0.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-8l-2.08-5.99zM6.5 16c-0.83 0-1.5-0.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-0.83 0-1.5-0.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-0.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                                         </svg>
                                         <h1 className="text-4xl font-bold text-white">AUTOS</h1>
                                     </div>
@@ -1704,7 +1703,7 @@ function AutosPage() {
                                 </div>
                                 <div className="hidden md:block">
                                     <svg className="w-32 h-32 text-white opacity-20" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-0.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-8l-2.08-5.99zM6.5 16c-0.83 0-1.5-0.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-0.83 0-1.5-0.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-0.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                                     </svg>
                                 </div>
                             </div>
@@ -1717,7 +1716,7 @@ function AutosPage() {
                                 <div className="flex items-center gap-4 mb-3">
                                     <div className="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center">
                                         <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-0.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-8l-2.08-5.99zM6.5 16c-0.83 0-1.5-0.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-0.83 0-1.5-0.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-0.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                                         </svg>
                                     </div>
                                     <div>
@@ -1738,7 +1737,7 @@ function AutosPage() {
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
                                             <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-0.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-8l-2.08-5.99zM6.5 16c-0.83 0-1.5-0.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-0.83 0-1.5-0.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-0.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                                             </svg>
                                         </div>
                                         <h1 className="text-4xl font-bold text-gray-900">AUTOS</h1>
@@ -1749,7 +1748,7 @@ function AutosPage() {
                                 </div>
                                 <div className="hidden md:block">
                                     <svg className="w-28 h-28 text-red-600 opacity-10" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-0.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-8l-2.08-5.99zM6.5 16c-0.83 0-1.5-0.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-0.83 0-1.5-0.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-0.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                                     </svg>
                                 </div>
                             </div>
@@ -1763,15 +1762,10 @@ function AutosPage() {
                             </div>
                             <div className="relative z-10">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                                            <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h1 className="text-4xl font-bold text-white mb-1">{getCategoryTranslation('Autos').toUpperCase()}</h1>
-                                            <p className="text-white text-lg opacity-90">
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full sm:w-auto text-center sm:text-left">
+                                        <div className="w-full">
+                                            <h1 className="text-2xl sm:text-4xl font-bold text-white mb-0.5 sm:mb-1">{getCategoryTranslation('Autos').toUpperCase()}</h1>
+                                            <p className="text-white text-sm sm:text-lg opacity-90 leading-tight">
                                                 {t.autos?.findDreamCar || 'Hayalinizdeki Arabayı Bulun'} - {statsListings.length.toLocaleString('tr-TR')} {t.autos?.ads || 'İlanlar'}
                                             </p>
                                         </div>
@@ -1831,7 +1825,7 @@ function AutosPage() {
                                         <p className="text-sm text-gray-500 mt-2">{t.autos?.adjustFilters || 'Filtreleri ayarlamayı deneyin'}</p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-2 md:block md:space-y-6">
                                         {sortedListings.map((listing) => (
                                             <div
                                                 key={listing.id}
@@ -1840,7 +1834,7 @@ function AutosPage() {
                                             >
                                                 <div className="flex flex-col md:flex-row">
                                                     {/* Image Section - Balanced Size */}
-                                                    <div className="md:w-64 h-44 md:h-48 relative group flex-shrink-0 bg-gray-100">
+                                                    <div className="md:w-64 h-28 md:h-48 relative group flex-shrink-0 bg-gray-100">
                                                         <LazyImage
                                                             src={listing.images && listing.images.length > 0 ? listing.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}
                                                             alt={listing.title}
@@ -1900,94 +1894,91 @@ function AutosPage() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="flex-1 p-4 flex flex-col justify-between">
+                                                    <div className="flex-1 p-2 md:p-3 flex flex-col justify-between">
                                                         <div>
-                                                            <div className="mb-2">
-                                                                <h4 className="text-lg font-bold text-gray-900 line-clamp-1 mb-1">
-                                                                    {listing.title}
-                                                                </h4>
-                                                            </div>
-                                                            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
-                                                                <div className="flex items-center gap-1.5 text-sm">
-                                                                    <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                            <h4 className="text-[11px] md:text-lg font-bold text-gray-900 line-clamp-2 mb-1 group-hover:text-red-600 transition-colors leading-snug">
+                                                                {listing.title}
+                                                            </h4>
+
+                                                            <div className="grid grid-cols-2 md:grid-cols-5 gap-1.5 md:gap-2 mb-2">
+                                                                <div className="flex items-center gap-1.5 ">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-sm text-gray-700 uppercase font-black">{t.filters.year || 'Yıl'}</div>
-                                                                        <div className="font-semibold text-gray-900 text-xs">{listing.erstzulassung || '-'}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.year || 'Yıl'}</div>
+                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs">{listing.erstzulassung || '-'}</div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex items-center gap-1.5 text-sm">
-                                                                    <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-sm text-gray-700 uppercase font-black">KM</div>
-                                                                        <div className="font-semibold text-gray-900 text-xs">{listing.kilometerstand ? listing.kilometerstand.toLocaleString('tr-TR') : '-'}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">KM</div>
+                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs">{listing.kilometerstand ? listing.kilometerstand.toLocaleString('tr-TR') : '-'}</div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex items-center gap-1.5 text-sm">
-                                                                    <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-sm text-gray-700 uppercase font-black">{t.filters.fuel || 'Kraftstoff'}</div>
-                                                                        <div className="font-semibold text-gray-900 text-xs truncate max-w-[60px]">{getTranslatedFuel(listing.kraftstoff)}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.fuel || 'Kraftstoff'}</div>
+                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs truncate max-w-[60px]">{getTranslatedFuel(listing.kraftstoff)}</div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex items-center gap-1.5 text-sm">
-                                                                    <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                                                            <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                            <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-0.82-1.573l7-10a1 1 0 011.12-0.38z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-sm text-gray-700 uppercase font-black">{t.filters.bg || 'BG'}</div>
-                                                                        <div className="font-semibold text-gray-900 text-xs">{listing.leistung || '-'}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.bg || 'BG'}</div>
+                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs">{listing.leistung || '-'}</div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex items-center gap-1.5 text-sm">
-                                                                    <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-100 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-sm text-gray-700 uppercase font-black">{t.filters.transmission || 'Getriebe'}</div>
-                                                                        <div className="font-semibold text-gray-900 text-xs truncate max-w-[70px]">{getTranslatedTransmission(listing.getriebe)}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.transmission || 'Getriebe'}</div>
+                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs truncate max-w-[70px]">{getTranslatedTransmission(listing.getriebe)}</div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="pt-3">
-                                                            <div className="text-xl font-bold text-gray-900 mb-2">
-                                                                {listing.price === 0 ? (t.autos?.giveaway || 'Ücretsiz') : listing.priceType === 'giveaway' ? (t.autos?.giveaway || 'Ücretsiz') : `${listing.price?.toLocaleString('tr-TR')} ₺`}
+                                                        <div className="mt-auto">
+                                                            <div className="mb-1.5 pt-2 border-t border-gray-50">
+                                                                <span className="text-sm md:text-xl font-black text-gray-900">
+                                                                    {listing.price === 0 ? (t.autos?.giveaway || 'Ücretsiz') : listing.priceType === 'giveaway' ? (t.autos?.giveaway || 'Ücretsiz') : `${listing.price?.toLocaleString('tr-TR')} TL`}
+                                                                </span>
                                                             </div>
-                                                            <div className="flex items-center justify-between text-sm text-gray-500 border-t border-gray-100 pt-2">
+                                                            <div className="flex items-center justify-between text-[10px] md:text-sm text-gray-500 border-t border-gray-100 pt-1.5">
                                                                 {listing.city && (
                                                                     <div className="flex items-center">
-                                                                        <svg className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                            <circle cx="12" cy="12" r="8" />
-                                                                            <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
-                                                                            <line x1="12" y1="2" x2="12" y2="4" />
-                                                                            <line x1="12" y1="20" x2="12" y2="22" />
-                                                                            <line x1="2" y1="12" x2="4" y2="12" />
-                                                                            <line x1="20" y1="12" x2="22" y2="12" />
+                                                                        <svg className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                         </svg>
-                                                                        <span className="text-sm">{listing.city}</span>
+                                                                        <span className="text-[10px] md:text-sm">{listing.city}</span>
                                                                     </div>
                                                                 )}
                                                                 <div className="flex items-center ml-auto">
-                                                                    <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <svg className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                                     </svg>
-                                                                    <span className="text-sm">{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
+                                                                    <span className="text-[10px] md:text-sm">{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
                                                                 </div>
                                                             </div>
                                                         </div>

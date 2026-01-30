@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { fetchUserListings } from './api/listings';
-import { HorizontalListingCard } from './components';
+import { HorizontalListingCard, ListingCard } from './components';
 import LoadingSpinner from './components/LoadingSpinner';
 
 import ProfileLayout from './ProfileLayout';
@@ -122,16 +122,32 @@ const MyListingsPage = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {filteredListings.map(listing => (
-                            <HorizontalListingCard
-                                key={listing.id}
-                                listing={listing}
-                                toggleFavorite={() => { }}
-                                isFavorite={() => false}
-                                isOwnListing={true}
-                            />
-                        ))}
+                    <div className="flex flex-col gap-4">
+                        {/* Desktop View */}
+                        <div className="hidden sm:block space-y-4">
+                            {filteredListings.map(listing => (
+                                <HorizontalListingCard
+                                    key={listing.id}
+                                    listing={listing}
+                                    toggleFavorite={() => { }}
+                                    isFavorite={() => false}
+                                    isOwnListing={true}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Mobile Grid View */}
+                        <div className="grid grid-cols-2 gap-2 sm:hidden px-0">
+                            {filteredListings.map(listing => (
+                                <ListingCard
+                                    key={listing.id}
+                                    listing={listing}
+                                    toggleFavorite={() => { }}
+                                    isFavorite={() => false}
+                                    isOwnListing={true}
+                                />
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

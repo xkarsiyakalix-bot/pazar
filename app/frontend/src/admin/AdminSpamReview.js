@@ -134,7 +134,7 @@ const AdminSpamReview = () => {
                                                 <h3 className="text-lg font-bold text-gray-900 mb-2">{listing.title}</h3>
                                                 <p className="text-sm text-gray-600 mb-2">{listing.description?.substring(0, 200)}...</p>
                                                 <div className="flex items-center gap-4 text-sm text-gray-500">
-                                                    <span>Fiyat: {listing.price}₺</span>
+                                                    <span>Fiyat: {listing.price} TL</span>
                                                     <span>Kategori: {listing.category}</span>
                                                     <span>Kullanıcı: {listing.profiles?.full_name || 'Bilinmiyor'}</span>
                                                 </div>

@@ -29,15 +29,14 @@ const ContactPage = () => {
     };
 
     const breadcrumbItems = [
-        { label: 'Ana Sayfa', path: '/' },
+        { label: 'ExVitrin', path: '/' },
         { label: 'İletişim', isActive: true }
     ];
 
     return (
         <main className="flex-grow pt-12 pb-20 px-4 bg-gray-50/50">
             <div className="max-w-5xl mx-auto">
-                {/* Breadcrumb */}
-                <Breadcrumb items={breadcrumbItems} />
+
 
                 {/* Hero Section */}
                 <div className="text-center mb-12">

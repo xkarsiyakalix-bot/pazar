@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const AuthContext = createContext({});
 
@@ -47,12 +48,23 @@ export const AuthProvider = ({ children }) => {
 
         // Check active session on mount
         const initAuth = async () => {
+            // Safety timeout: if auth doesn't initialize within 5 seconds, move on
+            const timeoutId = setTimeout(() => {
+                if (mounted && loading) {
+                    console.warn('Auth initialization timed out, continuing...');
+                    setLoading(false);
+                }
+            }, 5000);
+
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) throw error;
+
                 if (mounted) {
                     const currentUser = session?.user ?? null;
                     setUser(currentUser);
                     setLoading(false);
+                    clearTimeout(timeoutId);
 
                     // Check ban status and update last seen
                     if (currentUser) {
@@ -66,14 +78,17 @@ export const AuthProvider = ({ children }) => {
                 }
             } catch (error) {
                 console.error('Error getting session:', error);
-                if (mounted) setLoading(false);
+                if (mounted) {
+                    setLoading(false);
+                    clearTimeout(timeoutId);
+                }
             }
         };
 
         initAuth();
 
         // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        const authListener = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 if (mounted) {
                     const currentUser = session?.user ?? null;
@@ -105,7 +120,9 @@ export const AuthProvider = ({ children }) => {
 
         return () => {
             mounted = false;
-            subscription.unsubscribe();
+            if (authListener && authListener.data && authListener.data.subscription) {
+                authListener.data.subscription.unsubscribe();
+            }
             clearInterval(heartbeat);
         };
     }, []);
@@ -159,8 +176,8 @@ export const AuthProvider = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 text-red-600">
-                <div className="w-12 h-12 border-4 border-red-100 border-t-red-600 rounded-full animate-spin"></div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <LoadingSpinner size="large" />
             </div>
         );
     }

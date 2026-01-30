@@ -121,7 +121,7 @@ export const getConversations = async () => {
     if (listingIds.size > 0) {
         const { data: listings } = await supabase
             .from('listings')
-            .select('id, title, images')
+            .select('id, title, images, status')
             .in('id', Array.from(listingIds));
 
         listings?.forEach(listing => {
@@ -145,7 +145,18 @@ export const getConversations = async () => {
 
         // Add listing info if available
         if (message.listing_id) {
-            message.listing = listingMap.get(message.listing_id);
+            const foundListing = listingMap.get(message.listing_id);
+            if (foundListing && foundListing.status !== 'deleted') {
+                message.listing = foundListing;
+            } else {
+                // Listing was deleted or doesn't exist
+                message.listing = {
+                    id: message.listing_id,
+                    title: foundListing?.title || 'İlan Artık Mevcut Değil',
+                    is_deleted: true,
+                    images: foundListing?.images || ['https://premium.exvitrin.com/storage/v1/object/public/listing-images/placeholder_listing.png']
+                };
+            }
         }
 
         // Create unique key: user_id + listing_id (or "general" if no listing)

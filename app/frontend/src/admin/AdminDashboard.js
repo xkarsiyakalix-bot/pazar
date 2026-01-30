@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchListings } from '../api/listings';
 import { supabase } from '../lib/supabase';
@@ -18,72 +18,61 @@ const AdminDashboard = () => {
     const [recentPromotions, setRecentPromotions] = useState([]);
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
+    const [realtimeOnlineCount, setRealtimeOnlineCount] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const refreshTimerRef = useRef(null);
 
-    const loadDashboardData = async () => {
+    const loadDashboardData = async (silent = false) => {
         try {
-            // Only set loading on initial load
-            if (stats.totalListings === 0) setLoading(true);
+            // Only set loading on initial load if we haven't successfully loaded data yet
+            if (!silent && !hasLoadedInitialData) {
+                setLoading(true);
+            } else if (silent) {
+                setIsRefreshing(true);
+            }
 
-            // Fetch listings stats
-            const { count: listingsCount } = await supabase
-                .from('listings')
-                .select('*', { count: 'exact', head: true });
+            // Execute fetches in parallel for better performance
+            const [
+                { count: listingsCount },
+                { count: activeCount },
+                { count: usersCount },
+                { count: newUsersCount },
+                { count: newListingsCount },
+                { data: listings, error: listingsError },
+                { data: allPromotions, error: allPromotionsError },
+                { data: promotions, error: promotionsError }
+            ] = await Promise.all([
+                supabase.from('listings').select('*', { count: 'exact', head: true }),
+                supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+                supabase.from('profiles').select('*', { count: 'exact', head: true }),
+                supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
+                supabase.from('listings').select('*', { count: 'exact', head: true }).gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
+                supabase.from('listings').select('*').order('created_at', { ascending: false }).limit(5),
+                supabase.from('promotions').select('price, status'),
+                supabase.from('promotions').select(`
+                    *,
+                    listings (title, listing_number),
+                    profiles (full_name, user_number)
+                `).order('created_at', { ascending: false }).limit(5)
+            ]);
 
-            const { count: activeCount } = await supabase
-                .from('listings')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'active');
+            // We no longer rely on profiles 'last_seen' for total online count
+            // but we fetch it as a secondary stat if needed
 
-            // Fetch users stats
-            const { count: usersCount } = await supabase
-                .from('profiles')
-                .select('*', { count: 'exact', head: true });
+            if (listingsError) throw listingsError;
 
-            // Fetch online users (active in last 15 minutes)
-            // Note: profiles must have 'last_seen' column updated regularly
-            const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
-            const { count: onlineCount } = await supabase
-                .from('profiles')
-                .select('*', { count: 'exact', head: true })
-                .gte('last_seen', fifteenMinsAgo);
-
-            // New users today
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const { count: newUsersCount } = await supabase
-                .from('profiles')
-                .select('*', { count: 'exact', head: true })
-                .gte('created_at', today.toISOString());
-
-            // New listings today
-            const { count: newListingsCount } = await supabase
-                .from('listings')
-                .select('*', { count: 'exact', head: true })
-                .gte('created_at', today.toISOString());
-
+            // Update stats
             setStats({
                 totalListings: listingsCount || 0,
                 activeListings: activeCount || 0,
                 totalUsers: usersCount || 0,
-                onlineUsers: onlineCount || 0,
+                onlineUsers: realtimeOnlineCount, // This will be updated by the presence effect
                 newUsersToday: newUsersCount || 0,
                 newListingsToday: newListingsCount || 0
             });
 
-            // Fetch recent listings
-            const { data: listings, error: listingsError } = await supabase
-                .from('listings')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(5);
-
-            if (listingsError) throw listingsError;
-
-            // Fetch all promotions for accurate revenue calculation (filtering by status)
-            const { data: allPromotions, error: allPromotionsError } = await supabase
-                .from('promotions')
-                .select('price, status');
-
+            // Calculate Revenue
             if (!allPromotionsError && allPromotions) {
                 const total = allPromotions
                     .filter(p => p.status === 'active' || p.status === 'paid')
@@ -91,25 +80,10 @@ const AdminDashboard = () => {
                 setTotalRevenue(total);
             }
 
-            // Fetch recent promotions for display
-            const { data: promotions, error: promotionsError } = await supabase
-                .from('promotions')
-                .select(`
-                    *,
-                    listings (title, listing_number),
-                    profiles (full_name, user_number)
-                `)
-                .order('created_at', { ascending: false })
-                .limit(5);
+            // Update Recent Data
+            if (!promotionsError) setRecentPromotions(promotions || []);
 
-            if (promotionsError) {
-                console.warn('Promotions error:', promotionsError);
-            } else {
-                setRecentPromotions(promotions || []);
-            }
-
-            // Manually fetch profiles for these listings
-            let listingsWithProfiles = [];
+            // Manually fetch profiles for listings
             if (listings && listings.length > 0) {
                 const userIds = [...new Set(listings.map(l => l.user_id))];
                 const { data: profiles } = await supabase
@@ -117,60 +91,98 @@ const AdminDashboard = () => {
                     .select('id, full_name, user_number')
                     .in('id', userIds);
 
-                listingsWithProfiles = listings.map(listing => ({
+                const listingsWithProfiles = listings.map(listing => ({
                     ...listing,
                     profiles: profiles?.find(p => p.id === listing.user_id) || { full_name: 'Bilinmiyor' }
                 }));
+                setRecentListings(listingsWithProfiles);
             }
 
-            setRecentListings(listingsWithProfiles);
-
+            setHasLoadedInitialData(true);
         } catch (error) {
             console.error('Error loading admin stats:', error);
         } finally {
             setLoading(false);
+            setIsRefreshing(false);
         }
+    };
+
+    // Debounced refresh function
+    const debouncedRefresh = () => {
+        if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = setTimeout(() => {
+            loadDashboardData(true);
+        }, 2000); // 2 second debounce to prevent rapid-fire refreshes
     };
 
     useEffect(() => {
         loadDashboardData();
 
-        // 1. Polling Fallback to 60 seconds
+        // 1. Polling Fallback (every 2 minutes for baseline stats)
         const intervalId = setInterval(() => {
-            console.log('Auto-refreshing dashboard...');
-            loadDashboardData();
-        }, 60000);
+            debouncedRefresh();
+        }, 120000);
 
-        // 2. Real-time subscriptions (Instant updates)
+        // 2. Real-time subscriptions
+        // Only trigger for significant changes to avoid "flickering"
         const listingsSubscription = supabase
             .channel('admin_listings_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'listings' }, () => {
-                loadDashboardData();
-            })
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'listings' }, debouncedRefresh)
+            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'listings' }, debouncedRefresh)
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'listings', filter: 'status=eq.active' }, debouncedRefresh)
             .subscribe();
 
         const profilesSubscription = supabase
             .channel('admin_profiles_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-                loadDashboardData();
-            })
+            // Only care about new registrations or deletions, 
+            // NOT every 'last_seen' update which happens constantly
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, debouncedRefresh)
+            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'profiles' }, debouncedRefresh)
             .subscribe();
 
         const promotionsSubscription = supabase
             .channel('admin_promotions_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, () => {
-                console.log('Promotions changed, reloading dashboard...');
-                loadDashboardData();
-            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, debouncedRefresh)
             .subscribe();
 
+        // 3. Presence Subscription for Real-time Online Count (Whole Site)
+        const presenceChannel = supabase.channel('site-presence');
+
+        const updateOnlineCount = () => {
+            const state = presenceChannel.presenceState();
+            // Filter out different sessions from same user to count unique users but also count guests
+            const count = Object.keys(state).length;
+            setRealtimeOnlineCount(count);
+        };
+
+        presenceChannel
+            .on('presence', { event: 'sync' }, updateOnlineCount)
+            .on('presence', { event: 'join' }, updateOnlineCount)
+            .on('presence', { event: 'leave' }, updateOnlineCount)
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    // Initial sync after subscription
+                    updateOnlineCount();
+                }
+            });
+
         return () => {
+            if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
             clearInterval(intervalId);
             listingsSubscription.unsubscribe();
             profilesSubscription.unsubscribe();
             promotionsSubscription.unsubscribe();
+            presenceChannel.unsubscribe();
         };
     }, []);
+
+    // Sync stats.onlineUsers with realtimeOnlineCount - use a more stable update
+    useEffect(() => {
+        setStats(prev => {
+            if (prev.onlineUsers === realtimeOnlineCount) return prev;
+            return { ...prev, onlineUsers: realtimeOnlineCount };
+        });
+    }, [realtimeOnlineCount]);
 
     if (loading) {
         return (
@@ -181,7 +193,13 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="space-y-8 animate-fade-in">
+        <div className="space-y-8 animate-fade-in relative">
+            {isRefreshing && (
+                <div className="absolute -top-6 right-0 flex items-center gap-2 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full animate-pulse z-10">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                    VERİLER GÜNCELLENİYOR
+                </div>
+            )}
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <StatsCard
@@ -208,7 +226,7 @@ const AdminDashboard = () => {
                 <Link to="/admin/sales-reports" className="block transform transition-transform hover:scale-[1.02]">
                     <StatsCard
                         title="Toplam Gelir"
-                        value={`${totalRevenue.toLocaleString('tr-TR')} ₺`}
+                        value={`${totalRevenue.toLocaleString('tr-TR')} TL`}
                         icon="💰"
                         gradient="from-amber-400 to-orange-500"
                         iconColor="text-white"
@@ -239,7 +257,7 @@ const AdminDashboard = () => {
                                 <div className="flex justify-between items-start mb-1">
                                     <div className="font-bold text-neutral-800">{promo.profiles?.full_name || 'Bilinmiyor'}</div>
                                     <div className="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-600">
-                                        {promo.price?.toLocaleString('de-DE')} ₺
+                                        {promo.price?.toLocaleString('de-DE')} TL
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-center mt-2">

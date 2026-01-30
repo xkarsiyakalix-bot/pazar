@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { generateListingNumber } from '../components';
 
 const UserDetailsModal = ({ user: initialUser, onClose }) => {
+    const navigate = useNavigate();
     const [user, setUser] = useState(initialUser);
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -98,17 +100,46 @@ const UserDetailsModal = ({ user: initialUser, onClose }) => {
                     <div className="flex flex-col md:flex-row gap-8 mb-8">
                         {/* Avatar & Basic Info */}
                         <div className="flex flex-col items-center text-center md:w-1/3">
-                            <div className="w-32 h-32 rounded-full bg-gray-100 mb-4 overflow-hidden border-4 border-white shadow-lg">
-                                {user.avatar_url ? (
-                                    <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-gray-400">
-                                        {user.full_name?.charAt(0) || '?'}
+                            <div className="relative group/profile">
+                                {/* Main Profile Image (Store Logo or Avatar) */}
+                                <div
+                                    onClick={() => navigate(user.store_slug ? `/${user.store_slug}` : `/store/${user.id}`)}
+                                    className="w-32 h-32 rounded-full bg-slate-50 mb-4 overflow-hidden border-4 border-white shadow-xl cursor-pointer hover:ring-4 hover:ring-blue-100 transition-all relative"
+                                    title="Mağazayı Gör"
+                                >
+                                    {user.store_logo || user.avatar_url ? (
+                                        <img
+                                            src={user.store_logo || user.avatar_url}
+                                            alt=""
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-4xl font-black text-slate-300">
+                                            {user.full_name?.charAt(0) || '?'}
+                                        </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/profile:opacity-100 transition-opacity">
+                                        <span className="text-white text-xs font-bold">Mağazayı Gör</span>
                                     </div>
-                                )}
+                                </div>
                             </div>
-                            <h2 className="text-2xl font-bold text-gray-900">{user.full_name}</h2>
-                            <p className="text-gray-500 mb-2">{user.email}</p>
+
+                            <div className="mt-2 flex flex-col items-center">
+                                <h2 className="text-2xl font-bold text-gray-900">{user.full_name}</h2>
+                                {user.store_name && (
+                                    <p className="text-blue-600 font-bold text-sm">🏪 {user.store_name}</p>
+                                )}
+                                <p className="text-gray-500 mb-2">{user.email}</p>
+                                <button
+                                    onClick={() => navigate(user.store_slug ? `/${user.store_slug}` : `/store/${user.id}`)}
+                                    className="mt-2 px-4 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-2 border border-blue-100"
+                                >
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    Mağazayı Gör
+                                </button>
+                            </div>
                             <div className="flex flex-wrap justify-center gap-2 mt-2">
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.is_commercial ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                                     {user.is_commercial ? 'Ticari' : 'Şahsi'}
@@ -270,7 +301,7 @@ const UserDetailsModal = ({ user: initialUser, onClose }) => {
                                                     <div className="text-xs text-gray-500 font-mono">No: {generateListingNumber(listing)}</div>
                                                 </td>
                                                 <td className="px-4 py-3 font-bold text-red-600">
-                                                    {listing.price ? `${listing.price.toLocaleString('tr-TR')} ₺` : 'Pazarlıklı'}
+                                                    {listing.price ? `${listing.price.toLocaleString('tr-TR')} TL` : 'Pazarlıklı'}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${listing.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'

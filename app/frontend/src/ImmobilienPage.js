@@ -1,6 +1,7 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
+import { getCommonFilters } from './config/filterConfigs';
 
 const ImmobilienPage = ({ toggleFavorite, isFavorite }) => {
     const subCategories = [
@@ -22,30 +23,7 @@ const ImmobilienPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     const filterConfig = {
-        offerType: {
-            label: 'İlan Tipi',
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: 'Satıcı',
-            type: 'multiselect',
-            options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
-            ],
-            field: 'seller_type'
-        },
-        federalState: {
-            label: 'Konum',
-            type: 'multiselect',
-            options: getTurkishCities().map(city => ({ label: city, value: city })),
-            field: 'federal_state'
-        }
+        ...getCommonFilters()
     };
 
     const bannerConfig = {

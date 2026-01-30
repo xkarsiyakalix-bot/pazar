@@ -23,6 +23,10 @@ export const t = {
         myLocation: 'Konumum',
     },
 
+    categories: {
+        all: 'Tüm Kategoriler',
+    },
+
     // Welcome Modal
     welcome: {
         title: 'Hoş Geldiniz!',
@@ -45,7 +49,7 @@ export const t = {
         listingTitlePlaceholder: 'Örn. iPhone 13 Pro, 128GB, Mavi',
         description: 'Açıklama',
         descriptionPlaceholder: 'İlanınızı detaylıca açıklayın...',
-        price: 'Fiyat (₺)',
+        price: 'Fiyat (TL)',
         pricePlaceholder: 'Örn. 500',
         negotiable: 'Pazarlığa Açık',
         images: 'Resimler',
@@ -79,8 +83,8 @@ export const t = {
         pricePlaceholder: 'Örn. 500',
         optionalPricePlaceholder: 'Örn. 500 (isteğe bağlı)',
         descriptionPlaceholder: 'İlanınızı detaylıca açıklayın...',
-        rentFee: 'Kira Bedeli (₺)',
-        rent: 'Kira (₺)',
+        rentFee: 'Kira Bedeli (TL)',
+        rent: 'Kira (TL)',
         priceType: 'Fiyat Türü',
         selectAccountType: 'İlan vermeden önce lütfen ayarlardan hesap türünüzü (Bireysel veya Kurumsal) seçin.',
         locationTitle: 'Konum',
@@ -110,13 +114,13 @@ export const t = {
             title: 'İlan Limitine Ulaştınız',
             description: 'Aylık ücretsiz ilan limitiniz ({limit} adet) dolmuştur. Devam etmek için bir paket seçebilir veya bu ilan için tek seferlik ödeme yapabilirsiniz.',
             viewPackages: 'Paketleri İncele & Yükselt',
-            paySingle: 'Sadece Bu İlan İçin Öde (9,90 ₺)',
+            paySingle: 'Sadece Bu İlan İçin Öde (9,90 TL)',
             cancel: 'Vazgeç'
         },
         saveListing: 'İlanı Kaydet',
         offerType: 'Teklif Türü',
-        offering: 'İlan Veriyorum (Teklif)',
-        searching: 'Arıyorum (Arayış)',
+        offering: 'İlan Veriyorum',
+        searching: 'Arıyorum',
         subcategory: 'Alt Kategori',
         details: 'Detaylar',
         condition: 'Durum',
@@ -323,7 +327,7 @@ export const t = {
             floor: 'Bulunduğu Kat',
             availableFrom: 'Teslim Tarihi',
             onlineViewing: 'Online Gösterim',
-            warmRent: 'Toplam Kira (Sıcak/₺)',
+            warmRent: 'Toplam Kira (Sıcak/TL)',
             roommates: 'Ev Arkadaşı',
             buildYear: 'Yapım Yılı',
             exchange: 'Takas Teklifi',
@@ -1010,29 +1014,34 @@ export const t = {
         subtitle: 'İlanının daha fazla kişiye ulaşmasını sağla ve daha hızlı sat!',
         packages: {
             gallery: {
-                name: 'Premium Vitrin',
-                description: 'Ana sayfa vitrininde 30 gün boyunca görüntülenme.',
-                price: '59,90 ₺'
+                name: 'Vitrin',
+                description: '15 kata kadar daha fazla görünürlük! İlanınız ana sayfada da görünecek!',
+                price: '199,99 TL',
+                duration: '10 Gün'
             },
             top: {
-                name: 'En Üstte Tut',
-                description: 'İlanın her gün en üste taşınır (15 gün).',
-                price: '39,90 ₺'
+                name: 'Yukarı Çıkar',
+                description: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.',
+                price: '9,99 TL',
+                duration: 'bir kerelik'
             },
             highlight: {
-                name: 'Renkli Çerçeve',
-                description: 'Liste görünümlerinde dikkat çekici çerçeve (30 gün).',
-                price: '19,90 ₺'
+                name: 'Öne Çıkan',
+                description: '2 kata kadar daha fazla görünürlük! İlanınız renkli olarak vurgulanacak.',
+                price: '79,99 TL',
+                duration: '7 Gün'
             },
             multi_bump: {
                 name: 'Tekrarlı Yukarı Çıkarma',
                 description: '5 kata kadar daha fazla görünürlük! Bir hafta boyunca ilanınız her gün yukarı çıkarılacak.',
-                price: '29,90 ₺'
+                price: '99,99 TL',
+                duration: '7 Gün'
             },
             premium: {
                 name: 'Premium',
                 description: '10 kata kadar daha fazla görünürlük! İlanınız listenin en başında yer alacak!',
-                price: '19,99 ₺'
+                price: '129,99 TL',
+                duration: '7 Gün'
             }
         },
         select: 'Paketi Seç',
@@ -1377,6 +1386,7 @@ export const t = {
         sellerNotFound: 'Satıcı bulunamadı.',
         onlineMarketplace: 'Online Pazaryeri',
         notSpecified: 'Belirtilmedi',
+        notAvailable: 'Belirtilmedi',
         privateSeller: 'Bireysel Satıcı',
     },
 
@@ -1768,6 +1778,10 @@ export const t = {
             subtitle: 'İstediğiniz zaman, istediğiniz yerde ilan verin ve bulun',
         },
         features: {
+            title: 'Neden ExVitrin Mobil?',
+            postAds: 'İlan Ver',
+            nearby: 'Yakınında Ara',
+            updates: 'Güncel Kal',
             free: 'Ücretsiz İndirin',
             fast: 'Hızlı ve Kolay',
             secure: '%100 Güvenli'

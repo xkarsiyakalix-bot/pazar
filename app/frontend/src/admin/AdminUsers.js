@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { supabase } from '../lib/supabase';
 import UserDetailsModal from './UserDetailsModal';
 
@@ -98,7 +99,7 @@ const AdminUsers = () => {
 
     if (loading) return (
         <div className="flex items-center justify-center min-h-[400px]">
-            <div className="w-12 h-12 rounded-full border-4 border-neutral-200 border-t-red-500 animate-spin"></div>
+            <LoadingSpinner size="medium" />
         </div>
     );
 
@@ -143,8 +144,8 @@ const AdminUsers = () => {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neutral-100 to-neutral-200 border border-neutral-200 p-0.5 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                {user.avatar_url ? (
-                                                    <img src={user.avatar_url} alt="" className="w-full h-full object-cover rounded-full" />
+                                                {user.store_logo || user.avatar_url ? (
+                                                    <img src={user.store_logo || user.avatar_url} alt="" className="w-full h-full object-cover rounded-full" />
                                                 ) : (
                                                     <span className="text-sm font-bold text-neutral-500">{user.full_name?.charAt(0) || '?'}</span>
                                                 )}
@@ -167,9 +168,9 @@ const AdminUsers = () => {
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1.5 items-start">
                                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${user.subscription_tier === 'unlimited' ? 'bg-purple-50 text-purple-700 border-purple-100' :
-                                                    user.subscription_tier === 'pack2' ? 'bg-red-50 text-red-700 border-red-100' :
-                                                        user.subscription_tier === 'pack1' ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                                                            'bg-neutral-100 text-neutral-600 border-neutral-200'
+                                                user.subscription_tier === 'pack2' ? 'bg-red-50 text-red-700 border-red-100' :
+                                                    user.subscription_tier === 'pack1' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                                        'bg-neutral-100 text-neutral-600 border-neutral-200'
                                                 }`}>
                                                 {user.subscription_tier === 'unlimited' ? 'Sınırsız' :
                                                     user.subscription_tier === 'pack2' ? 'Pro Paket' :
@@ -189,8 +190,8 @@ const AdminUsers = () => {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${user.status === 'banned'
-                                                ? 'bg-red-50 text-red-700 border-red-100'
-                                                : 'bg-green-50 text-green-700 border-green-100'
+                                            ? 'bg-red-50 text-red-700 border-red-100'
+                                            : 'bg-green-50 text-green-700 border-green-100'
                                             }`}>
                                             <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${user.status === 'banned' ? 'bg-red-500' : 'bg-green-500'
                                                 }`}></span>
@@ -220,19 +221,19 @@ const AdminUsers = () => {
                                             <button
                                                 onClick={() => handleTogglePro(user)}
                                                 className={`p-2 rounded-xl transition-all shadow-sm border ${user.is_pro
-                                                        ? 'text-amber-500 bg-amber-50 border-amber-100 hover:bg-amber-100'
-                                                        : 'text-neutral-400 bg-white border-neutral-200 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-100'
+                                                    ? 'text-amber-500 bg-amber-50 border-amber-100 hover:bg-amber-100'
+                                                    : 'text-neutral-400 bg-white border-neutral-200 hover:text-amber-500 hover:bg-amber-50 hover:border-amber-100'
                                                     }`}
                                                 title={user.is_pro ? 'PRO Statüsünü Kaldır' : 'PRO Yap'}
                                             >
-                                                <svg className="w-4 h-4" fill={user.is_pro ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                                                <svg className="w-4 h-4" fill={user.is_pro ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-0.363 1.118l1.518 4.674c.3.922-0.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-0.783.57-1.838-0.197-1.538-1.118l1.518-4.674a1 1 0 00-0.363-1.118l-3.976-2.888c-0.784-0.57-0.38-1.81.588-1.81h4.914a1 1 0 00.951-0.69l1.519-4.674z"></path></svg>
                                             </button>
 
                                             <button
                                                 onClick={() => handleToggleStatus(user)}
                                                 className={`p-2 rounded-xl transition-all shadow-sm border ${user.status === 'banned'
-                                                        ? 'text-green-600 bg-green-50 border-green-100 hover:bg-green-100'
-                                                        : 'text-neutral-400 bg-white border-neutral-200 hover:text-red-600 hover:bg-red-50 hover:border-red-100'
+                                                    ? 'text-green-600 bg-green-50 border-green-100 hover:bg-green-100'
+                                                    : 'text-neutral-400 bg-white border-neutral-200 hover:text-red-600 hover:bg-red-50 hover:border-red-100'
                                                     }`}
                                                 title={user.status === 'banned' ? 'Engeli Kaldır' : 'Kullanıcıyı Engelle'}
                                             >
@@ -261,7 +262,7 @@ const AdminUsers = () => {
                                                     className="p-2 text-neutral-400 bg-white border border-neutral-200 hover:text-purple-600 hover:bg-purple-50 hover:border-purple-100 rounded-xl transition-all shadow-sm"
                                                     title="Yönetici Yap"
                                                 >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-0.133-2.052-0.382-3.016z"></path></svg>
                                                 </button>
                                             )}
                                         </div>

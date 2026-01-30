@@ -3,10 +3,267 @@ import { useNavigate } from 'react-router-dom';
 import { categories } from '../data/categories';
 
 export const getCategoryPath = (categoryName, subcategoryName = null) => {
-    if (categoryName === 'Tüm Kategoriler') return '/Butun-Kategoriler';
-    if (subcategoryName) return `/search?category=${encodeURIComponent(categoryName)}&subcategory=${encodeURIComponent(subcategoryName)}`;
-    return `/search?category=${encodeURIComponent(categoryName)}`;
+    const mainMappings = {
+        'Tüm Kategoriler': 'Butun-Kategoriler',
+        'Otomobil, Bisiklet & Tekne': 'Otomobil-Bisiklet-Tekne',
+        'Otomobil, Bisiklet & Tekne Servisi': 'Otomobil-Bisiklet-Tekne',
+        'Emlak': 'Emlak',
+        'Ev & Bahçe': 'Ev-Bahce',
+        'Moda & Güzellik': 'Moda-Guzellik',
+        'Elektronik': 'Elektronik',
+        'Evcil Hayvanlar': 'Evcil-Hayvanlar',
+        'Aile, Çocuk & Bebek': 'Aile-Cocuk-Bebek',
+        'İş İlanları': 'Is-Ilanlari',
+        'Eğlence, Hobi & Mahalle': 'Eglence-Hobi-Mahalle',
+        'Müzik, Film & Kitap': 'Muzik-Film-Kitap',
+        'Biletler': 'Biletler',
+        'Hizmetler': 'Hizmetler',
+        'Ücretsiz & Takas': 'Ucretsiz-Takas',
+        'Eğitim & Kurslar': 'Egitim-Kurslar',
+        'Dersler & Kurslar': 'Egitim-Kurslar',
+        'Komşu Yardımı': 'Komsu-Yardimi'
+    };
+
+    const subMappings = {
+        // Auto, Rad & Boot
+        'Otomobiller': 'Otomobiller',
+        'Bisiklet & Aksesuarlar': 'Bisiklet-Aksesuarlar',
+        'Bisiklet & Aksesuarları': 'Bisiklet-Aksesuarlar',
+        'Oto Parça & Lastik': 'Oto-Parca-Lastik',
+        'Tekne & Tekne Malzemeleri': 'Tekne-Tekne-Malzemeleri',
+        'Motosiklet & Scooter': 'Motosiklet-Scooter',
+        'Motosiklet Parça & Aksesuarlar': 'Motosiklet-Parca-Aksesuarlar',
+        'Ticari Araçlar & Römorklar': 'Ticari-Araclar-Romorklar',
+        'Tamir & Servis': 'Tamir-Servis',
+        'Karavan & Motokaravan': 'Karavan-Motokaravan',
+        'Diğer Otomobil, Bisiklet & Tekne': 'Diger-Otomobil-Bisiklet-Tekne',
+
+        // Immobilien
+        'Geçici Konaklama & Paylaşımlı Ev': 'Gecici-Konaklama-Paylasimli-Ev',
+        'Geçici Konaklama & Paylaşımlı Oda': 'Gecici-Konaklama-Paylasimli-Ev',
+        'Gecici Konaklamalar': 'Gecici-Konaklama-Paylasimli-Ev',
+        'Konteyner': 'Konteyner',
+        'Satılık Daireler': 'Satilik-Daireler',
+        'Satılık Daire': 'Satilik-Daireler',
+        'Satılık Yazlık': 'Satilik-Yazlik',
+        'Tatil Evi & Yurt Dışı Emlak': 'Tatil-Evi-Yurt-Disi-Emlak',
+        'Tatil ve Yurt Dışı Emlak': 'Tatil-Evi-Yurt-Disi-Emlak',
+        'Garaj & Otopark': 'Garaj-Otopark',
+        'Garaj & Park Yeri': 'Garaj-Otopark',
+        'Ticari Emlak': 'Ticari-Emlak',
+        'Arsa & Bahçe': 'Arsa-Bahce',
+        'Satılık Evler': 'Satilik-Evler',
+        'Satılık Müstakil Ev': 'Satilik-Evler',
+        'Satılık Ev': 'Satilik-Evler',
+        'Kiralık Evler': 'Kiralik-Evler',
+        'Kiralık Müstakil Ev': 'Kiralik-Evler',
+        'Kiralık Ev': 'Kiralik-Evler',
+        'Kiralık Daireler': 'Kiralik-Daireler',
+        'Kiralık Daire': 'Kiralik-Daireler',
+        'Yeni Projeler': 'Yeni-Projeler',
+        'Taşımacılık & Nakliye': 'Tasimacilik-Nakliye',
+        'Diğer Emlak': 'Diger-Emlak',
+
+        // Haus & Garten
+        'Banyo': 'Banyo',
+        'Ofis': 'Ofis',
+        'Dekorasyon': 'Dekorasyon',
+        'Ev Hizmetleri': 'Ev-Hizmetleri',
+        'Bahçe Malzemeleri & Bitkiler': 'Bahce-Malzemeleri-Bitkiler',
+        'Ev Tekstili': 'Ev-Tekstili',
+        'Ev Tadilatı': 'Ev-Tadilati',
+        'Yapı Market & Tadilat': 'Ev-Tadilati',
+        'Mutfak & Yemek Odası': 'Mutfak-Yemek-Odasi',
+        'Lamba & Aydınlatma': 'Lamba-Aydinlatma',
+        'Aydınlatma': 'Lamba-Aydinlatma',
+        'Yatak Odası': 'Yatak-Odasi',
+        'Oturma Odası': 'Oturma-Odasi',
+        'Diğer Ev & Bahçe': 'Diger-Ev-Bahce',
+
+        // Moda & Güzellik
+        'Güzellik & Sağlık': 'Guzellik-Saglik',
+        'Kadın Giyimi': 'Kadin-Giyimi',
+        'Kadın Ayakkabıları': 'Kadin-Ayakkabilari',
+        'Erkek Giyimi': 'Erkek-Giyimi',
+        'Erkek Ayakkabıları': 'Erkek-Ayakkabilari',
+        'Çanta & Aksesuarlar': 'Canta-Aksesuarlar',
+        'Saat & Takı': 'Saat-Taki',
+        'Diğer Moda & Güzellik': 'Diger-Moda-Guzellik',
+
+        // Elektronik
+        'Ses & Hifi': 'Ses-Hifi',
+        'Elektronik Servisler': 'Elektronik-Hizmetler',
+        'Elektronik Hizmetler': 'Elektronik-Hizmetler',
+        'Fotoğraf & Kamera': 'Fotograf-Kamera',
+        'Cep Telefonu & Aksesuar': 'Cep-Telefonu-Telefon',
+        'Cep Telefonu & Telefon': 'Cep-Telefonu-Telefon',
+        'Beyaz Eşya & Ev Aletleri': 'Ev-Aletleri',
+        'Ev Aletleri': 'Ev-Aletleri',
+        'Oyun Konsolları': 'Konsollar',
+        'Konsollar': 'Konsollar',
+        'Dizüstü Bilgisayar': 'Dizustu-Bilgisayarlar',
+        'Dizüstü Bilgisayarlar': 'Dizustu-Bilgisayarlar',
+        'Masaüstü Bilgisayar': 'Bilgisayarlar',
+        'Bilgisayarlar': 'Bilgisayarlar',
+        'Bilgisayar Aksesuar & Yazılım': 'Bilgisayar-Aksesuarlari-Yazilim',
+        'Bilgisayar Aksesuarları & Yazılım': 'Bilgisayar-Aksesuarlari-Yazilim',
+        'Tablet & E-Okuyucu': 'Tabletler-E-Okuyucular',
+        'Tabletler & E-Okuyucular': 'Tabletler-E-Okuyucular',
+        'TV & Video': 'TV-Video',
+        'Video Oyunları': 'Video-Oyunlari',
+        'Diğer Elektronik': 'Diger-Elektronik',
+
+        // Evcil Hayvanlar
+        'Balıklar': 'Baliklar',
+        'Köpekler': 'Kopekler',
+        'Kediler': 'Kedi',
+        'Küçük Hayvanlar': 'Kucuk-Hayvanlar',
+        'Çiftlik Hayvanları': 'Ciftlik-Hayvanlari',
+        'Atlar': 'Atlar',
+        'Hayvan Bakımı & Eğitimi': 'Hayvan-Bakimi-Egitimi',
+        'Hayvan Bakımı & Eğitim': 'Hayvan-Bakimi-Egitimi',
+        'Kayıp Hayvanlar': 'Kayip-Hayvanlar',
+        'Kuşlar': 'Kuslar',
+        'Aksesuarlar': 'Aksesuarlar',
+
+        // Aile, Çocuk & Bebek
+        'Yaşlı Bakımı': 'Yasli-Bakimi',
+        'Bebek & Çocuk Giyimi': 'Bebek-Cocuk-Giyimi',
+        'Bebek & Çocuk Ayakkabıları': 'Bebek-Cocuk-Ayakkabilari',
+        'Bebek Ekipmanları': 'Bebek-Ekipmanlari',
+        'Oto Koltukları': 'Oto-Koltuklari',
+        'Bebek Koltuğu & Oto Koltukları': 'Oto-Koltuklari',
+        'Babysitter & Çocuk Bakımı': 'Babysitter-Cocuk-Bakimi',
+        'Bebek Arabaları & Pusetler': 'Bebek-Arabalari-Pusetler',
+        'Çocuk Odası Mobilyaları': 'Cocuk-Odasi-Mobilyalari',
+        'Bebek Odası Mobilyaları': 'Cocuk-Odasi-Mobilyalari',
+        'Oyuncaklar': 'Oyuncaklar',
+        'Oyuncak': 'Oyuncaklar',
+        'Diğer Aile, Çocuk & Bebek': 'Diger-Aile-Cocuk-Bebek',
+
+        // İş İlanları
+        'Mesleki Eğitim': 'Mesleki-Egitim',
+        'İnşaat, Zanaat & Üretim': 'Insaat-Sanat-Uretim',
+        'İnşaat, El Sanatları & Üretim': 'Insaat-Sanat-Uretim',
+        'Büro İşleri & Yönetim': 'Buroarbeit-Yonetim',
+        'Büroarbeit & Yönetim': 'Buroarbeit-Yonetim',
+        'Ofis İşleri & Yönetim': 'Buroarbeit-Yonetim',
+        'Büroarbeit-Yonetim': 'Buroarbeit-Yonetim',
+        'Gastronomi & Turizm': 'Gastronomi-Turizm',
+        'Müşteri Hizmetleri & Çağrı Merkezi': 'Musteri-Hizmetleri-Cagri-Merkezi',
+        'Yarı Zamanlı & Ek İşler': 'Ek-Isler',
+        'Mini & Ek İşler': 'Ek-Isler',
+        'Ek İşler': 'Ek-Isler',
+        'Staj': 'Staj',
+        'Sosyal Sektör & Bakım': 'Sosyal-Sektor-Bakim',
+        'Nakliye, Lojistik & Trafik': 'Tasimacilik-Lojistik',
+        'Taşımacılık & Lojistik': 'Tasimacilik-Lojistik',
+        'Satış, Satın Alma & Pazarlama': 'Satis-Pazarlama',
+        'Satış & Pazarlama': 'Satis-Pazarlama',
+        'Diğer İş İlanları': 'Diger-Is-Ilanlari',
+
+        // Eğlence, Hobi & Mahalle
+        'Ezoterizm & Spiritüalizm': 'Ezoterizm-Spiritualizm',
+        'Yiyecek & İçecek': 'Yiyecek-Icecek',
+        'Boş Zaman Aktiviteleri': 'Bos-Zaman-Aktiviteleri',
+        'El Sanatları & Hobi': 'El-Sanatlari-Hobi',
+        'Sanat & Antikalar': 'Sanat-Antikalar',
+        'Sanatçılar & Müzisyenler': 'Sanatcilar-Muzisyenler',
+        'Model Yapımı': 'Model-Yapimi',
+        'Seyahat & Etkinlik Hizmetleri': 'Seyahat-Etkinlik-Hizmetleri',
+        'Koleksiyon': 'Koleksiyon',
+        'Spor & Kamp': 'Spor-Kamp',
+        'Bit Pazarı': 'Bit-Pazari',
+        'Kayıp & Buluntu': 'Kayip-Buluntu',
+        'Diğer Eğlence, Hobi & Mahalle': 'Diger-Eglence-Hobi-Mahalle',
+
+        // Müzik, Film & Kitap
+        'Kitap & Dergi': 'Kitap-Dergi',
+        'Kırtasiye': 'Kirtasiye',
+        'Çizgi Romanlar': 'Cizgi-Romanlar',
+        'Ders Kitapları, Okul & Eğitim': 'Ders-Kitaplari-Okul-Egitim',
+        'Film & DVD': 'Film-DVD',
+        'Müzik & CD\'ler': 'Muzik-CDler',
+        'Müzik Enstrümanları': 'Muzik-Enstrumanlari',
+        'Diğer Müzik, Film & Kitap': 'Diger-Muzik-Film-Kitap',
+
+        // Biletler
+        'Tren & Toplu Taşıma': 'Tren-Toplu-Tasima',
+        'Komedi & Kabare': 'Komedi-Kabare',
+        'Hediye Kartları': 'Hediye-Kartlari',
+        'Hediye Çekleri': 'Hediye-Kartlari',
+        'Çocuk': 'Cocuk',
+        'Çocuk Etkinlikleri': 'Cocuk',
+        'Konserler': 'Konserler',
+        'Spor': 'Spor',
+        'Spor Etkinlikleri': 'Spor',
+        'Tiyatro & Müzikal': 'Tiyatro-Muzikal',
+        'Diğer Biletler': 'Diger-Biletler',
+
+        // Hizmetler
+        'Otomobil, Bisiklet & Tekne Servisi': 'Otomobil-Bisiklet-Tekne-Servisi',
+        'Yaşlı Bakımı': 'Yasli-Bakimi',
+        'Bebek Bakıcısı & Kreş': 'Babysitter-Cocuk-Bakimi',
+        'Babysitter & Çocuk Bakımı': 'Babysitter-Cocuk-Bakimi',
+        'Elektronik': 'Elektronik',
+        'Elektronik Servisler': 'Elektronik-Hizmetler',
+        'Ev & Bahçe': 'Ev-Bahce',
+        'Ev & Bahçe Hizmetleri': 'Ev-Hizmetleri',
+        'Ev Hizmetleri': 'Ev-Hizmetleri',
+        'Sanatçılar & Müzisyenler': 'Sanatcilar-Muzisyenler',
+        'Seyahat & Etkinlik': 'Seyahat-Etkinlik',
+        'Hayvan Bakımı & Eğitimi': 'Hayvan-Bakimi-Egitimi',
+        'Taşımacılık & Nakliye': 'Tasimacilik-Nakliye',
+        'Diğer Hizmetler': 'Diger-Hizmetler',
+
+        // Ücretsiz & Takas
+        'Takas': 'Takas',
+        'Ödünç Verme': 'Kiralama',
+        'Kiralama': 'Kiralama',
+        'Ücretsiz': 'Ucretsiz',
+        'Ücretsiz Verilecekler': 'Ucretsiz',
+
+        // Eğitim & Kurslar
+        'Bilgisayar Kursları': 'Bilgisayar-Kurslari',
+        'Ezoterizm & Spiritüalizm': 'Ezoterizm-Spiritualizm',
+        'Yemek & Pastacılık': 'Yemek-Pastacilik-Kurslari',
+        'Yemek & Pastacılık Kursları': 'Yemek-Pastacilik-Kurslari',
+        'Sanat & Tasarım': 'Sanat-Tasarim-Kurslari',
+        'Sanat & Tasarım Kursları': 'Sanat-Tasarim-Kurslari',
+        'Müzik & Şan': 'Muzik-San-Dersleri',
+        'Müzik & Şan Dersleri': 'Muzik-San-Dersleri',
+        'Özel Ders': 'Ozel-Ders',
+        'Spor Kursları': 'Spor-Kurslari',
+        'Dil Kursları': 'Dil-Kurslari',
+        'Dans Kursları': 'Dans-Kurslari',
+        'Sürekli Eğitim': 'Surekli-Egitim',
+        'Diğer Dersler & Kurslar': 'Diger-Dersler-Kurslar',
+        'Diğer Eğitim & Kurslar': 'Diger-Dersler-Kurslar',
+
+        // Komşu Yardımı
+        'Komşu Yardımı': 'Komsu-Yardimi'
+    };
+
+    const slugify = (text) => {
+        const trMap = {
+            'ç': 'c', 'Ç': 'C', 'ğ': 'g', 'Ğ': 'G', 'ş': 's', 'Ş': 'S',
+            'ı': 'i', 'İ': 'I', 'ö': 'o', 'Ö': 'O', 'ü': 'u', 'Ü': 'U'
+        };
+        for (let key in trMap) {
+            text = text.replace(new RegExp(key, 'g'), trMap[key]);
+        }
+        return text.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+    };
+
+    const catSlug = mainMappings[categoryName] || slugify(categoryName);
+    if (!subcategoryName || subcategoryName === 'Tümü' || subcategoryName === 'Alle' || subcategoryName === 'Tüm' || subcategoryName === categoryName) {
+        return `/${catSlug}`;
+    }
+
+    const subSlug = subMappings[subcategoryName] || slugify(subcategoryName);
+    return `/${catSlug}/${subSlug}`;
 };
+
 
 export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
     const [expandedCategories, setExpandedCategories] = useState([]);
@@ -116,7 +373,7 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                             </div>
                         </button>
                         {category.subcategories && expandedCategories.includes(category.name) && (
-                            <div className="mt-1 ml-4 space-y-1 border-l-2 border-gray-100 px-2 animate-in slide-in-from-top-1 duration-200">
+                            <div className="mt-1 ml-4 space-y-1 px-2 animate-in slide-in-from-top-1 duration-200">
                                 {category.subcategories.map((sub) => (
                                     <button
                                         key={sub.name}

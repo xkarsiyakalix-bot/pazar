@@ -1,7 +1,7 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
-import { getTurkishCities } from './translations';
-import { t } from './translations';
+import { getTurkishCities, t } from './translations';
+import { getCommonFilters, getConditionFilter, getShippingFilter } from './config/filterConfigs';
 
 const ModeBeautyPage = ({ toggleFavorite, isFavorite }) => {
     const subCategories = [
@@ -17,58 +17,9 @@ const ModeBeautyPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     const filterConfig = {
-        versand: {
-            label: t.addListing.shipping,
-            type: 'multiselect',
-            options: [
-                { value: 'Versand möglich', label: t.addListing.options.shipping },
-                { value: 'Nur Abholung', label: t.addListing.options.noShipping }
-            ],
-            field: 'versand_art'
-        },
-        price: {
-            label: t.common.price,
-            type: 'range',
-            field: 'price'
-        },
-        offerType: {
-            label: t.addListing.offerType,
-            type: 'multiselect',
-            options: [
-                { value: 'Angebote', label: t.addListing.offering },
-                { value: 'Gesuche', label: t.addListing.searching }
-            ],
-            field: 'offer_type'
-        },
-        providerType: {
-            label: t.addListing.accountType,
-            type: 'multiselect',
-            options: [
-                { value: 'Privatnutzer', label: t.addListing.private },
-                { value: 'Gewerblicher Nutzer', label: t.addListing.commercial }
-            ],
-            field: 'seller_type'
-        },
-        zustand: {
-            label: t.addListing.condition,
-            type: 'multiselect',
-            options: [
-                { value: 'neu', label: t.addListing.options.new },
-                { value: 'neu_mit_etikett', label: t.addListing.options.newWithTags },
-                { value: 'sehr_gut', label: t.addListing.options.veryGood },
-                { value: 'gut', label: t.addListing.options.good },
-                { value: 'in_ordnung', label: t.addListing.options.okay },
-                { value: 'used', label: t.addListing.options.used },
-                { value: 'defekt', label: t.addListing.options.defective }
-            ],
-            field: 'condition'
-        },
-        federalState: {
-            label: t.addListing.location,
-            type: 'multiselect',
-            options: getTurkishCities().map(city => ({ value: city, label: city })),
-            field: 'federal_state'
-        }
+        ...getCommonFilters(),
+        ...getConditionFilter(),
+        ...getShippingFilter()
     };
 
     const bannerConfig = {
