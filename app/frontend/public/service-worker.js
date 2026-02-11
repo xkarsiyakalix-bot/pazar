@@ -1,80 +1,182 @@
-/* eslint-disable no-restricted-globals */
+// Service Worker for ExVitrin PWA
+const CACHE_NAME = 'exvitrin-v1';
+const RUNTIME_CACHE = 'exvitrin-runtime';
 
-// This service worker can be customized!
-// See https://developers.google.com/web/tools/workbox/modules
-// for the list of available Workbox modules, or add any other
-// code you'd like.
-// You can also remove this file if you'd prefer not to use a
-// service worker, and the Workbox build step will be skipped.
-
-const CACHE_NAME = 'exvitrin-cache-v1';
-const urlsToCache = [
+// Assets to cache on install
+const PRECACHE_URLS = [
     '/',
+    '/index.html',
     '/static/css/main.css',
     '/static/js/main.js',
-    '/logo_exvitrin.png',
+    '/logo_exvitrin_new.png',
+    '/logo_exvitrin_2026_cropped.png',
     '/manifest.json'
 ];
 
-// Install event - cache resources
+// Install event - cache essential assets
 self.addEventListener('install', (event) => {
+    console.log('[Service Worker] Installing...');
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
+                console.log('[Service Worker] Precaching assets');
+                return cache.addAll(PRECACHE_URLS.map(url => new Request(url, { cache: 'reload' })));
+            })
+            .catch((error) => {
+                console.error('[Service Worker] Precache failed:', error);
             })
     );
     self.skipWaiting();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+    console.log('[Service Worker] Activating...');
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames
+                    .filter((cacheName) => cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE)
+                    .map((cacheName) => {
+                        console.log('[Service Worker] Deleting old cache:', cacheName);
+                        return caches.delete(cacheName);
+                    })
+            );
+        })
+    );
+    return self.clients.claim();
+});
+
+// Fetch event - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
+    // Skip cross-origin requests
+    if (!event.request.url.startsWith(self.location.origin)) {
+        return;
+    }
+
+    // Skip non-GET requests
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
-
-                return fetch(event.request).then(
-                    (response) => {
-                        // Check if we received a valid response
-                        // Only cache basic responses from http/https schemes
-                        if (!response || response.status !== 200 || response.type !== 'basic' ||
-                            !event.request.url.startsWith('http')) {
-                            return response;
-                        }
-
-                        // Clone the response
-                        const responseToCache = response.clone();
-
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                cache.put(event.request, responseToCache);
-                            });
-
-                        return response;
+        caches.open(RUNTIME_CACHE).then((cache) => {
+            return fetch(event.request)
+                .then((response) => {
+                    // Cache successful responses
+                    if (response.status === 200) {
+                        cache.put(event.request, response.clone());
                     }
-                );
+                    return response;
+                })
+                .catch(() => {
+                    // Network failed, try cache
+                    return caches.match(event.request).then((cachedResponse) => {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        // Return offline page for navigation requests
+                        if (event.request.mode === 'navigate') {
+                            return caches.match('/index.html');
+                        }
+                        return new Response('Offline', { status: 503 });
+                    });
+                });
+        })
+    );
+});
+
+// Push notification event
+self.addEventListener('push', (event) => {
+    console.log('[Service Worker] Push received:', event);
+
+    let notificationData = {
+        title: 'ExVitrin',
+        body: 'Yeni bir bildiriminiz var!',
+        icon: '/logo_exvitrin_2026_cropped.png',
+        badge: '/logo_exvitrin_2026_cropped.png',
+        vibrate: [200, 100, 200],
+        tag: 'exvitrin-notification',
+        requireInteraction: false
+    };
+
+    if (event.data) {
+        try {
+            const data = event.data.json();
+            notificationData = {
+                ...notificationData,
+                title: data.title || notificationData.title,
+                body: data.body || notificationData.body,
+                icon: data.icon || notificationData.icon,
+                data: data.data || {},
+                actions: data.actions || []
+            };
+        } catch (e) {
+            console.error('[Service Worker] Error parsing push data:', e);
+        }
+    }
+
+    event.waitUntil(
+        self.registration.showNotification(notificationData.title, notificationData)
+    );
+});
+
+// Notification click event
+self.addEventListener('notificationclick', (event) => {
+    console.log('[Service Worker] Notification clicked:', event);
+    event.notification.close();
+
+    const urlToOpen = event.notification.data?.url || '/';
+
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clientList) => {
+                // Check if there's already a window open
+                for (let client of clientList) {
+                    if (client.url === urlToOpen && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // Open new window
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen);
+                }
             })
     );
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
-    const cacheWhitelist = [CACHE_NAME];
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        return caches.delete(cacheName);
+// Background sync event (for offline actions)
+self.addEventListener('sync', (event) => {
+    console.log('[Service Worker] Background sync:', event.tag);
+
+    if (event.tag === 'sync-messages') {
+        event.waitUntil(
+            // Sync messages when back online
+            fetch('/api/sync-messages', { method: 'POST' })
+                .then(response => console.log('[Service Worker] Messages synced'))
+                .catch(error => console.error('[Service Worker] Sync failed:', error))
+        );
+    }
+});
+
+// Periodic background sync (for checking new messages)
+self.addEventListener('periodicsync', (event) => {
+    if (event.tag === 'check-new-messages') {
+        event.waitUntil(
+            fetch('/api/check-new-messages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.hasNew) {
+                        return self.registration.showNotification('ExVitrin', {
+                            body: 'Yeni mesajlarınız var!',
+                            icon: '/logo_exvitrin_2026_cropped.png',
+                            badge: '/logo_exvitrin_2026_cropped.png',
+                            tag: 'new-messages',
+                            data: { url: '/messages' }
+                        });
                     }
                 })
-            );
-        })
-    );
-    self.clients.claim();
+                .catch(error => console.error('[Service Worker] Check messages failed:', error))
+        );
+    }
 });

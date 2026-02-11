@@ -19,7 +19,6 @@ const BikesPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     const filterConfig = {
-        ...getCommonFilters(),
         art: {
             label: 'Tür',
             type: 'multiselect',
@@ -50,7 +49,8 @@ const BikesPage = ({ toggleFavorite, isFavorite }) => {
                 { value: 'Diğer Bisikletler', label: 'Diğer Bisikletler' }
             ],
             field: 'bike_type'
-        }
+        },
+        ...getCommonFilters()
     };
 
     const bannerConfig = {

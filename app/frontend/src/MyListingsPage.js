@@ -10,14 +10,27 @@ import ProfileLayout from './ProfileLayout';
 const MyListingsPage = () => {
     const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
-    const [listings, setListings] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchParams, setSearchParams] = useSearchParams();
-    const filter = searchParams.get('filter') || 'all';
+    const [listings, setListings] = useState(() => {
+        const saved = sessionStorage.getItem('myListings');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [loading, setLoading] = useState(() => {
+        const saved = sessionStorage.getItem('myListings');
+        // If we have any saved data (even empty array), don't show loading
+        return saved === null;
+    });
+    const [searchParams] = useSearchParams();
 
-    const setFilter = (newFilter) => {
-        setSearchParams({ filter: newFilter });
-    };
+    // Save listings to cache changes
+    useEffect(() => {
+        if (listings.length > 0) {
+            try {
+                sessionStorage.setItem('myListings', JSON.stringify(listings));
+            } catch (e) {
+                console.warn('Could not save myListings to cache:', e);
+            }
+        }
+    }, [listings]);
 
     useEffect(() => {
         if (authLoading) return;
@@ -30,7 +43,10 @@ const MyListingsPage = () => {
 
     const loadListings = async () => {
         try {
-            setLoading(true);
+            // Only show loading if no cached data
+            if (listings.length === 0) {
+                setLoading(true);
+            }
             const data = await fetchUserListings(user.id);
             setListings(data);
         } catch (error) {
@@ -40,16 +56,11 @@ const MyListingsPage = () => {
         }
     };
 
-    const filteredListings = listings.filter(listing => {
-        if (filter === 'all') return true;
-        if (filter === 'active') return listing.status === 'active';
-        if (filter === 'sold') return listing.status === 'sold';
-        return true;
-    });
+
 
     if (loading || authLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 flex items-center justify-center transition-colors">
                 <LoadingSpinner size="large" />
             </div>
         );
@@ -57,21 +68,17 @@ const MyListingsPage = () => {
 
     return (
         <ProfileLayout>
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">İlanlarım</h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 px-2 md:px-0">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-neutral-100 flex items-center gap-3">
+                    İlanlarım
+                    <span className="text-lg font-medium text-gray-400 dark:text-neutral-500 bg-gray-100 dark:bg-neutral-800 px-3 py-1 rounded-full">
+                        {listings.length}
+                    </span>
+                </h1>
                 <div className="flex gap-3">
                     <button
-                        onClick={() => navigate('/my-invoices')}
-                        className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors font-semibold shadow-sm flex items-center gap-2"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Faturalar
-                    </button>
-                    <button
                         onClick={() => navigate('/add-listing')}
-                        className="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition-colors font-semibold shadow-md flex items-center gap-2"
+                        className="bg-red-600 dark:bg-rose-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 dark:hover:bg-rose-700 transition-colors font-semibold shadow-md flex items-center gap-2"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -81,51 +88,29 @@ const MyListingsPage = () => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-                {/* Filter Tabs */}
-                <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-                    <button
-                        onClick={() => setFilter('all')}
-                        className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${filter === 'all' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                    >
-                        Tümü ({listings.length})
-                    </button>
-                    <button
-                        onClick={() => setFilter('active')}
-                        className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${filter === 'active' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                    >
-                        Aktif ({listings.filter(l => l.status === 'active').length})
-                    </button>
-                    <button
-                        onClick={() => setFilter('sold')}
-                        className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${filter === 'sold' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                    >
-                        Satıldı ({listings.filter(l => l.status === 'sold').length})
-                    </button>
-                </div>
-
-                {/* Listings Grid */}
-                {filteredListings.length === 0 ? (
-                    <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Listings Grid */}
+            <div className="px-1 md:px-0">
+                {listings.length === 0 ? (
+                    <div className="text-center py-20 bg-white dark:bg-neutral-800 rounded-3xl shadow-sm border border-gray-200 dark:border-white/5">
+                        <div className="w-20 h-20 bg-gray-50 dark:bg-neutral-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg className="w-10 h-10 text-gray-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                         </div>
-                        <p className="text-gray-500 text-lg font-medium mb-2">İlan bulunamadı</p>
-                        <p className="text-gray-400 mb-6">İlk ilanınızı oluşturun ve başarıyla satış yapmaya başlayın.</p>
+                        <p className="text-gray-900 dark:text-neutral-100 text-xl font-bold mb-2">Henüz ilanınız yok</p>
+                        <p className="text-gray-500 dark:text-neutral-400 mb-8 max-w-sm mx-auto">Satmaya başlamak için hemen ilk ilaninizi oluşturun.</p>
                         <button
                             onClick={() => navigate('/add-listing')}
-                            className="text-red-600 hover:text-red-700 font-semibold hover:underline"
+                            className="bg-red-600 dark:bg-rose-600 text-white px-8 py-3 rounded-xl hover:bg-red-700 dark:hover:bg-rose-700 transition-all font-bold shadow-lg shadow-red-200 dark:shadow-rose-900/20 active:scale-95"
                         >
-                            Şimdi ilan ver
+                            İlan Ver
                         </button>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-4">
                         {/* Desktop View */}
                         <div className="hidden sm:block space-y-4">
-                            {filteredListings.map(listing => (
+                            {listings.map(listing => (
                                 <HorizontalListingCard
                                     key={listing.id}
                                     listing={listing}
@@ -137,8 +122,8 @@ const MyListingsPage = () => {
                         </div>
 
                         {/* Mobile Grid View */}
-                        <div className="grid grid-cols-2 gap-2 sm:hidden px-0">
-                            {filteredListings.map(listing => (
+                        <div className="grid grid-cols-2 gap-2 sm:hidden">
+                            {listings.map(listing => (
                                 <ListingCard
                                     key={listing.id}
                                     listing={listing}

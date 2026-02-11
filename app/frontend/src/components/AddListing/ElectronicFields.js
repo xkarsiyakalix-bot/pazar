@@ -41,14 +41,14 @@ export const ElectronicFields = ({
     setSelectedDienstleistungenElektronikArt
 }) => {
     return (
-        <div className="space-y-4 pt-4 border-t border-gray-200">
+        <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
             {subCategory === 'Ses & Hifi' && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedElektronikAudioHifiArt}
                         onChange={(e) => setSelectedElektronikAudioHifiArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="CD Player">{t.addListing.electronics.types.cdPlayer}</option>
@@ -66,7 +66,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedHandyTelefonArt}
                         onChange={(e) => setSelectedHandyTelefonArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Apple">{t.addListing.electronics.types.apple}</option>
@@ -92,7 +92,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedFotoArt}
                         onChange={(e) => setSelectedFotoArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Kamera">{t.addListing.electronics.types.camera}</option>
@@ -109,7 +109,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedHaushaltsgeraeteArt}
                         onChange={(e) => setSelectedHaushaltsgeraeteArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Küçük Ev Aletleri">Küçük Ev Aletleri</option>
@@ -129,7 +129,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedKonsolenArt}
                         onChange={(e) => setSelectedKonsolenArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="El Konsolları">El Konsolları</option>
@@ -146,7 +146,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedPCZubehoerSoftwareArt}
                         onChange={(e) => setSelectedPCZubehoerSoftwareArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Yazıcı & Tarayıcılar">Yazıcı & Tarayıcılar</option>
@@ -172,7 +172,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedTabletsReaderArt}
                         onChange={(e) => setSelectedTabletsReaderArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Apple">{t.addListing.electronics.types.ipad}</option>
@@ -192,7 +192,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedTVVideoArt}
                         onChange={(e) => setSelectedTVVideoArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="DVD Oynatıcı & Kaydedici">{t.addListing.electronics.types.video}</option>
@@ -208,7 +208,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedNotebooksArt}
                         onChange={(e) => setSelectedNotebooksArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Apple">{t.addListing.electronics.types.macbook}</option>
@@ -231,7 +231,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedPCsArt}
                         onChange={(e) => setSelectedPCsArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Apple">{t.addListing.electronics.types.pc}</option>
@@ -252,7 +252,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedVideospieleArt}
                         onChange={(e) => setSelectedVideospieleArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="DS(i) & PSP Oyunları">DS(i) & PSP Oyunları</option>
@@ -271,7 +271,7 @@ export const ElectronicFields = ({
                     <select
                         value={selectedDienstleistungenElektronikArt}
                         onChange={(e) => setSelectedDienstleistungenElektronikArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Onarım">{t.addListing.electronics.types.repair}</option>

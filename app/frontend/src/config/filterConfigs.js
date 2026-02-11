@@ -20,7 +20,7 @@ export const getCommonFilters = () => ({
         type: 'multiselect',
         options: [
             { value: 'Privatnutzer', label: t.addListing?.private || 'Bireysel' },
-            { value: 'Gewerblicher Nutzer', label: t.addListing?.commercial || 'Kurumsal' }
+            { value: 'Kurumsal Kullanıcı', label: t.addListing?.commercial || 'Kurumsal' }
         ],
         field: 'seller_type'
     },
@@ -54,8 +54,8 @@ export const getShippingFilter = () => ({
         label: t.addListing?.shipping || 'Kargo',
         type: 'multiselect',
         options: [
-            { value: 'Versand möglich', label: t.addListing?.options?.shipping || 'Kargo Mümkün' },
-            { value: 'Nur Abholung', label: t.addListing?.options?.noShipping || 'Sadece Elden Teslim' }
+            { value: 'Kargo Mümkün', label: t.addListing?.options?.shipping || 'Kargo Mümkün' },
+            { value: 'Sadece Elden Teslim', label: t.addListing?.options?.noShipping || 'Sadece Elden Teslim' }
         ],
         field: 'versand_art'
     }

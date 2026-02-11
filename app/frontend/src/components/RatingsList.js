@@ -8,11 +8,11 @@ import StarRating from './StarRating';
 function RatingsList({ ratings }) {
     if (!ratings || ratings.length === 0) {
         return (
-            <div className="text-center py-8 text-gray-500">
-                <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="text-center py-8 text-gray-500 dark:text-neutral-500">
+                <svg className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-0.363 1.118l1.518 4.674c.3.922-0.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-0.783.57-1.838-0.197-1.538-1.118l1.518-4.674a1 1 0 00-0.363-1.118l-3.976-2.888c-0.784-0.57-0.38-1.81.588-1.81h4.914a1 1 0 00.951-0.69l1.519-4.674z" />
                 </svg>
-                <p className="font-medium">Henüz değerlendirme yapılmamış</p>
+                <p className="font-medium text-gray-900 dark:text-neutral-100">Henüz değerlendirme yapılmamış</p>
                 <p className="text-sm mt-1">Bu satıcı için ilk değerlendirmeyi siz yapın!</p>
             </div>
         );
@@ -21,7 +21,7 @@ function RatingsList({ ratings }) {
     return (
         <div className="space-y-4">
             {ratings.map((rating, index) => (
-                <div key={rating.id || index} className="border-b border-gray-100 pb-4 last:border-0">
+                <div key={rating.id || index} className="border-b border-neutral-100 dark:border-white/5 pb-4 last:border-0">
                     <div className="flex items-start gap-3">
                         <div className="flex-shrink-0">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white font-bold">
@@ -30,11 +30,11 @@ function RatingsList({ ratings }) {
                         </div>
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                                <span className="font-semibold text-gray-900">
+                                <span className="font-semibold text-gray-900 dark:text-neutral-100">
                                     {rating.rater?.full_name || 'Anonim Kullanıcı'}
                                 </span>
                                 <span className="text-xs text-gray-400">•</span>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-gray-500 dark:text-neutral-400">
                                     {new Date(rating.created_at).toLocaleDateString('tr-TR', {
                                         year: 'numeric',
                                         month: 'long',
@@ -46,7 +46,7 @@ function RatingsList({ ratings }) {
                                 <StarRating rating={rating.rating} readOnly size={16} />
                             </div>
                             {rating.comment && (
-                                <p className="text-sm text-gray-700 leading-relaxed">
+                                <p className="text-sm text-gray-700 dark:text-neutral-300 leading-relaxed">
                                     {rating.comment}
                                 </p>
                             )}

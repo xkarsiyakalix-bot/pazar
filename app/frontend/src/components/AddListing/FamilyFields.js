@@ -29,18 +29,18 @@ export const FamilyFields = ({
     setSelectedSpielzeugArt
 }) => {
     return (
-        <div className="space-y-4 pt-4 border-t border-gray-200">
-            <h3 className="font-semibold text-gray-900">{t.productDetail.details}</h3>
+        <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
+            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6 flex items-center gap-3">{t.productDetail.details}</h3>
 
             {/* Bebek & Çocuk Giyimi */}
             {subCategory === 'Bebek & Çocuk Giyimi' && (
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                         <select
                             value={babyKinderkleidungArt}
                             onChange={(e) => setBabyKinderkleidungArt(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {[
@@ -60,11 +60,11 @@ export const FamilyFields = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.size}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.size}</label>
                         <select
                             value={babyKinderkleidungSize}
                             onChange={(e) => setBabyKinderkleidungSize(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {['44', '50', '56', '62', '68', '74', '80', '86', '92', '98', '104', '110', '116', '122', '128', '134', '140', '146', '152', '158', '164', '170', '176', '182', '188'].map(size => (
@@ -73,11 +73,11 @@ export const FamilyFields = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.gender}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.gender}</label>
                         <select
                             value={babyKinderkleidungGender}
                             onChange={(e) => setBabyKinderkleidungGender(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             <option value="Erkek">{t.addListing.genders.male}</option>
@@ -86,11 +86,11 @@ export const FamilyFields = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.color}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.color}</label>
                         <select
                             value={babyKinderkleidungColor}
                             onChange={(e) => setBabyKinderkleidungColor(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {[
@@ -125,11 +125,11 @@ export const FamilyFields = ({
             {subCategory === 'Bebek & Çocuk Ayakkabıları' && (
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                         <select
                             value={babyKinderschuheArt}
                             onChange={(e) => setBabyKinderschuheArt(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {[
@@ -146,11 +146,11 @@ export const FamilyFields = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.size}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.size}</label>
                         <select
                             value={babyKinderschuheSize}
                             onChange={(e) => setBabyKinderschuheSize(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {['<20', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '>36'].map(size => (
@@ -159,11 +159,11 @@ export const FamilyFields = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.color}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.color}</label>
                         <select
                             value={babyKinderschuheColor}
                             onChange={(e) => setBabyKinderschuheColor(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {[
@@ -182,11 +182,11 @@ export const FamilyFields = ({
             {subCategory === 'Bebek Arabaları & Pusetler' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{t.addListing.art}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                         <select
                             value={kinderwagenBuggysArt}
                             onChange={(e) => setKinderwagenBuggysArt(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {[
@@ -200,11 +200,11 @@ export const FamilyFields = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{t.addListing.color}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.color}</label>
                         <select
                             value={kinderwagenBuggysColor}
                             onChange={(e) => setKinderwagenBuggysColor(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             {[
@@ -238,11 +238,11 @@ export const FamilyFields = ({
             {/* Bebek Koltuğu & Oto Koltukları */}
             {subCategory === 'Bebek Koltuğu & Oto Koltukları' && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.color}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.color}</label>
                     <select
                         value={babyschalenKindersitzeColor}
                         onChange={(e) => setBabyschalenKindersitzeColor(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
@@ -275,11 +275,11 @@ export const FamilyFields = ({
             {/* Bebek Odası Mobilyaları */}
             {subCategory === 'Bebek Odası Mobilyaları' && (
                 <div className="mt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedKinderzimmermobelArt}
                         onChange={(e) => setSelectedKinderzimmermobelArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
@@ -297,11 +297,11 @@ export const FamilyFields = ({
             {/* Oyuncak */}
             {subCategory === 'Oyuncak' && (
                 <div className="mt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedSpielzeugArt}
                         onChange={(e) => setSelectedSpielzeugArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[

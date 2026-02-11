@@ -4,86 +4,71 @@ import { supabase } from './lib/supabase';
 import StorePage from './components/Store/StorePage';
 import NotFoundPage from './NotFoundPage';
 import LoadingSpinner from './components/LoadingSpinner';
+import { ProductDetail } from './components.js';
 
-const SmartRoute = () => {
+const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isStore, setIsStore] = useState(null); // null = loading, true = found, false = not found
+    const [isListing, setIsListing] = useState(false);
     const slug = decodeURIComponent(location.pathname.substring(1)); // Remove leading slash and decode
     const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
-        // Reserved paths that should never be checked as stores
-        // Although React Router handles exact matches first, this is a safety check
+        // Reserved paths that should never be checked as stores or listings
         const reservedPaths = [
             'login', 'register', 'admin', 'settings', 'profile', 'search', 'packages',
-            'privacy', 'terms', 'contact', 'hakkimizda', 'iletisim', 'sitemap', 'robots'
+            'privacy', 'terms', 'contact', 'hakkimizda', 'iletisim', 'sitemap', 'robots',
+            'my-listings', 'favorites', 'messages', 'notifications', 'checkout', 'payment',
+            'ilan', 'product', 'seller', 'store', 'categories'
         ];
 
         if (!slug || reservedPaths.includes(slug.toLowerCase())) {
             setIsStore(false);
+            setIsListing(false);
             return;
         }
 
         const checkSlug = async () => {
             try {
-                // Determine if we should query by ID or Slug
-                const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
-                if (isUuid) {
-                    setIsStore(false); // UUIDs should go to /store/:id usually, but if catch-all caught it, treating as 404 or let StorePage redirect?
-                    // Actually, if we are here, it's NOT /store/UUID (captured by other route).
-                    // It's /UUID at root. We can support /UUID root too!
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .select('id, store_slug')
-                        .eq('id', slug)
-                        .single();
+                // 1. Check if it's a Store Slug
+                const { data: storeData, error: storeError } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('store_slug', slug.toLowerCase())
+                    .single();
 
-                    if (data && !error) {
-                        // If it's a UUID at root, we should probably redirect to cleaner slug if available
-                        if (data.store_slug) {
-                            window.location.replace(`/${data.store_slug}`);
-                            return;
-                        }
-                        setIsStore(true);
-                    } else {
-                        setIsStore(false);
-                    }
+                if (storeData && !storeError) {
+                    setIsStore(true);
+                    setIsListing(false);
                     return;
                 }
 
-                // Normal Slug Check
-                const { data, error } = await supabase
-                    .from('profiles')
+                // 2. Check if it's a Listing Slug
+                const { data: listingData, error: listingError } = await supabase
+                    .from('listings')
                     .select('id')
-                    .eq('store_slug', slug.toLowerCase()) // Force lowercase match
+                    .eq('slug', slug)
                     .single();
 
-                if (data && !error) {
-                    setIsStore(true);
+                if (listingData && !listingError) {
+                    setIsListing(true);
+                    setIsStore(false);
                 } else {
-                    console.error('No store found for slug:', slug);
-                    handleError();
+                    setIsStore(false);
+                    setIsListing(false);
                 }
             } catch (err) {
-                console.error('Error checking store slug:', err);
-                handleError();
-            }
-        };
-
-        const handleError = () => {
-            if (retryCount < 2) {
-                setTimeout(() => {
-                    setRetryCount(prev => prev + 1);
-                }, 1000); // Wait 1 second before retrying
-            } else {
+                console.error('Error checking slug:', err);
                 setIsStore(false);
+                setIsListing(false);
             }
         };
 
-        setIsStore(null); // Keep loading state
+        setIsStore(null);
+        setIsListing(false);
         checkSlug();
-    }, [slug, retryCount]);
+    }, [slug]);
 
     if (isStore === null) {
         return (
@@ -97,15 +82,17 @@ const SmartRoute = () => {
         return <StorePage sellerId={slug} />;
     }
 
-    // If it's a reserved path, don't show 404 here, let App.js handle it
-    const reservedPaths = [
-        'login', 'register', 'admin', 'settings', 'profile', 'search', 'packages',
-        'privacy', 'terms', 'contact', 'hakkimizda', 'iletisim', 'sitemap', 'robots',
-        'my-listings', 'favorites', 'messages', 'notifications', 'checkout', 'payment'
-    ];
-
-    if (reservedPaths.includes(slug.toLowerCase())) {
-        return null;
+    if (isListing) {
+        return (
+            <ProductDetail
+                slug={slug}
+                addToCart={addToCart}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                toggleFollowSeller={toggleFollowSeller}
+                isSellerFollowed={isSellerFollowed}
+            />
+        );
     }
 
     return <NotFoundPage />;

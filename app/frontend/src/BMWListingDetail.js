@@ -31,6 +31,22 @@ function BMWListingDetail() {
         }
     ];
 
+    const galleryRef = React.useRef(null);
+    const targetImageIndexRef = React.useRef(null);
+
+    // Sync gallery scroll with activeImageIndex state
+    React.useEffect(() => {
+        if (galleryRef.current) {
+            const width = galleryRef.current.clientWidth;
+            if (width > 0) {
+                galleryRef.current.scrollTo({
+                    left: activeImageIndex * width,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }, [activeImageIndex]);
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header/Navbar would go here */}
@@ -60,16 +76,23 @@ function BMWListingDetail() {
                                     onScroll={(e) => {
                                         const scrollLeft = e.target.scrollLeft;
                                         const width = e.target.clientWidth;
+                                        if (width <= 0) return;
+
                                         const newIndex = Math.round(scrollLeft / width);
+
+                                        // Programmatik kaydırma sırasında (thumbnail tıklaması), hedef noktaya ulaşana kadar state'i kilitle
+                                        if (targetImageIndexRef.current !== null) {
+                                            if (newIndex === targetImageIndexRef.current) {
+                                                targetImageIndexRef.current = null;
+                                            }
+                                            return;
+                                        }
+
                                         if (newIndex !== activeImageIndex) {
                                             setActiveImageIndex(newIndex);
                                         }
                                     }}
-                                    ref={(el) => {
-                                        if (el && el.scrollLeft !== activeImageIndex * el.clientWidth) {
-                                            el.scrollLeft = activeImageIndex * el.clientWidth;
-                                        }
-                                    }}
+                                    ref={galleryRef}
                                 >
                                     {images.map((image, index) => (
                                         <div key={index} className="w-full flex-shrink-0 snap-center">
@@ -116,22 +139,29 @@ function BMWListingDetail() {
                             {/* Thumbnail'ler */}
                             <div className="p-4 bg-gray-50">
                                 <div className="flex gap-2 overflow-x-auto">
-                                    {images.map((image, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => setActiveImageIndex(index)}
-                                            className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${activeImageIndex === index
-                                                ? 'border-red-500 ring-2 ring-red-200'
-                                                : 'border-gray-300 hover:border-gray-400'
-                                                }`}
-                                        >
-                                            <img
-                                                src={image.url}
-                                                alt={image.alt}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </button>
-                                    ))}
+                                    {images.map((image, index) => {
+                                        const handleThumbnailClick = (idx) => {
+                                            targetImageIndexRef.current = idx;
+                                            setActiveImageIndex(idx);
+                                        };
+
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={() => handleThumbnailClick(index)}
+                                                className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${activeImageIndex === index
+                                                    ? 'border-red-500 ring-2 ring-red-200'
+                                                    : 'border-gray-300 hover:border-gray-400'
+                                                    }`}
+                                            >
+                                                <img
+                                                    src={image.url}
+                                                    alt={image.alt}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -412,23 +442,23 @@ function BMWListingDetail() {
                             </div>
 
                             {/* Safety Tips */}
-                            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                            <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-xl">
                                 <div className="flex items-start gap-2 mb-3">
                                     <span className="text-xl">💡</span>
-                                    <h3 className="font-semibold text-gray-900">Güvenlik İpuçları:</h3>
+                                    <h3 className="font-semibold text-gray-900 dark:text-neutral-50">Güvenlik İpuçları:</h3>
                                 </div>
-                                <ul className="space-y-2 text-sm text-gray-700">
+                                <ul className="space-y-2 text-sm text-gray-700 dark:text-neutral-300">
                                     <li className="flex items-start gap-2">
-                                        <span className="text-yellow-600 mt-0.5">•</span>
+                                        <span className="text-amber-600 dark:text-amber-500 mt-0.5">•</span>
                                         <span>Halka açık bir yerde buluşun</span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="text-yellow-600 mt-0.5">•</span>
+                                        <span className="text-amber-600 dark:text-amber-500 mt-0.5">•</span>
                                         <span>Satın almadan önce ürünü kontrol edin</span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="text-yellow-600 mt-0.5">•</span>
-                                        <span>Önden para göndermeyin</span>
+                                        <span className="text-amber-600 dark:text-amber-500 mt-0.5">•</span>
+                                        <span>Asla önceden para göndermeyin</span>
                                     </li>
                                 </ul>
                             </div>
@@ -439,7 +469,18 @@ function BMWListingDetail() {
 
             {/* Satıcının Diğer İlanları */}
             <div className="max-w-7xl mx-auto px-4 py-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-2">Max Mustermann'ın Diğer İlanları</h2>
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-gray-900">Max Mustermann'ın Diğer İlanları</h2>
+                    <button
+                        onClick={() => navigate('/seller/demo-seller')}
+                        className="text-red-600 hover:text-red-700 font-semibold transition-colors flex items-center gap-1"
+                    >
+                        Tümünü Gör
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
                 <p className="text-sm text-gray-600 mb-6">Bu satıcının diğer ilanlarını keşfedin</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

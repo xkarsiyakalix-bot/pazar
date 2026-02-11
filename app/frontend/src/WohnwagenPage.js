@@ -23,7 +23,7 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
             type: 'multiselect',
             options: [
                 { value: 'Alkoven', label: 'Alkoven' },
-                { value: 'Entegre', label: 'Tam Entegre' },
+                { value: 'Tam Entegre', label: 'Tam Entegre' },
                 { value: 'Panelvan', label: 'Panelvan' },
                 { value: 'Yarı Entegre', label: 'Yarı Entegre' },
                 { value: 'Karavan', label: 'Karavan' },
@@ -62,8 +62,8 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -71,8 +71,8 @@ const WohnwagenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

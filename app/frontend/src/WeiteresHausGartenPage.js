@@ -8,8 +8,8 @@ const WeiteresHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Kargo',
             type: 'multiselect',
             options: [
-                { value: 'Versand möglich', label: 'Kargo Mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
+                { value: 'Kargo Mümkün', label: 'Kargo Mümkün' },
+                { value: 'Sadece Elden Teslim', label: 'Sadece Elden Teslim' }
             ],
             field: 'versand_art'
         },
@@ -22,8 +22,8 @@ const WeiteresHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Kiralık', label: 'Satılık/Kiralık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -31,8 +31,8 @@ const WeiteresHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },
@@ -40,11 +40,11 @@ const WeiteresHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Durum',
             type: 'multiselect',
             options: [
-                { value: 'neu', label: 'Yeni' },
-                { value: 'sehr_gut', label: 'Çok İyi' },
-                { value: 'gut', label: 'İyi' },
-                { value: 'in_ordnung', label: 'İdare Eder' },
-                { value: 'defekt', label: 'Arızalı' }
+                { value: 'Yeni', label: 'Yeni' },
+                { value: 'Çok İyi', label: 'Çok İyi' },
+                { value: 'İyi', label: 'İyi' },
+                { value: 'İdare Eder', label: 'İdare Eder' },
+                { value: 'Arızalı', label: 'Arızalı' }
             ],
             field: 'condition'
         },
@@ -58,10 +58,10 @@ const WeiteresHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Werkzeuge', label: 'Aletler' },
-                { value: 'Gartengeräte', label: 'Bahçe Aletleri' },
-                { value: 'Baumaterialien', label: 'İnşaat Malzemeleri' },
-                { value: 'Sonstiges', label: 'Diğer' }
+                { value: 'Aletler', label: 'Aletler' },
+                { value: 'Bahçe Aletleri', label: 'Bahçe Aletleri' },
+                { value: 'İnşaat Malzemeleri', label: 'İnşaat Malzemeleri' },
+                { value: 'Diğer', label: 'Diğer' }
             ],
             field: 'weiteres_haus_garten_art'
         }

@@ -8,11 +8,11 @@ const TransportLogistikVerkehrPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Kraftfahrer/-in', label: 'Şoför' },
-                { value: 'Kurierfahrer/-in', label: 'Kurye' },
-                { value: 'Lagerhelfer/-in', label: 'Depo Elemanı' },
-                { value: 'Staplerfahrer/-in', label: 'Forklift Operatörü' },
-                { value: 'Weitere Berufe', label: 'Diğer Meslekler' }
+                { value: 'Şoför', label: 'Şoför' },
+                { value: 'Kurye', label: 'Kurye' },
+                { value: 'Depo Elemanı', label: 'Depo Elemanı' },
+                { value: 'Forklift Operatörü', label: 'Forklift Operatörü' },
+                { value: 'Diğer Meslekler', label: 'Diğer Meslekler' }
             ],
             field: 'transport_logistik_verkehr_art'
         },
@@ -20,8 +20,8 @@ const TransportLogistikVerkehrPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Çalışma Süresi',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' }
             ],
             field: 'working_time'
         },
@@ -34,8 +34,8 @@ const TransportLogistikVerkehrPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -43,8 +43,8 @@ const TransportLogistikVerkehrPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

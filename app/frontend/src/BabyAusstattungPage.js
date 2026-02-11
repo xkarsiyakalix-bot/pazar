@@ -8,8 +8,8 @@ const BabyAusstattungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Kargo',
             type: 'multiselect',
             options: [
-                { value: 'Versand möglich', label: 'Kargo Mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
+                { value: 'Kargo Mümkün', label: 'Kargo Mümkün' },
+                { value: 'Sadece Elden Teslim', label: 'Sadece Elden Teslim' }
             ],
             field: 'versand_art'
         },
@@ -17,11 +17,11 @@ const BabyAusstattungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Durum',
             type: 'multiselect',
             options: [
-                { value: 'neu', label: 'Yeni' },
-                { value: 'sehr_gut', label: 'Çok İyi' },
-                { value: 'gut', label: 'İyi' },
-                { value: 'in_ordnung', label: 'İdare Eder' },
-                { value: 'defekt', label: 'Arızalı' }
+                { value: 'Yeni', label: 'Yeni' },
+                { value: 'Çok İyi', label: 'Çok İyi' },
+                { value: 'İyi', label: 'İyi' },
+                { value: 'İdare Eder', label: 'İdare Eder' },
+                { value: 'Arızalı', label: 'Arızalı' }
             ],
             field: 'condition'
         },
@@ -34,8 +34,8 @@ const BabyAusstattungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -43,8 +43,8 @@ const BabyAusstattungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

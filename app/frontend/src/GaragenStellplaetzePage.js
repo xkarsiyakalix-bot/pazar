@@ -25,8 +25,8 @@ const GaragenStellplaetzePage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Kaufen', label: 'Satılık' },
-                { value: 'Mieten', label: 'Kiralık' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Kiralık', label: 'Kiralık' }
             ],
             field: 'angebotsart'
         },
@@ -34,8 +34,8 @@ const GaragenStellplaetzePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Park Yeri Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Garage', label: 'Garaj' },
-                { value: 'Außenstellplatz', label: 'Açık Otopark' }
+                { value: 'Garaj', label: 'Garaj' },
+                { value: 'Açık Otopark', label: 'Açık Otopark' }
             ],
             field: 'garage_type'
         },
@@ -48,8 +48,8 @@ const GaragenStellplaetzePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Komisyon',
             type: 'multiselect',
             options: [
-                { value: 'Provisionsfrei', label: 'Komisyonsuz' },
-                { value: 'Mit Provision', label: 'Komisyonlu' }
+                { value: 'Komisyonsuz', label: 'Komisyonsuz' },
+                { value: 'Komisyonlu', label: 'Komisyonlu' }
             ],
             field: 'commission'
         },
@@ -57,8 +57,8 @@ const GaragenStellplaetzePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Online Gösterim',
             type: 'multiselect',
             options: [
-                { value: 'Möglich', label: 'Mümkün' },
-                { value: 'Nicht möglich', label: 'Mümkün Değil' }
+                { value: 'Mümkün', label: 'Mümkün' },
+                { value: 'Mümkün Değil', label: 'Mümkün Değil' }
             ],
             field: 'online_viewing'
         },
@@ -71,8 +71,8 @@ const GaragenStellplaetzePage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Kiralık', label: 'Satılık/Kiralık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -80,8 +80,8 @@ const GaragenStellplaetzePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

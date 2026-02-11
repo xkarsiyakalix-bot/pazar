@@ -282,17 +282,17 @@ const AdminPromotions = () => {
         <div className="space-y-6 animate-fade-in pb-12">
             <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                 <div>
-                    <h1 className="text-3xl font-display font-bold text-neutral-900 tracking-tight">Ödemeler & Promosyonlar</h1>
-                    <p className="text-neutral-500 font-medium mt-1">Sistemdeki tüm satın alımları yönetin</p>
+                    <h1 className="text-3xl font-display font-bold text-neutral-900 dark:text-neutral-50 tracking-tight">Ödemeler & Promosyonlar</h1>
+                    <p className="text-neutral-500 dark:text-neutral-400 font-medium mt-1 transition-colors duration-300">Sistemdeki tüm satın alımları yönetin</p>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 items-center">
-                    <div className="bg-white p-1 rounded-xl shadow-sm border border-neutral-200 flex">
+                    <div className="bg-white dark:bg-neutral-900 p-1 rounded-xl shadow-sm border border-neutral-200 dark:border-white/10 flex transition-colors duration-300">
                         <button
                             onClick={() => setFilter('all')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'all'
-                                ? 'bg-neutral-900 text-white shadow-md'
-                                : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
+                                ? 'bg-neutral-900 dark:bg-neutral-700 text-white shadow-md'
+                                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                 }`}
                         >
                             Tümü
@@ -300,8 +300,8 @@ const AdminPromotions = () => {
                         <button
                             onClick={() => setFilter('active')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'active'
-                                ? 'bg-neutral-900 text-white shadow-md'
-                                : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
+                                ? 'bg-neutral-900 dark:bg-neutral-700 text-white shadow-md'
+                                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                 }`}
                         >
                             Aktif
@@ -309,8 +309,8 @@ const AdminPromotions = () => {
                         <button
                             onClick={() => setFilter('expired')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'expired'
-                                ? 'bg-neutral-900 text-white shadow-md'
-                                : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
+                                ? 'bg-neutral-900 dark:bg-neutral-700 text-white shadow-md'
+                                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                 }`}
                         >
                             Süresi Bitenler
@@ -326,16 +326,16 @@ const AdminPromotions = () => {
                             placeholder="Ara..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="block w-full pl-10 pr-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm placeholder-neutral-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all shadow-sm group-hover:border-neutral-300"
+                            className="block w-full pl-10 pr-4 py-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-xl text-sm placeholder-neutral-400 focus:outline-none focus:border-red-500 dark:focus:border-red-700 focus:ring-4 focus:ring-red-500/10 dark:focus:ring-red-900/20 transition-all shadow-sm group-hover:border-neutral-300 dark:group-hover:border-white/20 text-neutral-900 dark:text-neutral-50"
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
+            <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5 overflow-hidden transition-colors duration-300">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-neutral-50/50 border-b border-neutral-100 text-neutral-500 font-bold text-[11px] uppercase tracking-wider">
+                        <thead className="bg-neutral-50/50 dark:bg-neutral-950/50 border-b border-neutral-100 dark:border-white/5 text-neutral-500 dark:text-neutral-400 font-bold text-[11px] uppercase tracking-wider">
                             <tr>
                                 <th className="px-6 py-4">Tarih & Zaman</th>
                                 <th className="px-6 py-4">Satıcı Profili</th>
@@ -346,15 +346,15 @@ const AdminPromotions = () => {
                                 <th className="px-6 py-4 text-right">İşlemler</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-50">
+                        <tbody className="divide-y divide-neutral-50 dark:divide-white/5">
                             {paginatedPromotions.map(promo => (
-                                <tr key={promo.id} className="hover:bg-neutral-50/80 transition-colors group">
+                                <tr key={promo.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/50 transition-colors group">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="text-sm font-bold text-neutral-900">
+                                            <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                                                 {new Date(promo.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
                                             </span>
-                                            <span className="text-xs text-neutral-400 font-medium">
+                                            <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">
                                                 {new Date(promo.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
@@ -363,12 +363,12 @@ const AdminPromotions = () => {
 
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-xs font-bold text-neutral-500">
+                                            <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 dark:text-neutral-400">
                                                 {promo.profiles?.full_name?.charAt(0) || '?'}
                                             </div>
                                             <div>
-                                                <div className="font-bold text-neutral-900 text-sm">{promo.profiles?.full_name || 'Bilinmiyor'}</div>
-                                                <div className="text-[10px] text-neutral-400 font-mono">#{promo.profiles?.user_number || '-'}</div>
+                                                <div className="font-bold text-neutral-900 dark:text-neutral-200 text-sm">{promo.profiles?.full_name || 'Bilinmiyor'}</div>
+                                                <div className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">#{promo.profiles?.user_number || '-'}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -379,21 +379,21 @@ const AdminPromotions = () => {
                                                     href={`/product/${promo.listings.id}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="block font-medium text-sm text-neutral-700 hover:text-red-600 hover:underline truncate transition-colors"
+                                                    className="block font-medium text-sm text-neutral-700 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-500 hover:underline truncate transition-colors"
                                                 >
                                                     {promo.listings.title}
                                                 </a>
                                             ) : (
-                                                <span className="text-neutral-400 italic text-sm">İlan Silinmiş / Abonelik</span>
+                                                <span className="text-neutral-400 dark:text-neutral-500 italic text-sm">İlan Silinmiş / Abonelik</span>
                                             )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1.5 items-start">
-                                            <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border ${['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase()) ? 'bg-purple-50 text-purple-700 border-purple-100' :
-                                                ['top', 'premium', 'z_premium'].includes(promo.package_type?.toLowerCase()) ? 'bg-red-50 text-red-700 border-red-100' :
-                                                    ['highlight', 'budget'].includes(promo.package_type?.toLowerCase()) ? 'bg-amber-50 text-amber-700 border-amber-100' :
-                                                        'bg-neutral-100 text-neutral-600 border-neutral-200'
+                                            <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border transition-colors duration-300 ${['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase()) ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-100 dark:border-purple-900/30' :
+                                                ['top', 'premium', 'z_premium'].includes(promo.package_type?.toLowerCase()) ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-900/30' :
+                                                    ['highlight', 'budget'].includes(promo.package_type?.toLowerCase()) ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900/30' :
+                                                        'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-white/10'
                                                 }`}>
                                                 {getPackageDisplayName(promo.package_type)}
                                             </span>
@@ -402,26 +402,26 @@ const AdminPromotions = () => {
                                                 ((['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase())) && !promo.listings.is_gallery) ||
                                                 ((['top', 'premium', 'z_premium'].includes(promo.package_type?.toLowerCase())) && !promo.listings.is_top)
                                             ) && (
-                                                    <div className="flex items-center gap-1 animate-pulse bg-red-50 px-1.5 py-0.5 rounded border border-red-100">
-                                                        <span className="text-red-600 text-[9px] font-bold whitespace-nowrap">⚠️ ROZET EKSİK</span>
+                                                    <div className="flex items-center gap-1 animate-pulse bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded border border-red-100 dark:border-red-900/30">
+                                                        <span className="text-red-600 dark:text-red-400 text-[9px] font-bold whitespace-nowrap">⚠️ ROZET EKSİK</span>
                                                     </div>
                                                 )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <span className="font-bold text-neutral-900 text-sm">
+                                        <span className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">
                                             {promo.price?.toLocaleString('tr-TR')} TL
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${isExpired(promo) ? 'bg-neutral-100 text-neutral-500 border-neutral-200' :
-                                            (promo.status === 'active' || promo.status === 'paid') ? 'bg-green-50 text-green-700 border-green-100' :
-                                                promo.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-100' :
-                                                    'bg-neutral-100 text-neutral-600 border-neutral-200'
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border transition-colors duration-300 ${isExpired(promo) ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 border-neutral-200 dark:border-white/10' :
+                                            (promo.status === 'active' || promo.status === 'paid') ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-900/30' :
+                                                promo.status === 'cancelled' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-900/30' :
+                                                    'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-white/10'
                                             }`}>
-                                            <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isExpired(promo) ? 'bg-neutral-400' :
-                                                (promo.status === 'active' || promo.status === 'paid') ? 'bg-green-500' :
-                                                    promo.status === 'cancelled' ? 'bg-red-500' : 'bg-neutral-500'
+                                            <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isExpired(promo) ? 'bg-neutral-400 dark:bg-neutral-500' :
+                                                (promo.status === 'active' || promo.status === 'paid') ? 'bg-green-500 dark:bg-green-400' :
+                                                    promo.status === 'cancelled' ? 'bg-red-500 dark:bg-red-400' : 'bg-neutral-500'
                                                 }`}></span>
                                             {getStatusDisplayName(promo)}
                                         </span>
@@ -434,7 +434,7 @@ const AdminPromotions = () => {
                                             ) && (
                                                     <button
                                                         onClick={() => handleRepairFlags(promo)}
-                                                        className="p-2 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-100"
+                                                        className="p-2 text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 rounded-lg transition-colors border border-amber-100 dark:border-amber-900/30"
                                                         title="Rozeti Geri Getir"
                                                     >
                                                         🛠️
@@ -444,8 +444,8 @@ const AdminPromotions = () => {
                                             <button
                                                 onClick={() => handleSendEmail(promo)}
                                                 className={`p-2 rounded-lg transition-all border ${promo.invoice_sent_at
-                                                    ? 'text-green-600 bg-green-50 border-green-100'
-                                                    : 'text-neutral-400 bg-white border-neutral-200 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100'
+                                                    ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900/30'
+                                                    : 'text-neutral-400 dark:text-neutral-500 bg-white dark:bg-neutral-800 border-neutral-200 dark:border-white/10 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-100 dark:hover:border-blue-900/30'
                                                     }`}
                                                 title={promo.invoice_sent_at ? `E-posta Gönderildi: ${new Date(promo.invoice_sent_at).toLocaleString('tr-TR')}` : 'Makbuz Gönder'}
                                             >
@@ -454,7 +454,7 @@ const AdminPromotions = () => {
 
                                             <button
                                                 onClick={() => setSelectedInvoice(promo)}
-                                                className="p-2 text-neutral-400 bg-white border border-neutral-200 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-100 rounded-lg transition-all"
+                                                className="p-2 text-neutral-400 dark:text-neutral-500 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:border-indigo-100 dark:hover:border-indigo-900/30 rounded-lg transition-all"
                                                 title="Fatura Detayı"
                                             >
                                                 📄
@@ -463,7 +463,7 @@ const AdminPromotions = () => {
                                             {promo.listings?.id && (
                                                 <button
                                                     onClick={() => window.open(`/product/${promo.listings.id}`, '_blank')}
-                                                    className="p-2 text-neutral-400 bg-white border border-neutral-200 hover:text-neutral-900 hover:bg-neutral-50 hover:border-neutral-300 rounded-lg transition-all"
+                                                    className="p-2 text-neutral-400 dark:text-neutral-500 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 hover:text-neutral-900 dark:hover:text-neutral-50 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-white/20 rounded-lg transition-all"
                                                     title="İlanı Görüntüle"
                                                 >
                                                     👁️
@@ -472,7 +472,7 @@ const AdminPromotions = () => {
 
                                             <button
                                                 onClick={() => handleCancelPromotion(promo)}
-                                                className="p-2 text-neutral-400 bg-white border border-neutral-200 hover:text-red-600 hover:bg-red-50 hover:border-red-100 rounded-lg transition-all"
+                                                className="p-2 text-neutral-400 dark:text-neutral-500 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-100 dark:hover:border-red-900/30 rounded-lg transition-all"
                                                 title="İptal Et"
                                             >
                                                 🚫
@@ -483,7 +483,7 @@ const AdminPromotions = () => {
                             ))}
                             {paginatedPromotions.length === 0 && (
                                 <tr>
-                                    <td colSpan="7" className="px-6 py-12 text-center text-neutral-400 font-medium">
+                                    <td colSpan="7" className="px-6 py-12 text-center text-neutral-400 dark:text-neutral-500 font-medium">
                                         Sonuç bulunamadı
                                     </td>
                                 </tr>
@@ -493,22 +493,22 @@ const AdminPromotions = () => {
                 </div>
 
                 {totalPages > 1 && (
-                    <div className="p-4 border-t border-neutral-100 flex justify-between items-center bg-neutral-50/30">
-                        <div className="text-xs font-bold text-neutral-400 uppercase tracking-wide">
+                    <div className="p-4 border-t border-neutral-100 dark:border-white/5 flex justify-between items-center bg-neutral-50/30 dark:bg-neutral-950/30 transition-colors duration-300">
+                        <div className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wide">
                             Sayfa {page} / {totalPages}
                         </div>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className="px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                                className="px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-xl text-sm font-bold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
                             >
                                 Önceki
                             </button>
                             <button
                                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
-                                className="px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                                className="px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-xl text-sm font-bold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
                             >
                                 Sonraki
                             </button>

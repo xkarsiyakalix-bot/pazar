@@ -25,8 +25,8 @@ const FerienAuslandsimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Kaufen', label: 'Satılık' },
-                { value: 'Mieten', label: 'Kiralık' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Kiralık', label: 'Kiralık' }
             ],
             field: 'angebotsart'
         },
@@ -34,8 +34,8 @@ const FerienAuslandsimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Konum Türü',
             type: 'multiselect',
             options: [
-                { value: 'Inland', label: 'Yurt İçi' },
-                { value: 'Ausland', label: 'Yurt Dışı' }
+                { value: 'Yurt İçi', label: 'Yurt İçi' },
+                { value: 'Yurt Dışı', label: 'Yurt Dışı' }
             ],
             field: 'lage'
         },
@@ -48,8 +48,8 @@ const FerienAuslandsimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Online Gösterim',
             type: 'multiselect',
             options: [
-                { value: 'Möglich', label: 'Mümkün' },
-                { value: 'Nicht möglich', label: 'Mümkün Değil' }
+                { value: 'Mümkün', label: 'Mümkün' },
+                { value: 'Mümkün Değil', label: 'Mümkün Değil' }
             ],
             field: 'online_viewing'
         },
@@ -62,19 +62,19 @@ const FerienAuslandsimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Donanım',
             type: 'multiselect',
             options: [
-                { value: 'Möbliert/Teilmöbliert', label: 'Eşyalı/Yarı Eşyalı' },
+                { value: 'Eşyalı/Yarı Eşyalı', label: 'Eşyalı/Yarı Eşyalı' },
                 { value: 'Balkon', label: 'Balkon' },
-                { value: 'Terrasse', label: 'Teras' },
-                { value: 'Einbauküche', label: 'Ankastre Mutfak' },
-                { value: 'Badewanne', label: 'Küvet' },
-                { value: 'Gäste-WC', label: 'Misafir WC' },
-                { value: 'Stufenloser Zugang', label: 'Engelsiz Erişim' },
-                { value: 'Fußbodenheizung', label: 'Yerden Isıtma' },
-                { value: 'WLAN', label: 'Wi-Fi' },
-                { value: 'Kühlschrank', label: 'Buzdolabı' },
-                { value: 'Waschmaschine', label: 'Çamaşır Makinesi' },
-                { value: 'Spülmaschine', label: 'Bulaşık Makinesi' },
-                { value: 'TV', label: 'Televizyon' }
+                { value: 'Teras', label: 'Teras' },
+                { value: 'Ankastre Mutfak', label: 'Ankastre Mutfak' },
+                { value: 'Küvet', label: 'Küvet' },
+                { value: 'Misafir WC', label: 'Misafir WC' },
+                { value: 'Engelsiz Erişim', label: 'Engelsiz Erişim' },
+                { value: 'Yerden Isıtma', label: 'Yerden Isıtma' },
+                { value: 'Wi-Fi', label: 'Wi-Fi' },
+                { value: 'Buzdolabı', label: 'Buzdolabı' },
+                { value: 'Çamaşır Makinesi', label: 'Çamaşır Makinesi' },
+                { value: 'Bulaşık Makinesi', label: 'Bulaşık Makinesi' },
+                { value: 'Televizyon', label: 'Televizyon' }
             ],
             field: 'amenities'
         },
@@ -82,17 +82,17 @@ const FerienAuslandsimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Genel Özellikler',
             type: 'multiselect',
             options: [
-                { value: 'Altbau', label: 'Eski Yapı' },
-                { value: 'Neubau', label: 'Yeni Yapı' },
-                { value: 'Aufzug', label: 'Asansör' },
-                { value: 'Keller', label: 'Bodrum' },
-                { value: 'Dachboden', label: 'Tavan Arası' },
-                { value: 'Garage/Stellplatz', label: 'Garaj/Park Yeri' },
-                { value: 'Garten/-mitnutzung', label: 'Bahçeli/Bahçe Kullanımı' },
-                { value: 'Haustiere erlaubt', label: 'Evcil Hayvan İzni' },
-                { value: 'WG-geeignet', label: 'Paylaşımlı Eve Uygun' },
-                { value: 'Denkmalobjekt', label: 'Tarihi Eser' },
-                { value: 'Aktuell vermietet', label: 'Kiracılı' }
+                { value: 'Eski Yapı', label: 'Eski Yapı' },
+                { value: 'Yeni Yapı', label: 'Yeni Yapı' },
+                { value: 'Asansör', label: 'Asansör' },
+                { value: 'Bodrum', label: 'Bodrum' },
+                { value: 'Tavan Arası', label: 'Tavan Arası' },
+                { value: 'Garaj/Park Yeri', label: 'Garaj/Park Yeri' },
+                { value: 'Bahçeli/Bahçe Kullanımı', label: 'Bahçeli/Bahçe Kullanımı' },
+                { value: 'Evcil Hayvan İzni', label: 'Evcil Hayvan İzni' },
+                { value: 'Paylaşımlı Eve Uygun', label: 'Paylaşımlı Eve Uygun' },
+                { value: 'Tarihi Eser', label: 'Tarihi Eser' },
+                { value: 'Kiracılı', label: 'Kiracılı' }
             ],
             field: 'general_features'
         },
@@ -100,8 +100,8 @@ const FerienAuslandsimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Kiralık', label: 'Satılık/Kiralık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -109,8 +109,8 @@ const FerienAuslandsimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

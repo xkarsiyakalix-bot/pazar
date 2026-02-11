@@ -65,7 +65,7 @@ function UberUnsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-300">
             {/* Hero Section with Glassmorphism Overlay */}
             <div className="relative h-[60vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
@@ -74,7 +74,7 @@ function UberUnsPage() {
                         alt="ExVitrin Team"
                         className="w-full h-full object-cover filter brightness-50"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white dark:to-neutral-950"></div>
                 </div>
 
                 <div className="relative z-10 text-center px-4 max-w-4xl animate-in fade-in zoom-in duration-700">
@@ -93,13 +93,13 @@ function UberUnsPage() {
                     {stats.map((stat, idx) => (
                         <div
                             key={idx}
-                            className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl hover:shadow-red-200/50 transition-all duration-300 transform hover:-translate-y-2 group"
+                            className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-3xl p-8 shadow-2xl hover:shadow-red-200/50 transition-all duration-300 transform hover:-translate-y-2 group"
                         >
-                            <div className="mb-4 inline-flex p-3 bg-red-50 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                            <div className="mb-4 inline-flex p-3 bg-red-50 dark:bg-red-900/20 rounded-2xl group-hover:scale-110 transition-transform duration-300">
                                 {stat.icon}
                             </div>
-                            <div className="text-4xl font-black text-gray-900 mb-1">{stat.value}</div>
-                            <div className="text-gray-500 font-semibold uppercase tracking-wider text-sm">{stat.label}</div>
+                            <div className="text-4xl font-black text-gray-900 dark:text-neutral-50 mb-1">{stat.value}</div>
+                            <div className="text-gray-500 dark:text-neutral-400 font-semibold uppercase tracking-wider text-sm">{stat.label}</div>
                         </div>
                     ))}
                 </div>
@@ -109,12 +109,12 @@ function UberUnsPage() {
                     <div className="space-y-8 animate-in slide-in-from-left duration-700">
                         <div>
                             <span className="text-red-600 font-bold uppercase tracking-widest text-sm mb-2 block">Vizyonumuz</span>
-                            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+                            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-neutral-50 leading-tight">
                                 {t.aboutUs.about.title}
                             </h2>
                         </div>
-                        <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
-                            <p className="bg-red-50 p-6 rounded-2xl border-l-4 border-red-500 font-medium text-red-900">
+                        <div className="space-y-6 text-lg text-gray-600 dark:text-neutral-400 leading-relaxed">
+                            <p className="bg-red-50 dark:bg-red-900/10 p-6 rounded-2xl border-l-4 border-red-500 font-medium text-red-900 dark:text-red-200">
                                 {t.aboutUs.about.description1}
                             </p>
                             <p>
@@ -124,7 +124,7 @@ function UberUnsPage() {
                     </div>
                     <div className="relative group animate-in slide-in-from-right duration-700">
                         <div className="absolute -inset-4 bg-gradient-to-r from-red-500 to-rose-500 rounded-3xl opacity-20 blur-2xl group-hover:opacity-30 transition-opacity"></div>
-                        <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl">
+                        <div className="relative bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl">
                             <img
                                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=2070"
                                 alt="Innovation"
@@ -170,7 +170,7 @@ function UberUnsPage() {
 
                 {/* Values / Why Us - Simple but Elegant */}
                 <div className="text-center mb-32">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-16">Neden ExVitrin?</h2>
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-neutral-50 mb-16">Neden ExVitrin?</h2>
                     <div className="grid md:grid-cols-4 gap-8">
                         {[
                             { title: "Güvenlik", desc: "En üst düzey güvenlik protokolleri ile huzurlu ticaret.", icon: "🛡️" },
@@ -178,10 +178,10 @@ function UberUnsPage() {
                             { title: "Yerellik", desc: "İzmir'den tüm Türkiye'ye uzanan güçlü bağlar.", icon: "📍" },
                             { title: "Yenilik", desc: "Sürekli güncellenen modern kullanıcı deneyimi.", icon: "💡" }
                         ].map((item, i) => (
-                            <div key={i} className="p-8 rounded-3xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300">
+                            <div key={i} className="p-8 rounded-3xl bg-gray-50 dark:bg-neutral-900 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-xl transition-all duration-300 border border-transparent dark:border-white/5">
                                 <div className="text-4xl mb-4">{item.icon}</div>
-                                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-neutral-50">{item.title}</h3>
+                                <p className="text-gray-500 dark:text-neutral-400 text-sm leading-relaxed">{item.desc}</p>
                             </div>
                         ))}
                     </div>

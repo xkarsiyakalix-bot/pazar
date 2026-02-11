@@ -125,6 +125,14 @@ export const fetchSubcategoryBySlug = async (categorySlug, subcategorySlug) => {
  */
 export const fetchCategoriesWithCounts = async () => {
     try {
+        // Fetch inactive categories
+        const { data: inactiveData } = await supabase
+            .from('category_settings')
+            .select('category_name')
+            .eq('is_active', false);
+
+        const inactiveCategories = new Set(inactiveData?.map(item => item.category_name) || []);
+
         // Fetch all listings to count by category and subcategory
         const { data: listings, error: listingsError } = await supabase
             .from('listings')
@@ -417,7 +425,12 @@ export const fetchCategoriesWithCounts = async () => {
             }
         ];
 
-        return categories;
+        return categories
+            .filter(cat => !inactiveCategories.has(cat.name))
+            .map(cat => ({
+                ...cat,
+                subcategories: cat.subcategories?.filter(sub => !inactiveCategories.has(sub.name))
+            }));
     } catch (error) {
         console.error('Error in fetchCategoriesWithCounts:', error);
         return [];

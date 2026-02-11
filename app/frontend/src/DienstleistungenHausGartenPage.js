@@ -17,13 +17,13 @@ const DienstleistungenHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Bau & Handwerk', label: 'İnşaat & El Sanatları' },
-                { value: 'Garten- & Landschaftsbau', label: 'Bahçe & Peyzaj' },
-                { value: 'Haushaltshilfe', label: 'Ev Yardımcısı' },
-                { value: 'Reinigungsservice', label: 'Temizlik Hizmeti' },
-                { value: 'Reparaturen', label: 'Onarım & Tamir' },
-                { value: 'Wohnungsauflösungen', label: 'Ev Boşaltma/Tasfiye' },
-                { value: 'Weitere Dienstleistungen Haus & Garten', label: 'Diğer Ev & Bahçe Hizmetleri' }
+                { value: 'İnşaat & El Sanatları', label: 'İnşaat & El Sanatları' },
+                { value: 'Bahçe & Peyzaj', label: 'Bahçe & Peyzaj' },
+                { value: 'Ev Yardımcısı', label: 'Ev Yardımcısı' },
+                { value: 'Temizlik Hizmeti', label: 'Temizlik Hizmeti' },
+                { value: 'Onarım & Tamir', label: 'Onarım & Tamir' },
+                { value: 'Ev Boşaltma/Tasfiye', label: 'Ev Boşaltma/Tasfiye' },
+                { value: 'Diğer Ev & Bahçe Hizmetleri', label: 'Diğer Ev & Bahçe Hizmetleri' }
             ],
             field: 'dienstleistungen_haus_garten_art'
         },
@@ -36,8 +36,8 @@ const DienstleistungenHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -45,8 +45,8 @@ const DienstleistungenHausGartenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

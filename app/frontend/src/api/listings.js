@@ -12,6 +12,7 @@ import { supabase } from '../lib/supabase';
  * @returns {Promise<Array>} Array of listings
  */
 import { getCache, setCache, clearCache } from '../utils/cache';
+import { createSlug } from '../utils/slug';
 
 /**
  * Helper to mask promotion flags if the promotion has expired
@@ -68,16 +69,10 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
         .or(`expiry_date.gt.${new Date().toISOString()},expiry_date.is.null`);
 
     // Applying sort based on filters
-    if (filters.sort_by_newest || filters.sort_by === 'created_at') {
-        query = query.order('created_at', { ascending: false });
-    } else {
-        // Default priority sorting: Promoted first (TOP), then newest
-        // We prioritize 'z_premium' by sorting package_type DESC
-        query = query
-            .order('is_top', { ascending: false })
-            .order('package_type', { ascending: false })
-            .order('created_at', { ascending: false });
-    }
+    // Default sort is by newest (created_at DESC)
+    // Promoted listings (Premium, etc.) will naturally drift down as new listings are added.
+    // They jump to the top when bumped (created_at updated to NOW()).
+    query = query.order('created_at', { ascending: false });
 
     if (filters.category) {
         // Bilingual Main Category Mapping
@@ -396,12 +391,47 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
  * @returns {Promise<Object>} Listing object
  */
 export const fetchListingById = async (id) => {
+    if (!id) return null;
     const { data, error } = await supabase
         .from('listings')
         .select('*')
         .eq('id', id)
         .single();
 
+
+    if (data && data.category === 'Evcil Hayvanlar') {
+        const subCategoryMapping = {
+            'Balık': 'Balıklar',
+            'Köpek': 'Köpekler',
+            'Kedi': 'Kediler',
+            'Küçükbaş Hayvanlar': 'Küçük Hayvanlar',
+            'Kümes Hayvanları': 'Çiftlik Hayvanları',
+            'At': 'Atlar',
+            'Kuş': 'Kuşlar',
+            'Hayvan Aksesuarları': 'Aksesuarlar'
+        };
+        data.sub_category = subCategoryMapping[data.sub_category] || data.sub_category;
+    }
+    return applyPromotionExpiry(data);
+};
+
+/**
+ * Fetch listing by slug
+ * @param {string} slug - Listing slug
+ * @returns {Promise<Object>} Listing object
+ */
+export const fetchListingBySlug = async (slug) => {
+    if (!slug) return null;
+    const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+    if (error) {
+        console.error('Error fetching listing by slug:', error);
+        return null;
+    }
 
     if (data && data.category === 'Evcil Hayvanlar') {
         const subCategoryMapping = {
@@ -435,8 +465,16 @@ export const createListing = async (listingData) => {
     const now = new Date();
     const expiryDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days from now
 
+    // Generate unique slug
+    // We append a random short string or timestamp to ensure uniqueness if needed,
+    // but for now let's try just the title. 
+    // In a real prod app, you'd check for collisions in a loop.
+    let slug = createSlug(listingData.title || "ilan");
+    const timestamp = Date.now().toString().slice(-4);
+
     const finalListingData = {
         ...listingData,
+        slug: `${slug}-${timestamp}`, // Appending 4 digits to help uniqueness without a loop
         expiry_date: listingData.expiry_date || expiryDate.toISOString()
     };
 
@@ -449,6 +487,24 @@ export const createListing = async (listingData) => {
     if (error) {
         console.error('Error creating listing:', error);
         throw error;
+    }
+
+    // After first successful listing, check and set first_listing_at in profile if null
+    try {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_listing_at')
+            .eq('id', listingData.user_id)
+            .single();
+
+        if (profile && !profile.first_listing_at) {
+            await supabase
+                .from('profiles')
+                .update({ first_listing_at: data.created_at || now.toISOString() })
+                .eq('id', listingData.user_id);
+        }
+    } catch (e) {
+        console.warn('Could not set first_listing_at:', e);
     }
 
     return data;
@@ -824,25 +880,37 @@ export const fetchRawDebugListings = async () => {
  */
 export const checkUserListingLimit = async (userId) => {
     try {
-        // 1. Fetch user subscription details
+        // 1. Fetch user subscription details and first_listing_at
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('subscription_tier, extra_paid_listings, subscription_expiry')
+            .select('subscription_tier, extra_paid_listings, subscription_expiry, first_listing_at')
             .eq('id', userId)
             .single();
 
         if (profileError) throw profileError;
 
-        // 2. Count active listings created in the last 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        let periodStart;
+        if (!profile.first_listing_at) {
+            // If they haven't listed yet, the period starts now (effectively 0 listings)
+            periodStart = new Date();
+        } else {
+            const firstListingDate = new Date(profile.first_listing_at);
+            const now = new Date();
+
+            // Calculate how many 30-day periods have passed since the first listing
+            const diffInMs = now.getTime() - firstListingDate.getTime();
+            const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+            const periodIndex = Math.floor(diffInDays / 30);
+
+            // The current period starts exactly at (firstListingDate + periodIndex * 30 days)
+            periodStart = new Date(firstListingDate.getTime() + periodIndex * 30 * 24 * 60 * 60 * 1000);
+        }
 
         const { count, error: countError } = await supabase
             .from('listings')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId)
-            .neq('status', 'deleted')
-            .gte('created_at', thirtyDaysAgo.toISOString());
+            .gte('created_at', periodStart.toISOString());
 
         if (countError) throw countError;
 
@@ -858,12 +926,19 @@ export const checkUserListingLimit = async (userId) => {
         let baseLimit = TIER_LIMITS[tier] || 20;
 
         // Handle expired subscriptions (revert to free)
-        if (profile.subscription_expiry && new Date(profile.subscription_expiry) < new Date()) {
-            baseLimit = 20;
+        if (profile.subscription_expiry) {
+            const expiryDate = new Date(profile.subscription_expiry);
+            const now = new Date();
+            if (expiryDate < now && !isNaN(expiryDate.getTime())) {
+                baseLimit = 20;
+            }
         }
 
         const totalLimit = baseLimit + (profile.extra_paid_listings || 0);
         const currentCount = count || 0;
+
+        // Calculate next reset date
+        const nextResetDate = new Date(periodStart.getTime() + 30 * 24 * 60 * 60 * 1000);
 
         return {
             canAdd: currentCount < totalLimit,
@@ -871,11 +946,12 @@ export const checkUserListingLimit = async (userId) => {
             currentCount: currentCount,
             tier: tier,
             isUnlimited: tier === 'unlimited',
-            remaining: Math.max(0, totalLimit - currentCount)
+            remaining: Math.max(0, totalLimit - currentCount),
+            nextResetDate: nextResetDate.toISOString(),
+            periodStart: periodStart.toISOString()
         };
     } catch (error) {
         console.error('Error checking listing limit:', error);
-        // Fallback to allowing in case of error, but log it
         return { canAdd: true, limit: 20, currentCount: 0, tier: 'free' };
     }
 };

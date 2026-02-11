@@ -1,37 +1,77 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { t } from '../../translations';
-import { formatLastSeen, MessageModal, ListingCard } from '../../components';
+import { formatLastSeen, MessageModal, ListingCard, Breadcrumb } from '../../components';
 import LoadingSpinner from '../LoadingSpinner';
+import SEO from '../../SEO';
+import VerifiedBadge from '../VerifiedBadge';
 import { applyPromotionExpiry } from '../../api/listings';
 import { followUser, unfollowUser, isFollowing, getFollowersCount } from '../../api/follows';
 import { getRatings, getUserAverageRating } from '../../api/ratings';
+import { getOptimizedImageUrl } from '../../utils/imageUtils';
 
 const StorePage = ({ sellerId: propSellerId }) => {
     const params = useParams();
     const sellerId = propSellerId || params.sellerId; // Prioritize prop (from SmartRoute) over params
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useAuth();
-    const [storeInfo, setStoreInfo] = useState(null);
-    const [listings, setListings] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [isRedirecting, setIsRedirecting] = useState(false);
-    const [showHours, setShowHours] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState('All');
-    const [isFollowingSeller, setIsFollowingSeller] = useState(false);
-    const [followersCount, setFollowersCount] = useState(0);
-    const [showMessageModal, setShowMessageModal] = useState(false);
-    const [ratings, setRatings] = useState([]);
-    const [averageRating, setAverageRating] = useState({ average: 0, count: 0 });
-    const [activeTab, setActiveTab] = useState('listings'); // 'listings' or 'ratings'
-    const [userStats, setUserStats] = useState(null);
 
     const [currentTime, setCurrentTime] = useState(new Date());
     const [showMobileShare, setShowMobileShare] = useState(false);
     const hoursDropdownRef = useRef(null);
     const shareDropdownRef = useRef(null);
+
+    // Cache Helpers
+    const CACHE_KEY = `store_page_${sellerId}`;
+    const getCachedStoreData = () => {
+        try {
+            const saved = sessionStorage.getItem(CACHE_KEY);
+            return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+            console.error('Error parsing store cache:', e);
+            return null;
+        }
+    };
+
+    const cachedData = getCachedStoreData();
+
+    // Initialize state from cache if available
+    const [storeInfo, setStoreInfo] = useState(location.state?.sellerProfile || cachedData?.storeInfo || null);
+    const [listings, setListings] = useState(cachedData?.listings || []);
+    const [loading, setLoading] = useState(!cachedData?.storeInfo); // Only show loading if no cache
+    const [isRedirecting, setIsRedirecting] = useState(false);
+    const [showHours, setShowHours] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [isFollowingSeller, setIsFollowingSeller] = useState(cachedData?.isFollowingSeller || false);
+    const [followersCount, setFollowersCount] = useState(cachedData?.followersCount || 0);
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [ratings, setRatings] = useState(cachedData?.ratings || []);
+    const [averageRating, setAverageRating] = useState(cachedData?.averageRating || { average: 0, count: 0 });
+    const [activeTab, setActiveTab] = useState('listings');
+    const [userStats, setUserStats] = useState(cachedData?.userStats || null);
+
+    // Save to cache whenever data changes
+    useEffect(() => {
+        if (storeInfo) {
+            const dataToCache = {
+                storeInfo,
+                listings,
+                ratings,
+                averageRating,
+                userStats,
+                followersCount,
+                isFollowingSeller
+            };
+            try {
+                sessionStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
+            } catch (e) {
+                console.warn('Could not save store data to cache:', e);
+            }
+        }
+    }, [storeInfo, listings, ratings, averageRating, userStats, followersCount, isFollowingSeller, CACHE_KEY]);
 
     // Handle click outside to close dropdowns
     useEffect(() => {
@@ -77,6 +117,9 @@ const StorePage = ({ sellerId: propSellerId }) => {
     useEffect(() => {
         const fetchStoreData = async () => {
             try {
+                // If we don't have cache, show loading
+                if (!storeInfo) setLoading(true);
+
                 // Fetch store/profile info
                 const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sellerId);
 
@@ -96,7 +139,9 @@ const StorePage = ({ sellerId: propSellerId }) => {
                 }
 
                 const actualSellerId = profile.id;
-                setStoreInfo(profile);
+
+                // Update store info
+                setStoreInfo(prev => JSON.stringify(prev) !== JSON.stringify(profile) ? profile : prev);
 
                 // Fetch stats only if the viewing user is the owner
                 if (user?.id === actualSellerId) {
@@ -111,12 +156,10 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
                 if (isUuid && profile.store_slug) {
                     setIsRedirecting(true);
-                    // Force a hard redirect or use replace to prevent history stack buildup
-                    window.location.replace(`/${profile.store_slug}`);
+                    // Use react-router navigate instead of window.location.replace to prevent full page reload
+                    navigate(`/${profile.store_slug}`, { replace: true, state: { sellerProfile: profile } });
                     return;
                 }
-
-                setStoreInfo(profile);
 
                 // Fetch store listings
                 const { data: storeListings, error: listingsError } = await supabase
@@ -128,7 +171,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
                 if (listingsError) throw listingsError;
                 const processedListings = (storeListings || []).map(l => applyPromotionExpiry(l));
-                setListings(processedListings);
+                setListings(prev => JSON.stringify(prev) !== JSON.stringify(processedListings) ? processedListings : prev);
 
                 // Fetch ratings using actual UUID
                 const ratingsData = await getRatings(actualSellerId);
@@ -136,6 +179,16 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
                 const avgData = await getUserAverageRating(actualSellerId);
                 setAverageRating(avgData);
+
+                // Fetch follow status logic is moved inside here to happen in parallel/sequence
+                try {
+                    const following = await isFollowing(actualSellerId);
+                    setIsFollowingSeller(following);
+                    const count = await getFollowersCount(actualSellerId);
+                    setFollowersCount(count);
+                } catch (followErr) {
+                    console.error(followErr);
+                }
 
                 // Only set loading false if we are staying on this page
                 setLoading(false);
@@ -148,7 +201,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
         if (sellerId) {
             fetchStoreData();
         }
-    }, [sellerId]);
+    }, [sellerId, user?.id]); // Added user?.id dependency
 
     // Calculate category counts
     const categoryCounts = listings.reduce((acc, curr) => {
@@ -262,20 +315,47 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
     if (!storeInfo) {
         return (
-            <div className="max-w-[1400px] mx-auto px-4 py-12 text-center">
-                <h2 className="text-2xl font-bold text-gray-900">Mağaza bulunamadı.</h2>
+            <div className="flex flex-col items-center justify-center min-h-[600px] text-center p-4 transition-colors">
+                <div className="w-24 h-24 bg-red-50 dark:bg-red-900/10 rounded-full flex items-center justify-center text-red-500 mb-6 mx-auto">
+                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-50">Mağaza bulunamadı.</h2>
+                <p className="text-gray-500 dark:text-neutral-400 mt-2 mb-8">Aradığınız mağaza silinmiş veya adresi değişmiş olabilir.</p>
+                <button
+                    onClick={() => navigate('/')}
+                    className="px-8 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all active:scale-95"
+                >
+                    Ana Sayfaya Dön
+                </button>
             </div>
         );
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen pb-12">
+        <div className="bg-gray-50 dark:bg-neutral-950 min-h-screen pb-12 transition-colors">
+            <SEO
+                title={storeInfo.store_name || storeInfo.full_name}
+                description={`${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de ziyaret edin. ${listings.length} aktif ilan, uygun fiyatlar ve güvenli alışveriş.`}
+                image={storeInfo.store_logo || storeInfo.avatar_url}
+            />
+
+            {/* Breadcrumb section */}
+            <div className="max-w-[1400px] mx-auto px-4 pt-4 -mb-2">
+                <Breadcrumb
+                    items={[
+                        { label: 'ExVitrin', path: '/' },
+                        { label: storeInfo.store_name || storeInfo.full_name, isActive: true }
+                    ]}
+                />
+            </div>
             {/* Store Banner - Constrained Width & Balanced Height */}
             <div className="max-w-[1400px] mx-auto px-0 md:px-4 pt-0 md:pt-6">
                 <div className="relative h-56 md:h-[240px] bg-gray-200 overflow-hidden md:rounded-2xl md:shadow-xl md:border-4 md:border-white">
                     {storeInfo.store_banner ? (
                         <img
-                            src={storeInfo.store_banner}
+                            src={getOptimizedImageUrl(storeInfo.store_banner, 1400, 480, 'cover')}
                             alt={storeInfo.store_name}
                             className="w-full h-full object-cover"
                         />
@@ -297,7 +377,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             </button>
 
                             {showMobileShare && (
-                                <div className="absolute right-0 top-full -mt-1 w-40 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-1.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="absolute right-0 top-full -mt-1 w-40 bg-white/95 dark:bg-neutral-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 p-1.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div className="flex flex-col gap-0.5">
                                         <button
                                             onClick={() => {
@@ -305,7 +385,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
                                                 setShowMobileShare(false);
                                             }}
-                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-neutral-300 transition-colors"
                                         >
                                             <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white shrink-0">
                                                 <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
@@ -322,7 +402,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
                                                 setShowMobileShare(false);
                                             }}
-                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-neutral-300 transition-colors"
                                         >
                                             <div className="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center text-white shrink-0">
                                                 <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
@@ -339,7 +419,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
                                                 setShowMobileShare(false);
                                             }}
-                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-neutral-300 transition-colors"
                                         >
                                             <div className="w-7 h-7 bg-black rounded-lg flex items-center justify-center text-white shrink-0">
                                                 <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 1200 1227">
@@ -356,7 +436,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 });
                                                 setShowMobileShare(false);
                                             }}
-                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition-colors"
+                                            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-neutral-300 transition-colors"
                                         >
                                             <div className="w-7 h-7 bg-gray-200 rounded-lg flex items-center justify-center text-gray-600 shrink-0">
                                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -371,11 +451,15 @@ const StorePage = ({ sellerId: propSellerId }) => {
                         </div>
                         <div className="w-full flex flex-row items-center md:items-end gap-3 md:gap-8 text-white text-left">
                             <div className="relative shrink-0">
-                                <img
-                                    src={storeInfo.store_logo || storeInfo.avatar_url || 'https://i.pravatar.cc/150'}
-                                    alt={storeInfo.store_name}
-                                    className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-xl md:rounded-2xl border-2 md:border-4 border-white shadow-2xl object-cover bg-white transform hover:scale-105 transition-transform duration-500"
-                                />
+                                {(storeInfo.store_logo || storeInfo.avatar_url) ? (
+                                    <img
+                                        src={getOptimizedImageUrl(storeInfo.store_logo || storeInfo.avatar_url, 300, 300, 'cover')}
+                                        alt={storeInfo.store_name}
+                                        className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-xl md:rounded-2xl border-2 md:border-4 border-white dark:border-neutral-800 shadow-2xl object-cover bg-white dark:bg-neutral-800 transform hover:scale-105 transition-transform duration-500"
+                                    />
+                                ) : (
+                                    <div className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-xl md:rounded-2xl border-2 md:border-4 border-white dark:border-neutral-800 shadow-2xl bg-white/10 dark:bg-neutral-800/10 backdrop-blur-md"></div>
+                                )}
                                 {storeInfo.is_pro && (
                                     <div className="absolute -top-2 -right-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white text-[8px] md:text-xs uppercase font-black px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-xl border border-white">
                                         PRO
@@ -384,9 +468,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             </div>
 
                             <div className="flex-1 pb-0.5 sm:pb-1 min-w-0">
-                                <h1 className="text-xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 sm:mb-2 drop-shadow-2xl truncate">
-                                    {storeInfo.store_name || storeInfo.full_name}
-                                </h1>
+                                <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                                    <h1 className="text-xl sm:text-3xl md:text-4xl font-black tracking-tight drop-shadow-2xl truncate">
+                                        {storeInfo.store_name || storeInfo.full_name}
+                                    </h1>
+                                    <VerifiedBadge isVerified={storeInfo.is_verified} size="lg" />
+                                </div>
                                 <div className="flex flex-wrap items-center justify-start gap-2 sm:gap-3">
                                     <p className="text-red-100 font-bold text-[10px] sm:text-base flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/10 shadow-lg">
                                         {storeInfo.city && (
@@ -492,7 +579,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
             {/* Store Info Panel - Separate High Visibility Panel */}
             <div className="relative z-20 mt-0 md:mt-4 max-w-[1400px] mx-auto px-0 md:px-4 mb-0 sm:mb-8">
-                <div className="bg-white md:rounded-xl md:shadow-md md:border border-gray-100 p-4 md:p-6 shadow-sm">
+                <div className="bg-white dark:bg-neutral-900 md:rounded-xl md:shadow-md md:border border-gray-100 dark:border-white/5 p-4 md:p-6 shadow-sm">
                     <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-6">
                         <div className="flex flex-wrap items-center gap-6 md:gap-10">
                             {storeInfo.phone && (
@@ -503,8 +590,8 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Telefon</p>
-                                        <p className="text-sm font-bold text-gray-900">{storeInfo.phone}</p>
+                                        <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-bold uppercase tracking-wider mb-0.5">Telefon</p>
+                                        <p className="text-sm font-bold text-gray-900 dark:text-neutral-50">{storeInfo.phone}</p>
                                     </div>
                                 </div>
                             )}
@@ -518,8 +605,8 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Adres</p>
-                                        <p className="text-sm font-bold text-gray-900">
+                                        <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-bold uppercase tracking-wider mb-0.5">Adres</p>
+                                        <p className="text-sm font-bold text-gray-900 dark:text-neutral-50">
                                             {storeInfo.street ? `${storeInfo.street}, ` : ''}
                                             {storeInfo.city || ''}
                                         </p>
@@ -535,12 +622,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Web Sitesi</p>
+                                        <p className="text-[10px] text-gray-400 dark:text-neutral-500 font-bold uppercase tracking-wider mb-0.5">Web Sitesi</p>
                                         <a
                                             href={storeInfo.website.startsWith('http') ? storeInfo.website : `https://${storeInfo.website}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-sm font-bold text-gray-900 hover:text-red-500 transition-colors block"
+                                            className="text-sm font-bold text-gray-900 dark:text-neutral-50 hover:text-red-500 transition-colors block"
                                         >
                                             {storeInfo.website.replace(/^https?:\/\//, '')}
                                         </a>
@@ -550,7 +637,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                         </div>
 
                         <div className="flex items-center gap-3 group relative" ref={hoursDropdownRef}>
-                            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all shadow-sm group-hover:scale-105 duration-300 cursor-pointer">
+                            <div className="w-10 h-10 bg-green-50 dark:bg-green-900/10 rounded-xl flex items-center justify-center text-green-500 group-hover:bg-green-500 dark:group-hover:bg-green-600 group-hover:text-white transition-all shadow-sm group-hover:scale-105 duration-300 cursor-pointer">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -563,7 +650,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <p className="text-sm font-bold text-gray-900">
+                                    <p className="text-sm font-bold text-gray-900 dark:text-neutral-100">
                                         {(() => {
                                             if (storeInfo.working_hours?.isAlwaysOpen) return '7/24 Açık';
                                             const now = currentTime;
@@ -576,25 +663,25 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                             return 'Kapalı';
                                         })()}
                                     </p>
-                                    <svg className={`w-3.5 h-3.5 text-gray-400 transform transition-transform duration-300 ${showHours ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className={`w-3.5 h-3.5 text-gray-400 dark:text-neutral-500 transform transition-transform duration-300 ${showHours ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
 
                                 {showHours && (
-                                    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-4 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                                        <h4 className="text-[10px] font-black text-gray-900 border-b border-gray-100 pb-2 mb-3 uppercase tracking-wider flex items-center justify-between">
+                                    <div className="absolute top-full left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[calc(100vw-32px)] bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-gray-100 dark:border-white/5 p-4 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                                        <h4 className="text-[10px] font-black text-gray-900 dark:text-neutral-100 border-b border-gray-100 dark:border-white/5 pb-2 mb-3 uppercase tracking-wider flex items-center justify-between">
                                             <span>Haftalık Program</span>
-                                            <span className={`${isOpen ? 'text-green-500 bg-green-50' : 'text-red-500 bg-red-50'} text-[10px] px-2 py-0.5 rounded-full uppercase`}>
+                                            <span className={`${isOpen ? 'text-green-500 bg-green-50 dark:bg-green-900/10' : 'text-red-500 bg-red-50 dark:bg-red-900/10'} text-[10px] px-2 py-0.5 rounded-full uppercase`}>
                                                 {isOpen ? 'AÇIK' : 'KAPALI'}
                                             </span>
                                         </h4>
                                         <div className="space-y-1.5">
                                             {storeInfo.working_hours?.isAlwaysOpen ? (
-                                                <div className="p-4 bg-green-50 rounded-xl border border-green-100 text-center">
+                                                <div className="p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-500/20 text-center">
                                                     <span className="text-xl mb-2 block">🌍</span>
-                                                    <p className="text-[11px] font-black text-green-700 uppercase tracking-tight">7/24 Sürekli Açık</p>
-                                                    <p className="text-[10px] text-green-600 mt-1 leading-tight">Bu mağaza haftanın her günü kesintisiz hizmet vermektedir.</p>
+                                                    <p className="text-[11px] font-black text-green-700 dark:text-green-400 uppercase tracking-tight">7/24 Sürekli Açık</p>
+                                                    <p className="text-[10px] text-green-600 dark:text-green-500 mt-1 leading-tight">Bu mağaza haftanın her günü kesintisiz hizmet vermektedir.</p>
                                                 </div>
                                             ) : (
                                                 [
@@ -611,7 +698,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                     const isToday = new Date().getDay() === dayIndex;
 
                                                     return (
-                                                        <div key={idx} className={`flex justify-between items-center text-[11px] font-medium ${isToday ? 'text-gray-900 bg-gray-50 -mx-2 px-2 py-1.5 rounded-lg' : 'text-gray-500'}`}>
+                                                        <div key={idx} className={`flex justify-between items-center text-[11px] font-medium ${isToday ? 'text-gray-900 dark:text-neutral-100 bg-gray-50 dark:bg-white/5 -mx-2 px-2 py-1.5 rounded-lg' : 'text-gray-500 dark:text-neutral-400'}`}>
                                                             <span>{item.day}</span>
                                                             <span className={isToday ? 'font-black' : ''}>
                                                                 {schedule?.active ? `${schedule.open} - ${schedule.close}` : 'Kapalı'}
@@ -636,16 +723,16 @@ const StorePage = ({ sellerId: propSellerId }) => {
                         {/* Store Owner Subscription Info Panel */}
 
                         {/* Seller Profile Card - Desktop Only */}
-                        <div className="hidden lg:block bg-white rounded-2xl shadow-xl border border-gray-100 p-8 overflow-hidden relative group">
+                        <div className="hidden lg:block bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-gray-100 dark:border-white/5 p-8 overflow-hidden relative group">
                             {/* Decorative Background */}
-                            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-gray-50 to-gray-100 -z-10"></div>
+                            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-white/5 dark:to-white/10 -z-10"></div>
 
                             <div className="flex flex-col items-center">
                                 <div className="relative mb-4">
                                     <img
                                         src={storeInfo.store_logo || storeInfo.avatar_url || 'https://i.pravatar.cc/150'}
                                         alt={storeInfo.store_name}
-                                        className="w-24 h-24 rounded-2xl border-4 border-white shadow-lg object-cover bg-white"
+                                        className="w-24 h-24 rounded-2xl border-4 border-white dark:border-neutral-800 shadow-lg object-cover bg-white dark:bg-neutral-800"
                                     />
                                     {storeInfo.is_pro && (
                                         <div className="absolute -bottom-2 -right-2 bg-blue-500 text-white text-[10px] uppercase font-black px-2 py-0.5 rounded-full shadow-lg border-2 border-white">
@@ -654,11 +741,14 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                     )}
                                 </div>
 
-                                <h3 className="text-xl font-black text-gray-900 text-center mb-1 group-hover:text-red-600 transition-colors">
-                                    {storeInfo.store_name || storeInfo.full_name}
-                                </h3>
+                                <div className="flex items-center justify-center gap-2 mb-1">
+                                    <h3 className="text-xl font-black text-gray-900 dark:text-neutral-100 group-hover:text-red-600 transition-colors">
+                                        {storeInfo.store_name || storeInfo.full_name}
+                                    </h3>
+                                    <VerifiedBadge isVerified={storeInfo.is_verified} size="md" />
+                                </div>
 
-                                <p className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-4">
+                                <p className="text-[11px] font-bold text-gray-600 dark:text-neutral-500 uppercase tracking-widest mb-4">
                                     {new Date(storeInfo.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}'den beri üye
                                 </p>
 
@@ -675,27 +765,30 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                             </svg>
                                         ))}
                                     </div>
-                                    <p className="text-sm font-bold text-gray-700">
+                                    <p className="text-sm font-bold text-gray-700 dark:text-neutral-300">
                                         {averageRating.average}
                                     </p>
                                 </div>
 
                                 <div className="flex items-center gap-6 mb-6">
                                     <div className="text-center">
-                                        <p className="text-lg font-black text-gray-900 leading-none">{listings.length}</p>
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase mt-1">İlan</p>
+                                        <p className="text-lg font-black text-gray-900 dark:text-neutral-100 leading-none">{listings.length}</p>
+                                        <p className="text-[10px] font-bold text-gray-500 dark:text-neutral-500 uppercase mt-1">İlan</p>
                                     </div>
-                                    <div className="w-px h-8 bg-gray-100"></div>
-                                    <div className="text-center">
-                                        <p className="text-lg font-black text-gray-900 leading-none">{followersCount}</p>
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase mt-1">Takipçi</p>
+                                    <div className="w-px h-8 bg-gray-100 dark:bg-white/5"></div>
+                                    <div
+                                        onClick={() => user?.id === storeInfo.id && navigate('/followers')}
+                                        className={`text-center ${user?.id === storeInfo.id ? 'cursor-pointer hover:opacity-70 transition-all' : ''}`}
+                                    >
+                                        <p className="text-lg font-black text-gray-900 dark:text-neutral-100 leading-none">{followersCount}</p>
+                                        <p className="text-[10px] font-bold text-gray-500 dark:text-neutral-500 uppercase mt-1">Takipçi</p>
                                     </div>
                                 </div>
 
                                 <div className="w-full space-y-3">
                                     <button
                                         onClick={() => setShowMessageModal(true)}
-                                        className="w-full bg-white text-gray-900 font-bold py-3 rounded-xl border-2 border-gray-900 hover:bg-gray-900 hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
+                                        className="w-full bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-100 font-bold py-3 rounded-xl border-2 border-gray-900 dark:border-white/10 hover:bg-gray-900 dark:hover:bg-neutral-700 hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
                                     >
                                         <svg className="w-5 h-5 group-hover/btn:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h0.01M12 10h0.01M16 10h0.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -706,8 +799,8 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                     <button
                                         onClick={handleFollowToggle}
                                         className={`w-full font-black py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 border-2 ${isFollowingSeller
-                                            ? 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-red-50 hover:border-red-200 hover:text-red-600'
-                                            : 'bg-white border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white'
+                                            ? 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-neutral-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:border-red-200 hover:text-red-600'
+                                            : 'bg-white dark:bg-neutral-800 border-gray-900 dark:border-white/20 text-gray-900 dark:text-neutral-100 hover:bg-gray-900 dark:hover:bg-neutral-700 hover:text-white'
                                             }`}
                                     >
                                         {isFollowingSeller ? (
@@ -732,18 +825,18 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
                         {/* Categories Filter - Only show if Listings tab is active */}
                         {activeTab === 'listings' && (
-                            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4 tracking-tight">Kategoriler</h3>
+                            <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-white/5 transition-colors">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4 tracking-tight">Kategoriler</h3>
                                 <nav className="space-y-1">
                                     <button
                                         onClick={() => setSelectedCategory('All')}
                                         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group ${selectedCategory === 'All'
-                                            ? 'bg-red-50 text-red-600 font-bold'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                            ? 'bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold'
+                                            : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-neutral-100'
                                             }`}
                                     >
                                         <span className="text-sm">Tüm İlanlar</span>
-                                        <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === 'All' ? 'bg-red-200 text-red-700' : 'bg-gray-100 text-gray-500'}`}>
+                                        <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === 'All' ? 'bg-red-200 dark:bg-red-900/40 text-red-700 dark:text-red-300' : 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-neutral-400'}`}>
                                             {listings.length}
                                         </span>
                                     </button>
@@ -752,12 +845,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         <button
                                             onClick={() => setSelectedCategory('Free')}
                                             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group ${selectedCategory === 'Free'
-                                                ? 'bg-green-50 text-green-600 font-bold'
-                                                : 'text-gray-600 hover:bg-green-50/50 hover:text-green-700'
+                                                ? 'bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-400 font-bold'
+                                                : 'text-gray-600 dark:text-neutral-400 hover:bg-green-50/50 dark:hover:bg-green-900/10 hover:text-green-700 dark:hover:text-green-300'
                                                 }`}
                                         >
                                             <span className="text-sm font-medium">🎁 Ücretsiz İlanlar</span>
-                                            <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === 'Free' ? 'bg-green-200 text-green-700' : 'bg-green-100 text-green-600'}`}>
+                                            <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === 'Free' ? 'bg-green-200 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'}`}>
                                                 {freeListingsCount}
                                             </span>
                                         </button>
@@ -767,12 +860,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                             key={category}
                                             onClick={() => setSelectedCategory(category)}
                                             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group ${selectedCategory === category
-                                                ? 'bg-red-50 text-red-600 font-bold'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                ? 'bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold'
+                                                : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-neutral-100'
                                                 }`}
                                         >
                                             <span className="text-sm truncate mr-2">{category}</span>
-                                            <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === category ? 'bg-red-200 text-red-700' : 'bg-gray-100 text-gray-500'}`}>
+                                            <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === category ? 'bg-red-200 dark:bg-red-900/40 text-red-700 dark:text-red-300' : 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-neutral-400'}`}>
                                                 {count}
                                             </span>
                                         </button>
@@ -784,9 +877,9 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
 
                         {storeInfo.legal_info && (
-                            <div className="hidden lg:block bg-gray-100 rounded-xl p-6 border border-gray-200">
-                                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">Yasal Künye</h3>
-                                <p className="text-xs text-gray-500 whitespace-pre-wrap">{storeInfo.legal_info}</p>
+                            <div className="hidden lg:block bg-gray-100 dark:bg-neutral-900/50 rounded-xl p-6 border border-gray-200 dark:border-white/5 transition-colors">
+                                <h3 className="text-sm font-bold text-gray-700 dark:text-neutral-300 uppercase tracking-wider mb-3">Yasal Künye</h3>
+                                <p className="text-xs text-gray-500 dark:text-neutral-400 whitespace-pre-wrap">{storeInfo.legal_info}</p>
                             </div>
                         )}
                     </div>
@@ -794,12 +887,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
                     {/* Listings Grid or Ratings List */}
                     <div className="lg:col-span-3">
                         {/* Tabs */}
-                        <div className="flex items-center gap-6 mb-6 border-b border-gray-200">
+                        <div className="flex items-center gap-6 mb-6 border-b border-gray-200 dark:border-white/10 transition-colors">
                             <button
                                 onClick={() => setActiveTab('listings')}
                                 className={`pb-4 text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === 'listings'
                                     ? 'text-red-600'
-                                    : 'text-gray-500 hover:text-gray-900'
+                                    : 'text-gray-500 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-neutral-100'
                                     }`}
                             >
                                 İlanlar ({listings.length})
@@ -811,7 +904,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                 onClick={() => setActiveTab('ratings')}
                                 className={`pb-4 text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === 'ratings'
                                     ? 'text-red-600'
-                                    : 'text-gray-500 hover:text-gray-900'
+                                    : 'text-gray-500 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-neutral-100'
                                     }`}
                             >
                                 Değerlendirmeler ({averageRating.count})
@@ -823,17 +916,17 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
                         {activeTab === 'listings' ? (
                             <>
-                                <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-2xl font-bold text-gray-900">
+                                <div className="flex items-center justify-between mb-6 transition-colors">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-50">
                                         {selectedCategory === 'All' ? 'Mağazadaki İlanlar' : `${selectedCategory} İlanları`}
                                     </h2>
-                                    <span className="text-sm text-gray-500 font-medium">{filteredListings.length} sonuç</span>
+                                    <span className="text-sm text-gray-500 dark:text-neutral-400 font-medium">{filteredListings.length} sonuç</span>
                                 </div>
 
                                 {filteredListings.length === 0 ? (
-                                    <div className="bg-white rounded-xl p-12 text-center border-2 border-dashed border-gray-200">
+                                    <div className="bg-white dark:bg-neutral-900 rounded-xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-white/5 transition-colors">
                                         <div className="text-4xl mb-4">📦</div>
-                                        <p className="text-gray-500 font-medium">Bu kategoride henüz ilan bulunmuyor.</p>
+                                        <p className="text-gray-500 dark:text-neutral-400 font-medium">Bu kategoride henüz ilan bulunmuyor.</p>
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-6">
@@ -848,38 +941,38 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             </>
                         ) : (
                             /* RATINGS LIST */
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Değerlendirmeler</h2>
-                                <div className="flex items-center gap-8 mb-8 bg-gray-50 p-6 rounded-xl">
+                            <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 p-6 transition-colors">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-50 mb-6">Değerlendirmeler</h2>
+                                <div className="flex items-center gap-8 mb-8 bg-gray-50 dark:bg-neutral-800/50 p-6 rounded-xl">
                                     <div className="text-center">
-                                        <div className="text-5xl font-black text-gray-900 mb-1">{averageRating.average}</div>
+                                        <div className="text-5xl font-black text-gray-900 dark:text-neutral-100 mb-1">{averageRating.average}</div>
                                         <div className="flex items-center gap-1 justify-center mb-1">
                                             {[1, 2, 3, 4, 5].map((star) => (
                                                 <svg
                                                     key={star}
-                                                    className={`w-6 h-6 ${star <= Math.round(averageRating.average) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                                                    className={`w-6 h-6 ${star <= Math.round(averageRating.average) ? 'text-yellow-400 fill-current' : 'text-gray-300 dark:text-neutral-700'}`}
                                                     viewBox="0 0 24 24"
                                                 >
                                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                                                 </svg>
                                             ))}
                                         </div>
-                                        <p className="text-sm text-gray-500">{averageRating.count} Değerlendirme</p>
+                                        <p className="text-sm text-gray-500 dark:text-neutral-400">{averageRating.count} Değerlendirme</p>
                                     </div>
-                                    <div className="flex-1 border-l border-gray-200 pl-8">
+                                    <div className="flex-1 border-l border-gray-200 dark:border-white/10 pl-8">
                                         {[5, 4, 3, 2, 1].map((star) => {
                                             const count = ratings.filter(r => r.rating === star).length;
                                             const percentage = ratings.length > 0 ? (count / ratings.length) * 100 : 0;
                                             return (
                                                 <div key={star} className="flex items-center gap-3 mb-2">
-                                                    <div className="flex items-center gap-1 w-12 text-sm font-bold text-gray-600">
+                                                    <div className="flex items-center gap-1 w-12 text-sm font-bold text-gray-600 dark:text-neutral-400">
                                                         <span>{star}</span>
                                                         <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
                                                     </div>
-                                                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                    <div className="flex-1 h-2 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
                                                         <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${percentage}%` }}></div>
                                                     </div>
-                                                    <div className="w-8 text-xs text-gray-400 text-right">{count}</div>
+                                                    <div className="w-8 text-xs text-gray-400 dark:text-neutral-500 text-right">{count}</div>
                                                 </div>
                                             );
                                         })}
@@ -888,28 +981,28 @@ const StorePage = ({ sellerId: propSellerId }) => {
 
                                 <div className="space-y-6">
                                     {ratings.length === 0 ? (
-                                        <div className="text-center py-12 text-gray-500">
+                                        <div className="text-center py-12 text-gray-500 dark:text-neutral-400">
                                             <p>Henüz değerlendirme yapılmamış.</p>
                                         </div>
                                     ) : (
                                         ratings.map((rating) => (
-                                            <div key={rating.id} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
+                                            <div key={rating.id} className="border-b border-gray-100 dark:border-white/5 last:border-0 pb-6 last:pb-0">
                                                 <div className="flex items-start gap-4">
                                                     <img
                                                         src={rating.rater?.store_logo || rating.rater?.avatar_url || 'https://i.pravatar.cc/150'}
                                                         alt={rating.rater?.full_name || 'Kullanıcı'}
-                                                        className="w-12 h-12 rounded-full object-cover bg-gray-100"
+                                                        className="w-12 h-12 rounded-full object-cover bg-gray-100 dark:bg-neutral-800"
                                                     />
                                                     <div className="flex-1">
                                                         <div className="flex items-center justify-between mb-1">
-                                                            <h4 className="font-bold text-gray-900">{rating.rater?.full_name || 'Kullanıcı'}</h4>
-                                                            <span className="text-xs text-gray-400">{new Date(rating.created_at).toLocaleDateString('tr-TR')}</span>
+                                                            <h4 className="font-bold text-gray-900 dark:text-neutral-100">{rating.rater?.full_name || 'Kullanıcı'}</h4>
+                                                            <span className="text-xs text-gray-400 dark:text-neutral-500">{new Date(rating.created_at).toLocaleDateString('tr-TR')}</span>
                                                         </div>
                                                         <div className="flex items-center gap-1 mb-2">
                                                             {[1, 2, 3, 4, 5].map((star) => (
                                                                 <svg
                                                                     key={star}
-                                                                    className={`w-4 h-4 ${star <= rating.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                                                                    className={`w-4 h-4 ${star <= rating.rating ? 'text-yellow-400 fill-current' : 'text-gray-300 dark:text-neutral-700'}`}
                                                                     viewBox="0 0 24 24"
                                                                 >
                                                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -917,7 +1010,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                             ))}
                                                         </div>
                                                         {rating.comment && (
-                                                            <p className="text-gray-600 text-sm leading-relaxed">{rating.comment}</p>
+                                                            <p className="text-gray-600 dark:text-neutral-400 text-sm leading-relaxed">{rating.comment}</p>
                                                         )}
                                                     </div>
                                                 </div>
@@ -940,12 +1033,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
             />
 
             {/* Mobile Bottom Bar (Sticky) - Positioned above main MobileBottomNavigation (h-16) */}
-            <div className="lg:hidden fixed bottom-16 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 p-3 z-[9998] flex items-center gap-3 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
+            <div className="lg:hidden fixed bottom-16 left-0 right-0 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border-t border-gray-100 dark:border-white/5 p-3 z-[9998] flex items-center gap-3 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] transition-colors">
                 <button
                     onClick={handleFollowToggle}
                     className={`flex-1 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 border-2 text-sm shadow-sm ${isFollowingSeller
-                        ? 'bg-gray-50 border-gray-200 text-gray-600'
-                        : 'bg-white border-gray-900 text-gray-900'
+                        ? 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-600 dark:text-neutral-400'
+                        : 'bg-white dark:bg-neutral-800 border-gray-900 dark:border-white/20 text-gray-900 dark:text-neutral-100'
                         }`}
                 >
                     {isFollowingSeller ? (
@@ -974,7 +1067,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                     Mesaj Gönder
                 </button>
             </div>
-        </div>
+        </div >
     );
 };
 

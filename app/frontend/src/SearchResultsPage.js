@@ -6,6 +6,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from './api/savedSearches';
 import { useAuth } from './contexts/AuthContext';
 import { getTurkishCities, getCategoryTranslation, t } from './translations';
+import { SKELETON_CONFIG } from './config/skeletonConfig';
+import { ListingGridSkeleton } from './components/skeletons/ListingCardSkeleton';
 
 const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     const categories = [
@@ -108,6 +110,21 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     const [cityCounts, setCityCounts] = useState({});
     const [showFilters, setShowFilters] = useState(false);
     const { user } = useAuth();
+
+    // -- Mobile Search Panel Logic --
+    const [searchQuery, setSearchQuery] = useState(query);
+    useEffect(() => setSearchQuery(query), [query]);
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        const params = new URLSearchParams(searchParams);
+        if (searchQuery.trim()) {
+            params.set('q', searchQuery.trim());
+        } else {
+            params.delete('q');
+        }
+        setSearchParams(params);
+    };
 
     // Sync filters to URL whenever they change
     useEffect(() => {
@@ -290,16 +307,17 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-12">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 pb-12 transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 py-6">
+
 
                 {/* Başlık ve Sonuç Sayısı */}
                 <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 px-0 sm:px-4 md:px-0">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-neutral-100 mb-2">
                             {query ? `"${query}" için arama sonuçları` : 'Tüm İlanlar'}
                         </h1>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 dark:text-neutral-400">
                             {results.length} {results.length === 1 ? 'ilan' : 'ilan'} bulundu
                             {category && category !== 'Tüm Kategoriler' && ` - ${category}`}
                             {location && location !== 'Türkiye' && ` - ${location}`}
@@ -309,48 +327,63 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                     {/* Aramayı Kaydet Butonu */}
                     <button
                         onClick={handleToggleSave}
-                        className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all ${isSaved
-                            ? 'bg-red-50 text-red-600 border border-red-200'
-                            : 'bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg'
-                            }`}
+                        className={`
+                            flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md
+                            /* Mobile Styles: Icon only, circular or small pill */
+                            w-10 h-10 rounded-full p-0
+                            /* Desktop Styles: Full button */
+                            md:w-auto md:h-auto md:px-6 md:py-2 md:rounded-lg md:font-medium
+                            ${isSaved
+                                ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 border border-red-200 dark:border-rose-500/20'
+                                : 'bg-red-500 text-white hover:bg-red-600'
+                            }
+                        `}
+                        title={isSaved ? 'Aramayı Kaydettiniz' : 'Aramayı Kaydet'}
                     >
                         {isSaved ? (
                             <>
                                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
                                 </svg>
-                                Aramayı Kaydettiniz
+                                <span className="hidden md:inline">Aramayı Kaydettiniz</span>
                             </>
                         ) : (
                             <>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                                 </svg>
-                                Aramayı Kaydet
+                                <span className="hidden md:inline">Aramayı Kaydet</span>
                             </>
                         )}
                     </button>
                 </div>
 
-                {/* Mobile/Tablet Filter Button - Fixed to left */}
-                <button
-                    onClick={() => setShowFilters(true)}
-                    className="xl:hidden fixed left-4 top-24 z-[1001] w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center group"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    {(priceRange !== 'all' || condition !== 'all' || sortBy !== 'created_at') && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                            !
-                        </span>
-                    )}
-                </button>
+                <div className="flex items-center gap-3 mb-6 bg-white dark:bg-neutral-800/50 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                    {/* Mobile/Tablet Filter Button */}
+                    <button
+                        onClick={() => setShowFilters(true)}
+                        className="xl:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 group shrink-0"
+                    >
+                        <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        <span className="text-sm font-bold">Filtrele</span>
+                        {(priceRange !== 'all' || condition !== 'all' || sortBy !== 'created_at') && (
+                            <span className="w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                                !
+                            </span>
+                        )}
+                    </button>
+
+                    <div className="flex-1 overflow-hidden">
+                        <Breadcrumb items={breadcrumbItems} />
+                    </div>
+                </div>
 
                 <div className="flex flex-col xl:flex-row gap-8">
                     {/* Filtreler - Mobilde çekmece, Desktop'ta solda */}
                     <aside className={`
-                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-[20%] xl:min-w-[320px] xl:block
                         ${showFilters ? 'block' : 'hidden xl:block'}
                     `}>
                         {/* Mobile Overlay Backdrop */}
@@ -361,13 +394,13 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
 
                         {/* Sidebar Content Column - Balanced width on mobile */}
                         <div className={`
-                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
-                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white dark:bg-neutral-800 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0 border-r dark:border-white/5 xl:border-none
                             ${showFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>
                             {/* Mobile Header */}
-                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
-                                <h3 className="font-bold text-gray-900 text-lg">Filtreleme</h3>
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b dark:border-white/5">
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 text-lg">Filtreleme</h3>
                                 <button
                                     onClick={() => setShowFilters(false)}
                                     className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
@@ -377,17 +410,17 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                     </svg>
                                 </button>
                             </div>
-                            <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtreler</h2>
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-4">Filtreler</h2>
 
                             {/* Sıralama */}
                             <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                                     Sıralama kriteri
                                 </label>
                                 <select
                                     value={`${sortBy}-${sortOrder}`}
                                     onChange={(e) => handleSortChange(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                                    className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 rounded-lg px-3 py-2 text-gray-900 dark:text-neutral-100 focus:ring-2 focus:ring-red-400 dark:focus:ring-rose-500/20 focus:border-transparent"
                                 >
                                     <option value="relevance">Önerilen</option>
                                     <option value="newest">En yeni ilanlar</option>
@@ -398,7 +431,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
 
                             {/* Kategoriler */}
                             <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                                     Kategoriler
                                 </label>
                                 <div className="space-y-1">
@@ -424,14 +457,14 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                                         setSearchParams(params);
                                                     }}
                                                     className={`w-full text-left px-2 py-1.5 rounded-md text-sm transition-colors flex items-center justify-between group ${category === cat.name || (category === 'Tüm Kategoriler' && cat.name === 'Tüm Kategoriler')
-                                                        ? 'bg-red-50 text-red-600 font-medium'
-                                                        : 'text-gray-600 hover:bg-gray-50'
+                                                        ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 font-medium'
+                                                        : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-700'
                                                         }`}
                                                 >
                                                     <div className="flex items-center justify-between w-full">
                                                         <span>{getCategoryTranslation(cat.name)}</span>
                                                         {cat.name !== 'Tüm Kategoriler' && (
-                                                            <span className={`text-xs ${category === cat.name ? 'text-red-500' : 'text-gray-400 opacity-60'}`}>
+                                                            <span className={`text-xs ${category === cat.name ? 'text-red-500 dark:text-rose-500' : 'text-gray-400 dark:text-neutral-500 opacity-60'}`}>
                                                                 {categoryCounts[cat.name] || 0}
                                                             </span>
                                                         )}
@@ -440,7 +473,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
 
                                                 {/* Subcategories - Expanded if main category selected */}
                                                 {category === cat.name && cat.subcategories && cat.subcategories.length > 0 && (
-                                                    <div className="ml-4 pl-3 border-l-2 border-red-100 my-1 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
+                                                    <div className="ml-4 pl-3 border-l-2 border-red-100 dark:border-white/5 my-1 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
                                                         {cat.subcategories.map(sub => (
                                                             <button
                                                                 key={sub}
@@ -448,8 +481,8 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                                                     setSubCategory(sub === subCategory ? '' : sub);
                                                                 }}
                                                                 className={`w-full text-left px-2 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between group ${subCategory === sub
-                                                                    ? 'bg-red-100 text-red-700 font-bold'
-                                                                    : 'text-gray-500 hover:bg-gray-50 hover:text-red-600'
+                                                                    ? 'bg-red-100 dark:bg-rose-500/10 text-red-700 dark:text-rose-400 font-bold'
+                                                                    : 'text-gray-500 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-700 hover:text-red-600 dark:hover:text-rose-400'
                                                                     }`}
                                                             >
                                                                 <span>{getCategoryTranslation(sub)}</span>
@@ -467,45 +500,11 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                 </div>
                             </div>
 
-                            {/* Fiyat Aralığı */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Fiyat
-                                </label>
-                                <div className="space-y-2">
-                                    <label className="flex items-center cursor-pointer group">
-                                        <input
-                                            type="checkbox"
-                                            checked={priceRange === 'all'}
-                                            onChange={() => setPriceRange('all')}
-                                            className="w-4 h-4 text-red-600 border-gray-300 rounded-none focus:ring-red-500"
-                                        />
-                                        <span className="ml-2 text-sm text-gray-700 group-hover:text-red-500 transition-colors">Tüm fiyatlar</span>
-                                    </label>
-                                    {[
-                                        { val: 'under100', label: '100 TL altı' },
-                                        { val: '100-500', label: '100 - 500 TL' },
-                                        { val: '500-1000', label: '500 - 1.000 TL' },
-                                        { val: 'over1000', label: '1.000 TL üstü' }
-                                    ].map((range) => (
-                                        <label key={range.val} className="flex items-center cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                checked={priceRange === range.val}
-                                                onChange={() => setPriceRange(range.val)}
-                                                className="w-4 h-4 text-red-600 border-gray-300 rounded-none focus:ring-red-500"
-                                            />
-                                            <span className={`ml-2 text-sm transition-colors ${priceRange === range.val ? 'text-red-600 font-medium' : 'text-gray-700 group-hover:text-red-500'}`}>
-                                                {range.label}
-                                            </span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
+
 
                             {/* Zustand (Condition) Filter */}
                             <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                                     Durum
                                 </label>
                                 <div className="space-y-2">
@@ -524,9 +523,9 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                                 type="checkbox"
                                                 checked={condition === cond.val}
                                                 onChange={() => setCondition(cond.val)}
-                                                className="w-4 h-4 text-red-600 border-gray-300 rounded-none focus:ring-red-500"
+                                                className="w-4 h-4 text-red-600 dark:text-rose-500 border-gray-300 dark:border-white/10 rounded-none focus:ring-red-500 dark:focus:ring-rose-500/20 dark:bg-neutral-800"
                                             />
-                                            <span className={`ml-2 text-sm transition-colors ${condition === cond.val ? 'text-red-600 font-medium' : 'text-gray-700 group-hover:text-red-500'}`}>
+                                            <span className={`ml-2 text-sm transition-colors ${condition === cond.val ? 'text-red-600 dark:text-rose-500 font-medium' : 'text-gray-700 dark:text-neutral-300 group-hover:text-red-500 dark:group-hover:text-rose-400'}`}>
                                                 {cond.label}
                                             </span>
                                         </label>
@@ -537,7 +536,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                             {/* Konum (Şehirler) */}
                             <div className="mb-6">
                                 <div className="flex items-center justify-between mb-2">
-                                    <label className="block text-sm font-medium text-gray-700">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
                                         Konum
                                     </label>
                                     {(location && location !== 'Türkiye') && (
@@ -547,7 +546,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                                 params.delete('location');
                                                 setSearchParams(params);
                                             }}
-                                            className="text-xs text-red-600 hover:text-red-700 font-medium"
+                                            className="text-xs text-red-600 dark:text-rose-400 hover:text-red-700 dark:hover:text-rose-300 font-medium"
                                         >
                                             Temizle
                                         </button>
@@ -559,14 +558,14 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                         placeholder="Şehir ara..."
                                         value={citySearch}
                                         onChange={(e) => setCitySearch(e.target.value)}
-                                        className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-red-400 focus:border-red-400 outline-none"
+                                        className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-100 rounded-md focus:ring-1 focus:ring-red-400 dark:focus:ring-rose-500/20 focus:border-red-400 outline-none"
                                     />
-                                    <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-4 h-4 text-gray-400 dark:text-neutral-500 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group">
+                                    <label className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-700 p-2 rounded-lg transition-colors group">
                                         <div className="flex items-center gap-2">
                                             <input
                                                 type="checkbox"
@@ -576,9 +575,9 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                                     params.delete('location');
                                                     setSearchParams(params);
                                                 }}
-                                                className="w-4 h-4 text-red-600 border-gray-300 rounded-none focus:ring-red-500"
+                                                className="w-4 h-4 text-red-600 dark:text-rose-500 border-gray-300 dark:border-white/10 rounded-none focus:ring-red-500 dark:focus:ring-rose-500/20 dark:bg-neutral-800"
                                             />
-                                            <span className={`text-sm ${(!location || location === 'Türkiye') ? 'text-red-600 font-medium' : 'text-gray-700'}`}>Tüm Türkiye</span>
+                                            <span className={`text-sm ${(!location || location === 'Türkiye') ? 'text-red-600 dark:text-rose-500 font-medium' : 'text-gray-700 dark:text-neutral-300'}`}>Tüm Türkiye</span>
                                         </div>
                                     </label>
                                     {allCities
@@ -588,7 +587,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                             const isChecked = currentLocations.includes(cityItem);
 
                                             return (
-                                                <label key={cityItem} className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group">
+                                                <label key={cityItem} className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-700 p-2 rounded-lg transition-colors group">
                                                     <div className="flex items-center gap-2">
                                                         <input
                                                             type="checkbox"
@@ -609,11 +608,11 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                                                 }
                                                                 setSearchParams(params);
                                                             }}
-                                                            className="w-4 h-4 text-red-600 border-gray-300 rounded-none focus:ring-red-500"
+                                                            className="w-4 h-4 text-red-600 dark:text-rose-500 border-gray-300 dark:border-white/10 rounded-none focus:ring-red-500 dark:focus:ring-rose-500/20 dark:bg-neutral-800"
                                                         />
-                                                        <span className={`text-sm ${isChecked ? 'text-red-600 font-medium' : 'text-gray-700'}`}>{cityItem}</span>
+                                                        <span className={`text-sm ${isChecked ? 'text-red-600 dark:text-rose-500 font-medium' : 'text-gray-700 dark:text-neutral-300'}`}>{cityItem}</span>
                                                     </div>
-                                                    <span className={`text-xs ${isChecked ? 'text-red-500' : 'text-gray-400 opacity-60'}`}>
+                                                    <span className={`text-xs ${isChecked ? 'text-red-500 dark:text-rose-400' : 'text-gray-400 dark:text-neutral-500 opacity-60'}`}>
                                                         {cityCounts[cityItem] || 0}
                                                     </span>
                                                 </label>
@@ -638,7 +637,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                     if (location) params.set('location', location);
                                     setSearchParams(params);
                                 }}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                className="w-full px-4 py-2 border border-gray-300 dark:border-white/10 rounded-lg text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 Filtreleri temizle
                             </button>
@@ -648,22 +647,28 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                     {/* Sonuçlar - Sağ Taraf */}
                     <div className="flex-1">
                         {loading ? (
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                                <LoadingSpinner size="medium" className="mb-4" />
-                                <p className="text-gray-600">Arama yapılıyor...</p>
+                            <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm border border-gray-200 dark:border-white/5 p-6 md:p-12 text-center">
+                                {SKELETON_CONFIG.enabled ? (
+                                    <ListingGridSkeleton count={10} />
+                                ) : (
+                                    <>
+                                        <LoadingSpinner size="medium" className="mb-4" />
+                                        <p className="text-gray-600 dark:text-neutral-400">Arama yapılıyor...</p>
+                                    </>
+                                )}
                             </div>
                         ) : results.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm border border-gray-200 dark:border-white/5 p-12 text-center">
+                                <svg className="w-16 h-16 text-gray-400 dark:text-neutral-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h0.01M15 10h0.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">Sonuç bulunamadı</h3>
-                                <p className="text-gray-600 mb-4">
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-neutral-100 mb-2">Sonuç bulunamadı</h3>
+                                <p className="text-gray-600 dark:text-neutral-400 mb-4">
                                     Farklı kelimeler veya filtreler kullanarak tekrar deneyin.
                                 </p>
                                 <button
                                     onClick={() => navigate('/')}
-                                    className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                    className="px-6 py-2 bg-red-500 dark:bg-rose-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-rose-700 transition-colors"
                                 >
                                     Ana Sayfaya Dön
                                 </button>

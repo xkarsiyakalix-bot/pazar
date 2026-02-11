@@ -66,30 +66,35 @@ export const searchApi = {
         try {
             const queryTerm = term.trim();
 
-            // 1. Fetch matching listings titles
+            // 1. Fetch matching listings
             const { data: listings, error: listingsError } = await supabase
                 .from('listings')
-                .select('id, title, category')
+                .select('id, title, category, price, thumbnail_url, slug')
                 .ilike('title', `%${queryTerm}%`)
                 .eq('status', 'active')
-                .limit(5);
+                .order('created_at', { ascending: false })
+                .limit(4);
 
             if (listingsError) throw listingsError;
 
-            // 2. Fetch unique categories that match the term
-            const { data: categories, error: catsError } = await supabase
+            // 2. Fetch categories that match the term directly
+            const { data: directCategoriesData } = await supabase
                 .from('listings')
                 .select('category')
                 .ilike('category', `%${queryTerm}%`)
                 .eq('status', 'active');
 
-            if (catsError) throw catsError;
+            // 3. Extract categories from matching listings to provide context
+            const listingCategories = listings ? listings.map(l => l.category) : [];
+            const directCategories = directCategoriesData ? directCategoriesData.map(item => item.category) : [];
 
-            // Get unique category names
-            const uniqueCategories = [...new Set(categories.map(item => item.category))].slice(0, 3);
+            // Combine, unique and filter
+            const allCategories = [...new Set([...directCategories, ...listingCategories])]
+                .filter(Boolean)
+                .slice(0, 3);
 
             return {
-                categories: uniqueCategories,
+                categories: allCategories,
                 listings: listings || []
             };
         } catch (error) {

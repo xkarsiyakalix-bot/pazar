@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { t } from '../translations';
+import { getListingUrl } from '../utils/slug';
 
 export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, hidePrice = false }) => {
     const navigate = useNavigate();
@@ -25,39 +26,54 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         : "w-full h-28 object-cover group-hover:scale-105 transition-transform duration-500";
 
     // Determine card styles based on promotion Type
-    let cardClasses = "listing-card border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative bg-white flex flex-col h-full ";
+    let cardClasses = "listing-card border border-gray-200 dark:border-white/10 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative bg-white dark:bg-neutral-900 flex flex-col h-full ";
 
     const pkgType = listing?.package_type?.toLowerCase();
 
     if (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType)) {
-        cardClasses += "border-2 border-purple-500 ring-2 ring-purple-100 bg-purple-50/20 scale-[1.01] ";
+        cardClasses += "border-2 border-purple-500 ring-2 ring-purple-100 dark:ring-purple-900/20 bg-purple-50/20 dark:bg-purple-950/20 scale-[1.01] ";
     } else if (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType)) {
-        cardClasses += "border-2 border-amber-400 ring-2 ring-amber-50/50 bg-amber-50/10 ";
+        cardClasses += "border-2 border-amber-400 ring-2 ring-amber-50/50 dark:ring-amber-900/20 bg-amber-50/10 dark:bg-amber-950/20 ";
     } else if (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing.is_multi_bump) {
-        cardClasses += "border-2 border-orange-400 ring-2 ring-orange-50/50 bg-orange-50/10 ";
+        cardClasses += "border-2 border-orange-400 ring-2 ring-orange-50/50 dark:ring-orange-900/20 bg-orange-50/10 dark:bg-orange-950/20 ";
     } else if (listing.is_highlighted || pkgType === 'highlight' || pkgType === 'budget') {
-        cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 ";
+        cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 dark:bg-yellow-950/5 ";
     }
 
     return (
-        <div className={cardClasses} onClick={() => navigate(`/product/${listing.id}`)}>
-            <div className="relative overflow-hidden rounded-t-lg bg-gray-100 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+        <div className={cardClasses} onClick={() => navigate(getListingUrl(listing))}>
+            <div className="relative overflow-hidden rounded-t-lg bg-gray-100 dark:bg-neutral-800 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
                 {!imageLoaded && !isMiniJob && (
-                    <div className="absolute inset-0 animate-pulse bg-gray-200 flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-neutral-700 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-gray-300 dark:text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
                 )}
-                <img
-                    src={displayImage}
-                    alt={listing.title}
-                    width="300"
-                    height="200"
-                    loading="lazy"
-                    onLoad={() => setImageLoaded(true)}
-                    className={`${imageClasses} ${!isMiniJob ? (imageLoaded ? 'opacity-100' : 'opacity-0') : 'opacity-100'} transition-opacity duration-300`}
-                />
+
+                {isMiniJob ? (
+                    <img
+                        src={displayImage}
+                        alt={listing.title}
+                        width="300"
+                        height="200"
+                        loading="lazy"
+                        decoding="async"
+                        onLoad={() => setImageLoaded(true)}
+                        className={`${imageClasses} ${imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
+                    />
+                ) : (
+                    <img
+                        src={rawImageUrl}
+                        alt={listing.title}
+                        width="300"
+                        height="200"
+                        loading="lazy"
+                        decoding="async"
+                        onLoad={() => setImageLoaded(true)}
+                        className={`${imageClasses} ${imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
+                    />
+                )}
                 {/* RESERVIERT Badge - highest priority */}
                 {isReserved && (
                     <div className="absolute top-1 left-1 bg-yellow-500 text-white px-2 py-0.5 rounded text-[9px] font-bold shadow-lg flex items-center gap-1 z-20">
@@ -121,7 +137,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                             e.stopPropagation();
                             if (toggleFavorite) toggleFavorite(listing.id);
                         }}
-                        className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
+                        className="absolute top-2 right-2 w-7 h-7 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
                         aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
                     >
                         {favorite ? (
@@ -139,7 +155,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
 
             <div className="p-2.5 flex flex-col justify-between flex-grow min-h-[140px]">
                 <div>
-                    <h3 className="text-[12px] font-bold text-gray-900 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors leading-snug">
+                    <h3 className="text-[12px] font-bold text-gray-900 dark:text-neutral-50 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors leading-snug">
                         {listing.title}
                     </h3>
 
@@ -156,7 +172,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                         return (
                             <div className="flex flex-wrap gap-1 mb-2">
                                 {attrs.slice(0, 2).map((attr, idx) => (
-                                    <span key={idx} className="text-[9px] text-gray-500 bg-gray-50 px-1 py-0 rounded border border-gray-100 font-medium">
+                                    <span key={idx} className="text-[9px] text-gray-500 dark:text-neutral-400 bg-gray-50 dark:bg-neutral-800/50 px-1 py-0 rounded border border-gray-100 dark:border-white/5 font-medium">
                                         {attr}
                                     </span>
                                 ))}
@@ -166,8 +182,8 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                 </div>
 
                 <div className="mt-auto">
-                    <div className="mb-1.5 pt-2 border-t border-gray-50">
-                        <span className="text-sm font-black text-gray-900">
+                    <div className="mb-1.5 pt-2 border-t border-gray-50 dark:border-white/5">
+                        <span className="text-sm font-black text-gray-900 dark:text-neutral-50">
                             {!hidePrice && listing.sub_category !== 'Eğitim / Meslek Eğitimi' && listing.sub_category !== 'İnşaat, Zanaat & Üretim' && listing.category !== 'İş İlanları' && (
                                 listing.price_type === 'giveaway' || listing.price === 0
                                     ? 'Ücretsiz'
@@ -178,17 +194,17 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                         </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-[13px] text-gray-500 pt-1.5 border-t border-gray-100">
+                    <div className="flex items-center justify-between text-[13px] text-gray-500 dark:text-neutral-400 pt-1.5 border-t border-gray-100 dark:border-white/5">
                         {listing.city && (
                             <div className="flex items-center gap-0.5 truncate max-w-[60%]">
-                                <svg className="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                <svg className="w-2.5 h-2.5 text-gray-400 dark:text-neutral-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                                 <span className="truncate">{listing.city}</span>
                             </div>
                         )}
-                        <span className="flex-shrink-0 text-gray-400 text-[12px]">
+                        <span className="flex-shrink-0 text-gray-400 dark:text-neutral-500 text-[12px]">
                             {listing.date || (listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR') : '')}
                         </span>
                     </div>

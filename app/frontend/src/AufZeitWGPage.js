@@ -4,7 +4,6 @@ import { getTurkishCities } from './translations';
 
 const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
     const subCategories = [
-        { name: 'Tümü', route: '/Emlak' },
         { name: 'Geçici Konaklama & Paylaşımlı Ev', route: '/Emlak/Gecici-Konaklama-Paylasimli-Ev' },
         { name: 'Konteyner', route: '/Emlak/Konteyner' },
         { name: 'Satılık Daireler', route: '/Emlak/Satilik-Daireler' },
@@ -25,9 +24,9 @@ const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Konaklama Türü',
             type: 'multiselect',
             options: [
-                { value: 'Gesamte Unterkunft', label: 'Tüm Konut' },
-                { value: 'Privatzimmer', label: 'Özel Oda' },
-                { value: 'Gemeinsames Zimmer', label: 'Paylaşımlı Oda' }
+                { value: 'Tüm Konut', label: 'Tüm Konut' },
+                { value: 'Özel Oda', label: 'Özel Oda' },
+                { value: 'Paylaşımlı Oda', label: 'Paylaşımlı Oda' }
             ],
             field: 'auf_zeit_wg_art'
         },
@@ -35,8 +34,8 @@ const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Kira Türü',
             type: 'multiselect',
             options: [
-                { value: 'befristet', label: 'Süreli' },
-                { value: 'unbefristet', label: 'Süresiz' }
+                { value: 'Süreli', label: 'Süreli' },
+                { value: 'Süresiz', label: 'Süresiz' }
             ],
             field: 'rental_type'
         },
@@ -64,8 +63,8 @@ const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Online Gösterim',
             type: 'multiselect',
             options: [
-                { value: 'Möglich', label: 'Mümkün' },
-                { value: 'Nicht möglich', label: 'Mümkün Değil' }
+                { value: 'Mümkün', label: 'Mümkün' },
+                { value: 'Mümkün Değil', label: 'Mümkün Değil' }
             ],
             field: 'online_viewing'
         },
@@ -78,15 +77,15 @@ const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Donanım',
             type: 'multiselect',
             options: [
-                { value: 'WLAN', label: 'Wi-Fi' },
-                { value: 'Möbliert', label: 'Mobilyalı' },
-                { value: 'Kühlschrank', label: 'Buzdolabı' },
-                { value: 'Backofen', label: 'Fırın' },
-                { value: 'Herd', label: 'Ocak' },
-                { value: 'Waschmaschine', label: 'Çamaşır Makinesi' },
-                { value: 'Trockner', label: 'Kurutma Makinesi' },
-                { value: 'Spülmaschine', label: 'Bulaşık Makinesi' },
-                { value: 'TV', label: 'Televizyon' }
+                { value: 'Wi-Fi', label: 'Wi-Fi' },
+                { value: 'Mobilyalı', label: 'Mobilyalı' },
+                { value: 'Buzdolabı', label: 'Buzdolabı' },
+                { value: 'Fırın', label: 'Fırın' },
+                { value: 'Ocak', label: 'Ocak' },
+                { value: 'Çamaşır Makinesi', label: 'Çamaşır Makinesi' },
+                { value: 'Kurutma Makinesi', label: 'Kurutma Makinesi' },
+                { value: 'Bulaşık Makinesi', label: 'Bulaşık Makinesi' },
+                { value: 'Televizyon', label: 'Televizyon' }
             ],
             field: 'amenities'
         },
@@ -94,10 +93,10 @@ const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Genel Özellikler',
             type: 'multiselect',
             options: [
-                { value: 'Keller', label: 'Bodrum' },
-                { value: 'Garage/Stellplatz', label: 'Garaj/Park Yeri' },
-                { value: 'Haustiere erlaubt', label: 'Evcil Hayvan İzni' },
-                { value: 'Stufenloser Zugang', label: 'Engelsiz Erişim' }
+                { value: 'Bodrum', label: 'Bodrum' },
+                { value: 'Garaj/Park Yeri', label: 'Garaj/Park Yeri' },
+                { value: 'Evcil Hayvan İzni', label: 'Evcil Hayvan İzni' },
+                { value: 'Engelsiz Erişim', label: 'Engelsiz Erişim' }
             ],
             field: 'general_features'
         },
@@ -105,8 +104,8 @@ const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Kiralık', label: 'Satılık/Kiralık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -114,8 +113,8 @@ const AufZeitWGPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

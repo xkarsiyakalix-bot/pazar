@@ -14,7 +14,7 @@ function RatingDisplay({ userRating, showDetails = false, size = 'medium', cente
 
     if (!userRating || ratingCount === 0 || ratingCount === undefined) {
         return (
-            <div className={`text-gray-500 text-sm ${center ? 'text-center' : ''}`}>
+            <div className={`text-gray-500 dark:text-neutral-500 text-sm ${center ? 'text-center' : ''}`}>
                 Henüz değerlendirme yok
             </div>
         );
@@ -48,7 +48,7 @@ function RatingDisplay({ userRating, showDetails = false, size = 'medium', cente
                     readOnly
                     size={currentSize.star}
                 />
-                <span className={`font-bold text-gray-900 ${currentSize.text}`}>
+                <span className={`font-bold text-gray-900 dark:text-neutral-100 ${currentSize.text}`}>
                     {parseFloat(userRating.average || userRating.average_rating || 0).toFixed(1)}
                 </span>
             </div>
@@ -91,14 +91,14 @@ function DetailRating({ label, rating, size }) {
 
     return (
         <div className="flex items-center justify-between">
-            <span className={`text-gray-600 ${currentSize.text}`}>{label}</span>
+            <span className={`text-gray-600 dark:text-neutral-400 ${currentSize.text}`}>{label}</span>
             <div className="flex items-center gap-2">
                 <StarRating
                     rating={Math.round(rating)}
                     readOnly
                     size={currentSize.star}
                 />
-                <span className={`text-gray-700 font-medium ${currentSize.text} w-8 text-right`}>
+                <span className={`text-gray-700 dark:text-neutral-300 font-medium ${currentSize.text} w-8 text-right`}>
                     {parseFloat(rating).toFixed(1)}
                 </span>
             </div>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getTurkishCities, t } from './translations';
+
+import { getSellerUrl } from './utils/slug';
 
 const Unternehmensseiten = () => {
     const navigate = useNavigate();
@@ -46,7 +48,7 @@ const Unternehmensseiten = () => {
     // Filter only commercial sellers
     const companies = Object.entries(mockSellers)
         .map(([id, seller]) => ({ ...seller, id }))
-        .filter(seller => seller.sellerType === 'Gewerblicher Nutzer')
+        .filter(seller => seller.sellerType === 'Kurumsal Kullanıcı')
         .filter(company =>
             (selectedOrt === 'Tüm Şehirler' || company.city === selectedOrt) &&
             (selectedKategorie === 'Tüm Kategoriler' || company.businessCategory === selectedKategorie) &&
@@ -66,7 +68,7 @@ const Unternehmensseiten = () => {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Zurück zur Startseite
+                    Ana Sayfaya Dön
                 </button>
 
                 {/* Red Banner */}
@@ -170,13 +172,13 @@ const Unternehmensseiten = () => {
                                 {/* Deutschland Option */}
                                 <button
                                     onClick={() => {
-                                        setSelectedOrt('Alle Orte');
+                                        setSelectedOrt('Tüm Şehirler');
                                         setShowOrtDropdown(false);
                                     }}
                                     className="w-full text-left px-4 py-2.5 hover:bg-gray-100 text-sm text-gray-700 transition-colors flex items-center justify-between font-medium"
                                 >
-                                    <span>Türkei</span>
-                                    {selectedOrt === 'Alle Orte' && (
+                                    <span>Türkiye</span>
+                                    {selectedOrt === 'Tüm Şehirler' && (
                                         <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
@@ -228,13 +230,13 @@ const Unternehmensseiten = () => {
                                     <>
                                         <button
                                             onClick={() => {
-                                                setSelectedKategorie('Alle Kategorien');
+                                                setSelectedKategorie('Tüm Kategoriler');
                                                 setShowKategorieDropdown(false);
                                             }}
                                             className="w-full text-left px-4 py-2.5 hover:bg-gray-100 text-sm text-gray-700 transition-colors flex items-center justify-between font-medium"
                                         >
-                                            <span>Alle Kategorien</span>
-                                            {selectedKategorie === 'Alle Kategorien' && (
+                                            <span>Tüm Kategoriler</span>
+                                            {selectedKategorie === 'Tüm Kategoriler' && (
                                                 <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 </svg>
@@ -482,10 +484,11 @@ const Unternehmensseiten = () => {
                 {/* Companies Grid */}
                 <div className="grid grid-cols-5 gap-4">
                     {companies.map((company) => (
-                        <div
+                        <Link
                             key={company.id}
-                            className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer group border border-gray-100 overflow-hidden"
-                            onClick={() => navigate(`/seller/${company.user_number || company.id}`)}
+                            to={getSellerUrl(company)}
+                            state={{ sellerProfile: company }}
+                            className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer group border border-gray-100 overflow-hidden block"
                         >
                             {/* Company Image */}
                             <div className="relative w-full h-40 bg-gray-100">
@@ -515,7 +518,7 @@ const Unternehmensseiten = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                     <span className="line-clamp-1">
-                                        {company.city || 'Türkei'}
+                                        {company.city || 'Türkiye'}
                                     </span>
                                 </div>
 
@@ -533,18 +536,12 @@ const Unternehmensseiten = () => {
                                     </div>
                                 </div>
 
-                                {/* Action Button */}
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigate(`/seller/${company.user_number || company.id}`);
-                                    }}
-                                    className="w-full py-2 px-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-xs"
-                                >
+                                {/* Action Link */}
+                                <div className="w-full py-2 px-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-xs text-center block">
                                     İşletme Sayfasına Git
-                                </button>
+                                </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
 

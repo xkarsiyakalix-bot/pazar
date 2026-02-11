@@ -8,8 +8,8 @@ const PraktikaPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Çalışma Süresi',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' }
             ],
             field: 'working_time'
         },
@@ -22,8 +22,8 @@ const PraktikaPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -31,8 +31,8 @@ const PraktikaPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

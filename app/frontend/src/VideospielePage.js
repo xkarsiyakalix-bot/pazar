@@ -22,8 +22,8 @@ const VideospielePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Kargo',
             type: 'multiselect',
             options: [
-                { value: 'Versand möglich', label: 'Kargo Mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
+                { value: 'Kargo Mümkün', label: 'Kargo Mümkün' },
+                { value: 'Sadece Elden Teslim', label: 'Sadece Elden Teslim' }
             ],
             field: 'versand_art'
         },
@@ -31,11 +31,11 @@ const VideospielePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Durum',
             type: 'multiselect',
             options: [
-                { value: 'neu', label: 'Yeni' },
-                { value: 'sehr_gut', label: 'Çok İyi' },
-                { value: 'gut', label: 'İyi' },
-                { value: 'in_ordnung', label: 'Makul' },
-                { value: 'defekt', label: 'Kusurlu' }
+                { value: 'Yeni', label: 'Yeni' },
+                { value: 'Çok İyi', label: 'Çok İyi' },
+                { value: 'İyi', label: 'İyi' },
+                { value: 'Makul', label: 'Makul' },
+                { value: 'Kusurlu', label: 'Kusurlu' }
             ],
             field: 'condition'
         },
@@ -48,8 +48,8 @@ const VideospielePage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -57,8 +57,8 @@ const VideospielePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

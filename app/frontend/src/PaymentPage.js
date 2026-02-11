@@ -103,32 +103,32 @@ const PaymentPage = () => {
     if (!pkg) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-24 pb-12 px-4">
-            <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                <div className="bg-gray-900 p-6 text-white text-center">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 pt-24 pb-12 px-4 transition-colors duration-300">
+            <div className="max-w-xl mx-auto bg-white dark:bg-neutral-900 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-white/5">
+                <div className="bg-gray-900 dark:bg-neutral-950 p-6 text-white text-center border-b border-white/5">
                     <h2 className="text-2xl font-bold mb-2">Güvenli Ödeme</h2>
-                    <p className="text-gray-400 text-sm">Paket aktivasyonu için ödeme bilgilerinizi giriniz.</p>
+                    <p className="text-gray-400 dark:text-neutral-400 text-sm">Paket aktivasyonu için ödeme bilgilerinizi giriniz.</p>
                 </div>
 
                 <div className="p-8">
-                    <div className="bg-blue-50 p-4 rounded-lg mb-8 flex justify-between items-center border border-blue-100">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-8 flex justify-between items-center border border-blue-100 dark:border-blue-900/30">
                         <div>
-                            <div className="text-xs text-blue-600 font-bold uppercase tracking-wider">Seçilen Paket</div>
-                            <div className="text-lg font-bold text-gray-900">{pkg.name}</div>
+                            <div className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">Seçilen Paket</div>
+                            <div className="text-lg font-bold text-gray-900 dark:text-neutral-50">{pkg.name}</div>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-black text-gray-900">{pkg.price} TL</div>
-                            <div className="text-xs text-gray-500">/ay</div>
+                            <div className="text-2xl font-black text-gray-900 dark:text-neutral-50">{pkg.price} TL</div>
+                            <div className="text-xs text-gray-500 dark:text-neutral-400">/ay</div>
                         </div>
                     </div>
 
                     <form onSubmit={handlePayment} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Kart Sahibi Ad Soyad</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Kart Sahibi Ad Soyad</label>
                             <input
                                 required
                                 type="text"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                                className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all"
                                 placeholder="Örn: Ahmet Yılmaz"
                                 value={cardDetails.holder}
                                 onChange={e => setCardDetails({ ...cardDetails, holder: e.target.value })}
@@ -136,13 +136,13 @@ const PaymentPage = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Kart Numarası</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Kart Numarası</label>
                             <div className="relative">
                                 <input
                                     required
                                     type="text"
                                     maxLength="19"
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all pl-12 font-mono"
+                                    className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all pl-12 font-mono"
                                     placeholder="0000 0000 0000 0000"
                                     value={cardDetails.number}
                                     onChange={e => setCardDetails({ ...cardDetails, number: e.target.value })}
@@ -153,24 +153,24 @@ const PaymentPage = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Son Kullanma Tarihi</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Son Kullanma Tarihi</label>
                                 <input
                                     required
                                     type="text"
                                     maxLength="5"
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all text-center"
+                                    className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all text-center"
                                     placeholder="AA/YY"
                                     value={cardDetails.expiry}
                                     onChange={e => setCardDetails({ ...cardDetails, expiry: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">CVC / CVV</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">CVC / CVV</label>
                                 <input
                                     required
                                     type="text"
                                     maxLength="3"
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all text-center"
+                                    className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all text-center"
                                     placeholder="123"
                                     value={cardDetails.cvc}
                                     onChange={e => setCardDetails({ ...cardDetails, cvc: e.target.value })}
@@ -181,7 +181,7 @@ const PaymentPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-red-600 text-white font-bold py-4 rounded-xl hover:bg-red-700 transition-colors shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="w-full bg-red-600 dark:bg-red-700 text-white font-bold py-4 rounded-xl hover:bg-red-700 dark:hover:bg-red-800 transition-colors shadow-lg shadow-red-200 dark:shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <>
@@ -193,7 +193,7 @@ const PaymentPage = () => {
                             )}
                         </button>
 
-                        <p className="text-xs text-center text-gray-400 mt-4">
+                        <p className="text-xs text-center text-gray-400 dark:text-neutral-500 mt-4">
                             Bu işlem güvenli bir şekilde şifrelenmektedir. Demo amaçlı kart bilgilerini rastgele girebilirsiniz.
                         </p>
                     </form>

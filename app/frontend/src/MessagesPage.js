@@ -8,6 +8,9 @@ import RatingModal from './components/RatingModal';
 import LoadingSpinner from './components/LoadingSpinner';
 import { useIsMobile } from './hooks/useIsMobile';
 import ProfileLayout from './ProfileLayout';
+import { getSellerUrl } from './utils/slug';
+import { generateListingNumber } from './components';
+
 
 function MessagesPage() {
     const { user } = useAuth();
@@ -15,15 +18,46 @@ function MessagesPage() {
     const location = useLocation();
 
     // State
-    const [conversations, setConversations] = useState([]);
+    const [conversations, setConversations] = useState(() => {
+        // Restore from sessionStorage on mount
+        const saved = sessionStorage.getItem('conversations');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedConversation, setSelectedConversation] = useState(null);
+    const [selectedConversation, setSelectedConversation] = useState(() => {
+        // Restore from sessionStorage on mount
+        const saved = sessionStorage.getItem('selectedConversation');
+        return saved ? JSON.parse(saved) : null;
+    });
     const [messageText, setMessageText] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(() => {
+        // If we have cached conversations, don't show loading
+        const saved = sessionStorage.getItem('conversations');
+        return !saved || saved === '[]';
+    });
     const [userProfile, setUserProfile] = useState(null);
     const [canRateUser, setCanRateUser] = useState(false);
     const [hasRated, setHasRated] = useState(false);
     const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+
+    const [swipedConvId, setSwipedConvId] = useState(null);
+    const touchStartX = useRef(0);
+
+    const handleTouchStart = (e) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e, id) => {
+        if (!isMobile) return;
+        const touchX = e.touches[0].clientX;
+        const diff = touchStartX.current - touchX;
+
+        if (diff > 50) {
+            setSwipedConvId(id);
+        } else if (diff < -30) {
+            setSwipedConvId(null);
+        }
+    };
 
     // Refs & Hooks
     const messagesEndRef = useRef(null);
@@ -60,7 +94,12 @@ function MessagesPage() {
 
         const loadConversations = async () => {
             try {
-                setLoading(true);
+                // Only show loading if we don't have cached data
+                const hasCachedData = conversations.length > 0;
+                if (!hasCachedData) {
+                    setLoading(true);
+                }
+
                 const data = await getConversations();
                 setConversations(data);
             } catch (error) {
@@ -179,6 +218,30 @@ function MessagesPage() {
         }
     }, [selectedConversation, user]);
 
+    // Save selectedConversation to sessionStorage whenever it changes
+    useEffect(() => {
+        if (selectedConversation) {
+            try {
+                sessionStorage.setItem('selectedConversation', JSON.stringify(selectedConversation));
+            } catch (e) {
+                console.warn('Could not save selected conversation to cache:', e);
+            }
+        } else {
+            sessionStorage.removeItem('selectedConversation');
+        }
+    }, [selectedConversation]);
+
+    // Save conversations to sessionStorage whenever they change
+    useEffect(() => {
+        if (conversations.length > 0) {
+            try {
+                sessionStorage.setItem('conversations', JSON.stringify(conversations));
+            } catch (e) {
+                console.warn('Could not save conversations to cache:', e);
+            }
+        }
+    }, [conversations]);
+
     // Check rating eligibility
     useEffect(() => {
         const checkEligibility = async () => {
@@ -276,98 +339,109 @@ function MessagesPage() {
 
     return (
         <ProfileLayout>
-            <div className="h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] -mx-4 sm:-mx-6 -mt-8 sm:-mt-12 bg-white flex flex-col md:flex-row overflow-hidden">
-
+            <div className="h-[calc(100vh-100px)] -mx-4 sm:-mx-6 -mt-8 sm:-mt-12 bg-white dark:bg-neutral-900 flex flex-col md:flex-row overflow-hidden border-t border-neutral-100 dark:border-white/5">
                 {/* SIDEBAR */}
-                <div className={`w-full md:w-96 bg-neutral-50 flex flex-col border-r border-neutral-100 ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
+                <div className={`w-full md:w-96 flex flex-col border-r border-neutral-100 dark:border-white/5 ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
                     {/* Sidebar Header */}
-                    <div className="p-6 bg-white border-b border-neutral-100">
-                        <h2 className="text-2xl font-display font-bold text-neutral-900 mb-4">Mesajlar</h2>
-                        <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="w-5 h-5 text-neutral-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Sohbetlerde ara..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="block w-full pl-10 pr-4 py-3 bg-neutral-100 border-none rounded-2xl text-sm font-medium placeholder-neutral-500 focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-all"
-                            />
-                        </div>
+                    <div className="p-5 border-b border-neutral-200 dark:border-white/10">
+                        <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
+                            Mesajlar
+                        </h2>
                     </div>
 
                     {/* Conversations List */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-neutral-100 dark:divide-white/5">
                         {filteredConversations.length === 0 ? (
                             <div className="text-center py-12">
-                                <p className="text-neutral-400 text-sm font-medium">Sohbet bulunamadı.</p>
+                                <p className="text-neutral-400 dark:text-neutral-500 text-sm font-medium">Sohbet bulunamadı.</p>
                             </div>
                         ) : (
                             filteredConversations.map((conv, idx) => {
                                 const isSelected = selectedConversation?.user.id === conv.user.id && selectedConversation?.listing?.id === conv.listing?.id;
+                                const convId = `${conv.user.id}-${conv.listing?.id || 'no-listing'}`;
+                                const isSwiped = swipedConvId === convId;
+
                                 return (
-                                    <div
-                                        key={idx}
-                                        onClick={() => setSelectedConversation(conv)}
-                                        className={`group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 ${isSelected
-                                            ? 'bg-white shadow-lg shadow-neutral-100 ring-1 ring-neutral-100'
-                                            : 'hover:bg-white hover:shadow-md hover:shadow-neutral-50'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="relative flex-shrink-0">
-                                                <div className="w-14 h-14 rounded-full overflow-hidden bg-neutral-100 ring-2 ring-white flex items-center justify-center">
-                                                    {conv.listing?.images?.[0] ? (
-                                                        <img
-                                                            src={conv.listing.images[0]}
-                                                            alt=""
-                                                            className={`w-full h-full object-cover ${conv.listing?.is_deleted ? 'brightness-[0.4] grayscale-[0.5]' : ''}`}
-                                                        />
-                                                    ) : (
-                                                        <svg className={`w-6 h-6 ${conv.listing?.is_deleted ? 'text-neutral-300 opacity-20' : 'text-neutral-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
+                                    <div key={idx} className="relative overflow-hidden">
+                                        {/* Swipe Delete Action */}
+                                        <div
+                                            onClick={(e) => handleDeleteConversation(conv, e)}
+                                            className="absolute inset-0 bg-neutral-900 flex justify-end items-center pr-6 z-0 active:bg-black transition-colors"
+                                        >
+                                            <div className="flex flex-col items-center gap-1 text-white">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">Sil</span>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            onClick={() => {
+                                                if (isSwiped) {
+                                                    setSwipedConvId(null);
+                                                } else {
+                                                    setSelectedConversation(conv);
+                                                }
+                                            }}
+                                            onTouchStart={handleTouchStart}
+                                            onTouchMove={(e) => handleTouchMove(e, convId)}
+                                            style={{ transform: isSwiped ? 'translateX(-80px)' : 'translateX(0)' }}
+                                            className={`group relative p-4 cursor-pointer transition-all duration-300 z-10 ${isSelected
+                                                ? 'bg-neutral-50 dark:bg-neutral-800 border-l-4 border-purple-600 shadow-sm'
+                                                : 'bg-white dark:bg-neutral-900 border-l-4 border-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative flex-shrink-0">
+                                                    <div className="w-14 h-14 rounded-full overflow-hidden bg-neutral-100 dark:bg-neutral-800 ring-2 ring-white dark:ring-neutral-700 flex items-center justify-center">
+                                                        {conv.listing?.images?.[0] ? (
+                                                            <img
+                                                                src={conv.listing.images[0]}
+                                                                alt=""
+                                                                className={`w-full h-full object-cover ${conv.listing?.is_deleted ? 'brightness-[0.4] grayscale-[0.5]' : ''}`}
+                                                            />
+                                                        ) : (
+                                                            <svg className={`w-6 h-6 ${conv.listing?.is_deleted ? 'text-neutral-300 opacity-20' : 'text-neutral-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                        )}
+                                                    </div>
+                                                    {conv.listing?.is_deleted && (
+                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    {conv.unreadCount > 0 && (
+                                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 border-2 border-white text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                                            {conv.unreadCount}
+                                                        </span>
                                                     )}
                                                 </div>
-                                                {conv.listing?.is_deleted && (
-                                                    <div className="absolute inset-0 flex items-center justify-center">
-                                                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start">
+                                                        <h3 className={`font-bold text-sm truncate ${isSelected ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-700 dark:text-neutral-300'}`}>
+                                                            {conv.user.full_name || 'Kullanıcı'}
+                                                        </h3>
+                                                        <span className="text-[10px] font-medium text-neutral-400 dark:text-neutral-500 whitespace-nowrap ml-2">
+                                                            {new Date(conv.lastMessage.created_at).toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
                                                     </div>
-                                                )}
-                                                {conv.unreadCount > 0 && (
-                                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 border-2 border-white text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                                                        {conv.unreadCount}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between items-start">
-                                                    <h3 className={`font-bold text-sm truncate ${isSelected ? 'text-neutral-900' : 'text-neutral-700'}`}>
-                                                        {conv.user.full_name || 'Kullanıcı'}
-                                                    </h3>
-                                                    <span className="text-[10px] font-medium text-neutral-400 whitespace-nowrap ml-2">
-                                                        {new Date(conv.lastMessage.created_at).toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                                                    </span>
-                                                </div>
 
-                                                {conv.listing && (
-                                                    <p className="text-[13px] font-medium truncate mt-0.5 text-neutral-800">
-                                                        {conv.listing.is_deleted ? (
-                                                            <span className="text-red-600 font-bold">Silindi • </span>
-                                                        ) : (
-                                                            <span className="text-red-600 font-bold mr-1">İlan: </span>
-                                                        )}
-                                                        {conv.listing.title}
+                                                    {conv.listing && (
+                                                        <p className={`text-[13px] font-medium truncate mt-0.5 ${conv.listing.is_deleted ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-800 dark:text-neutral-200'}`}>
+                                                            {conv.listing.is_deleted && <span className="text-red-600 dark:text-red-500 font-bold mr-1">Silindi</span>}
+                                                            {conv.listing.title}
+                                                        </p>
+                                                    )}
+
+                                                    <p className={`text-sm truncate mt-0.5 ${conv.unreadCount > 0 ? 'font-bold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                                                        {conv.lastMessage.sender_id === user?.id && <span className="text-neutral-400 dark:text-neutral-500 font-medium">Siz: </span>}
+                                                        {conv.lastMessage.content}
                                                     </p>
-                                                )}
-
-                                                <p className={`text-sm truncate mt-0.5 ${conv.unreadCount > 0 ? 'font-bold text-neutral-900' : 'text-neutral-500'}`}>
-                                                    {conv.lastMessage.sender_id === user?.id && <span className="text-neutral-400 font-medium">Siz: </span>}
-                                                    {conv.lastMessage.content}
-                                                </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -378,31 +452,35 @@ function MessagesPage() {
                 </div>
 
                 {/* CHAT AREA */}
-                <div className={`flex-1 bg-white flex flex-col relative ${isMobile && !selectedConversation ? 'hidden' : 'flex'}`}>
+                <div className={`flex-1 flex flex-col ${isMobile && !selectedConversation ? 'hidden' : 'flex'}`}>
                     {selectedConversation ? (
                         <>
                             {/* Chat Header */}
-                            <div className="h-20 border-b border-neutral-100 flex items-center justify-between px-6 bg-white/80 backdrop-blur-md sticky top-0 z-10">
+                            <div className="h-20 border-b border-neutral-100 dark:border-white/5 flex items-center justify-between px-6 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md sticky top-0 z-10">
                                 <div className="flex items-center gap-4">
                                     {isMobile && (
                                         <button onClick={() => setSelectedConversation(null)} className="p-2 -ml-2 text-neutral-500 hover:bg-neutral-50 rounded-xl">
                                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
                                         </button>
                                     )}
-                                    <div className="relative">
+                                    <div
+                                        className="relative cursor-pointer"
+                                        onClick={() => navigate(getSellerUrl(selectedConversation.user))}
+                                    >
                                         <img
                                             src={selectedConversation.user.store_logo || selectedConversation.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedConversation.user.full_name || 'U')}&background=ef4444&color=fff`}
                                             alt=""
-                                            className="w-10 h-10 rounded-full object-cover ring-2 ring-neutral-50"
+                                            className="w-10 h-10 rounded-full object-cover ring-2 ring-neutral-50 dark:ring-neutral-800"
                                         />
-                                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-neutral-900 rounded-full"></span>
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold text-neutral-900">{selectedConversation.user.full_name}</h3>
-                                        <div className="flex items-center gap-2 text-xs text-neutral-500">
-                                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                                            Çevrimiçi
-                                        </div>
+                                    <div
+                                        className="cursor-pointer"
+                                        onClick={() => navigate(getSellerUrl(selectedConversation.user))}
+                                    >
+                                        <h3 className="font-bold text-neutral-900 dark:text-neutral-100 hover:text-red-600 transition-colors">
+                                            {selectedConversation.user.full_name}
+                                        </h3>
                                     </div>
                                 </div>
 
@@ -410,28 +488,21 @@ function MessagesPage() {
                                     {canRateUser && !hasRated && (
                                         <button
                                             onClick={() => setIsRatingModalOpen(true)}
-                                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-600 rounded-xl font-bold text-sm hover:bg-amber-100 transition-colors"
+                                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl font-bold text-sm hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-0.921 1.603-0.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-0.363 1.118l1.518 4.674c.3.922-0.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-0.783.57-1.838-0.197-1.538-1.118l1.518-4.674a1 1 0 00-0.363-1.118l-3.976-2.888c-0.784-0.57-0.38-1.81.588-1.81h4.914a1 1 0 00.951-0.69l1.519-4.674z"></path></svg>
                                             Puanla
                                         </button>
                                     )}
-                                    {selectedConversation.listing && (
-                                        <button
-                                            onClick={() => navigate(`/product/${selectedConversation.listing.id}`)}
-                                            className="px-4 py-2 bg-neutral-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all shadow-lg shadow-neutral-200"
-                                        >
-                                            İlanı Gör
-                                        </button>
-                                    )}
+
                                 </div>
                             </div>
 
                             {/* Listing Context Bar (if exists) */}
                             {selectedConversation.listing && (
-                                <div className={`px-6 py-3 border-b border-neutral-100 flex items-center justify-between ${selectedConversation.listing.is_deleted ? 'bg-neutral-100/50' : 'bg-neutral-50/50'}`}>
+                                <div className={`px-6 py-3 border-b border-neutral-100 dark:border-white/5 flex items-center justify-between ${selectedConversation.listing.is_deleted ? 'bg-neutral-100/50 dark:bg-neutral-800/50' : 'bg-neutral-50/50 dark:bg-neutral-800/30'}`}>
                                     <div className="flex items-center gap-3 overflow-hidden">
-                                        <div className="relative flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-neutral-200">
+                                        <div className="relative flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-neutral-200 dark:border-white/10">
                                             <img
                                                 src={selectedConversation.listing.images?.[0] || "https://premium.exvitrin.com/storage/v1/object/public/listing-images/placeholder_listing.png"}
                                                 className={`w-full h-full object-cover ${selectedConversation.listing.is_deleted ? 'grayscale opacity-40' : ''}`}
@@ -446,11 +517,11 @@ function MessagesPage() {
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className={`text-sm font-bold truncate ${selectedConversation.listing.is_deleted ? 'text-neutral-500 italic' : 'text-neutral-900'}`}>
+                                            <p className={`text-sm font-bold truncate ${selectedConversation.listing.is_deleted ? 'text-neutral-500 dark:text-neutral-500 italic' : 'text-neutral-900 dark:text-neutral-100'}`}>
                                                 {selectedConversation.listing.is_deleted ? 'Bu ilan silinmiş' : selectedConversation.listing.title}
                                             </p>
-                                            <p className="text-xs text-neutral-500">
-                                                {selectedConversation.listing.is_deleted ? 'Artık görüntülenemez' : `İlan No: #${selectedConversation.listing.listing_number || selectedConversation.listing.id.slice(0, 8)}`}
+                                            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                                                {selectedConversation.listing.is_deleted ? 'Artık görüntülenemez' : `İlan No: #${generateListingNumber(selectedConversation.listing)}`}
                                             </p>
                                         </div>
                                     </div>
@@ -466,22 +537,22 @@ function MessagesPage() {
                             )}
 
                             {/* Messages List */}
-                            <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#f8f9fa] custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white dark:bg-neutral-900 custom-scrollbar">
                                 {selectedConversation.messages.map((msg, idx) => {
                                     const isMe = msg.sender_id === user.id;
                                     return (
                                         <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group`}>
-                                            <div className={`max-w-[75%] md:max-w-[60%] space-y-1 ${isMe ? 'items-end flex flex-col' : 'items-start flex flex-col'}`}>
+                                            <div className={`max-w-[75%] space-y-1 ${isMe ? 'items-end flex flex-col' : 'items-start flex flex-col'}`}>
                                                 <div className={`
-                                                    p-4 rounded-2xl text-sm leading-relaxed shadow-sm relative
-                                                    ${isMe
-                                                        ? 'bg-red-600 text-white rounded-br-none'
-                                                        : 'bg-white text-neutral-700 rounded-bl-none border border-neutral-100'
+                                                        px-5 py-3 rounded-2xl text-sm leading-relaxed shadow-sm relative
+                                                        ${isMe
+                                                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-br-sm'
+                                                        : 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-100 rounded-bl-sm border border-neutral-100 dark:border-white/5'
                                                     }
-                                                `}>
+                                                    `}>
                                                     {msg.content}
                                                 </div>
-                                                <span className="text-[10px] text-neutral-400 font-medium px-1">
+                                                <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-medium px-1">
                                                     {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     {isMe && (
                                                         <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -497,21 +568,21 @@ function MessagesPage() {
                             </div>
 
                             {/* Input Area */}
-                            <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-neutral-100">
+                            <form onSubmit={handleSendMessage} className="p-4 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-white/5">
                                 <div className="flex items-end gap-3 max-w-4xl mx-auto">
-                                    <div className="flex-1 bg-neutral-50 rounded-3xl border border-neutral-200 focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500 transition-all flex items-center">
+                                    <div className="flex-1 bg-neutral-50 dark:bg-neutral-800 rounded-3xl border border-neutral-200 dark:border-white/10 focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500 transition-all flex items-center">
                                         <input
                                             type="text"
                                             value={messageText}
                                             onChange={(e) => setMessageText(e.target.value)}
                                             placeholder="Bir mesaj yazın..."
-                                            className="w-full bg-transparent border-none px-6 py-4 focus:ring-0 text-neutral-900 placeholder-neutral-400"
+                                            className="w-full bg-transparent border-none px-6 py-4 focus:ring-0 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500"
                                         />
                                     </div>
                                     <button
                                         type="submit"
                                         disabled={!messageText.trim()}
-                                        className="p-4 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-200 active:scale-95 disabled:opacity-50 disabled:scale-100"
+                                        className="p-4 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all shadow-lg shadow-red-200 dark:shadow-none active:scale-95 disabled:opacity-50 disabled:scale-100"
                                     >
                                         <svg className="w-6 h-6 transform rotate-90" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
                                     </button>
@@ -531,12 +602,12 @@ function MessagesPage() {
                             />
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-neutral-50/30">
-                            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg shadow-neutral-100 mb-6 border border-neutral-100">
+                        <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-white dark:bg-neutral-900">
+                            <div className="w-24 h-24 bg-white dark:bg-neutral-800 rounded-full flex items-center justify-center shadow-lg shadow-neutral-100 dark:shadow-none mb-6 border border-neutral-100 dark:border-white/5">
                                 <span className="text-4xl">💭</span>
                             </div>
-                            <h3 className="text-2xl font-display font-bold text-neutral-900 mb-2">Sohbet Başlatın</h3>
-                            <p className="text-neutral-500 max-w-sm">
+                            <h3 className="text-2xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-2">Sohbet Başlatın</h3>
+                            <p className="text-neutral-500 dark:text-neutral-400 max-w-sm">
                                 Mesajlaşmak için sol taraftaki listeden bir konuşma seçin veya yeni bir ilana mesaj gönderin.
                             </p>
                         </div>

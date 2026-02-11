@@ -255,7 +255,7 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
 
             {/* End Message */}
             {!hasMore && displayedListings.length > 0 && (
-                <div className="text-center mt-8 py-6 text-gray-500">
+                <div className="text-center mt-8 py-6 text-gray-500 dark:text-neutral-400">
                     <p className="text-lg font-medium">Tüm öneriler bu kadar</p>
                     <p className="text-sm mt-2">Daha fazla ilan bulmak için aramayı veya kategorileri kullanın</p>
                 </div>

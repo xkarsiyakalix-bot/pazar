@@ -25,8 +25,8 @@ const GewerbeimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Kaufen', label: 'Satılık' },
-                { value: 'Mieten', label: 'Kiralık' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Kiralık', label: 'Kiralık' }
             ],
             field: 'angebotsart'
         },
@@ -39,11 +39,11 @@ const GewerbeimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Emlak Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Büros & Praxen', label: 'Ofis & Muayenehane' },
-                { value: 'Weitere Gewerbeeinheiten', label: 'Diğer Ticari Birimler' },
-                { value: 'Lager, Hallen & Produktion', label: 'Depo, Antrepo & Üretim' },
-                { value: 'Gastronomie & Hotels', label: 'Gastronomi & Otel' },
-                { value: 'Einzelhandel & Kioske', label: 'Perakende & Büfe' }
+                { value: 'Ofis & Muayenehane', label: 'Ofis & Muayenehane' },
+                { value: 'Diğer Ticari Birimler', label: 'Diğer Ticari Birimler' },
+                { value: 'Depo, Antrepo & Üretim', label: 'Depo, Antrepo & Üretim' },
+                { value: 'Gastronomi & Otel', label: 'Gastronomi & Otel' },
+                { value: 'Perakende & Büfe', label: 'Perakende & Büfe' }
             ],
             field: 'objektart'
         },
@@ -61,8 +61,8 @@ const GewerbeimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Komisyon',
             type: 'multiselect',
             options: [
-                { value: 'Provisionsfrei', label: 'Komisyonsuz' },
-                { value: 'Mit Provision', label: 'Komisyonlu' }
+                { value: 'Komisyonsuz', label: 'Komisyonsuz' },
+                { value: 'Komisyonlu', label: 'Komisyonlu' }
             ],
             field: 'commission'
         },
@@ -70,8 +70,8 @@ const GewerbeimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Online Gösterim',
             type: 'multiselect',
             options: [
-                { value: 'Möglich', label: 'Mümkün' },
-                { value: 'Nicht möglich', label: 'Mümkün Değil' }
+                { value: 'Mümkün', label: 'Mümkün' },
+                { value: 'Mümkün Değil', label: 'Mümkün Değil' }
             ],
             field: 'online_viewing'
         },
@@ -84,13 +84,13 @@ const GewerbeimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Donanım',
             type: 'multiselect',
             options: [
-                { value: 'Starkstrom', label: 'Yüksek Akım' },
-                { value: 'Klimaanlage', label: 'Klima' },
-                { value: 'DV-Verkabelung', label: 'DV Kablolama' },
-                { value: 'Parkplätze vorhanden', label: 'Otopark Mevcut' },
-                { value: 'Stufenloser Zugang', label: 'Engelsiz Erişim' },
-                { value: 'Küche', label: 'Mutfak' },
-                { value: 'Fußbodenheizung', label: 'Yerden Isıtma' }
+                { value: 'Yüksek Akım', label: 'Yüksek Akım' },
+                { value: 'Klima', label: 'Klima' },
+                { value: 'DV Kablolama', label: 'DV Kablolama' },
+                { value: 'Otopark Mevcut', label: 'Otopark Mevcut' },
+                { value: 'Engelsiz Erişim', label: 'Engelsiz Erişim' },
+                { value: 'Mutfak', label: 'Mutfak' },
+                { value: 'Yerden Isıtma', label: 'Yerden Isıtma' }
             ],
             field: 'amenities'
         },
@@ -99,8 +99,8 @@ const GewerbeimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Kiralık', label: 'Satılık/Kiralık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -108,8 +108,8 @@ const GewerbeimmobilienPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

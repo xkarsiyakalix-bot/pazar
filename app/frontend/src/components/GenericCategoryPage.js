@@ -10,6 +10,9 @@ import { useListings } from '../hooks/useListings';
 import { t, getCategoryTranslation, getGenericTranslation } from '../translations';
 import { checkIfSearchIsSaved, createSavedSearch, deleteSavedSearchByUrl } from '../api/savedSearches';
 import { categories as globalCategories } from '../config/categories';
+import { supabase } from '../lib/supabase';
+import { SKELETON_CONFIG } from '../config/skeletonConfig';
+import { ListingGridSkeleton } from './skeletons/ListingCardSkeleton';
 
 const formatPriceDisplay = (val) => {
     if (!val) return '';
@@ -18,11 +21,23 @@ const formatPriceDisplay = (val) => {
 };
 
 const areSubCategoriesEquivalent = (sub1, sub2) => {
-    if (!sub1 || !sub2) return false;
-    const normalize = (s) => s.toLowerCase().trim()
+    if (!sub1 || !sub2) return sub1 === sub2;
+    const normalize = (s) => String(s).toLowerCase().trim()
         .replace(/&/g, 've')
         .replace(/  +/g, ' ');
-    return normalize(sub1) === normalize(sub2);
+    const n1 = normalize(sub1);
+    const n2 = normalize(sub2);
+    if (n1 === n2) return true;
+
+    // Handle common plural/singular or variations
+    const mappings = [
+        ['otomobiller', 'otomobil', 'autos'],
+        ['kiralık daireler', 'kiralık daire', 'mietwohnungen'],
+        ['satılık daireler', 'satılık daire', 'eigentumswohnungen'],
+        ['kiralık evler', 'kiralık müstakil ev', 'kiralık ev', 'häuser zur miete'],
+        ['satılık evler', 'satılık müstakil ev', 'satılık ev', 'häuser zum kauf']
+    ];
+    return mappings.some(group => group.includes(n1) && group.includes(n2));
 };
 
 const GenericCategoryPage = ({
@@ -48,23 +63,53 @@ const GenericCategoryPage = ({
     const [savedSearchId, setSavedSearchId] = useState(null);
     const [savingSearch, setSavingSearch] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [inactiveCategories, setInactiveCategories] = useState(new Set());
+
+    // Fetch inactive categories
+    useEffect(() => {
+        const fetchInactive = async () => {
+            try {
+                const { data } = await supabase
+                    .from('category_settings')
+                    .select('category_name')
+                    .eq('is_active', false);
+
+                if (data) {
+                    setInactiveCategories(new Set(data.map(item => item.category_name)));
+                }
+            } catch (error) {
+                console.error('Error fetching inactive categories in GenericCategoryPage:', error);
+            }
+        };
+        fetchInactive();
+    }, [location.pathname]);
 
     // Resolve subcategories if not provided
     const resolvedSubCategories = React.useMemo(() => {
-        if (subCategories && subCategories.length > 0) return subCategories;
-
-        // Find main category from global list
-        const mainCat = globalCategories.find(c => c.name === category);
-        if (mainCat && mainCat.subcategories) {
-            const list = mainCat.subcategories.map(name => ({
-                name,
-                route: getCategoryPath(category, name)
-            }));
-            // Add "Tümü" (All) at the beginning
-            return [{ name: 'Tümü', route: getCategoryPath(category) }, ...list];
+        let list = [];
+        if (subCategories && subCategories.length > 0) {
+            list = subCategories;
+        } else {
+            // Find main category from global list
+            const mainCat = globalCategories.find(c => c.name === category);
+            if (mainCat && mainCat.subcategories) {
+                list = mainCat.subcategories.map(name => ({
+                    name,
+                    route: getCategoryPath(category, name)
+                }));
+            }
         }
-        return [];
-    }, [subCategories, category]);
+
+        // Filter out inactive subcategories
+        const filteredList = list.filter(sub => !inactiveCategories.has(sub.name));
+
+        // Add "Tümü" (All) at the beginning if not already there and if we have a category
+        if (category && (!filteredList.length || filteredList[0].name !== 'Tümü')) {
+            return [{ name: 'Tümü', route: getCategoryPath(category) }, ...filteredList];
+        }
+
+        return filteredList;
+    }, [subCategories, category, inactiveCategories]);
 
     // 1. Derive active filters directly from URL
     const getActiveFiltersFromURL = () => {
@@ -135,7 +180,7 @@ const GenericCategoryPage = ({
         }
     });
 
-    const { listings, loading, hasMore, loadMore } = useListings(category, subCategory, 1, 20, serverFilters);
+    const { listings, loading, hasMore, loadMore } = useListings(category, subCategory, 1, 50, serverFilters);
 
     useEffect(() => {
         console.log(`[DEBUG] GenericCategoryPage (${category}${subCategory ? ` > ${subCategory}` : ''}):`, {
@@ -379,12 +424,12 @@ const GenericCategoryPage = ({
                 return listingValStr === 'gewerblich' || listingValStr === 'gewerblicher nutzer';
             }
             // Versand logic
-            if (key === 'versand') {
-                if (targetVal === 'versand möglich' || targetVal === 'kargo mümkün') {
-                    return listingValStr === 'true' || listingValStr === 'versand möglich' || listingValStr === 'kargo mümkün';
+            if (key === 'versand' || key === 'shipping') {
+                if (targetVal === 'kargo mümkün' || targetVal === 'versand möglich') {
+                    return listingValStr === 'true' || listingValStr === 'kargo mümkün' || listingValStr === 'versand möglich';
                 }
-                if (targetVal === 'nur abholung' || targetVal === 'sadece elden teslim') {
-                    return !listingValStr || listingValStr === 'false' || listingValStr === 'nur abholung' || listingValStr === 'sadece elden teslim';
+                if (targetVal === 'sadece elden teslim' || targetVal === 'nur abholung') {
+                    return !listingValStr || listingValStr === 'false' || listingValStr === 'sadece elden teslim' || listingValStr === 'nur abholung';
                 }
             }
 
@@ -654,11 +699,11 @@ const GenericCategoryPage = ({
                                         value={optionValue}
                                         checked={isChecked}
                                         onChange={() => handleFilterChange(key, isChecked ? '' : optionValue)}
-                                        className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                        className="w-4 h-4 text-red-600 dark:text-rose-500 border-gray-300 dark:border-white/10 focus:ring-red-500 dark:focus:ring-rose-500/20 dark:bg-neutral-800"
                                     />
-                                    <span className="text-sm text-gray-700 group-hover:text-red-600">{option.displayLabel || getGenericTranslation(optionLabel)}</span>
+                                    <span className="text-sm text-gray-700 dark:text-neutral-300 group-hover:text-red-600 dark:group-hover:text-rose-400 font-medium">{option.displayLabel || getGenericTranslation(optionLabel)}</span>
                                 </div>
-                                <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
+                                <span className="text-xs text-gray-400 dark:text-neutral-500">({count.toLocaleString('tr-TR')})</span>
                             </label>
                         );
                     })}
@@ -684,13 +729,13 @@ const GenericCategoryPage = ({
                                         value={optionValue}
                                         checked={isSelected}
                                         onChange={() => handleFilterChange(key, optionValue)}
-                                        className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                        className="w-4 h-4 text-red-600 dark:text-rose-500 border-gray-300 dark:border-white/10 rounded focus:ring-red-500 dark:focus:ring-rose-500/20 dark:bg-neutral-800"
                                     />
-                                    <span className={`text-sm group-hover:text-red-600 transition-colors ${isSelected ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
+                                    <span className={`text-sm group-hover:text-red-600 dark:group-hover:text-rose-400 transition-colors ${isSelected ? 'text-gray-900 dark:text-neutral-100 font-bold' : 'text-gray-700 dark:text-neutral-300'}`}>
                                         {option.displayLabel || getGenericTranslation(optionLabel)}
                                     </span>
                                 </div>
-                                <span className="text-xs text-gray-400">({count.toLocaleString('tr-TR')})</span>
+                                <span className="text-xs text-gray-400 dark:text-neutral-500">({count.toLocaleString('tr-TR')})</span>
                             </label>
                         );
                     })}
@@ -721,7 +766,7 @@ const GenericCategoryPage = ({
                                     }
                                 }}
                                 placeholder={t.filters.from}
-                                className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 rounded-lg px-2 py-2 text-sm text-gray-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-rose-500/20"
                             />
                         </div>
                         <div>
@@ -743,7 +788,7 @@ const GenericCategoryPage = ({
                                     }
                                 }}
                                 placeholder={t.filters.to}
-                                className="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 rounded-lg px-2 py-2 text-sm text-gray-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-rose-500/20"
                             />
                         </div>
                     </div>
@@ -756,7 +801,7 @@ const GenericCategoryPage = ({
                                 [`${key}To`]: to ? to.toString().replace(/\./g, '') : ''
                             });
                         }}
-                        className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[38px] w-[38px] flex items-center justify-center border border-gray-200"
+                        className="bg-gray-100 dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-rose-500/10 text-gray-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-rose-400 p-2 rounded-lg transition-colors h-[38px] w-[38px] flex items-center justify-center border border-gray-200 dark:border-white/10"
                         title={t.filters.apply || "Uygula"}
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -775,11 +820,11 @@ const GenericCategoryPage = ({
                             type="checkbox"
                             checked={activeFilters[key]}
                             onChange={(e) => handleFilterChange(key, e.target.checked)}
-                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                            className="w-4 h-4 text-red-600 dark:text-rose-500 border-gray-300 dark:border-white/10 rounded focus:ring-red-500 dark:focus:ring-rose-500/20 dark:bg-neutral-800"
                         />
-                        <span className="text-sm text-gray-700 group-hover:text-red-600 font-medium">Aktif</span>
+                        <span className="text-sm text-gray-700 dark:text-neutral-300 group-hover:text-red-600 dark:group-hover:text-rose-400 font-bold">Aktif</span>
                     </div>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 dark:text-neutral-500">
                         ({getFilterCount(key, true).toLocaleString('tr-TR')})
                     </span>
                 </label>
@@ -807,7 +852,7 @@ const GenericCategoryPage = ({
                             const year = currYear || currentYear;
                             updateURL({ [key]: newMonth ? `${year}-${newMonth}` : year });
                         }}
-                        className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                        className="flex-1 border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-100 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-rose-500/20"
                     >
                         <option value="">{t.filters.month || 'Ay'}</option>
                         {months.map(m => (
@@ -824,7 +869,7 @@ const GenericCategoryPage = ({
                                 updateURL({ [key]: currMonth ? `${newYear}-${currMonth}` : newYear });
                             }
                         }}
-                        className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                        className="flex-1 border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-100 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-rose-500/20"
                     >
                         <option value="">{t.filters.year || 'Yıl'}</option>
                         {years.map(y => (
@@ -858,32 +903,39 @@ const GenericCategoryPage = ({
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors">
 
 
             <CategorySEO category={category} subCategory={subCategory} itemCount={listings.length} />
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
 
-                {/* Mobile/Tablet Filter Button - Fixed to left */}
-                <button
-                    onClick={() => setShowMobileFilters(true)}
-                    className="xl:hidden fixed left-4 top-24 z-[1001] w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center group"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    {getActiveFilterCount() > 0 && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                            {getActiveFilterCount()}
-                        </span>
-                    )}
-                </button>
+                <div className="flex items-center gap-3 mb-6 bg-white dark:bg-neutral-800/50 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                    {/* Mobile/Tablet Filter Button */}
+                    <button
+                        onClick={() => setShowMobileFilters(true)}
+                        className="xl:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 group shrink-0"
+                    >
+                        <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        <span className="text-sm font-bold">Filtrele</span>
+                        {getActiveFilterCount() > 0 && (
+                            <span className="w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                                {getActiveFilterCount()}
+                            </span>
+                        )}
+                    </button>
+
+                    <div className="flex-1 overflow-hidden">
+                        <Breadcrumb items={breadcrumbItems} />
+                    </div>
+                </div>
 
                 <div className="flex flex-col xl:flex-row gap-6">
                     {/* Filter Sidebar - Responsive Drawer for Mobile/Tablet */}
                     <aside className={`
-                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-[20%] xl:min-w-[320px] xl:block
                         ${showMobileFilters ? 'block' : 'hidden xl:block'}
                     `}>
                         {/* Mobile Overlay Backdrop */}
@@ -894,13 +946,13 @@ const GenericCategoryPage = ({
 
                         {/* Sidebar Content Column - Balanced width on mobile */}
                         <div className={`
-                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6
-                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white dark:bg-neutral-800 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0 border-r dark:border-white/5 xl:border-none
                             ${showMobileFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>
                             {/* Mobile Header */}
-                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
-                                <h3 className="font-bold text-gray-900 text-lg">{t.filters.filtering || "Filtreleme"}</h3>
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b dark:border-white/5">
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 text-lg">{t.filters.filtering || "Filtreleme"}</h3>
                                 <button
                                     onClick={() => setShowMobileFilters(false)}
                                     className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
@@ -911,11 +963,11 @@ const GenericCategoryPage = ({
                                 </button>
                             </div>
                             {/* Category Navigation */}
-                            <div className="mb-6 pb-6 border-b border-gray-200">
+                            <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/5">
                                 <h3 className="font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent mb-3 text-base">{t.filters.categories}</h3>
                                 <button
                                     onClick={() => navigate('/Butun-Kategoriler')}
-                                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
+                                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-600 flex items-center justify-between group"
                                 >
                                     <span>{t.filters.allCategories}</span>
                                     <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -928,7 +980,7 @@ const GenericCategoryPage = ({
                                         onClick={() => {
                                             navigate(getCategoryPath(category));
                                         }}
-                                        className={`text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ml-4 ${subCategory ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'}`}
+                                        className={`text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ml-4 ${subCategory ? 'bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-600' : 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'}`}
                                         style={{ width: 'calc(100% - 1rem)' }}
                                     >
                                         <span>{getCategoryTranslation(category)}</span>
@@ -937,46 +989,56 @@ const GenericCategoryPage = ({
                                         </svg>
                                     </button>
 
-                                    {resolvedSubCategories && resolvedSubCategories.length > 0 && !subCategory && (
-                                        <div className="space-y-1 pt-3 border-t border-gray-200 mt-3">
-                                            {resolvedSubCategories.map(sub => {
-                                                const count = getSubcategoryCount(sub.name);
-                                                // Check if this subcategory is the active one
-                                                // "Tümü" is active if subCategory prop is null/undefined
-                                                const isActive = (sub.name === 'Tümü' || sub.name === 'Alle')
-                                                    ? !subCategory
-                                                    : areSubCategoriesEquivalent(sub.name, subCategory);
+                                    {resolvedSubCategories && resolvedSubCategories.length > 0 && (
+                                        <div className="space-y-1 pt-3 border-t border-gray-200 dark:border-white/5 mt-3">
+                                            {resolvedSubCategories
+                                                .filter(sub => {
+                                                    // If a subcategory is selected, hide other non-relevant subcategories
+                                                    if (subCategory) {
+                                                        const isAll = sub.name === 'Tümü' || sub.name === 'Alle' || sub.name === 'Tüm';
+                                                        return areSubCategoriesEquivalent(sub.name, subCategory) || isAll;
+                                                    }
+                                                    // When no subcategory is selected, show everything
+                                                    return true;
+                                                })
+                                                .map(sub => {
+                                                    const count = getSubcategoryCount(sub.name);
+                                                    // Check if this subcategory is the active one
+                                                    // "Tümü" is active if subCategory prop is null/undefined
+                                                    const isActive = (sub.name === 'Tümü' || sub.name === 'Alle')
+                                                        ? !subCategory
+                                                        : areSubCategoriesEquivalent(sub.name, subCategory);
 
-                                                return (
-                                                    <button
-                                                        key={sub.name}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            navigate(sub.route);
-                                                        }}
-                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${isActive
-                                                            ? 'bg-gradient-to-r from-red-50 to-rose-50 text-red-600 font-bold'
-                                                            : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-red-600'
-                                                            }`}
-                                                    >
-                                                        <span>{getCategoryTranslation(sub.name)}</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className={`text-xs ${isActive ? 'text-red-400' : 'text-gray-400'}`}>({count.toLocaleString('tr-TR')})</span>
-                                                            <svg className={`w-4 h-4 transition-colors ${isActive ? 'text-red-500' : 'text-gray-400 group-hover:text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                            </svg>
-                                                        </div>
-                                                    </button>
-                                                );
-                                            })}
+                                                    return (
+                                                        <button
+                                                            key={sub.name}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                navigate(sub.route);
+                                                            }}
+                                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${isActive
+                                                                ? 'bg-gradient-to-r from-red-50 to-rose-50 dark:from-rose-500/10 dark:to-red-500/10 text-red-600 dark:text-rose-400 font-bold'
+                                                                : 'bg-gray-50 dark:bg-neutral-800/50 text-gray-700 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:hover:text-rose-400'
+                                                                }`}
+                                                        >
+                                                            <span>{getCategoryTranslation(sub.name)}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className={`text-xs ${isActive ? 'text-red-400 dark:text-rose-300' : 'text-gray-400 dark:text-neutral-500'}`}>({count.toLocaleString('tr-TR')})</span>
+                                                                <svg className={`w-4 h-4 transition-colors ${isActive ? 'text-red-500' : 'text-gray-400 group-hover:text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                                </svg>
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-200">
-                                <h3 className="font-bold text-gray-900 text-lg">{getCategoryTranslation(pageTitle || subCategory || category)}</h3>
-                                <span className="text-gray-500 font-medium">{getStaticTotalCount()} {t.filters.ads}</span>
+                            <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-200 dark:border-white/5">
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 text-lg">{getCategoryTranslation(pageTitle || subCategory || category)}</h3>
+                                <span className="text-gray-500 dark:text-neutral-400 font-medium">{getStaticTotalCount()} {t.filters.ads}</span>
                             </div>
 
                             {/* Active Filters Display */}
@@ -984,23 +1046,23 @@ const GenericCategoryPage = ({
 
 
                             {/* Category-specific Filters */}
-                            <div className="mt-8 pt-8 border-t border-gray-100">
+                            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-white/5">
                                 {Object.entries(filterConfig).map(([key, config]) => (
                                     <div key={key} className="mb-8 last:mb-0">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h4 className="font-bold text-gray-900 text-sm uppercase tracking-wider">{getGenericTranslation(config.label)}</h4>
+                                            <h4 className="font-bold text-gray-900 dark:text-neutral-100 text-sm uppercase tracking-wider">{getGenericTranslation(config.label)}</h4>
                                             {((config.type === 'multiselect' && activeFilters[key]?.length > 0) ||
                                                 (config.type === 'range' && (activeFilters[`${key}From`] || activeFilters[`${key}To`])) ||
                                                 (config.type !== 'multiselect' && config.type !== 'range' && activeFilters[key])) && (
                                                     <button
                                                         onClick={() => clearFilter(key)}
-                                                        className="text-xs text-red-600 hover:text-red-700 font-bold transition-colors"
+                                                        className="text-xs text-red-600 dark:text-rose-400 hover:text-red-700 dark:hover:text-rose-300 font-bold transition-colors"
                                                     >
                                                         {t.filters.clear || "Temizle"}
                                                     </button>
                                                 )}
                                         </div>
-                                        <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100/50">
+                                        <div className="bg-gray-50/50 dark:bg-neutral-800/30 rounded-xl p-4 border border-gray-100/50 dark:border-white/5">
                                             {renderFilterInput(key, config)}
                                         </div>
                                     </div>
@@ -1068,7 +1130,7 @@ const GenericCategoryPage = ({
                         <div className="w-full">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:px-0">
                                 <div className="flex items-center justify-between w-full">
-                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-neutral-100">
                                         {getTotalCount()} {t.common?.listingsCount || 'İlan'}
                                     </h2>
 
@@ -1105,8 +1167,8 @@ const GenericCategoryPage = ({
                                         }}
                                         disabled={savingSearch}
                                         className={`group flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isSaved
-                                            ? 'border-yellow-400 bg-yellow-50 text-yellow-700'
-                                            : 'border-gray-200 hover:border-yellow-400 hover:bg-yellow-50 text-gray-500 hover:text-yellow-700'
+                                            ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-400/10 text-yellow-700 dark:text-yellow-500'
+                                            : 'border-gray-200 dark:border-white/5 hover:border-yellow-400 dark:hover:border-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-400/10 text-gray-500 dark:text-neutral-400 hover:text-yellow-700 dark:hover:text-yellow-500'
                                             }`}
                                         title={isSaved ? 'Arama Kaydedildi' : 'Aramayı Kaydet'}
                                     >
@@ -1131,12 +1193,18 @@ const GenericCategoryPage = ({
                             </div>
 
                             {loading ? (
-                                <div className="flex justify-center items-center py-12">
-                                    <LoadingSpinner size="medium" />
+                                <div className="py-8">
+                                    {SKELETON_CONFIG.enabled ? (
+                                        <ListingGridSkeleton count={8} />
+                                    ) : (
+                                        <div className="flex justify-center items-center py-12">
+                                            <LoadingSpinner size="medium" />
+                                        </div>
+                                    )}
                                 </div>
                             ) : filteredListings.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <p className="text-gray-500 text-lg">{t.common?.noListings || 'İlan bulunamadı'}</p>
+                                    <p className="text-gray-500 dark:text-neutral-400 text-lg">{t.common?.noListings || 'İlan bulunamadı'}</p>
                                 </div>
                             ) : (
                                 <>
@@ -1175,7 +1243,7 @@ const GenericCategoryPage = ({
                                 <div className="mt-8 flex justify-center">
                                     <button
                                         onClick={loadMore}
-                                        className="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                                        className="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-white/5 text-gray-700 dark:text-neutral-300 font-medium py-2 px-6 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors shadow-sm"
                                     >
                                         {t.common?.loadMore || 'Dahasını yükle'}
                                     </button>

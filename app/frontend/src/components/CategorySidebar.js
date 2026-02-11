@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { categories } from '../data/categories';
+import { supabase } from '../lib/supabase';
 
 export const getCategoryPath = (categoryName, subcategoryName = null) => {
     const mainMappings = {
@@ -264,15 +265,49 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     return `/${catSlug}/${subSlug}`;
 };
 
+const areSubCategoriesEquivalent = (sub1, sub2) => {
+    if (!sub1 || !sub2) return sub1 === sub2;
+    const normalize = s => String(s).toLowerCase().trim();
+    const n1 = normalize(sub1);
+    const n2 = normalize(sub2);
+    if (n1 === n2) return true;
+
+    const mappings = [
+        ['kiralık daireler', 'kiralık daire', 'mietwohnungen'],
+        ['satılık daireler', 'satılık daire', 'eigentumswohnungen'],
+        ['kiralık evler', 'kiralık müstakil ev', 'kiralık ev', 'häuser zur miete'],
+        ['satılık evler', 'satılık müstakil ev', 'satılık ev', 'häuser zum kauf'],
+        ['otomobil, bisiklet & tekne', 'oto, bisiklet & tekne', 'auto, rad & boot']
+        // ... can add more if needed
+    ];
+    return mappings.some(group => group.includes(n1) && group.includes(n2));
+};
+
 
 export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
     const [expandedCategories, setExpandedCategories] = useState([]);
     const [categoriesWithCounts, setCategoriesWithCounts] = useState(categories);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        const fetchCategoryCounts = async () => {
+        const fetchCategoriesAndCounts = async () => {
             try {
+                // 1. Fetch category settings (active/passive)
+                const { data: settingsData } = await supabase
+                    .from('category_settings')
+                    .select('*');
+
+                const inactiveCategories = new Set();
+                if (settingsData) {
+                    settingsData.forEach(item => {
+                        if (item.is_active === false) {
+                            inactiveCategories.add(item.category_name);
+                        }
+                    });
+                }
+
+                // 2. Fetch counts
                 const { fetchCategoryCounts: fetchCounts } = await import('../api/listings');
                 const allListings = await fetchCounts();
                 const counts = {};
@@ -295,32 +330,39 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                     }
                 });
 
-                const updatedCategories = categories.map(category => {
-                    if (category.name === 'Tüm Kategoriler') {
-                        return { ...category, count: allListings.length };
-                    }
+                // 3. Filter and map categories
+                const updatedCategories = categories
+                    .filter(cat => !inactiveCategories.has(cat.name)) // Filter out inactive main
+                    .map(category => {
+                        if (category.name === 'Tüm Kategoriler') {
+                            return { ...category, count: allListings.length };
+                        }
 
-                    const mainCount = counts[category.name] || 0;
-                    const updatedSubcategories = category.subcategories?.map(sub => ({
-                        ...sub,
-                        count: counts[`${category.name}:${sub.name}`] || 0
-                    }));
+                        const mainCount = counts[category.name] || 0;
 
-                    return {
-                        ...category,
-                        count: mainCount,
-                        subcategories: updatedSubcategories || category.subcategories
-                    };
-                });
+                        // Filter out inactive subcategories
+                        const updatedSubcategories = category.subcategories
+                            ?.filter(sub => !inactiveCategories.has(sub.name)) // Filter out inactive sub
+                            ?.map(sub => ({
+                                ...sub,
+                                count: counts[`${category.name}:${sub.name}`] || 0
+                            }));
+
+                        return {
+                            ...category,
+                            count: mainCount,
+                            subcategories: updatedSubcategories || category.subcategories
+                        };
+                    });
 
                 setCategoriesWithCounts(updatedCategories);
             } catch (error) {
-                console.error('Error fetching category counts:', error);
+                console.error('Error fetching categories:', error);
             }
         };
 
-        fetchCategoryCounts();
-    }, []);
+        fetchCategoriesAndCounts();
+    }, [location.pathname]);
 
     const toggleCategory = (categoryName) => {
         setExpandedCategories(prev =>
@@ -331,8 +373,8 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
     };
 
     return (
-        <aside className="w-96 flex-shrink-0 bg-white rounded-2xl shadow-lg p-6 h-fit border border-gray-100 hidden lg:block">
-            <h3 className="font-bold text-gray-900 mb-5 text-lg">Kategoriler</h3>
+        <aside className="w-96 flex-shrink-0 bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-6 h-fit border border-gray-100 dark:border-white/5 hidden lg:block transition-colors duration-300">
+            <h3 className="font-bold text-gray-900 dark:text-neutral-50 mb-5 text-lg">Kategoriler</h3>
             <div className="space-y-1.5">
                 {categoriesWithCounts.map((category) => (
                     <div key={category.name}>
@@ -348,18 +390,18 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                             }}
                             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 text-left ${selectedCategory === category.name
                                 ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
-                                : 'hover:bg-gray-50 text-gray-700 hover:shadow-sm'
+                                : 'hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-400 hover:shadow-sm'
                                 }`}
                         >
                             <span className="font-semibold text-sm flex-grow">{category.name}</span>
                             <div className="flex items-center gap-2">
                                 {category.count > 0 && (
-                                    <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === category.name ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === category.name ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400'}`}>
                                         {category.count.toLocaleString('tr-TR')}
                                     </span>
                                 )}
                                 {category.subcategories && (
-                                    <div className={`p-1 rounded-lg transition-colors ${selectedCategory === category.name ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`}>
+                                    <div className={`p-1 rounded-lg transition-colors ${selectedCategory === category.name ? 'hover:bg-white/10' : 'hover:bg-gray-200 dark:hover:bg-neutral-700'}`}>
                                         <svg
                                             className={`w-4 h-4 transition-transform duration-200 ${expandedCategories.includes(category.name) ? 'rotate-180' : ''} ${selectedCategory === category.name ? 'text-white' : 'text-gray-400'}`}
                                             fill="none"
@@ -372,9 +414,26 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                                 )}
                             </div>
                         </button>
-                        {category.subcategories && expandedCategories.includes(category.name) && (
+
+                        {category.subcategories && category.name !== 'Tüm Kategoriler' && (
                             <div className="mt-1 ml-4 space-y-1 px-2 animate-in slide-in-from-top-1 duration-200">
-                                {category.subcategories.map((sub) => (
+                                {(expandedCategories.includes(category.name)
+                                    ? [...(category.subcategories || [])]
+                                        .filter(sub => {
+                                            // On smaller screens, if a subcategory is selected, hide other subcategories
+                                            if (window.innerWidth < 1280 && selectedCategory) {
+                                                const isSelectMatch = areSubCategoriesEquivalent(sub.name, selectedCategory);
+                                                // If current sub is NOT the selected one, and we HAVE a selected one that is IN this category
+                                                const hasMatchInCategory = category.subcategories.some(s => areSubCategoriesEquivalent(s.name, selectedCategory));
+                                                if (hasMatchInCategory && !isSelectMatch) return false;
+                                            }
+                                            return true;
+                                        })
+                                        .sort((a, b) => (b.count || 0) - (a.count || 0))
+                                    : [...(category.subcategories || [])]
+                                        .sort((a, b) => (b.count || 0) - (a.count || 0))
+                                        .slice(0, 2)
+                                ).map((sub) => (
                                     <button
                                         key={sub.name}
                                         onClick={() => {
@@ -383,18 +442,30 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                                             setSelectedCategory(sub.name);
                                         }}
                                         className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${selectedCategory === sub.name
-                                            ? 'bg-red-50 text-red-600 font-bold'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                            ? 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-bold'
+                                            : 'text-gray-600 dark:text-neutral-500 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-neutral-200'
                                             }`}
                                     >
-                                        <span>{sub.name}</span>
+                                        <span className="truncate pr-2">{sub.name}</span>
                                         {sub.count > 0 && (
-                                            <span className="text-[10px] text-gray-400 font-medium">
+                                            <span className="text-xs text-gray-400 dark:text-neutral-500 font-bold flex-shrink-0">
                                                 {sub.count.toLocaleString('tr-TR')}
                                             </span>
                                         )}
                                     </button>
                                 ))}
+
+                                {category.subcategories?.length > 2 && !expandedCategories.includes(category.name) && (
+                                    <button
+                                        onClick={() => toggleCategory(category.name)}
+                                        className="w-full text-left px-3 py-1 text-[11px] font-bold text-gray-900 dark:text-neutral-400 hover:text-red-500 hover:underline transition-colors flex items-center gap-1 mt-1"
+                                    >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                        {category.subcategories.length - 2} alt kategori daha
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>

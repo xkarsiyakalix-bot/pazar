@@ -8,12 +8,12 @@ const WeitereJobsPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Designer/-in & Grafiker/-in', label: 'Tasarımcı & Grafiker' },
-                { value: 'Friseur/-in', label: 'Kuaför' },
-                { value: 'Haushaltshilfe', label: 'Ev Yardımcısı' },
-                { value: 'Hausmeister/-in', label: 'Apartman Görevlisi' },
-                { value: 'Reinigungskraft', label: 'Temizlik Elemanı' },
-                { value: 'Weitere Berufe', label: 'Diğer Meslekler' }
+                { value: 'Tasarımcı & Grafiker', label: 'Tasarımcı & Grafiker' },
+                { value: 'Kuaför', label: 'Kuaför' },
+                { value: 'Ev Yardımcısı', label: 'Ev Yardımcısı' },
+                { value: 'Apartman Görevlisi', label: 'Apartman Görevlisi' },
+                { value: 'Temizlik Elemanı', label: 'Temizlik Elemanı' },
+                { value: 'Diğer Meslekler', label: 'Diğer Meslekler' }
             ],
             field: 'weitere_jobs_art'
         },
@@ -21,8 +21,8 @@ const WeitereJobsPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Çalışma Süresi',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' }
             ],
             field: 'working_time'
         },
@@ -35,8 +35,8 @@ const WeitereJobsPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -44,8 +44,8 @@ const WeitereJobsPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

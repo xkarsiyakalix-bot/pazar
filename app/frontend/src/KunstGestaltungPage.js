@@ -28,8 +28,8 @@ const KunstGestaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -37,8 +37,8 @@ const KunstGestaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },
@@ -52,12 +52,12 @@ const KunstGestaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Malen & Zeichnen', label: 'Resim & Çizim' },
-                { value: 'Fotografie', label: 'Fotoğrafçılık' },
-                { value: 'Töpfern & Keramik', label: 'Çömlekçilik & Seramik' },
-                { value: 'Nähen & Textil', label: 'Dikiş & Tekstil' },
-                { value: 'Schmuckdesign', label: 'Takı Tasarımı' },
-                { value: 'Sonstiges', label: 'Diğer' }
+                { value: 'Resim & Çizim', label: 'Resim & Çizim' },
+                { value: 'Fotoğrafçılık', label: 'Fotoğrafçılık' },
+                { value: 'Çömlekçilik & Seramik', label: 'Çömlekçilik & Seramik' },
+                { value: 'Dikiş & Tekstil', label: 'Dikiş & Tekstil' },
+                { value: 'Takı Tasarımı', label: 'Takı Tasarımı' },
+                { value: 'Diğer', label: 'Diğer' }
             ],
             field: 'kunst_gestaltung_art'
         }

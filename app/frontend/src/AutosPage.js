@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useListings } from './hooks/useListings';
 import GenericCategoryPage from './components/GenericCategoryPage';
@@ -10,6 +10,12 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { CategorySEO } from './SEO';
 import { LazyImage } from './LazyLoad';
 import { categories as globalCategories } from './config/categories';
+import { supabase } from './lib/supabase';
+import { getListingUrl } from './utils/slug';
+import { SKELETON_CONFIG } from './config/skeletonConfig';
+import { ListingGridSkeleton } from './components/skeletons/ListingCardSkeleton';
+import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from './api/savedSearches';
+import { useAuth } from './contexts/AuthContext';
 
 
 
@@ -21,8 +27,25 @@ const formatPrice = (val) => {
     return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
 
+const areSubCategoriesEquivalent = (sub1, sub2) => {
+    if (!sub1 || !sub2) return sub1 === sub2;
+    const normalize = (s) => String(s).toLowerCase().trim()
+        .replace(/&/g, 've')
+        .replace(/  +/g, ' ');
+    const n1 = normalize(sub1);
+    const n2 = normalize(sub2);
+    if (n1 === n2) return true;
+
+    const mappings = [
+        ['otomobiller', 'otomobil', 'autos'],
+        ['otomobil, bisiklet & tekne', 'oto, bisiklet & tekne', 'auto, rad & boot']
+    ];
+    return mappings.some(group => group.includes(n1) && group.includes(n2));
+};
+
 function AutosPage() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Load saved filters from localStorage
     const loadSavedFilters = () => {
@@ -53,6 +76,43 @@ function AutosPage() {
         return saved ? JSON.parse(saved) : [];
     });
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [inactiveCategories, setInactiveCategories] = useState(new Set());
+    const [sortBy, setSortBy] = useState('newest'); // Options: newest, price-asc, price-desc, km-asc, km-desc, year-desc
+    const [isSaved, setIsSaved] = useState(false);
+    const { user } = useAuth();
+
+    // Fetch inactive categories
+    useEffect(() => {
+        const fetchInactive = async () => {
+            try {
+                const { data } = await supabase
+                    .from('category_settings')
+                    .select('category_name')
+                    .eq('is_active', false);
+
+                if (data) {
+                    setInactiveCategories(new Set(data.map(item => item.category_name)));
+                }
+            } catch (error) {
+                console.error('Error fetching inactive categories in AutosPage:', error);
+            }
+        };
+        fetchInactive();
+    }, [location.pathname]);
+
+    // Check if current search is saved
+    useEffect(() => {
+        const checkSaved = async () => {
+            if (!user) {
+                setIsSaved(false);
+                return;
+            }
+            const searchUrl = window.location.pathname + window.location.search;
+            const saved = await checkIfSearchIsSaved(searchUrl);
+            setIsSaved(saved);
+        };
+        checkSaved();
+    }, [user, location.pathname, location.search]);
 
     const getActiveFilterCount = () => {
         let count = 0;
@@ -90,16 +150,16 @@ function AutosPage() {
                 marke: l.marke || 'Mercedes Benz',
                 modell: l.modell || 'CLS',
                 kraftstoff: l.kraftstoff || 'Benzin',
-                fahrzeugtyp: l.fahrzeugtyp || 'Limousine',
+                fahrzeugtyp: l.fahrzeugtyp || 'Sedan',
                 door_count: l.door_count || '4/5',
-                exterior_color: l.exterior_color || 'Schwarz',
-                getriebe: l.getriebe || 'Automatik',
+                exterior_color: l.exterior_color || 'Siyah',
+                getriebe: l.getriebe || 'Otomatik',
                 leistung: l.leistung || 163,
                 kilometerstand: l.kilometerstand || 33300,
                 erstzulassung: l.erstzulassung || '12/2022',
                 schadstoffklasse: l.schadstoffklasse || 'Euro6',
                 emission_badge: l.emission_badge || '4 (Grün)',
-                interior_material: l.interior_material || 'Vollleder',
+                interior_material: l.interior_material || 'Tam Deri',
                 scheckheftgepflegt: true,
                 nichtraucher_fahrzeug: true,
                 car_amenities: l.car_amenities || ['Einparkhilfe', 'Leichtmetallfelgen', 'Xenon-/LED-Scheinwerfer', 'Klimaanlage', 'Navigationssystem', 'Radio/Tuner', 'Bluetooth', 'Freisprecheinrichtung', 'Sitzheizung', 'Tempomat', 'Antiblockiersystem (ABS)'],
@@ -111,22 +171,131 @@ function AutosPage() {
                 marke: l.marke || 'Volkswagen',
                 modell: l.modell || 'Käfer',
                 kraftstoff: l.kraftstoff || 'Benzin',
-                fahrzeugtyp: l.fahrzeugtyp || 'Limousine',
+                fahrzeugtyp: l.fahrzeugtyp || 'Sedan',
                 door_count: l.door_count || '2/3',
-                exterior_color: l.exterior_color || 'Beige',
-                getriebe: l.getriebe || 'Schaltgetriebe',
+                exterior_color: l.exterior_color || 'Bej',
+                getriebe: l.getriebe || 'Manuel',
                 leistung: l.leistung || 44,
                 kilometerstand: l.kilometerstand || 85000,
                 erstzulassung: l.erstzulassung || '07/1970',
                 schadstoffklasse: l.schadstoffklasse || 'Euro1',
                 emission_badge: l.emission_badge || '1 (Keine)',
-                interior_material: l.interior_material || 'Stoff',
+                interior_material: l.interior_material || 'Kumaş',
                 car_amenities: l.car_amenities || ['Radio/Tuner'],
                 federal_state: l.federal_state || 'Ankara'
             };
         }
+        return enriched;
+    };
 
-        // Generic normalization for all listings to handle field aliases
+    const clearAllFilters = () => {
+        setSelectedBrands([]);
+        setSelectedModels([]);
+        setKmFrom('');
+        setKmTo('');
+        setDamagedVehicle(false);
+        setUndamagedVehicle(false);
+        setYearFrom('');
+        setYearTo('');
+        setPowerFrom('');
+        setPowerTo('');
+        setAutomaticTransmission(false);
+        setManualTransmission(false);
+        setHuDate('');
+        setPriceFrom('');
+        setPriceTo('');
+        setVehicleTypes({
+            limousine: false,
+            kombi: false,
+            kleinwagen: false,
+            offroad: false,
+            cabrio: false,
+            coupe: false,
+            van: false,
+            andere: false
+        });
+        setDoorCounts({
+            '2/3': false,
+            '4/5': false
+        });
+        setEmissionBadges({
+            '1': false,
+            '2': false,
+            '3': false,
+            '4': false
+        });
+        setEmissionClasses({
+            euro1: false,
+            euro2: false,
+            euro3: false,
+            euro4: false,
+            euro5: false,
+            euro6: false
+        });
+        setInteriorMaterials({
+            vollleder: false,
+            teilleder: false,
+            stoff: false,
+            velours: false,
+            alcantara: false,
+            andere: false
+        });
+        setExteriorColors({
+            beige: false,
+            blau: false,
+            braun: false,
+            gelb: false,
+            gold: false,
+            grau: false,
+            gruen: false,
+            orange: false,
+            rot: false,
+            schwarz: false,
+            silber: false,
+            violet: false,
+            weiss: false,
+            andere: false
+        });
+        setFeatures({
+            anhaengerkupplung: false,
+            einparkhilfe: false,
+            leichtmetallfelgen: false,
+            xenonLed: false,
+            klimaanlage: false,
+            navigationssystem: false,
+            radioTuner: false,
+            bluetooth: false,
+            freisprecheinrichtung: false,
+            schiebedach: false,
+            sitzheizung: false,
+            tempomat: false,
+            nichtraucher: false,
+            abs: false,
+            scheckheftgepflegt: false
+        });
+        setOfferType({
+            angebote: false,
+            gesuche: false
+        });
+        setSellerType({
+            privat: false,
+            gewerblich: false
+        });
+        setLocations({});
+        setFuelTypes({
+            benzin: false,
+            diesel: false,
+            erdgas: false,
+            autogas: false,
+            hybrid: false,
+            elektro: false,
+            andere: false
+        });
+    };
+
+    // Combined normalization for all listings to handle field aliases and specific enrichments
+    const normalizeListing = (l) => {
+        const enriched = enrichListingData(l);
         return {
             ...enriched,
             marke: enriched.marke || enriched.car_brand,
@@ -149,7 +318,7 @@ function AutosPage() {
                 const autoStats = (data || []).filter(l =>
                     l.sub_category === 'Autos' || l.subCategory === 'Autos' ||
                     l.sub_category === 'Otomobiller' || l.subCategory === 'Otomobiller'
-                ).map(enrichListingData);
+                ).map(normalizeListing);
                 setStatsListings(autoStats);
             } catch (err) {
                 console.error('Error loading category stats:', err);
@@ -287,14 +456,14 @@ function AutosPage() {
     };
 
     const vehicleTypeOptions = [
-        { key: 'kleinwagen', label: 'Kleinwagen', displayLabel: t.autos?.vehicleTypes?.smallCar || 'Küçük Araç', count: getFilterCount('vehicle_type', 'Kleinwagen') },
-        { key: 'limousine', label: 'Limousine', displayLabel: t.autos?.vehicleTypes?.sedan || 'Sedan', count: getFilterCount('vehicle_type', 'Limousine') },
-        { key: 'kombi', label: 'Kombi', displayLabel: t.autos?.vehicleTypes?.wagon || 'Station Baza', count: getFilterCount('vehicle_type', 'Kombi') },
-        { key: 'cabrio', label: 'Cabrio', displayLabel: t.autos?.vehicleTypes?.convertible || 'Üstü Açık', count: getFilterCount('vehicle_type', 'Cabrio') },
-        { key: 'suv', label: 'SUV/Geländewagen', displayLabel: t.autos?.vehicleTypes?.suv || 'SUV/Arazi Aracı', count: getFilterCount('vehicle_type', 'SUV/Geländewagen') },
-        { key: 'van', label: 'Van/Bus', displayLabel: t.autos?.vehicleTypes?.van || 'Van/Minibüs', count: getFilterCount('vehicle_type', 'Van/Bus') },
-        { key: 'coupe', label: 'Coupé', displayLabel: t.autos?.vehicleTypes?.coupe || 'Kupe', count: getFilterCount('vehicle_type', 'Coupé') },
-        { key: 'andere', label: 'Andere Fahrzeugtypen', displayLabel: t.common.others || 'Diğer Araç Tipleri', count: getFilterCount('vehicle_type', 'Andere Fahrzeugtypen') }
+        { key: 'kleinwagen', label: 'Küçük Araç', displayLabel: t.autos?.vehicleTypes?.smallCar || 'Küçük Araç', count: getFilterCount('vehicle_type', 'Küçük Araç') },
+        { key: 'limousine', label: 'Sedan', displayLabel: t.autos?.vehicleTypes?.sedan || 'Sedan', count: getFilterCount('vehicle_type', 'Sedan') },
+        { key: 'kombi', label: 'Station Vagon', displayLabel: t.autos?.vehicleTypes?.wagon || 'Station Baza', count: getFilterCount('vehicle_type', 'Station Vagon') },
+        { key: 'cabrio', label: 'Üstü Açık', displayLabel: t.autos?.vehicleTypes?.convertible || 'Üstü Açık', count: getFilterCount('vehicle_type', 'Üstü Açık') },
+        { key: 'suv', label: 'SUV/Arazi Aracı', displayLabel: t.autos?.vehicleTypes?.suv || 'SUV/Arazi Aracı', count: getFilterCount('vehicle_type', 'SUV/Arazi Aracı') },
+        { key: 'van', label: 'Van/Minibüs', displayLabel: t.autos?.vehicleTypes?.van || 'Van/Minibüs', count: getFilterCount('vehicle_type', 'Van/Minibüs') },
+        { key: 'coupe', label: 'Kupe', displayLabel: t.autos?.vehicleTypes?.coupe || 'Kupe', count: getFilterCount('vehicle_type', 'Kupe') },
+        { key: 'andere', label: 'Diğer Araç Tipleri', displayLabel: t.common.others || 'Diğer Araç Tipleri', count: getFilterCount('vehicle_type', 'Diğer Araç Tipleri') }
     ];
 
     const [doorCounts, setDoorCounts] = useState(savedFilters.doorCounts || {
@@ -315,7 +484,7 @@ function AutosPage() {
         { key: 'doors23', label: '2/3', displayLabel: '2/3', count: getFilterCount('door_count', '2/3') },
         { key: 'doors45', label: '4/5', displayLabel: '4/5', count: getFilterCount('door_count', '4/5') },
         { key: 'doors67', label: '6/7', displayLabel: '6/7', count: getFilterCount('door_count', '6/7') },
-        { key: 'andere', label: 'Andere Türanzahl', displayLabel: t.common.others || 'Diğer Kapı Sayıları', count: getFilterCount('door_count', 'Andere Türanzahl') }
+        { key: 'andere', label: 'Diğer Kapı Sayıları', displayLabel: t.common.others || 'Diğer Kapı Sayıları', count: getFilterCount('door_count', 'Diğer Kapı Sayıları') }
     ];
 
     const [emissionBadges, setEmissionBadges] = useState(savedFilters.emissionBadges || {
@@ -381,12 +550,12 @@ function AutosPage() {
     };
 
     const interiorMaterialOptions = [
-        { key: 'vollleder', label: 'Vollleder', displayLabel: t.autos?.interior?.leather || 'Tam Deri', count: getFilterCount('interior_material', 'Vollleder') },
-        { key: 'teilleder', label: 'Teilleder', displayLabel: t.autos?.interior?.halfLeather || 'Yarı Deri', count: getFilterCount('interior_material', 'Teilleder') },
-        { key: 'stoff', label: 'Stoff', displayLabel: t.autos?.interior?.cloth || 'Kumaş', count: getFilterCount('interior_material', 'Stoff') },
-        { key: 'velours', label: 'Velours', displayLabel: t.autos?.interior?.velour || 'Kadife', count: getFilterCount('interior_material', 'Velours') },
+        { key: 'vollleder', label: 'Tam Deri', displayLabel: t.autos?.interior?.leather || 'Tam Deri', count: getFilterCount('interior_material', 'Tam Deri') },
+        { key: 'teilleder', label: 'Yarı Deri', displayLabel: t.autos?.interior?.halfLeather || 'Yarı Deri', count: getFilterCount('interior_material', 'Yarı Deri') },
+        { key: 'stoff', label: 'Kumaş', displayLabel: t.autos?.interior?.cloth || 'Kumaş', count: getFilterCount('interior_material', 'Kumaş') },
+        { key: 'velours', label: 'Kadife', displayLabel: t.autos?.interior?.velour || 'Kadife', count: getFilterCount('interior_material', 'Kadife') },
         { key: 'alcantara', label: 'Alcantara', displayLabel: t.autos?.interior?.alcantara || 'Alcantara', count: getFilterCount('interior_material', 'Alcantara') },
-        { key: 'andere', label: 'Andere Materialien Innenausstattung', displayLabel: t.common.others || 'Diğer İç Döşemeler', count: getFilterCount('interior_material', 'Andere Materialien Innenausstattung') }
+        { key: 'andere', label: 'Diğer İç Döşemeler', displayLabel: t.common.others || 'Diğer İç Döşemeler', count: getFilterCount('interior_material', 'Diğer İç Döşemeler') }
     ];
 
     const [exteriorColors, setExteriorColors] = useState(savedFilters.exteriorColors || {
@@ -414,20 +583,20 @@ function AutosPage() {
     };
 
     const exteriorColorOptions = [
-        { key: 'beige', label: 'Beige', displayLabel: t.autos?.exteriorColors?.beige || 'Bej', count: getFilterCount('exterior_color', 'Beige') },
-        { key: 'blau', label: 'Blau', displayLabel: t.autos?.exteriorColors?.blue || 'Mavi', count: getFilterCount('exterior_color', 'Blau') },
-        { key: 'braun', label: 'Braun', displayLabel: t.autos?.exteriorColors?.brown || 'Kahverengi', count: getFilterCount('exterior_color', 'Braun') },
-        { key: 'gelb', label: 'Gelb', displayLabel: t.autos?.exteriorColors?.yellow || 'Sarı', count: getFilterCount('exterior_color', 'Gelb') },
-        { key: 'gold', label: 'Gold', displayLabel: t.autos?.exteriorColors?.gold || 'Altın', count: getFilterCount('exterior_color', 'Gold') },
-        { key: 'grau', label: 'Grau', displayLabel: t.autos?.exteriorColors?.gray || 'Gri', count: getFilterCount('exterior_color', 'Grau') },
-        { key: 'gruen', label: 'Grün', displayLabel: t.autos?.exteriorColors?.green || 'Yeşil', count: getFilterCount('exterior_color', 'Grün') },
-        { key: 'orange', label: 'Orange', displayLabel: t.autos?.exteriorColors?.orange || 'Turuncu', count: getFilterCount('exterior_color', 'Orange') },
-        { key: 'rot', label: 'Rot', displayLabel: t.autos?.exteriorColors?.red || 'Kırmızı', count: getFilterCount('exterior_color', 'Rot') },
-        { key: 'schwarz', label: 'Schwarz', displayLabel: t.autos?.exteriorColors?.black || 'Siyah', count: getFilterCount('exterior_color', 'Schwarz') },
-        { key: 'silber', label: 'Silber', displayLabel: t.autos?.exteriorColors?.silver || 'Gümüş', count: getFilterCount('exterior_color', 'Silber') },
-        { key: 'violet', label: 'Violet', displayLabel: t.autos?.exteriorColors?.violet || 'Menekşe/Mor', count: getFilterCount('exterior_color', 'Violet') },
-        { key: 'weiss', label: 'Weiß', displayLabel: t.autos?.exteriorColors?.white || 'Beyaz', count: getFilterCount('exterior_color', 'Weiß') },
-        { key: 'andere', label: 'Andere Farben', displayLabel: t.autos?.exteriorColors?.other || 'Diğer Renkler', count: getFilterCount('exterior_color', 'Andere Farben') }
+        { key: 'beige', label: 'Bej', displayLabel: t.autos?.exteriorColors?.beige || 'Bej', count: getFilterCount('exterior_color', 'Bej') },
+        { key: 'blau', label: 'Mavi', displayLabel: t.autos?.exteriorColors?.blue || 'Mavi', count: getFilterCount('exterior_color', 'Mavi') },
+        { key: 'braun', label: 'Kahverengi', displayLabel: t.autos?.exteriorColors?.brown || 'Kahverengi', count: getFilterCount('exterior_color', 'Kahverengi') },
+        { key: 'gelb', label: 'Sarı', displayLabel: t.autos?.exteriorColors?.yellow || 'Sarı', count: getFilterCount('exterior_color', 'Sarı') },
+        { key: 'gold', label: 'Altın', displayLabel: t.autos?.exteriorColors?.gold || 'Altın', count: getFilterCount('exterior_color', 'Altın') },
+        { key: 'grau', label: 'Gri', displayLabel: t.autos?.exteriorColors?.gray || 'Gri', count: getFilterCount('exterior_color', 'Gri') },
+        { key: 'gruen', label: 'Yeşil', displayLabel: t.autos?.exteriorColors?.green || 'Yeşil', count: getFilterCount('exterior_color', 'Yeşil') },
+        { key: 'orange', label: 'Turuncu', displayLabel: t.autos?.exteriorColors?.orange || 'Turuncu', count: getFilterCount('exterior_color', 'Turuncu') },
+        { key: 'rot', label: 'Kırmızı', displayLabel: t.autos?.exteriorColors?.red || 'Kırmızı', count: getFilterCount('exterior_color', 'Kırmızı') },
+        { key: 'schwarz', label: 'Siyah', displayLabel: t.autos?.exteriorColors?.black || 'Siyah', count: getFilterCount('exterior_color', 'Siyah') },
+        { key: 'silber', label: 'Gümüş', displayLabel: t.autos?.exteriorColors?.silver || 'Gümüş', count: getFilterCount('exterior_color', 'Gümüş') },
+        { key: 'violet', label: 'Mor', displayLabel: t.autos?.exteriorColors?.violet || 'Menekşe/Mor', count: getFilterCount('exterior_color', 'Mor') },
+        { key: 'weiss', label: 'Beyaz', displayLabel: t.autos?.exteriorColors?.white || 'Beyaz', count: getFilterCount('exterior_color', 'Beyaz') },
+        { key: 'andere', label: 'Diğer Renkler', displayLabel: t.autos?.exteriorColors?.other || 'Diğer Renkler', count: getFilterCount('exterior_color', 'Diğer Renkler') }
     ];
 
     const [features, setFeatures] = useState(savedFilters.features || {
@@ -513,7 +682,7 @@ function AutosPage() {
 
     const sellerTypeOptions = [
         { key: 'privat', label: 'Privatnutzer', displayLabel: t.addListing.private || 'Bireysel', count: getFilterCount('seller_type', 'Privatnutzer') },
-        { key: 'gewerblich', label: 'Gewerblicher Nutzer', displayLabel: t.addListing.commercial || 'Kurumsal', count: getFilterCount('seller_type', 'Gewerblicher Nutzer') }
+        { key: 'gewerblich', label: 'Kurumsal Kullanıcı', displayLabel: t.addListing.commercial || 'Kurumsal', count: getFilterCount('seller_type', 'Kurumsal Kullanıcı') }
     ];
 
     // Sanitize legacy locations (only keep valid Turkish cities)
@@ -563,12 +732,12 @@ function AutosPage() {
 
     const fuelTypeOptions = [
         { key: 'benzin', label: 'Benzin', displayLabel: t.autos?.fuel?.petrol || 'Benzin', count: getFilterCount('fuel_type', 'Benzin') },
-        { key: 'diesel', label: 'Diesel', displayLabel: t.autos?.fuel?.diesel || 'Dizel', count: getFilterCount('fuel_type', 'Diesel') },
+        { key: 'diesel', label: 'Dizel', displayLabel: t.autos?.fuel?.diesel || 'Dizel', count: getFilterCount('fuel_type', 'Dizel') },
         { key: 'erdgas', label: 'Erdgas (CNG)', displayLabel: t.autos?.fuel?.cng || 'Doğalgaz (CNG)', count: getFilterCount('fuel_type', 'Erdgas (CNG)') },
         { key: 'autogas', label: 'Autogas (LPG)', displayLabel: t.autos?.fuel?.lpg || 'Otogaz (LPG)', count: getFilterCount('fuel_type', 'Autogas (LPG)') },
         { key: 'hybrid', label: 'Hybrid', displayLabel: t.autos?.fuel?.hybrid || 'Hibrit', count: getFilterCount('fuel_type', 'Hybrid') },
         { key: 'elektro', label: 'Elektro', displayLabel: t.autos?.fuel?.electric || 'Elektrik', count: getFilterCount('fuel_type', 'Elektro') },
-        { key: 'andere', label: 'Andere Kraftstoffarten', displayLabel: t.common.others || 'Diğer Yakıt Türleri', count: getFilterCount('fuel_type', 'Andere Kraftstoffarten') }
+        { key: 'andere', label: 'Diğer Yakıt Türleri', displayLabel: t.common.others || 'Diğer Yakıt Türleri', count: getFilterCount('fuel_type', 'Diğer Yakıt Türleri') }
     ];
 
     const getTranslatedFuel = (fuelValue) => {
@@ -580,7 +749,7 @@ function AutosPage() {
         // Fallback or direct translation
         const map = {
             'Benzin': t.autos?.fuel?.petrol || 'Benzin',
-            'Diesel': t.autos?.fuel?.diesel || 'Dizel',
+            'Dizel': t.autos?.fuel?.diesel || 'Dizel',
             'Erdgas (CNG)': t.autos?.fuel?.cng || 'Doğalgaz (CNG)',
             'Autogas (LPG)': t.autos?.fuel?.lpg || 'Otogaz (LPG)',
             'Hybrid': t.autos?.fuel?.hybrid || 'Hibrit',
@@ -593,11 +762,11 @@ function AutosPage() {
     const getTranslatedTransmission = (transValue) => {
         if (!transValue) return '-';
         const map = {
-            'Automatik': t.autos?.transmission?.automatic || 'Otomatik',
+            'Otomatik': t.autos?.transmission?.automatic || 'Otomatik',
             'Otomatik': t.autos?.transmission?.automatic || 'Otomatik',
             'Manuell': t.autos?.transmission?.manual || 'Manuel',
             'Manuel': t.autos?.transmission?.manual || 'Manuel',
-            'Schaltgetriebe': t.autos?.transmission?.manual || 'Manuel', // Common alias
+            'Manuel': t.autos?.transmission?.manual || 'Manuel', // Common alias
             'Halbautomatik': 'Yarı Otomatik',
             'Yarı Otomatik': 'Yarı Otomatik',
             'Andere': t.common.others || 'Diğer'
@@ -683,9 +852,8 @@ function AutosPage() {
         fuelTypes
     ]);
 
-    // Listings state
-    // Listings state
-    const { listings, loading, hasMore, loadMore, page, setListings } = useListings('Otomobil, Bisiklet & Tekne', 'Otomobiller', 1, 15);
+    // Listings state - Load 50 listings per page for better UX
+    const { listings, loading, hasMore, loadMore, page, setListings } = useListings('Otomobil, Bisiklet & Tekne', 'Otomobiller', 1, 50);
 
 
 
@@ -744,7 +912,7 @@ function AutosPage() {
 
         // Transmission (Getriebe)
         if (automaticTransmission || manualTransmission) {
-            const showAuto = automaticTransmission && (listing.getriebe === 'Automatik' || listing.getriebe === 'Otomatik');
+            const showAuto = automaticTransmission && (listing.getriebe === 'Otomatik' || listing.getriebe === 'Otomatik');
             const showManual = manualTransmission && (listing.getriebe === 'Manuell' || listing.getriebe === 'Manuel');
             // Note: AddListing now saves 'Otomatik'/'Manuel'
             if (!showAuto && !showManual && listing.getriebe) return false;
@@ -753,7 +921,7 @@ function AutosPage() {
         // Seller Type
         if (sellerType.privat || sellerType.gewerblich) {
             const showPrivat = sellerType.privat && listing.seller_type === 'Privatnutzer';
-            const showGewerblich = sellerType.gewerblich && listing.seller_type === 'Gewerblicher Nutzer';
+            const showGewerblich = sellerType.gewerblich && listing.seller_type === 'Kurumsal Kullanıcı';
             if (!showPrivat && !showGewerblich) return false;
         }
 
@@ -895,9 +1063,9 @@ function AutosPage() {
         return true;
     });
 
-    // Sort listings: Premium (z_premium) first, then z_multi_bump, then is_top, then highlighted, then newest
-    const sortedListings = [...filteredListings].sort((a, b) => {
-        // Priority: z_premium > z_multi_bump > other is_top > highlighted > basic
+    // Sort listings based on priority and user selection
+    const sortedListings = [...filteredListings.map(normalizeListing)].sort((a, b) => {
+        // Priority for package types always comes first
         const getPriority = (l) => {
             const type = l.package_type?.toLowerCase();
             if (type === 'z_premium' || type === 'premium') return 100;
@@ -911,7 +1079,23 @@ function AutosPage() {
         const prioB = getPriority(b);
 
         if (prioA !== prioB) return prioB - prioA;
-        return new Date(b.created_at) - new Date(a.created_at);
+
+        // User secondary sort
+        switch (sortBy) {
+            case 'price-asc':
+                return a.price - b.price;
+            case 'price-desc':
+                return b.price - a.price;
+            case 'km-asc':
+                return (a.kilometerstand || 0) - (b.kilometerstand || 0);
+            case 'km-desc':
+                return (b.kilometerstand || 0) - (a.kilometerstand || 0);
+            case 'year-desc':
+                return parseInt(b.erstzulassung || 0) - parseInt(a.erstzulassung || 0);
+            case 'newest':
+            default:
+                return new Date(b.created_at) - new Date(a.created_at);
+        }
     });
 
     // Generate breadcrumb items
@@ -922,30 +1106,37 @@ function AutosPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors duration-300">
             <CategorySEO category="Otomobil, Bisiklet & Tekne" subCategory="Otomobiller" itemCount={statsListings.length} />
             <div className="max-w-[1400px] mx-auto px-4 py-8">
 
 
-                {/* Mobile/Tablet Filter Button - Fixed to left */}
-                <button
-                    onClick={() => setShowMobileFilters(true)}
-                    className="xl:hidden fixed left-4 top-24 z-[1001] w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center group"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    {getActiveFilterCount() > 0 && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                            {getActiveFilterCount()}
-                        </span>
-                    )}
-                </button>
+                <div className="flex items-center gap-3 mb-6 bg-white dark:bg-neutral-800 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                    {/* Mobile/Tablet Filter Button */}
+                    <button
+                        onClick={() => setShowMobileFilters(true)}
+                        className="xl:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 group shrink-0"
+                    >
+                        <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        <span className="text-sm font-bold">Filtrele</span>
+                        {getActiveFilterCount() > 0 && (
+                            <span className="w-5 h-5 bg-yellow-400 text-gray-900 dark:text-neutral-100 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                                {getActiveFilterCount()}
+                            </span>
+                        )}
+                    </button>
+
+                    <div className="flex-1 overflow-hidden">
+                        <Breadcrumb items={breadcrumbItems} />
+                    </div>
+                </div>
 
                 <div className="flex flex-col xl:flex-row gap-8">
                     {/* Sidebar - Desktop and Mobile Drawer */}
                     <aside className={`
-                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-[20%] xl:min-w-[320px] xl:block
                         ${showMobileFilters ? 'block' : 'hidden xl:block'}
                     `}>
                         {/* Mobile Overlay Backdrop */}
@@ -956,13 +1147,13 @@ function AutosPage() {
 
                         {/* Sidebar Content Column - Half screen width on mobile */}
                         <div className={`
-                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-none p-6 
-                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0 border border-gray-100
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white dark:bg-neutral-800 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0 border border-gray-100 dark:border-white/5
                             ${showMobileFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>
                             {/* Mobile Header */}
-                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
-                                <h3 className="font-bold text-gray-900 text-lg">Filtreleme</h3>
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b dark:border-white/5">
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 dark:text-neutral-100 text-lg">Filtrele</h3>
                                 <button
                                     onClick={() => setShowMobileFilters(false)}
                                     className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
@@ -975,11 +1166,11 @@ function AutosPage() {
 
                             {/* Original Sidebar Content Starts Here */}
                             {/* Category Navigation */}
-                            <div className="mb-6 pb-6 border-b border-gray-200">
-                                <h3 className="font-bold text-gray-900 mb-3 text-base">{t.filters.categories}</h3>
+                            <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/5 dark:border-white/5">
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 dark:text-neutral-100 mb-3 text-base">{t.filters.categories}</h3>
                                 <button
                                     onClick={() => navigate('/Butun-Kategoriler')}
-                                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-between group"
+                                    className="w-full text-left px-3 py-2 rounded-lg text-sm transition-all bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-400 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-600 flex items-center justify-between group"
                                 >
                                     <span>{t.filters.allCategories}</span>
                                     <svg className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -992,7 +1183,7 @@ function AutosPage() {
                                         onClick={() => {
                                             navigate(getCategoryPath('Otomobil, Bisiklet & Tekne'));
                                         }}
-                                        className="text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ml-4 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                        className="text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ml-4 bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-400 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-600"
                                         style={{ width: 'calc(100% - 1rem)' }}
                                     >
                                         <span>{getCategoryTranslation('Otomobil, Bisiklet & Tekne')}</span>
@@ -1001,77 +1192,146 @@ function AutosPage() {
                                         </svg>
                                     </button>
 
-                                    <div className="space-y-1 pt-3 border-t border-gray-200 mt-3">
-                                        {globalCategories.find(c => c.name === 'Otomobil, Bisiklet & Tekne')?.subcategories.map(sub => {
-                                            const isActive = sub === 'Otomobiller';
-                                            const subRoute = getCategoryPath('Otomobil, Bisiklet & Tekne', sub);
+                                    <div className="space-y-1 pt-3 border-t border-gray-200 dark:border-white/5 dark:border-white/5 mt-3">
+                                        {globalCategories.find(c => c.name === 'Otomobil, Bisiklet & Tekne')?.subcategories
+                                            .filter(sub => !inactiveCategories.has(sub))
+                                            .filter(sub => {
+                                                // Always show if it's the current active subcategory
+                                                const isActive = areSubCategoriesEquivalent(sub, 'Otomobiller');
+                                                // Also show language variants/back options if any (though usually "Otomobiller" is hardcoded here)
+                                                return isActive;
+                                            })
+                                            .map(sub => {
+                                                const isActive = sub === 'Otomobiller';
+                                                const subRoute = getCategoryPath('Otomobil, Bisiklet & Tekne', sub);
 
-                                            return (
-                                                <button
-                                                    key={sub}
-                                                    onClick={() => {
-                                                        navigate(subRoute);
-                                                    }}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${isActive
-                                                        ? 'bg-gradient-to-r from-red-50 to-rose-50 text-red-600 font-bold'
-                                                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-red-600'
-                                                        }`}
-                                                >
-                                                    <span>{getCategoryTranslation(sub)}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <svg className={`w-4 h-4 transition-colors ${isActive ? 'text-red-500' : 'text-gray-400 group-hover:text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                        </svg>
-                                                    </div>
-                                                </button>
-                                            );
-                                        })}
+                                                return (
+                                                    <button
+                                                        key={sub}
+                                                        onClick={() => {
+                                                            navigate(subRoute);
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between group ${isActive
+                                                            ? 'bg-gradient-to-r from-red-50 to-rose-50 dark:from-rose-500/10 dark:to-red-500/10 text-red-600 dark:text-rose-400 font-bold'
+                                                            : 'bg-gray-50 dark:bg-neutral-800/50 text-gray-700 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-700 hover:text-red-600 dark:hover:text-rose-400'
+                                                            }`}
+                                                    >
+                                                        <span>{getCategoryTranslation(sub)}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <svg className={`w-4 h-4 transition-colors ${isActive ? 'text-red-500' : 'text-gray-400 group-hover:text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Aktuelle Suche */}
-                            {(selectedBrands.length > 0 || selectedModels.length > 0) && (
-                                <div className="mb-6 pb-6 border-b border-gray-200">
-                                    <h3 className="font-bold text-gray-900 mb-3 text-lg">{t.filters.currentSearch || 'Aktuelle Suche'}</h3>
+                            {/* Aktuelle Suche / Active Filters Summary */}
+                            {getActiveFilterCount() > 0 && (
+                                <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/5 dark:border-white/5">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h3 className="font-bold text-gray-900 dark:text-neutral-100 dark:text-neutral-100 text-base">{t.filters.currentSearch || 'Aktuelle Suche'}</h3>
+                                        <button
+                                            onClick={clearAllFilters}
+                                            className="text-xs text-red-600 dark:text-rose-400 hover:underline font-medium"
+                                        >
+                                            {t.filters.clearAll || 'Tümünü Temizle'}
+                                        </button>
+                                    </div>
                                     <div className="flex flex-wrap gap-2">
                                         {/* Brands */}
                                         {selectedBrands.map(brand => (
-                                            <div key={`summary-brand-${brand}`} className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
-                                                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t.filters.brand}:</span>
-                                                <span className="text-sm text-red-600 font-bold">{brand}</span>
-                                                <button
-                                                    onClick={() => toggleBrand(brand)}
-                                                    className="ml-1 text-red-300 hover:text-red-500 transition-colors"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
+                                            <div key={`summary-brand-${brand}`} className="flex items-center gap-1.5 bg-red-50 dark:bg-rose-500/10 px-2.5 py-1 rounded-full border border-red-100 dark:border-rose-500/20">
+                                                <span className="text-xs text-red-600 dark:text-rose-400 font-bold">{brand}</span>
+                                                <button onClick={() => toggleBrand(brand)} className="text-red-300 dark:text-rose-400/50 hover:text-red-500 dark:hover:text-rose-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                                 </button>
                                             </div>
                                         ))}
+
                                         {/* Models */}
                                         {selectedModels.map(model => (
-                                            <div key={`summary-model-${model}`} className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
-                                                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t.filters.model}:</span>
-                                                <span className="text-sm text-red-600 font-bold">{model}</span>
-                                                <button
-                                                    onClick={() => toggleModel(model)}
-                                                    className="ml-1 text-red-300 hover:text-red-500 transition-colors"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
+                                            <div key={`summary-model-${model}`} className="flex items-center gap-1.5 bg-red-50 dark:bg-rose-500/10 px-2.5 py-1 rounded-full border border-red-100 dark:border-rose-500/20">
+                                                <span className="text-xs text-red-600 dark:text-rose-400 font-bold">{model}</span>
+                                                <button onClick={() => toggleModel(model)} className="text-red-300 dark:text-rose-400/50 hover:text-red-500 dark:hover:text-rose-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                                 </button>
                                             </div>
                                         ))}
+
+                                        {/* Price Range */}
+                                        {(priceFrom || priceTo) && (
+                                            <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-500/20">
+                                                <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">
+                                                    {priceFrom ? `${formatPrice(priceFrom)} TL` : '0'} - {priceTo ? `${formatPrice(priceTo)} TL` : '∞'}
+                                                </span>
+                                                <button onClick={() => { setPriceFrom(''); setPriceTo(''); setInputPriceFrom(''); setInputPriceTo(''); }} className="text-blue-300 dark:text-blue-400/50 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* KM Range */}
+                                        {(kmFrom || kmTo) && (
+                                            <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-100 dark:border-amber-500/20">
+                                                <span className="text-xs text-amber-600 dark:text-amber-400 font-bold">
+                                                    {kmFrom ? `${formatPrice(kmFrom)} km` : '0'} - {kmTo ? `${formatPrice(kmTo)} km` : '∞'}
+                                                </span>
+                                                <button onClick={() => { setKmFrom(''); setKmTo(''); }} className="text-amber-300 dark:text-amber-400/50 hover:text-amber-500 dark:hover:text-amber-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Year Range */}
+                                        {(yearFrom || yearTo) && (
+                                            <div className="flex items-center gap-1.5 bg-green-50 dark:bg-green-500/10 px-2.5 py-1 rounded-full border border-green-100 dark:border-green-500/20">
+                                                <span className="text-xs text-green-600 dark:text-green-400 font-bold">
+                                                    {yearFrom || '...'} - {yearTo || '...'}
+                                                </span>
+                                                <button onClick={() => { setYearFrom(''); setYearTo(''); }} className="text-green-300 dark:text-green-400/50 hover:text-green-500 dark:hover:text-green-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Fuel Types */}
+                                        {Object.entries(fuelTypes).filter(([_, active]) => active).map(([type]) => (
+                                            <div key={`summary-fuel-${type}`} className="flex items-center gap-1.5 bg-purple-50 dark:bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-100 dark:border-purple-500/20">
+                                                <span className="text-xs text-purple-600 dark:text-purple-400 font-bold">{getTranslatedFuel(fuelTypeOptions.find(o => o.key === type)?.label)}</span>
+                                                <button onClick={() => toggleFuelType(type)} className="text-purple-300 dark:text-purple-400/50 hover:text-purple-500 dark:hover:text-purple-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+                                        ))}
+
+                                        {/* Condition */}
+                                        {damagedVehicle && (
+                                            <div className="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-500/10 px-2.5 py-1 rounded-full border border-orange-100 dark:border-orange-500/20">
+                                                <span className="text-xs text-orange-600 dark:text-orange-400 font-bold">Hasarlı Araç</span>
+                                                <button onClick={() => setDamagedVehicle(false)} className="text-orange-300 dark:text-orange-400/50 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+                                        )}
+                                        {undamagedVehicle && (
+                                            <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-100 dark:border-emerald-500/20">
+                                                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">Hasarsız Araç</span>
+                                                <button onClick={() => setUndamagedVehicle(false)} className="text-emerald-300 dark:text-emerald-400/50 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
 
 
                             {/* Marke Filter */}
-                            <h3 className="font-bold text-gray-900 mb-5 text-lg">{t.filters.brand}</h3>
+                            <h3 className="font-bold text-gray-900 dark:text-neutral-100 mb-5 text-lg">{t.filters.brand}</h3>
                             <div className="space-y-1 max-h-96 overflow-y-auto pr-2 mb-6">
                                 {sortedCarBrands.map((brand) => {
                                     const brandCount = getBrandCount(brand.name);
@@ -1080,7 +1340,7 @@ function AutosPage() {
 
                                     return (
                                         <div key={brand.name} className="brand-group">
-                                            <div className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors group ${isBrandSelected ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
+                                            <div className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors group ${isBrandSelected ? 'bg-red-50 dark:bg-rose-500/10' : 'hover:bg-gray-50 dark:hover:bg-neutral-700/50'}`}>
                                                 <label className="flex items-center flex-1 cursor-pointer">
                                                     <input
                                                         type="checkbox"
@@ -1088,7 +1348,7 @@ function AutosPage() {
                                                         onChange={() => toggleBrand(brand.name)}
                                                         className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer focus:ring-red-500"
                                                     />
-                                                    <span className={`ml-3 text-sm transition-colors ${isBrandSelected ? 'text-red-600 font-bold' : 'text-gray-700 group-hover:text-red-500'}`}>
+                                                    <span className={`ml-3 text-sm transition-colors ${isBrandSelected ? 'text-red-600 dark:text-rose-400 font-bold' : 'text-gray-700 dark:text-neutral-400 group-hover:text-red-500'}`}>
                                                         {brand.name}
                                                     </span>
                                                 </label>
@@ -1113,14 +1373,14 @@ function AutosPage() {
 
                                             {/* Sub-models */}
                                             {brand.subModels && isBrandSelected && (
-                                                <div className="ml-7 mt-2 mb-3 space-y-1 border-l-2 border-red-100 pl-4">
+                                                <div className="ml-7 mt-2 mb-3 space-y-1 border-l-2 border-red-100 dark:border-rose-500/20 pl-4">
                                                     {brand.subModels.map((model) => {
                                                         const modelCount = getModelCount(model.name);
                                                         const isModelSelected = selectedModels.includes(model.name);
                                                         return (
                                                             <label
                                                                 key={model.name}
-                                                                className={`flex items-center justify-between px-2 py-1.5 rounded cursor-pointer transition-colors group ${isModelSelected ? 'bg-red-50/50' : 'hover:bg-gray-50'}`}
+                                                                className={`flex items-center justify-between px-2 py-1.5 rounded cursor-pointer transition-colors group ${isModelSelected ? 'bg-red-50/50 dark:bg-rose-500/10' : 'hover:bg-gray-50 dark:hover:bg-neutral-700/50'}`}
                                                             >
                                                                 <div className="flex items-center">
                                                                     <input
@@ -1129,7 +1389,7 @@ function AutosPage() {
                                                                         onChange={() => toggleModel(model.name)}
                                                                         className="w-3.5 h-3.5 text-red-500 border-gray-300 rounded cursor-pointer focus:ring-red-500"
                                                                     />
-                                                                    <span className={`ml-3 text-sm transition-colors ${isModelSelected ? 'text-red-600 font-semibold' : 'text-gray-600 group-hover:text-red-500'}`}>
+                                                                    <span className={`ml-3 text-sm transition-colors ${isModelSelected ? 'text-red-600 dark:text-rose-400 font-semibold' : 'text-gray-600 dark:text-neutral-400 group-hover:text-red-500'}`}>
                                                                         {model.name}
                                                                     </span>
                                                                 </div>
@@ -1147,35 +1407,35 @@ function AutosPage() {
                             </div>
 
                             {/* Kilometerstand Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.mileage}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.mileage}</h4>
                                 <div className="flex gap-2">
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (km)</label>
+                                        <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.from} (km)</label>
                                         <input
                                             type="number"
                                             value={kmFrom}
                                             onChange={(e) => setKmFrom(e.target.value)}
                                             placeholder={`${t.common.example || 'örn.'} 0`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100"
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (km)</label>
+                                        <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.to} (km)</label>
                                         <input
                                             type="number"
                                             value={kmTo}
                                             onChange={(e) => setKmTo(e.target.value)}
                                             placeholder={`${t.common.example || 'örn.'} 150000`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100"
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Fahrzeugzustand Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.condition}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.condition}</h4>
                                 <div className="space-y-3">
                                     <label className="flex items-center justify-between cursor-pointer group">
                                         <div className="flex items-center">
@@ -1185,11 +1445,11 @@ function AutosPage() {
                                                 onChange={(e) => setDamagedVehicle(e.target.checked)}
                                                 className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                             />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                            <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                 {t.autos?.damaged || 'Beschädigtes Fahrzeug'}
                                             </span>
                                         </div>
-                                        <span className="text-xs text-gray-400">
+                                        <span className="text-xs text-gray-400 dark:text-neutral-500">
                                             ({getFilterCount('condition', 'defekt').toLocaleString('tr-TR')})
                                         </span>
                                     </label>
@@ -1201,11 +1461,11 @@ function AutosPage() {
                                                 onChange={(e) => setUndamagedVehicle(e.target.checked)}
                                                 className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                             />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                            <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                 {t.autos?.undamaged || 'Unbeschädigtes Fahrzeug'}
                                             </span>
                                         </div>
-                                        <span className="text-xs text-gray-400">
+                                        <span className="text-xs text-gray-400 dark:text-neutral-500">
                                             ({getUndamagedCount().toLocaleString('tr-TR')})
                                         </span>
                                     </label>
@@ -1213,35 +1473,35 @@ function AutosPage() {
                             </div>
 
                             {/* Erstzulassungsjahr Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.year}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.year}</h4>
                                 <div className="flex gap-2">
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.from}</label>
+                                        <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.from}</label>
                                         <input
                                             type="number"
                                             value={yearFrom}
                                             onChange={(e) => setYearFrom(e.target.value)}
                                             placeholder={`${t.common.example || 'örn.'} 2015`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100"
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.to}</label>
+                                        <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.to}</label>
                                         <input
                                             type="number"
                                             value={yearTo}
                                             onChange={(e) => setYearTo(e.target.value)}
                                             placeholder={`${t.common.example || 'örn.'} 2024`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100"
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Kraftstoffart Filter */}
-                            <div className="pt-6 border-t border-gray-200">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.fuel}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.fuel}</h4>
                                 <div className="space-y-2">
                                     {fuelTypeOptions.map((fuel) => (
                                         <label key={fuel.key} className="flex items-center justify-between cursor-pointer group">
@@ -1252,7 +1512,7 @@ function AutosPage() {
                                                     onChange={() => toggleFuelType(fuel.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {fuel.displayLabel || fuel.label}
                                                 </span>
                                             </div>
@@ -1265,35 +1525,35 @@ function AutosPage() {
                             </div>
 
                             {/* Leistung Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.power} ({t.filters.bg || 'BG'})</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.power} ({t.filters.bg || 'BG'})</h4>
                                 <div className="flex gap-2">
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.from} ({t.filters.bg || 'BG'})</label>
+                                        <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.from} ({t.filters.bg || 'BG'})</label>
                                         <input
                                             type="number"
                                             value={powerFrom}
                                             onChange={(e) => setPowerFrom(e.target.value)}
                                             placeholder={`${t.common.example || 'örn.'} 50`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100"
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <label className="block text-sm text-gray-600 mb-1">{t.filters.to} ({t.filters.bg || 'BG'})</label>
+                                        <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.to} ({t.filters.bg || 'BG'})</label>
                                         <input
                                             type="number"
                                             value={powerTo}
                                             onChange={(e) => setPowerTo(e.target.value)}
                                             placeholder={`${t.common.example || 'örn.'} 300`}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                            className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100"
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Getriebe Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.transmission}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.transmission}</h4>
                                 <div className="space-y-2">
                                     <label className="flex items-center justify-between cursor-pointer group">
                                         <div className="flex items-center">
@@ -1303,12 +1563,12 @@ function AutosPage() {
                                                 onChange={(e) => setAutomaticTransmission(e.target.checked)}
                                                 className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                             />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
-                                                {t.autos?.transmission?.automatic || 'Automatik'}
+                                            <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
+                                                {t.autos?.transmission?.automatic || 'Otomatik'}
                                             </span>
                                         </div>
                                         <span className="text-xs text-gray-400">
-                                            ({getFilterCount('getriebe', 'Automatik').toLocaleString('tr-TR')})
+                                            ({getFilterCount('getriebe', 'Otomatik').toLocaleString('tr-TR')})
                                         </span>
                                     </label>
                                     <label className="flex items-center justify-between cursor-pointer group">
@@ -1319,7 +1579,7 @@ function AutosPage() {
                                                 onChange={(e) => setManualTransmission(e.target.checked)}
                                                 className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                             />
-                                            <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                            <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                 {t.autos?.transmission?.manual || 'Manuell'}
                                             </span>
                                         </div>
@@ -1331,8 +1591,8 @@ function AutosPage() {
                             </div>
 
                             {/* Fahrzeugtyp Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.vehicleType}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.vehicleType}</h4>
                                 <div className="space-y-2">
                                     {vehicleTypeOptions.map((vehicle) => (
                                         <label key={vehicle.key} className="flex items-center justify-between cursor-pointer group">
@@ -1343,7 +1603,7 @@ function AutosPage() {
                                                     onChange={() => toggleVehicleType(vehicle.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {vehicle.displayLabel || vehicle.label}
                                                 </span>
                                             </div>
@@ -1356,8 +1616,8 @@ function AutosPage() {
                             </div>
 
                             {/* Anzahl Türen Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.doorCount}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.doorCount}</h4>
                                 <div className="space-y-2">
                                     {doorCountOptions.map((door) => (
                                         <label key={door.key} className="flex items-center justify-between cursor-pointer group">
@@ -1368,7 +1628,7 @@ function AutosPage() {
                                                     onChange={() => toggleDoorCount(door.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {door.displayLabel || door.label}
                                                 </span>
                                             </div>
@@ -1381,20 +1641,20 @@ function AutosPage() {
                             </div>
 
                             {/* HU mind. gültig Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.inspection || 'HU mind. gültig'}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.inspection || 'HU mind. gültig'}</h4>
                                 <input
                                     type="month"
                                     value={huDate}
                                     onChange={(e) => setHuDate(e.target.value)}
                                     placeholder="AA/YYYY"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                    className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100"
                                 />
                             </div>
 
                             {/* Umweltplakette Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.emissionBadge}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.emissionBadge}</h4>
                                 <div className="space-y-2">
                                     {emissionBadgeOptions.map((badge) => (
                                         <label key={badge.key} className="flex items-center justify-between cursor-pointer group">
@@ -1405,7 +1665,7 @@ function AutosPage() {
                                                     onChange={() => toggleEmissionBadge(badge.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {badge.displayLabel || badge.label}
                                                 </span>
                                             </div>
@@ -1418,8 +1678,8 @@ function AutosPage() {
                             </div>
 
                             {/* Schadstoffklasse Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.emissionClass}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.emissionClass}</h4>
                                 <div className="space-y-2">
                                     {emissionClassOptions.map((euroClass) => (
                                         <label key={euroClass.key} className="flex items-center justify-between cursor-pointer group">
@@ -1430,7 +1690,7 @@ function AutosPage() {
                                                     onChange={() => toggleEmissionClass(euroClass.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {euroClass.displayLabel || euroClass.label}
                                                 </span>
                                             </div>
@@ -1443,8 +1703,8 @@ function AutosPage() {
                             </div>
 
                             {/* Material Innenausstattung Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.interiorMaterial}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.interiorMaterial}</h4>
                                 <div className="space-y-2">
                                     {interiorMaterialOptions.map((material) => (
                                         <label key={material.key} className="flex items-center justify-between cursor-pointer group">
@@ -1455,7 +1715,7 @@ function AutosPage() {
                                                     onChange={() => toggleInteriorMaterial(material.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {material.displayLabel || material.label}
                                                 </span>
                                             </div>
@@ -1468,8 +1728,8 @@ function AutosPage() {
                             </div>
 
                             {/* Außenfarbe Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.exteriorColor}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.exteriorColor}</h4>
                                 <div className="space-y-2">
                                     {exteriorColorOptions.map((color) => (
                                         <label key={color.key} className="flex items-center justify-between cursor-pointer group">
@@ -1480,7 +1740,7 @@ function AutosPage() {
                                                     onChange={() => toggleExteriorColor(color.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {color.displayLabel || color.label}
                                                 </span>
                                             </div>
@@ -1493,37 +1753,37 @@ function AutosPage() {
                             </div>
 
                             {/* Preis Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.price}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.price}</h4>
                                 <div className="flex items-center gap-2">
                                     <div className="flex gap-2 flex-1">
                                         <div className="flex-1">
-                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.from} (TL)</label>
+                                            <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.from} (TL)</label>
                                             <input
                                                 type="text"
                                                 value={formatPrice(inputPriceFrom)}
                                                 onChange={(e) => setInputPriceFrom(e.target.value.replace(/\D/g, ''))}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
                                                 placeholder={`${t.common.example || 'örn.'} 5.000`}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
+                                                className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100 focus:ring-2 focus:ring-red-100 dark:focus:ring-rose-500/20 focus:border-red-500"
                                             />
                                         </div>
                                         <div className="flex-1">
-                                            <label className="block text-sm text-gray-600 mb-1">{t.filters.to} (TL)</label>
+                                            <label className="block text-sm text-gray-600 dark:text-neutral-400 mb-1">{t.filters.to} (TL)</label>
                                             <input
                                                 type="text"
                                                 value={formatPrice(inputPriceTo)}
                                                 onChange={(e) => setInputPriceTo(e.target.value.replace(/\D/g, ''))}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
                                                 placeholder={`${t.common.example || 'örn.'} 50.000`}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none transition-all focus:ring-2 focus:ring-red-100 focus:border-red-500"
+                                                className="w-full px-3 py-2 bg-white dark:bg-neutral-700 border border-gray-300 dark:border-white/10 rounded-lg outline-none transition-all text-gray-900 dark:text-neutral-100 focus:ring-2 focus:ring-red-100 dark:focus:ring-rose-500/20 focus:border-red-500"
                                             />
                                         </div>
                                     </div>
                                     <div className="pt-6">
                                         <button
                                             onClick={handleApplyPrice}
-                                            className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[42px] w-[42px] flex items-center justify-center border border-gray-200"
+                                            className="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 p-2 rounded-lg transition-colors h-[42px] w-[42px] flex items-center justify-center border border-gray-200 dark:border-white/5"
                                             title={t.filters.apply || "Uygula"}
                                         >
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1534,8 +1794,8 @@ function AutosPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.exteriorFeatures || 'Dış Donanım'}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.autos?.exteriorFeatures || 'Dış Donanım'}</h4>
                                 <div className="space-y-2">
                                     {exteriorFeatures.map((feature) => (
                                         <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
@@ -1546,7 +1806,7 @@ function AutosPage() {
                                                     onChange={() => toggleFeature(feature.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {feature.displayLabel || feature.label}
                                                 </span>
                                             </div>
@@ -1558,8 +1818,8 @@ function AutosPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.interiorFeatures || 'İç Donanım'}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.autos?.interiorFeatures || 'İç Donanım'}</h4>
                                 <div className="space-y-2">
                                     {interiorFeatures.map((feature) => (
                                         <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
@@ -1570,7 +1830,7 @@ function AutosPage() {
                                                     onChange={() => toggleFeature(feature.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {feature.displayLabel || feature.label}
                                                 </span>
                                             </div>
@@ -1582,8 +1842,8 @@ function AutosPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.autos?.safetyFeatures || 'Güvenlik'}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.autos?.safetyFeatures || 'Güvenlik'}</h4>
                                 <div className="space-y-2">
                                     {safetyFeatures.map((feature) => (
                                         <label key={feature.key} className="flex items-center justify-between cursor-pointer group">
@@ -1594,11 +1854,11 @@ function AutosPage() {
                                                     onChange={() => toggleFeature(feature.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {feature.displayLabel || feature.label}
                                                 </span>
                                             </div>
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-gray-400 dark:text-neutral-500">
                                                 ({feature.count.toLocaleString('tr-TR')})
                                             </span>
                                         </label>
@@ -1607,8 +1867,8 @@ function AutosPage() {
                             </div>
 
                             {/* Angebotstyp Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.offerType}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.offerType}</h4>
                                 <div className="space-y-2">
                                     {offerTypeOptions.map((type) => (
                                         <label key={type.key} className="flex items-center justify-between cursor-pointer group">
@@ -1619,11 +1879,11 @@ function AutosPage() {
                                                     onChange={() => toggleOfferType(type.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {type.displayLabel || type.label}
                                                 </span>
                                             </div>
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-gray-400 dark:text-neutral-500">
                                                 ({type.count.toLocaleString('tr-TR')})
                                             </span>
                                         </label>
@@ -1632,8 +1892,8 @@ function AutosPage() {
                             </div>
 
                             {/* Anbieter Filter */}
-                            <div className="pt-6 border-t border-gray-200 mb-6">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.sellerType}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5 mb-6">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.sellerType}</h4>
                                 <div className="space-y-2">
                                     {sellerTypeOptions.map((type) => (
                                         <label key={type.key} className="flex items-center justify-between cursor-pointer group">
@@ -1644,11 +1904,11 @@ function AutosPage() {
                                                     onChange={() => toggleSellerType(type.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {type.displayLabel || type.label}
                                                 </span>
                                             </div>
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-gray-400 dark:text-neutral-500">
                                                 ({type.count.toLocaleString('tr-TR')})
                                             </span>
                                         </label>
@@ -1657,8 +1917,8 @@ function AutosPage() {
                             </div>
 
                             {/* Ort Filter */}
-                            <div className="pt-6 border-t border-gray-200">
-                                <h4 className="font-bold text-gray-900 mb-4 text-base">{t.filters.location}</h4>
+                            <div className="pt-6 border-t border-gray-200 dark:border-white/5">
+                                <h4 className="font-bold text-gray-900 dark:text-neutral-100 mb-4 text-base">{t.filters.location}</h4>
                                 <div className="space-y-2">
                                     {locationOptions.map((location) => (
                                         <label key={location.key} className="flex items-center justify-between cursor-pointer group">
@@ -1669,11 +1929,11 @@ function AutosPage() {
                                                     onChange={() => toggleLocation(location.key)}
                                                     className="w-4 h-4 text-red-500 border-gray-300 rounded cursor-pointer"
                                                 />
-                                                <span className="ml-3 text-sm text-gray-700 group-hover:text-red-500 transition-colors">
+                                                <span className="ml-3 text-sm text-gray-700 dark:text-neutral-400 group-hover:text-red-500 transition-colors">
                                                     {location.displayLabel || location.label}
                                                 </span>
                                             </div>
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-gray-400 dark:text-neutral-500">
                                                 ({location.count.toLocaleString('tr-TR')})
                                             </span>
                                         </label>
@@ -1740,7 +2000,7 @@ function AutosPage() {
                                                 <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-0.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-0.45 1-1v-8l-2.08-5.99zM6.5 16c-0.83 0-1.5-0.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-0.83 0-1.5-0.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-0.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                                             </svg>
                                         </div>
-                                        <h1 className="text-4xl font-bold text-gray-900">AUTOS</h1>
+                                        <h1 className="text-4xl font-bold text-gray-900 dark:text-neutral-100">AUTOS</h1>
                                     </div>
                                     <p className="text-gray-600 text-lg">
                                         {t.autos?.findDreamCar || 'Hayalinizdeki Arabayı Bulun'} - {statsListings.length.toLocaleString('tr-TR')} {t.autos?.ads || 'İlanlar'}
@@ -1807,34 +2067,131 @@ function AutosPage() {
 
                             {/* Listings */}
                             <div className="mt-8 px-0 sm:px-4 md:px-0">
-                                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                                    {t.autos?.currentAds || 'Güncel İlanlar'} ({filteredListings.length})
-                                </h3>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-neutral-100">
+                                        {t.autos?.currentAds || 'Güncel İlanlar'} ({sortedListings.length})
+                                    </h3>
+
+                                    <div className="flex items-center gap-3">
+                                        {/* Aramayı Kaydet Butonu */}
+                                        <button
+                                            onClick={async () => {
+                                                if (!user) {
+                                                    alert('Aramayı kaydetmek için lütfen giriş yapın.');
+                                                    return;
+                                                }
+                                                const searchUrl = window.location.pathname + window.location.search;
+                                                try {
+                                                    if (isSaved) {
+                                                        await deleteSavedSearchByUrl(searchUrl);
+                                                        setIsSaved(false);
+                                                    } else {
+                                                        await createSavedSearch({
+                                                            searchName: 'Otomobil Araması',
+                                                            category: 'Otomobiller',
+                                                            filters: {
+                                                                selectedBrands,
+                                                                selectedModels,
+                                                                kmFrom,
+                                                                kmTo,
+                                                                yearFrom,
+                                                                yearTo,
+                                                                powerFrom,
+                                                                powerTo,
+                                                                priceFrom,
+                                                                priceTo,
+                                                                damagedVehicle,
+                                                                undamagedVehicle,
+                                                                fuelTypes,
+                                                                transmissions,
+                                                                vehicleTypes,
+                                                                locations
+                                                            },
+                                                            searchUrl: searchUrl
+                                                        });
+                                                        setIsSaved(true);
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error toggling saved search:', error);
+                                                    alert('İşlem sırasında bir hata oluştu.');
+                                                }
+                                            }}
+                                            className={`
+                                                flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md
+                                                w-10 h-10 rounded-full p-0
+                                                md:w-auto md:h-auto md:px-4 md:py-2 md:rounded-lg md:font-medium
+                                                ${isSaved
+                                                    ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 border border-red-200 dark:border-rose-500/20'
+                                                    : 'bg-red-500 text-white hover:bg-red-600'
+                                                }
+                                            `}
+                                            title={isSaved ? 'Aramayı Kaydettiniz' : 'Aramayı Kaydet'}
+                                        >
+                                            {isSaved ? (
+                                                <>
+                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                                    </svg>
+                                                    <span className="hidden md:inline">Kaydedildi</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                                    </svg>
+                                                    <span className="hidden md:inline">Aramayı Kaydet</span>
+                                                </>
+                                            )}
+                                        </button>
+
+                                        <label htmlFor="sort-select" className="hidden sm:block text-sm font-medium text-gray-500 dark:text-neutral-400">
+                                            {t.filters.sortBy || 'Sırala'}:
+                                        </label>
+                                        <select
+                                            id="sort-select"
+                                            value={sortBy}
+                                            onChange={(e) => setSortBy(e.target.value)}
+                                            className="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-white/5 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-700 dark:text-neutral-400 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all font-medium"
+                                        >
+                                            <option value="newest">{t.filters.newest || 'En Yeni'}</option>
+                                            <option value="price-asc">{t.filters.priceAsc || 'Fiyat (Artan)'}</option>
+                                            <option value="price-desc">{t.filters.priceDesc || 'Fiyat (Azalan)'}</option>
+                                            <option value="km-asc">{t.filters.kmAsc || 'KM (Düşükten Yükseğe)'}</option>
+                                            <option value="km-desc">{t.filters.kmDesc || 'KM (Yüksekten Düşüğe)'}</option>
+                                            <option value="year-desc">{t.filters.yearNewest || 'Model Yılı (Yeni)'}</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                                 {loading ? (
-                                    <div className="text-center py-12">
-                                        <LoadingSpinner size="medium" />
-                                        <p className="mt-4 text-gray-600">{t.autos?.loadingAds || 'İlanlar yükleniyor...'}</p>
+                                    <div className="py-8">
+                                        {SKELETON_CONFIG.enabled ? (
+                                            <ListingGridSkeleton count={10} />
+                                        ) : (
+                                            <div className="text-center py-12">
+                                                <LoadingSpinner size="medium" />
+                                            </div>
+                                        )}
                                     </div>
                                 ) : filteredListings.length === 0 ? (
-                                    <div className="text-center py-12 bg-gray-50 rounded-lg">
-                                        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="text-center py-12 bg-gray-50 dark:bg-neutral-800/50 rounded-lg">
+                                        <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
-                                        <p className="mt-4 text-gray-600">{t.autos?.noAdsFound || 'İlan bulunamadı'}</p>
-                                        <p className="text-sm text-gray-500 mt-2">{t.autos?.adjustFilters || 'Filtreleri ayarlamayı deneyin'}</p>
+                                        <p className="mt-4 text-gray-600 dark:text-neutral-400">{t.autos?.noAdsFound || 'İlan bulunamadı'}</p>
+                                        <p className="text-sm text-gray-500 dark:text-neutral-500 mt-2">{t.autos?.adjustFilters || 'Filtreleri ayarlamayı deneyin'}</p>
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-2 md:block md:space-y-6">
                                         {sortedListings.map((listing) => (
                                             <div
                                                 key={listing.id}
-                                                className={`${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'bg-purple-50' : 'bg-white'} border ${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'border-purple-200' : 'border-gray-200'} rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer`}
-                                                onClick={() => navigate(`/product/${listing.id}`)}
+                                                className={`${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'bg-purple-50 dark:bg-purple-900/20' : 'bg-white dark:bg-neutral-800'} border ${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'border-purple-200 dark:border-purple-500/30' : 'border-gray-200 dark:border-white/5'} rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer`}
+                                                onClick={() => navigate(getListingUrl(listing))}
                                             >
                                                 <div className="flex flex-col md:flex-row">
                                                     {/* Image Section - Balanced Size */}
-                                                    <div className="md:w-64 h-28 md:h-48 relative group flex-shrink-0 bg-gray-100">
+                                                    <div className="md:w-64 h-28 md:h-48 relative group flex-shrink-0 bg-gray-100 dark:bg-neutral-800">
                                                         <LazyImage
                                                             src={listing.images && listing.images.length > 0 ? listing.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}
                                                             alt={listing.title}
@@ -1862,7 +2219,7 @@ function AutosPage() {
                                                                 <div className={`absolute ${listing?.reserved_by ? ((listing?.is_top && listing?.package_type?.toLowerCase() !== 'multi-bump' && listing?.package_type?.toLowerCase() !== 'z_multi_bump' && listing?.package_type?.toLowerCase() !== 'premium' && listing?.package_type?.toLowerCase() !== 'z_premium') ? 'top-[4.5rem]' : 'top-12') : ((listing?.is_top && listing?.package_type?.toLowerCase() !== 'multi-bump' && listing?.package_type?.toLowerCase() !== 'z_multi_bump' && listing?.package_type?.toLowerCase() !== 'premium' && listing?.package_type?.toLowerCase() !== 'z_premium') ? 'top-12' : 'top-3')} left-3 px-3 py-1.5 rounded-md text-[10px] font-bold shadow-md border border-white/20 z-10 uppercase tracking-wider ${listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? 'bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse' :
                                                                     listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-200' :
                                                                         listing.package_type.toLowerCase() === 'plus' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
-                                                                            'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-200' // Budget/Standard -> Yellow
+                                                                            'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 dark:text-neutral-100 border-yellow-200' // Budget/Standard -> Yellow
                                                                     }`}>
                                                                     {listing.package_type.toLowerCase() === 'budget' || listing.package_type.toLowerCase() === 'highlight' ? 'ÖNE ÇIKAN' :
                                                                         listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? '⚡ GÜNLÜK YUKARI' :
@@ -1876,7 +2233,7 @@ function AutosPage() {
                                                                 e.stopPropagation();
                                                                 toggleFavorite(listing.id);
                                                             }}
-                                                            className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
+                                                            className="absolute top-2 right-2 w-7 h-7 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
                                                         >
                                                             {favorites.includes(listing.id) ? (
                                                                 <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
@@ -1889,96 +2246,96 @@ function AutosPage() {
                                                             )}
                                                         </button>
                                                         {listing.priceType === 'giveaway' && (
-                                                            <div className="absolute top-3 left-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                                                            <div className="absolute top-3 left-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-green-400/20">
                                                                 {t.autos?.free || 'GRATIS'}
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div className="flex-1 p-2 md:p-3 flex flex-col justify-between">
                                                         <div>
-                                                            <h4 className="text-[11px] md:text-lg font-bold text-gray-900 line-clamp-2 mb-1 group-hover:text-red-600 transition-colors leading-snug">
+                                                            <h4 className="text-[11px] md:text-lg font-bold text-gray-900 dark:text-neutral-100 line-clamp-2 mb-1 group-hover:text-red-600 transition-colors leading-snug">
                                                                 {listing.title}
                                                             </h4>
 
                                                             <div className="grid grid-cols-2 md:grid-cols-5 gap-1.5 md:gap-2 mb-2">
                                                                 <div className="flex items-center gap-1.5 ">
-                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 dark:bg-neutral-700 rounded border border-gray-100 dark:border-white/5 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500 dark:text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.year || 'Yıl'}</div>
-                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs">{listing.erstzulassung || '-'}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 dark:text-neutral-500 uppercase font-black">{t.filters.year || 'Yıl'}</div>
+                                                                        <div className="font-semibold text-gray-800 dark:text-neutral-200 text-[9px] md:text-xs">{listing.erstzulassung || '-'}</div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 dark:bg-neutral-700 rounded border border-gray-100 dark:border-white/5 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500 dark:text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">KM</div>
-                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs">{listing.kilometerstand ? listing.kilometerstand.toLocaleString('tr-TR') : '-'}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 dark:text-neutral-500 uppercase font-black">KM</div>
+                                                                        <div className="font-semibold text-gray-800 dark:text-neutral-200 text-[9px] md:text-xs">{listing.kilometerstand ? listing.kilometerstand.toLocaleString('tr-TR') : '-'}</div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 dark:bg-neutral-700 rounded border border-gray-100 dark:border-white/5 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500 dark:text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.fuel || 'Kraftstoff'}</div>
-                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs truncate max-w-[60px]">{getTranslatedFuel(listing.kraftstoff)}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 dark:text-neutral-500 uppercase font-black">{t.filters.fuel || 'Kraftstoff'}</div>
+                                                                        <div className="font-semibold text-gray-800 dark:text-neutral-200 text-[9px] md:text-xs truncate max-w-[60px]">{getTranslatedFuel(listing.kraftstoff)}</div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-50 dark:bg-neutral-700 rounded border border-gray-100 dark:border-white/5 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500 dark:text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-0.82-1.573l7-10a1 1 0 011.12-0.38z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.bg || 'BG'}</div>
-                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs">{listing.leistung || '-'}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 dark:text-neutral-500 uppercase font-black">{t.filters.bg || 'BG'}</div>
+                                                                        <div className="font-semibold text-gray-800 dark:text-neutral-200 text-[9px] md:text-xs">{listing.leistung || '-'}</div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-100 rounded border border-gray-100 flex items-center justify-center flex-shrink-0">
-                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <div className="w-5 h-5 md:w-7 md:h-7 bg-gray-100 dark:bg-neutral-700 rounded border border-gray-100 dark:border-white/5 flex items-center justify-center flex-shrink-0">
+                                                                        <svg className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-gray-500 dark:text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                                                                             <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                                                                         </svg>
                                                                     </div>
                                                                     <div>
-                                                                        <div className="text-[8px] md:text-xs text-gray-400 uppercase font-black">{t.filters.transmission || 'Getriebe'}</div>
-                                                                        <div className="font-semibold text-gray-800 text-[9px] md:text-xs truncate max-w-[70px]">{getTranslatedTransmission(listing.getriebe)}</div>
+                                                                        <div className="text-[8px] md:text-xs text-gray-400 dark:text-neutral-500 uppercase font-black">{t.filters.transmission || 'Getriebe'}</div>
+                                                                        <div className="font-semibold text-gray-800 dark:text-neutral-200 text-[9px] md:text-xs truncate max-w-[70px]">{getTranslatedTransmission(listing.getriebe)}</div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="mt-auto">
-                                                            <div className="mb-1.5 pt-2 border-t border-gray-50">
-                                                                <span className="text-sm md:text-xl font-black text-gray-900">
+                                                            <div className="mb-1.5 pt-2 border-t border-gray-50 dark:border-white/5">
+                                                                <span className="text-sm md:text-xl font-black text-gray-900 dark:text-neutral-100">
                                                                     {listing.price === 0 ? (t.autos?.giveaway || 'Ücretsiz') : listing.priceType === 'giveaway' ? (t.autos?.giveaway || 'Ücretsiz') : `${listing.price?.toLocaleString('tr-TR')} TL`}
                                                                 </span>
                                                             </div>
-                                                            <div className="flex items-center justify-between text-[10px] md:text-sm text-gray-500 border-t border-gray-100 pt-1.5">
+                                                            <div className="flex items-center justify-between text-[10px] md:text-sm text-gray-500 dark:text-neutral-400 border-t border-gray-100 dark:border-white/5 pt-1.5">
                                                                 {listing.city && (
                                                                     <div className="flex items-center">
-                                                                        <svg className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                                                        <svg className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1 text-gray-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                         </svg>
-                                                                        <span className="text-[10px] md:text-sm">{listing.city}</span>
+                                                                        <span className="text-[10px] md:text-sm text-gray-500 dark:text-neutral-400">{listing.city}</span>
                                                                     </div>
                                                                 )}
                                                                 <div className="flex items-center ml-auto">
-                                                                    <svg className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <svg className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1 text-gray-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                                     </svg>
-                                                                    <span className="text-[10px] md:text-sm">{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
+                                                                    <span className="text-[10px] md:text-sm text-gray-500 dark:text-neutral-400">{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1993,7 +2350,7 @@ function AutosPage() {
                                     <div className="mt-8 flex justify-center">
                                         <button
                                             onClick={loadMore}
-                                            className="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                                            className="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-white/10 text-gray-700 dark:text-neutral-200 font-medium py-2 px-6 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors shadow-sm"
                                         >
                                             {t.filters.loadMore || 'Mehr anzeigen'}
                                         </button>

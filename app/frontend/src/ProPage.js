@@ -90,7 +90,7 @@ function ProPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-neutral-950 dark:to-neutral-900 transition-colors duration-300">
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-red-600 to-rose-600 text-white py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -108,8 +108,8 @@ function ProPage() {
 
             {/* Introduction */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
-                    <p className="text-lg text-gray-700 leading-relaxed">
+                <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl dark:shadow-none p-8 mb-12 border border-transparent dark:border-white/5">
+                    <p className="text-lg text-gray-700 dark:text-neutral-400 leading-relaxed">
                         {t.pro.intro.description.split('Kurumsal görünümden')[0]}
                         <span className="font-semibold text-red-600">güçlü bir kurumsal görünümden</span>,
                         {t.pro.intro.description.split('güçlü bir kurumsal görünümden')[1]?.split('daha fazla görünürlükten')[0]}
@@ -122,11 +122,11 @@ function ProPage() {
 
                 {/* Ad Selector */}
                 <div className="mb-16">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-neutral-50 mb-8 text-center">
                         {t.pro.selector.title}
                     </h2>
-                    <div className="bg-white rounded-2xl shadow-xl p-8">
-                        <label className="block text-lg font-semibold text-gray-900 mb-6">
+                    <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl dark:shadow-none p-8 border border-transparent dark:border-white/5">
+                        <label className="block text-lg font-semibold text-gray-900 dark:text-neutral-50 mb-6">
                             {t.pro.selector.label}
                         </label>
                         <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
@@ -136,7 +136,7 @@ function ProPage() {
                                     onClick={() => setSelectedAds(num)}
                                     className={`py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${selectedAds === num
                                         ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg scale-105'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-700'
                                         }`}
                                 >
                                     {num}
@@ -146,7 +146,7 @@ function ProPage() {
                                 onClick={() => setSelectedAds(400)}
                                 className={`py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${selectedAds === 400
                                     ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg scale-105'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    : 'bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-700'
                                     }`}
                             >
                                 400+
@@ -164,7 +164,7 @@ function ProPage() {
                             <div
                                 key={pkg.name}
                                 onClick={() => setSelectedPackage(pkg.name)}
-                                className={`relative bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-105 cursor-pointer ${pkg.popular ? 'ring-4 ring-purple-500' : ''
+                                className={`relative bg-white dark:bg-neutral-900 rounded-2xl shadow-xl dark:shadow-none overflow-hidden transform transition-all duration-300 hover:scale-105 cursor-pointer border border-transparent dark:border-white/5 ${pkg.popular ? 'ring-4 ring-purple-500' : ''
                                     } ${isSelected ? 'ring-4 ring-green-500 scale-105' : ''
                                     }`}
                             >
@@ -193,7 +193,7 @@ function ProPage() {
 
                                 <div className="p-8">
                                     <div className="mb-6">
-                                        <span className="inline-block bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold">
+                                        <span className="inline-block bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-400 px-4 py-2 rounded-full text-sm font-semibold">
                                             {t.pro.packages.functions.replace('{count}', pkg.features)}
                                         </span>
                                     </div>
@@ -204,7 +204,7 @@ function ProPage() {
                                                 <svg className={`w-5 h-5 ${colors.text} flex-shrink-0 mt-0.5`} fill="currentColor" viewBox="0 0 20 20">
                                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                                 </svg>
-                                                <span className="text-gray-700 text-sm">{feature}</span>
+                                                <span className="text-gray-700 dark:text-neutral-400 text-sm">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -222,7 +222,7 @@ function ProPage() {
                                         {isSelected ? t.pro.packages.selected : `${pkg.name} ${t.pro.packages.select}`}
                                     </button>
 
-                                    <button className="w-full mt-3 text-gray-600 hover:text-gray-900 font-medium py-2 transition-colors">
+                                    <button className="w-full mt-3 text-gray-600 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-neutral-300 font-medium py-2 transition-colors">
                                         {t.pro.packages.moreInfo} →
                                     </button>
                                 </div>
@@ -232,7 +232,7 @@ function ProPage() {
                 </div>
 
                 {/* Benefits Section */}
-                <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-2xl p-12 text-white mb-16">
+                <div className="bg-gradient-to-r from-gray-900 to-gray-800 dark:from-neutral-900 dark:to-neutral-950 rounded-2xl shadow-2xl dark:shadow-none p-12 text-white mb-16 border border-transparent dark:border-white/5">
                     <h2 className="text-3xl font-bold mb-8 text-center">{t.pro.benefits.title}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
@@ -319,12 +319,12 @@ function ProPage() {
                 </div>
 
                 {/* Contact Section */}
-                <div className="mt-16 bg-white rounded-2xl shadow-xl p-8">
+                <div className="mt-16 bg-white dark:bg-neutral-900 rounded-2xl shadow-xl dark:shadow-none p-8 border border-transparent dark:border-white/5">
                     <div className="flex items-center justify-center gap-8 flex-wrap">
                         <div className="text-center">
                             <div className="text-5xl mb-4">💬</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">{t.pro.contact.title}</h3>
-                            <p className="text-gray-600 mb-4">{t.pro.contact.subtitle}</p>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-50 mb-2">{t.pro.contact.title}</h3>
+                            <p className="text-gray-600 dark:text-neutral-400 mb-4">{t.pro.contact.subtitle}</p>
                             <a href="tel:+493070016033" className="text-red-600 font-semibold hover:underline">
                                 {t.pro.contact.tel} +49 30 700160333
                             </a>

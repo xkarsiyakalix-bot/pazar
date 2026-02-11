@@ -23,8 +23,8 @@ const TierzubehoerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Gönderim',
             type: 'multiselect',
             options: [
-                { value: 'Versand möglich', label: 'Gönderim mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece elden teslim' }
+                { value: 'Gönderim mümkün', label: 'Gönderim mümkün' },
+                { value: 'Sadece elden teslim', label: 'Sadece elden teslim' }
             ],
             field: 'versand_art'
         },
@@ -37,8 +37,8 @@ const TierzubehoerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Teklif Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Verilecek' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Verilecek', label: 'Satılık/Verilecek' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -46,8 +46,8 @@ const TierzubehoerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

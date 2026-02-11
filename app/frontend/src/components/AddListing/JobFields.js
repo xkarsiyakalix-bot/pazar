@@ -10,20 +10,20 @@ export const JobFields = ({
     setWorkingTime,
     hourlyWage,
     setHourlyWage,
-    selectedSozialerSektorPflegeArt,
-    setSelectedSozialerSektorPflegeArt,
-    selectedBauHandwerkProduktionArt,
-    setSelectedBauHandwerkProduktionArt,
-    selectedBueroArbeitVerwaltungArt,
-    setSelectedBueroArbeitVerwaltungArt,
-    selectedGastronomieTourismusArt,
-    setSelectedGastronomieTourismusArt,
-    selectedTransportLogistikVerkehrArt,
-    setSelectedTransportLogistikVerkehrArt,
-    selectedVertriebEinkaufVerkaufArt,
-    setSelectedVertriebEinkaufVerkaufArt,
-    selectedWeitereJobsArt,
-    setSelectedWeitereJobsArt
+    selectedSocialCareType,
+    setSelectedSocialCareType,
+    selectedConstructionType,
+    setSelectedConstructionType,
+    selectedOfficeType,
+    setSelectedOfficeType,
+    selectedGastronomyType,
+    setSelectedGastronomyType,
+    selectedTransportType,
+    setSelectedTransportType,
+    selectedSalesType,
+    setSelectedSalesType,
+    selectedOtherJobsType,
+    setSelectedOtherJobsType
 }) => {
     const isJobCategory = category === 'İş İlanları';
 
@@ -32,11 +32,11 @@ export const JobFields = ({
             {/* Alt Kategorilere Göre Tür Seçimi */}
             {subCategory === 'Sosyal Sektör & Bakım' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
-                        value={selectedSozialerSektorPflegeArt}
-                        onChange={(e) => setSelectedSozialerSektorPflegeArt(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        value={selectedSocialCareType}
+                        onChange={(e) => setSelectedSocialCareType(e.target.value)}
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
@@ -53,12 +53,12 @@ export const JobFields = ({
 
             {subCategory === 'İnşaat, Zanaat & Üretim' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
-                        value={selectedBauHandwerkProduktionArt}
-                        onChange={(e) => setSelectedBauHandwerkProduktionArt(e.target.value)}
+                        value={selectedConstructionType}
+                        onChange={(e) => setSelectedConstructionType(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
@@ -79,20 +79,20 @@ export const JobFields = ({
 
             {subCategory === 'Ofis İşleri & Yönetim' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
-                        value={selectedBueroArbeitVerwaltungArt}
-                        onChange={(e) => setSelectedBueroArbeitVerwaltungArt(e.target.value)}
+                        value={selectedOfficeType}
+                        onChange={(e) => setSelectedOfficeType(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
-                            { val: 'Buchhalter/-in', label: t.addListing.jobs.categories.office.accountant },
-                            { val: 'Bürokaufmann/-frau', label: t.addListing.jobs.categories.office.clerk },
-                            { val: 'Sachbearbeiter/-in', label: t.addListing.jobs.categories.office.admin },
-                            { val: 'Sekretär/-in', label: t.addListing.jobs.categories.office.secretary },
-                            { val: 'Weitere Berufe', label: t.addListing.jobs.categories.office.other }
+                            { val: 'Muhasebeci', label: t.addListing.jobs.categories.office.accountant },
+                            { val: 'Büro Memuru', label: t.addListing.jobs.categories.office.clerk },
+                            { val: 'İdari İşler', label: t.addListing.jobs.categories.office.admin },
+                            { val: 'Sekreter', label: t.addListing.jobs.categories.office.secretary },
+                            { val: 'Diğer Meslekler', label: t.addListing.jobs.categories.office.other }
                         ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
                     </select>
                 </div>
@@ -100,23 +100,23 @@ export const JobFields = ({
 
             {subCategory === 'Gastronomi & Turizm' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
-                        value={selectedGastronomieTourismusArt}
-                        onChange={(e) => setSelectedGastronomieTourismusArt(e.target.value)}
+                        value={selectedGastronomyType}
+                        onChange={(e) => setSelectedGastronomyType(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
-                            { val: 'Barkeeper/-in', label: t.addListing.jobs.categories.gastronomy.barkeeper },
-                            { val: 'Hotelfachmann/-frau', label: t.addListing.jobs.categories.gastronomy.hotel },
-                            { val: 'Kellner/-in', label: t.addListing.jobs.categories.gastronomy.waiter },
-                            { val: 'Koch/Köchin', label: t.addListing.jobs.categories.gastronomy.cook },
-                            { val: 'Küchenhilfe', label: t.addListing.jobs.categories.gastronomy.kitchen },
-                            { val: 'Servicekraft', label: t.addListing.jobs.categories.gastronomy.service },
-                            { val: 'Housekeeping', label: t.addListing.jobs.categories.gastronomy.housekeeping },
-                            { val: 'Weitere Berufe', label: t.addListing.jobs.categories.gastronomy.other }
+                            { val: 'Barmen/Barmaid', label: t.addListing.jobs.categories.gastronomy.barkeeper },
+                            { val: 'Otel Elemanı', label: t.addListing.jobs.categories.gastronomy.hotel },
+                            { val: 'Garson', label: t.addListing.jobs.categories.gastronomy.waiter },
+                            { val: 'Aşçı', label: t.addListing.jobs.categories.gastronomy.cook },
+                            { val: 'Mutfak Yardımcısı', label: t.addListing.jobs.categories.gastronomy.kitchen },
+                            { val: 'Servis Elamanı', label: t.addListing.jobs.categories.gastronomy.service },
+                            { val: 'Kat Hizmetleri', label: t.addListing.jobs.categories.gastronomy.housekeeping },
+                            { val: 'Diğer Meslekler', label: t.addListing.jobs.categories.gastronomy.other }
                         ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
                     </select>
                 </div>
@@ -124,20 +124,20 @@ export const JobFields = ({
 
             {subCategory === 'Nakliye, Lojistik & Trafik' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
-                        value={selectedTransportLogistikVerkehrArt}
-                        onChange={(e) => setSelectedTransportLogistikVerkehrArt(e.target.value)}
+                        value={selectedTransportType}
+                        onChange={(e) => setSelectedTransportType(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
-                            { val: 'Kraftfahrer/-in', label: t.addListing.jobs.categories.transport.driver },
-                            { val: 'Kurierfahrer/-in', label: t.addListing.jobs.categories.transport.courier },
-                            { val: 'Lagerhelfer/-in', label: t.addListing.jobs.categories.transport.warehouse },
-                            { val: 'Staplerfahrer/-in', label: t.addListing.jobs.categories.transport.forklift },
-                            { val: 'Weitere Berufe', label: t.addListing.jobs.categories.transport.other }
+                            { val: 'Şoför', label: t.addListing.jobs.categories.transport.driver },
+                            { val: 'Kurye', label: t.addListing.jobs.categories.transport.courier },
+                            { val: 'Depo Yardımcısı', label: t.addListing.jobs.categories.transport.warehouse },
+                            { val: 'Forklift Operatörü', label: t.addListing.jobs.categories.transport.forklift },
+                            { val: 'Diğer Meslekler', label: t.addListing.jobs.categories.transport.other }
                         ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
                     </select>
                 </div>
@@ -145,20 +145,20 @@ export const JobFields = ({
 
             {subCategory === 'Satış, Satın Alma & Pazarlama' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
-                        value={selectedVertriebEinkaufVerkaufArt}
-                        onChange={(e) => setSelectedVertriebEinkaufVerkaufArt(e.target.value)}
+                        value={selectedSalesType}
+                        onChange={(e) => setSelectedSalesType(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
-                            { val: 'Buchhalter/-in', label: t.addListing.jobs.categories.sales.accountant },
-                            { val: 'Immobilienmakler/-in', label: t.addListing.jobs.categories.sales.realEstate },
-                            { val: 'Kaufmann/-frau', label: t.addListing.jobs.categories.sales.merchant },
-                            { val: 'Verkäufer/-in', label: t.addListing.jobs.categories.sales.sales },
-                            { val: 'Weitere Berufe', label: t.addListing.jobs.categories.sales.other }
+                            { val: 'Muhasebeci', label: t.addListing.jobs.categories.sales.accountant },
+                            { val: 'Emlak Danışmanı', label: t.addListing.jobs.categories.sales.realEstate },
+                            { val: 'Tüccar', label: t.addListing.jobs.categories.sales.merchant },
+                            { val: 'Satış Temsilcisi', label: t.addListing.jobs.categories.sales.sales },
+                            { val: 'Diğer Meslekler', label: t.addListing.jobs.categories.sales.other }
                         ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
                     </select>
                 </div>
@@ -166,12 +166,12 @@ export const JobFields = ({
 
             {subCategory === 'Diğer İşler' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
-                        value={selectedWeitereJobsArt}
-                        onChange={(e) => setSelectedWeitereJobsArt(e.target.value)}
+                        value={selectedOtherJobsType}
+                        onChange={(e) => setSelectedOtherJobsType(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         {[
@@ -188,16 +188,16 @@ export const JobFields = ({
 
             {/* Genel İş Alanları */}
             {isJobCategory && (
-                <div className="space-y-4 pt-4 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900">{t.addListing.jobs.title}</h3>
+                <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
+                    <h3 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6 flex items-center gap-3">{t.addListing.jobs.title}</h3>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.jobs.type}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.jobs.type}</label>
                             <select
                                 value={jobType}
                                 onChange={(e) => setJobType(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Tam Zamanlı">{t.addListing.jobs.types.fullTime}</option>
@@ -209,11 +209,11 @@ export const JobFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.jobs.workingTime}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.jobs.workingTime}</label>
                             <select
                                 value={workingTime}
                                 onChange={(e) => setWorkingTime(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Tam Zamanlı">{t.addListing.jobs.types.fullTime}</option>
@@ -221,14 +221,14 @@ export const JobFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.jobs.hourlyWage}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.jobs.hourlyWage}</label>
                             <input
                                 type="number"
                                 value={hourlyWage}
                                 onChange={(e) => setHourlyWage(e.target.value)}
                                 step="0.01"
                                 placeholder={t.addListing.jobs.hourlyWagePlaceholder}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     </div>

@@ -16,7 +16,7 @@ export const trackVisit = async (pagePath) => {
         const sessionId = getSessionId();
 
         await supabase.from('page_visits').insert({
-            page_path: pagePath,
+            page_path: pagePath || window.location.pathname,
             user_id: user?.id || null,
             session_id: sessionId,
             user_agent: navigator.userAgent

@@ -8,22 +8,6 @@
 }
 
 /* Prevent horizontal scroll and fix background */
-body {
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  background-color: #ffffff !important;
-}
-
-html {
-  overflow-x: hidden;
-  background-color: #ffffff !important;
-}
-
-#root {
-  background-color: #ffffff !important;
-}
-
 /* Ensure no red backgrounds anywhere */
 * {
   box-sizing: border-box;
@@ -55,23 +39,9 @@ button:focus {
   overflow: hidden;
 }
 
-/* Premium Button Styles */
-.btn-primary {
-  @apply bg-gradient-premium text-white font-semibold px-6 py-3 rounded-xl shadow-premium hover:shadow-premium-lg transform hover:-translate-y-0.5 transition-all duration-300;
-}
 
-.btn-secondary {
-  @apply bg-white text-primary-600 border-2 border-primary-600 font-semibold px-6 py-3 rounded-xl hover:bg-primary-50 transition-all duration-300;
-}
 
-/* Card Styles */
-.card-premium {
-  @apply bg-white rounded-2xl shadow-lg hover:shadow-premium transition-all duration-300 overflow-hidden;
-}
 
-.card-interactive {
-  @apply transform hover:-translate-y-1 hover:shadow-premium-lg transition-all duration-300;
-}
 
 /* Smooth transitions for interactive elements */
 button,
@@ -96,9 +66,7 @@ button:active,
 /* Focus styles for accessibility */
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid #dc2626;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+  outline: none;
 }
 
 /* Premium dropdown animation */
@@ -185,13 +153,7 @@ img {
   background-clip: text;
 }
 
-/* Glass morphism effect */
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
+
 
 /* Shimmer loading effect */
 @keyframes shimmer {
@@ -216,14 +178,7 @@ img {
   animation: none !important;
 }
 
-/* Badge styles */
-.badge-premium {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-premium text-white shadow-glow;
-}
 
-.badge-new {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-accent-500 text-white;
-}
 
 /* Hover glow effect */
 .hover-glow {

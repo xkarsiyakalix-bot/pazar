@@ -25,8 +25,8 @@ const VoegelPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Teklif Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Verilecek' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Verilecek', label: 'Satılık/Verilecek' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -34,8 +34,8 @@ const VoegelPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

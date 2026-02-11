@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import Response
+import datetime
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 import uvicorn
@@ -12,7 +14,7 @@ app = FastAPI()
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,7 +33,7 @@ except Exception as e:
 
 @app.get("/")
 async def root():
-    return {"message": "Kleinanzeigen API - Supabase Backend"}
+    return {"message": "ExVitrin API - Supabase Backend"}
 
 @app.get("/api/listings")
 async def get_listings(category: str = None, limit: int = 1000):
@@ -41,7 +43,7 @@ async def get_listings(category: str = None, limit: int = 1000):
             return {"error": "Supabase not connected"}
         
         query = supabase.table("listings").select("*")
-        if category and category != "Alle Kategorien":
+        if category and category != "Tüm Kategoriler":
             query = query.eq("category", category)
         
         response = query.limit(limit).execute()
@@ -71,7 +73,7 @@ async def get_listings(category: str = None, limit: int = 1000):
                 "location": item.get("city"),
                 "postalCode": item.get("postal_code"),
                 "sellerId": item.get("user_id"),
-                "sellerName": "Verkäufer",
+                "sellerName": "Satıcı",
                 "isTop": item.get("is_top", False),
                 "date": item.get("created_at", "").split("T")[0] if item.get("created_at") else "",
                 "image": item.get("images", ["https://via.placeholder.com/300x200"])[0] if item.get("images") else "https://via.placeholder.com/300x200",
@@ -189,7 +191,7 @@ async def search_listings(
             mapped_sub_cat = reverse_sub_category_mapping.get(sub_cat, sub_cat)
             query = query.eq("sub_category", mapped_sub_cat)
         
-        if location and location != "Deutschland":
+        if location and location != "Türkiye":
             query = query.ilike("city", f"%{location}%")
         
         if min_price is not None:
@@ -221,8 +223,8 @@ async def search_listings(
             # Special handling for 'versand' which has custom logic
             if key == 'versand':
                 versand_options = value.split(",")
-                wants_versand = "Versand mümkün" in versand_options or "Versand möglich" in versand_options
-                wants_abholung = "Nur Abholung" in versand_options or "Abholung" in versand_options
+                wants_versand = "Kargo mümkün" in versand_options or "Versand möglich" in versand_options
+                wants_abholung = "Sadece elden teslim" in versand_options or "Nur Abholung" in versand_options
                 
                 if wants_versand and not wants_abholung:
                     query = query.eq("versand", True)
@@ -255,7 +257,7 @@ async def search_listings(
                 "location": item.get("city"),
                 "postalCode": item.get("postal_code"),
                 "sellerId": item.get("user_id"),
-                "sellerName": "Verkäufer",
+                "sellerName": "Satıcı",
                 "isTop": item.get("is_top", False),
                 "date": item.get("created_at", "").split("T")[0] if item.get("created_at") else "",
                 "image": item.get("images", ["https://via.placeholder.com/300x200"])[0] if item.get("images") else "https://via.placeholder.com/300x200",
@@ -512,6 +514,80 @@ async def update_listing(listing_id: str, data: dict):
         import traceback
         traceback.print_exc()
         return {"error": str(e)}
+
+
+@app.get("/sitemap.xml")
+async def generate_sitemap(request: Request):
+    """Generate dynamic sitemap.xml"""
+    base_url = "https://exvitrin.com"
+    
+    # 1. Static Pages
+    static_urls = [
+        "/",
+        "/hakkimizda",
+        "/iletisim",
+        "/mobile-apps",
+        "/packages",
+        "/Butun-Kategoriler",
+        "/yasal-uyarilar",
+        "/cerez-politikasi",
+        # Categories
+        "/Otomobil-Bisiklet-Tekne",
+        "/Emlak",
+        "/Elektronik",
+        "/Evcil-Hayvanlar",
+        "/Moda-Guzellik",
+        "/Ev-Bahce",
+        "/Is-Ilanlari"
+    ]
+    
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    today = datetime.date.today().isoformat()
+    
+    # Add Static Pages
+    for url in static_urls:
+        xml += '  <url>\n'
+        xml += f'    <loc>{base_url}{url}</loc>\n'
+        xml += f'    <lastmod>{today}</lastmod>\n'
+        xml += '    <changefreq>daily</changefreq>\n'
+        xml += '    <priority>0.8</priority>\n'
+        xml += '  </url>\n'
+        
+    # 2. Dynamic Listings (Active)
+    try:
+        listings = supabase.table("listings").select("id, updated_at").eq("status", "active").limit(2000).execute()
+        for item in listings.data:
+            updated_at = (item.get("updated_at") or "").split("T")[0] or today
+            xml += '  <url>\n'
+            xml += f'    <loc>{base_url}/product/{item["id"]}</loc>\n'
+            xml += f'    <lastmod>{updated_at}</lastmod>\n'
+            xml += '    <changefreq>weekly</changefreq>\n'
+            xml += '    <priority>0.6</priority>\n'
+            xml += '  </url>\n'
+            
+    except Exception as e:
+        print(f"Error fetching listings for sitemap: {e}")
+
+    # 3. Seller Profiles / Stores
+    try:
+        stores = supabase.table("profiles").select("id, store_slug, updated_at").not_.is_("store_slug", "null").execute()
+        for item in stores.data:
+            updated_at = (item.get("updated_at") or "").split("T")[0] or today
+            slug = item.get("store_slug")
+            xml += '  <url>\n'
+            xml += f'    <loc>{base_url}/{slug}</loc>\n'
+            xml += f'    <lastmod>{updated_at}</lastmod>\n'
+            xml += '    <changefreq>weekly</changefreq>\n'
+            xml += '    <priority>0.7</priority>\n'
+            xml += '  </url>\n'
+    except Exception as e:
+        print(f"Error fetching stores for sitemap: {e}")
+
+    xml += '</urlset>'
+    
+    return Response(content=xml, media_type="application/xml")
 
 
 if __name__ == "__main__":

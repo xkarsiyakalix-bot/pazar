@@ -8,19 +8,19 @@ const HerrenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Anzüge', label: 'Takımlar' },
-                { value: 'Bademode', label: 'Deniz Giyimi' },
-                { value: 'Hemden', label: 'Gömlekler' },
-                { value: 'Hochzeitsmode', label: 'Düğün Giyimi' },
-                { value: 'Hosen', label: 'Pantolonlar' },
-                { value: 'Jacken & Mäntel', label: 'Ceket & Palto' },
-                { value: 'Jeans', label: 'Kot Pantolonlar' },
-                { value: 'Kostüme & Verkleidungen', label: 'Kostüm & Kıyafet' },
-                { value: 'Pullover', label: 'Kazaklar' },
-                { value: 'Shirts', label: 'Tişörtler' },
-                { value: 'Shorts', label: 'Şortlar' },
-                { value: 'Sportbekleidung', label: 'Spor Giyim' },
-                { value: 'Weitere Herrenbekleidung', label: 'Diğer Erkek Giyimi' }
+                { value: 'Takımlar', label: 'Takımlar' },
+                { value: 'Deniz Giyimi', label: 'Deniz Giyimi' },
+                { value: 'Gömlekler', label: 'Gömlekler' },
+                { value: 'Düğün Giyimi', label: 'Düğün Giyimi' },
+                { value: 'Pantolonlar', label: 'Pantolonlar' },
+                { value: 'Ceket & Palto', label: 'Ceket & Palto' },
+                { value: 'Kot Pantolonlar', label: 'Kot Pantolonlar' },
+                { value: 'Kostüm & Kıyafet', label: 'Kostüm & Kıyafet' },
+                { value: 'Kazaklar', label: 'Kazaklar' },
+                { value: 'Tişörtler', label: 'Tişörtler' },
+                { value: 'Şortlar', label: 'Şortlar' },
+                { value: 'Spor Giyim', label: 'Spor Giyim' },
+                { value: 'Diğer Erkek Giyimi', label: 'Diğer Erkek Giyimi' }
             ],
             field: 'herrenbekleidung_art'
         },
@@ -48,27 +48,27 @@ const HerrenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Renk',
             type: 'multiselect',
             options: [
-                { value: 'Beige', label: 'Bej' },
-                { value: 'Blau', label: 'Mavi' },
-                { value: 'Braun', label: 'Kahverengi' },
-                { value: 'Bunt', label: 'Renkli' },
-                { value: 'Creme', label: 'Krem' },
-                { value: 'Gelb', label: 'Sarı' },
-                { value: 'Gold', label: 'Altın' },
-                { value: 'Grau', label: 'Gri' },
-                { value: 'Grün', label: 'Yeşil' },
-                { value: 'Khaki', label: 'Haki' },
-                { value: 'Lavendel', label: 'Lavanta' },
-                { value: 'Lila', label: 'Mor' },
-                { value: 'Orange', label: 'Turuncu' },
-                { value: 'Pink', label: 'Pembe' },
-                { value: 'Print', label: 'Desenli' },
-                { value: 'Rot', label: 'Kırmızı' },
-                { value: 'Schwarz', label: 'Siyah' },
-                { value: 'Silber', label: 'Gümüş' },
-                { value: 'Türkis', label: 'Turkuaz' },
-                { value: 'Weiß', label: 'Beyaz' },
-                { value: 'Andere Farben', label: 'Diğer Renkler' }
+                { value: 'Bej', label: 'Bej' },
+                { value: 'Mavi', label: 'Mavi' },
+                { value: 'Kahverengi', label: 'Kahverengi' },
+                { value: 'Renkli', label: 'Renkli' },
+                { value: 'Krem', label: 'Krem' },
+                { value: 'Sarı', label: 'Sarı' },
+                { value: 'Altın', label: 'Altın' },
+                { value: 'Gri', label: 'Gri' },
+                { value: 'Yeşil', label: 'Yeşil' },
+                { value: 'Haki', label: 'Haki' },
+                { value: 'Lavanta', label: 'Lavanta' },
+                { value: 'Mor', label: 'Mor' },
+                { value: 'Turuncu', label: 'Turuncu' },
+                { value: 'Pembe', label: 'Pembe' },
+                { value: 'Desenli', label: 'Desenli' },
+                { value: 'Kırmızı', label: 'Kırmızı' },
+                { value: 'Siyah', label: 'Siyah' },
+                { value: 'Gümüş', label: 'Gümüş' },
+                { value: 'Turkuaz', label: 'Turkuaz' },
+                { value: 'Beyaz', label: 'Beyaz' },
+                { value: 'Diğer Renkler', label: 'Diğer Renkler' }
             ],
             field: 'herrenbekleidung_color'
         },
@@ -76,8 +76,8 @@ const HerrenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Kargo',
             type: 'multiselect',
             options: [
-                { value: 'Versand möglich', label: 'Kargo Mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
+                { value: 'Kargo Mümkün', label: 'Kargo Mümkün' },
+                { value: 'Sadece Elden Teslim', label: 'Sadece Elden Teslim' }
             ],
             field: 'versand_art'
         },
@@ -90,8 +90,8 @@ const HerrenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -99,8 +99,8 @@ const HerrenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },
@@ -108,13 +108,13 @@ const HerrenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Durum',
             type: 'multiselect',
             options: [
-                { value: 'neu', label: 'Yeni' },
-                { value: 'neu_mit_etikett', label: 'Yeni & Etiketli' },
-                { value: 'sehr_gut', label: 'Çok İyi' },
-                { value: 'gut', label: 'İyi' },
-                { value: 'in_ordnung', label: 'Makul' },
-                { value: 'used', label: 'İkinci El' },
-                { value: 'defekt', label: 'Kusurlu' }
+                { value: 'Yeni', label: 'Yeni' },
+                { value: 'Yeni & Etiketli', label: 'Yeni & Etiketli' },
+                { value: 'Çok İyi', label: 'Çok İyi' },
+                { value: 'İyi', label: 'İyi' },
+                { value: 'Makul', label: 'Makul' },
+                { value: 'İkinci El', label: 'İkinci El' },
+                { value: 'Kusurlu', label: 'Kusurlu' }
             ],
             field: 'condition'
         },

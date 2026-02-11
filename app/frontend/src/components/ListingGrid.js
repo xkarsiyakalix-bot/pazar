@@ -17,7 +17,7 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
                     const { fetchListings } = await import('../api/listings');
                     const data = await fetchListings({
                         sort_by_newest: true,
-                        select: 'id,title,price,price_type,images,category,sub_category,city,is_top,is_gallery,package_type,promotion_expiry,user_id,created_at'
+                        select: 'id,title,price,price_type,images,category,sub_category,city,is_top,is_gallery,package_type,promotion_expiry,user_id,created_at,slug'
                     }, { count: false });
                     const latestListings = data.slice(0, 30);
                     setApiListings(latestListings);
@@ -79,12 +79,12 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
         return (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
                 {[...Array(10)].map((_, i) => (
-                    <div key={i} className="animate-pulse bg-white rounded-xl shadow-md h-64 overflow-hidden border border-gray-100">
-                        <div className="bg-gray-200 h-32 w-full"></div>
+                    <div key={i} className="animate-pulse bg-white dark:bg-neutral-900 rounded-xl shadow-md h-64 overflow-hidden border border-gray-100 dark:border-white/5">
+                        <div className="bg-gray-200 dark:bg-neutral-800 h-32 w-full"></div>
                         <div className="p-3 space-y-3">
-                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                            <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                            <div className="h-4 bg-gray-200 dark:bg-neutral-800 rounded w-3/4"></div>
+                            <div className="h-4 bg-gray-200 dark:bg-neutral-800 rounded w-1/2"></div>
+                            <div className="h-6 bg-gray-200 dark:bg-neutral-800 rounded w-1/3"></div>
                         </div>
                     </div>
                 ))}
@@ -95,7 +95,7 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
     if (displayListings.length === 0) {
         if (selectedCategory !== 'Tüm Kategoriler' && !isLatest && filtered.length === 0) {
             return (
-                <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
+                <div className="text-center py-12 text-gray-500 dark:text-neutral-400 bg-white dark:bg-neutral-900 rounded-lg border border-dashed border-gray-300 dark:border-white/10">
                     "{selectedCategory}" kategorisinde ilan bulunamadı.
                 </div>
             );

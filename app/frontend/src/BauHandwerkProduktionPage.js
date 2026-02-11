@@ -8,16 +8,16 @@ const BauHandwerkProduktionPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Bauhelfer/-in', label: 'İnşaat Yardımcısı' },
-                { value: 'Dachdecker/-in', label: 'Çatı Ustası' },
-                { value: 'Elektriker/-in', label: 'Elektrikçi' },
-                { value: 'Fliesenleger/-in', label: 'Fayansçı' },
-                { value: 'Maler/-in', label: 'Boyacı' },
-                { value: 'Maurer/-in', label: 'Duvarcı' },
-                { value: 'Produktionshelfer/-in', label: 'Üretim Yardımcısı' },
-                { value: 'Schlosser/-in', label: 'Çilingir' },
-                { value: 'Tischler/-in', label: 'Marangoz' },
-                { value: 'Weitere Berufe', label: 'Diğer Meslekler' }
+                { value: 'İnşaat Yardımcısı', label: 'İnşaat Yardımcısı' },
+                { value: 'Çatı Ustası', label: 'Çatı Ustası' },
+                { value: 'Elektrikçi', label: 'Elektrikçi' },
+                { value: 'Fayansçı', label: 'Fayansçı' },
+                { value: 'Boyacı', label: 'Boyacı' },
+                { value: 'Duvarcı', label: 'Duvarcı' },
+                { value: 'Üretim Yardımcısı', label: 'Üretim Yardımcısı' },
+                { value: 'Çilingir', label: 'Çilingir' },
+                { value: 'Marangoz', label: 'Marangoz' },
+                { value: 'Diğer Meslekler', label: 'Diğer Meslekler' }
             ],
             field: 'bau_handwerk_produktion_art'
         },
@@ -25,8 +25,8 @@ const BauHandwerkProduktionPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Çalışma Süresi',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' }
             ],
             field: 'working_time'
         },
@@ -34,12 +34,12 @@ const BauHandwerkProduktionPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İş Türü',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' },
-                { value: 'Minijob', label: 'Mini İş' },
-                { value: 'Praktikum', label: 'Staj' },
-                { value: 'Werkstudent', label: 'Çalışan Öğrenci' },
-                { value: 'Selbstständig', label: 'Serbest Çalışan' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' },
+                { value: 'Mini İş', label: 'Mini İş' },
+                { value: 'Staj', label: 'Staj' },
+                { value: 'Çalışan Öğrenci', label: 'Çalışan Öğrenci' },
+                { value: 'Serbest Çalışan', label: 'Serbest Çalışan' }
             ],
             field: 'job_type'
         },
@@ -52,8 +52,8 @@ const BauHandwerkProduktionPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -61,8 +61,8 @@ const BauHandwerkProduktionPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

@@ -4,123 +4,335 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- Homepage -->
+  <!-- Ana Sayfa -->
   <url>
     <loc>https://exvitrin.com/</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Static Pages -->
+  <!-- Kurumsal Sayfalar -->
   <url>
     <loc>https://exvitrin.com/hakkimizda</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://exvitrin.com/iletisim</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-
   <url>
     <loc>https://exvitrin.com/mobile-apps</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-
   <url>
     <loc>https://exvitrin.com/packages</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-
   <url>
     <loc>https://exvitrin.com/Butun-Kategoriler</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- Legal Pages -->
+  <!-- Yasal Sayfalar -->
+  <url>
+    <loc>https://exvitrin.com/cerez-politikasi</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
   <url>
     <loc>https://exvitrin.com/hayvan-haklari-ve-yasal-uyari</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
   <url>
     <loc>https://exvitrin.com/emlak-ilanlari-yasal-uyari</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
   <url>
     <loc>https://exvitrin.com/vasita-ilanlari-yasal-uyari</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
-  <!-- Main Categories -->
+  <!-- Ana Kategoriler -->
   <url>
-    <loc>https://exvitrin.com/category/auto-rad-boot</loc>
-    <lastmod>2026-01-22</lastmod>
+    <loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Emlak</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Elektronik</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Evcil-Hayvanlar</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Moda-Guzellik</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Ev-Bahce</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Is-Ilanlari</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Eglence-Hobi-Mahalle</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Muzik-Film-Kitap</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Biletler</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Hizmetler</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Ucretsiz-Takas</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Egitim-Kurslar</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Komsu-Yardimi</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://exvitrin.com/Aile-Cocuk-Bebek</loc>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <url>
-    <loc>https://exvitrin.com/category/immobilien</loc>
-    <lastmod>2026-01-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://exvitrin.com/category/elektronik</loc>
-    <lastmod>2026-01-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://exvitrin.com/category/haustiere</loc>
-    <lastmod>2026-01-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://exvitrin.com/category/mode-beauty</loc>
-    <lastmod>2026-01-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://exvitrin.com/category/haus-garten</loc>
-    <lastmod>2026-01-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://exvitrin.com/category/jobs</loc>
-    <lastmod>2026-01-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Note: Dynamic product URLs and seller pages should be generated via a build script -->
-  <!-- This is a static sitemap for core pages -->
+  <!-- Alt Kategoriler -->
   
+  <!-- Otomobil, Bisiklet & Tekne -->
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Oto-Parca-Lastik</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Tekne-Tekne-Malzemeleri</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Bisiklet-Aksesuarlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Motosiklet-Scooter</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Motosiklet-Parca-Aksesuarlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Ticari-Araclar-Romorklar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Tamir-Servis</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Karavan-Motokaravan</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Diger-Otomobil-Bisiklet-Tekne</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Otomobil-Bisiklet-Tekne/Otomobiller</loc><priority>0.8</priority></url>
+
+  <!-- Emlak -->
+  <url><loc>https://exvitrin.com/Emlak/Gecici-Konaklama-Paylasimli-Ev</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Tatil-Evi-Yurt-Disi-Emlak</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Garaj-Otopark</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Arsa-Bahce</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Satilik-Evler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Kiralik-Evler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Tasimacilik-Nakliye</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Diger-Emlak</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Konteyner</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Satilik-Daireler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Ticari-Emlak</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Kiralik-Daireler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Emlak/Yeni-Projeler</loc><priority>0.8</priority></url>
+
+  <!-- Ev & Bahçe -->
+  <url><loc>https://exvitrin.com/Ev-Bahce/Ev-Hizmetleri</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Bahce-Malzemeleri-Bitkiler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Mutfak-Yemek-Odasi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Lamba-Aydinlatma</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Diger-Ev-Bahce</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Banyo</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Ofis</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Dekorasyon</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Ev-Tekstili</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Ev-Tadilati</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Yatak-Odasi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ev-Bahce/Oturma-Odasi</loc><priority>0.8</priority></url>
+
+  <!-- Moda & Güzellik -->
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Guzellik-Saglik</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Canta-Aksesuarlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Saat-Taki</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Diger-Moda-Guzellik</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Kadin-Giyimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Kadin-Ayakkabilari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Erkek-Giyimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Moda-Guzellik/Erkek-Ayakkabilari</loc><priority>0.8</priority></url>
+
+  <!-- Elektronik -->
+  <url><loc>https://exvitrin.com/Elektronik/Ses-Hifi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Elektronik-Hizmetler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Cep-Telefonu-Telefon</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Bilgisayar-Aksesuarlari-Yazilim</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Tabletler-E-Okuyucular</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/TV-Video</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Diger-Elektronik</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Ev-Aletleri</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Fotograf-Kamera</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Konsollar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Dizustu-Bilgisayarlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Bilgisayarlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Elektronik/Video-Oyunlari</loc><priority>0.8</priority></url>
+
+  <!-- Evcil Hayvanlar -->
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Hayvan-Bakimi-Egitimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Kayip-Hayvanlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Aksesuarlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Baliklar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Kopekler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Kedi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Kucuk-Hayvanlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Ciftlik-Hayvanlari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Atlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Evcil-Hayvanlar/Kuslar</loc><priority>0.8</priority></url>
+
+  <!-- Aile, Çocuk & Bebek -->
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Bebek-Cocuk-Giyimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Bebek-Cocuk-Ayakkabilari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Bebek-Ekipmanlari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Oto-Koltuklari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Babysitter-Cocuk-Bakimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Bebek-Arabalari-Pusetler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Diger-Aile-Cocuk-Bebek</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Yasli-Bakimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Cocuk-Odasi-Mobilyalari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Aile-Cocuk-Bebek/Oyuncaklar</loc><priority>0.8</priority></url>
+
+  <!-- İş İlanları -->
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Insaat-Sanat-Uretim</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Buroarbeit-Yonetim</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Gastronomi-Turizm</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Musteri-Hizmetleri-Cagri-Merkezi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Ek-Isler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Sosyal-Sektor-Bakim</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Tasimacilik-Lojistik</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Satis-Pazarlama</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Diger-Is-Ilanlari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Mesleki-Egitim</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Is-Ilanlari/Staj</loc><priority>0.8</priority></url>
+
+  <!-- Eğlence, Hobi & Mahalle -->
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Ezoterizm-Spiritualizm</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Yiyecek-Icecek</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/El-Sanatlari-Hobi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Sanat-Antikalar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Sanatcilar-Muzisyenler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Seyahat-Etkinlik-Hizmetleri</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Spor-Kamp</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Kayip-Buluntu</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Diger-Eglence-Hobi-Mahalle</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Bos-Zaman-Aktiviteleri</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Model-Yapimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Koleksiyon</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Eglence-Hobi-Mahalle/Bit-Pazari</loc><priority>0.8</priority></url>
+
+  <!-- Müzik, Film & Kitap -->
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Kitap-Dergi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Kirtasiye</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Ders-Kitaplari-Okul-Egitim</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Film-DVD</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Muzik-CDler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Diger-Muzik-Film-Kitap</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Cizgi-Romanlar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Muzik-Film-Kitap/Muzik-Enstrumanlari</loc><priority>0.8</priority></url>
+
+  <!-- Biletler -->
+  <url><loc>https://exvitrin.com/Biletler/Tren-Toplu-Tasima</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Biletler/Komedi-Kabare</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Biletler/Tiyatro-Muzikal</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Biletler/Diger-Biletler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Biletler/Hediye-Kartlari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Biletler/Cocuk</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Biletler/Konserler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Biletler/Spor</loc><priority>0.8</priority></url>
+
+  <!-- Hizmetler -->
+  <url><loc>https://exvitrin.com/Hizmetler/Otomobil-Bisiklet-Tekne-Servisi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Babysitter-Cocuk-Bakimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Ev-Bahce</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Sanatcilar-Muzisyenler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Seyahat-Etkinlik</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Hayvan-Bakimi-Egitimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Tasimacilik-Nakliye</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Diger-Hizmetler</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Yasli-Bakimi</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Hizmetler/Elektronik</loc><priority>0.8</priority></url>
+
+  <!-- Ücretsiz & Takas -->
+  <url><loc>https://exvitrin.com/Ucretsiz-Takas/Takas</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ucretsiz-Takas/Kiralama</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Ucretsiz-Takas/Ucretsiz</loc><priority>0.8</priority></url>
+
+  <!-- Eğitim & Kurslar -->
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Ezoterizm-Spiritualizm</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Yemek-Pastacilik-Kurslari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Sanat-Tasarim-Kurslari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Muzik-San-Dersleri</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Diger-Dersler-Kurslar</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Bilgisayar-Kurslari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Ozel-Ders</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Spor-Kurslari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Dil-Kurslari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Dans-Kurslari</loc><priority>0.8</priority></url>
+  <url><loc>https://exvitrin.com/Egitim-Kurslar/Surekli-Egitim</loc><priority>0.8</priority></url>
+
+  <!-- Komşu Yardımı -->
+  <url><loc>https://exvitrin.com/Komsu-Yardimi/Komsu-Yardimi</loc><priority>0.8</priority></url>
+
 </urlset>

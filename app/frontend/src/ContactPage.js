@@ -34,16 +34,16 @@ const ContactPage = () => {
     ];
 
     return (
-        <main className="flex-grow pt-12 pb-20 px-4 bg-gray-50/50">
+        <main className="flex-grow pt-12 pb-20 px-4 bg-gray-50/50 dark:bg-neutral-950 transition-colors duration-300">
             <div className="max-w-5xl mx-auto">
 
 
                 {/* Hero Section */}
                 <div className="text-center mb-12">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 tracking-tight">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-neutral-50 mb-3 tracking-tight">
                         {t.contact.title}
                     </h1>
-                    <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
+                    <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
                         Sorularınız, önerileriniz veya destek talepleriniz için bize her zaman ulaşabilirsiniz.
                         Size en kısa sürede dönüş yapacağız.
                     </p>
@@ -52,53 +52,53 @@ const ContactPage = () => {
                 <div className="max-w-3xl mx-auto">
                     {/* Contact Form */}
                     <div>
-                        <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
-                            <h2 className="text-lg font-semibold text-gray-900 mb-6">Bize Mesaj Gönderin</h2>
+                        <div className="bg-white dark:bg-neutral-900 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-white/5">
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-neutral-50 mb-6">Bize Mesaj Gönderin</h2>
 
                             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="md:col-span-1">
-                                    <label className="block text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">{t.contact.name}</label>
+                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">{t.contact.name}</label>
                                     <input
                                         type="text"
                                         required
                                         placeholder="Adınız Soyadınız"
-                                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all"
+                                        className="w-full bg-gray-50/50 dark:bg-neutral-800 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-neutral-50 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     />
                                 </div>
 
                                 <div className="md:col-span-1">
-                                    <label className="block text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">{t.contact.email}</label>
+                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">{t.contact.email}</label>
                                     <input
                                         type="email"
                                         required
                                         placeholder="E-posta adresiniz"
-                                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all"
+                                        className="w-full bg-gray-50/50 dark:bg-neutral-800 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-neutral-50 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     />
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">{t.contact.subject}</label>
+                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">{t.contact.subject}</label>
                                     <input
                                         type="text"
                                         required
                                         placeholder="Konu başlığı"
-                                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all"
+                                        className="w-full bg-gray-50/50 dark:bg-neutral-800 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-neutral-50 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all"
                                         value={formData.subject}
                                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                     />
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">{t.contact.message}</label>
+                                    <label className="block text-[11px] font-bold text-gray-500 dark:text-neutral-400 mb-1.5 uppercase tracking-wider">{t.contact.message}</label>
                                     <textarea
                                         required
                                         rows={4}
                                         placeholder="Mesajınız..."
-                                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all resize-none"
+                                        className="w-full bg-gray-50/50 dark:bg-neutral-800 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-neutral-50 focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500/50 transition-all resize-none"
                                         value={formData.message}
                                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                     />

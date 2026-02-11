@@ -4,6 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import "./index.css";
 import App from "./App.js";
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { HelmetProvider } from 'react-helmet-async';
 
 import ErrorBoundary from './ErrorBoundary';
@@ -30,9 +31,11 @@ root.render(
     <ErrorBoundary>
       <HelmetProvider>
         <AuthProvider>
-          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <App />
-          </Router>
+          <ThemeProvider>
+            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <App />
+            </Router>
+          </ThemeProvider>
         </AuthProvider>
       </HelmetProvider>
     </ErrorBoundary>

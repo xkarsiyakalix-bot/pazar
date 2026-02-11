@@ -1,14 +1,17 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, image, url, type = 'website', children }) => {
+const SEO = ({ title, description, keywords, image, url, type = 'website', children }) => {
     const siteTitle = 'ExVitrin';
     const titleTemplate = `%s | ${siteTitle}`;
     const defaultTitle = `${siteTitle} - Ücretsiz İlanlar`;
     const defaultDescription = "Türkiye'nin en büyük ilan pazaryeri ExVitrin. İkinci el ve sıfır araba, emlak, elektronik, moda, mobilya ve çocuk eşyalarını güvenle alın ve satın.";
+    const defaultKeywords = "ilan, ücretsiz ilan, ikinci el, sıfır, yeni, sahibinden, alım satım, araba, emlak, elektronik, moda, mobilya, çocuk eşyası, iş ilanları, türkiye, güvenli alışveriş";
 
     const metaDescription = description || defaultDescription;
-    const metaUrl = url || 'https://exvitrin.com/';
+    const metaKeywords = keywords || defaultKeywords;
+    const currentUrl = typeof window !== 'undefined' ? window.location.origin + window.location.pathname + window.location.search : 'https://exvitrin.com/';
+    const metaUrl = url || currentUrl;
 
     const siteName = 'ExVitrin';
 
@@ -41,7 +44,9 @@ const SEO = ({ title, description, image, url, type = 'website', children }) => 
             titleTemplate={titleTemplate}
             defaultTitle={defaultTitle}
         >
+            <link rel="canonical" href={metaUrl} />
             <meta name="description" content={metaDescription} />
+            <meta name="keywords" content={metaKeywords} />
             <meta property="og:type" content={type} />
             <meta property="og:url" content={metaUrl} />
             <meta property="og:title" content={title ? `${title} | ${siteTitle}` : defaultTitle} />
@@ -90,8 +95,6 @@ export const ProductSEO = ({ product }) => {
 
     // Use only product title for SEO
     const pageTitle = product.title;
-    console.log('ProductSEO - product.title:', product.title);
-    console.log('ProductSEO - pageTitle:', pageTitle);
 
     return (
         <SEO
@@ -118,12 +121,19 @@ export const SearchSEO = ({ query, resultsCount }) => (
 );
 
 // Kategori sayfası için SEO
-export const CategorySEO = ({ category, itemCount }) => (
-    <SEO
-        title={`${category} İlanları`}
-        description={`ExVitrin'de ${itemCount} adet ${category} ilanı bulundu. ${category} ürünlerini kolayca ve uygun fiyata alın veya satın.`}
-        keywords={`${category}, ilanlar, satın al, satış, uygun fiyat`}
-    />
-);
+export const CategorySEO = ({ category, subCategory, itemCount }) => {
+    const displayCategory = subCategory ? `${category} > ${subCategory}` : category;
+    const keywords = subCategory
+        ? `${subCategory}, ${category}, ilanlar, satın al, satış, uygun fiyat`
+        : `${category}, ilanlar, satın al, satış, uygun fiyat`;
+
+    return (
+        <SEO
+            title={`${displayCategory} İlanları`}
+            description={`ExVitrin'de ${itemCount} adet ${displayCategory} ilanı bulundu. ${displayCategory} ürünlerini kolayca ve uygun fiyata alın veya satın.`}
+            keywords={keywords}
+        />
+    );
+};
 
 export default SEO;

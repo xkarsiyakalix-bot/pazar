@@ -28,8 +28,8 @@ const ReparaturenPage = ({ toggleFavorite, isFavorite }) => {
             type: 'multiselect',
             field: 'offer_type',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ]
         },
 

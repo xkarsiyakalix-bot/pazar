@@ -8,9 +8,9 @@ const DienstleistungenElektronikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Reparaturen', label: 'Onarım' },
-                { value: 'Installationen', label: 'Kurulum' },
-                { value: 'Weitere Dienstleistungen', label: 'Diğer Hizmetler' }
+                { value: 'Onarım', label: 'Onarım' },
+                { value: 'Kurulum', label: 'Kurulum' },
+                { value: 'Diğer Hizmetler', label: 'Diğer Hizmetler' }
             ],
             field: 'dienstleistungen_elektronik_art'
         },
@@ -23,8 +23,8 @@ const DienstleistungenElektronikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -32,8 +32,8 @@ const DienstleistungenElektronikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

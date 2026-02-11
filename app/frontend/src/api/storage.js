@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { processImagesForUpload } from '../utils/imageOptimization';
 
 /**
  * Upload multiple images to Supabase Storage
@@ -15,10 +16,19 @@ export const uploadListingImages = async (files, userId) => {
     const maxFileSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-    for (const file of files) {
-        // Validate file size
+    // Optimize images before upload
+    console.log('Optimizing images...');
+    const optimizedFiles = await processImagesForUpload(files, {
+        maxWidth: 1200,
+        maxHeight: 900,
+        quality: 0.75,
+        maxFileSize
+    });
+
+    for (const file of optimizedFiles) {
+        // Validate file size (after optimization)
         if (file.size > maxFileSize) {
-            console.warn(`File ${file.name} is too large (${file.size} bytes). Skipping.`);
+            console.warn(`File ${file.name} is still too large (${file.size} bytes) after optimization. Skipping.`);
             continue;
         }
 
@@ -29,16 +39,16 @@ export const uploadListingImages = async (files, userId) => {
         }
 
         try {
-            // Generate unique filename
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            // Generate unique filename with .webp extension
+            const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
 
             // Upload to Supabase Storage
             const { data, error } = await supabase.storage
                 .from('listing-images')
                 .upload(fileName, file, {
-                    cacheControl: '3600',
-                    upsert: false
+                    cacheControl: '31536000', // 1 year cache
+                    upsert: false,
+                    contentType: 'image/webp'
                 });
 
             if (error) {

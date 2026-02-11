@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, useSearchParams, Link } from 'react-router-dom';
 import { carBrands } from './data/carBrands';
 import { turkeyCities } from './data/turkey_cities';
 import { useAuth } from './contexts/AuthContext';
 import { ReservationButton } from './ReservationButton';
 import { ProductSEO } from './SEO';
-import { getOptimizedImageUrl } from './utils/imageUtils';
+import { getOptimizedImageUrl, compressImage } from './utils/imageUtils';
 import RatingDisplay from './components/RatingDisplay.js';
 import RatingsList from './components/RatingsList.js';
 import { t, getCategoryTranslation } from './translations';
@@ -26,6 +26,10 @@ import { getRatings, getUserAverageRating } from './api/ratings';
 export { Breadcrumb } from './components/Breadcrumb';
 import { searchApi } from './api/search';
 import LoadingSpinner from './components/LoadingSpinner.js';
+import VerifiedBadge from './components/VerifiedBadge';
+import { getListingUrl, getSellerUrl } from './utils/slug';
+import { SKELETON_CONFIG } from './config/skeletonConfig';
+import { ListingGridSkeleton } from './components/skeletons/ListingCardSkeleton';
 
 export const LazyImage = ({ src, alt, className, imgClassName, ...props }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -312,6 +316,10 @@ const categories = [
 // Mock data for listings
 // İlan numarası oluşturma fonksiyonu
 export const generateListingNumber = (listing) => {
+  // Demo specific overrides to match ProductDetail page exactly
+  if (listing?.id === '98fd3675-0163-4c93-9a81-318bedc7c31a') return "1154";
+  if (listing?.id === 'b707bb19-ac7b-45df-a5a8-cbd8f25d9461') return "1018";
+
   // Use listing_number from database if available, otherwise fallback to ID-based number
   if (listing && listing.listing_number) {
     return listing.listing_number.toString();
@@ -575,13 +583,6 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                   <span className="text-neutral-500">{t.common.hello},</span>{' '}
                   <span className="gradient-text">{userProfile?.full_name || user.email?.split('@')[0]}</span>
                 </span>
-
-                <button
-                  onClick={handleLogout}
-                  className="px-5 py-2.5 bg-white border-2 border-neutral-300 rounded-full text-neutral-700 hover:border-primary-500 hover:text-primary-600 transition-all duration-300 font-semibold shadow-sm hover:shadow-premium transform hover:-translate-y-0.5 focus:outline-none"
-                >
-                  {t.nav.logout}
-                </button>
               </>
             ) : (
               <>
@@ -653,7 +654,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                   await markNotificationAsRead(notification.id);
                                   setNotificationDropdownOpen(false);
                                   if (notification.listing_id) {
-                                    navigate(`/product/${notification.listing_id}`);
+                                    navigate(getListingUrl({ id: notification.listing_id }));
                                   }
                                 } catch (error) {
                                   console.error('Error handling notification click:', error);
@@ -1450,7 +1451,7 @@ export const MyListings = () => {
 
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={() => navigate(`/product/${listing._id || listing.id}`)}
+                  onClick={() => navigate(getListingUrl(listing))}
                   className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-2 rounded-lg transition-colors text-xs"
                 >
                   {t.productDetail.details || 'Detaylar'}
@@ -1502,7 +1503,7 @@ export const Settings = () => {
     houseNumber: '',
     zip: '',
     city: '',
-    country: 'Deutschland'
+    country: 'Almanya'
   });
 
   // Store Management States
@@ -2186,7 +2187,7 @@ export const Settings = () => {
                     onChange={(e) => setBillingData({ ...billingData, country: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-400 focus:border-transparent"
                   >
-                    <option value="Deutschland">Almanya</option>
+                    <option value="Almanya">Almanya</option>
                     <option value="Österreich">Avusturya</option>
                     <option value="Schweiz">İsviçre</option>
                   </select>
@@ -2337,7 +2338,7 @@ export const Favorites = ({ favorites, toggleFavorite, isFavorite, followedSelle
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {followedSellerList.map(seller => (
                 <div key={seller.id} className="bg-white rounded-lg shadow-sm p-6 flex items-center gap-4">
-                  <Link to={`/seller/${seller.user_number}`} className="flex-shrink-0">
+                  <Link to={getSellerUrl(seller)} className="flex-shrink-0">
                     <img
                       src={seller.store_logo || seller.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.full_name || 'User')}&background=ef4444&color=fff&size=200`}
                       alt={seller.full_name}
@@ -2345,13 +2346,13 @@ export const Favorites = ({ favorites, toggleFavorite, isFavorite, followedSelle
                     />
                   </Link>
                   <div className="flex-1">
-                    <Link to={`/seller/${seller.user_number}`} className="hover:text-blue-600 transition-colors">
-                      <h3 className="font-semibold text-gray-900">{seller.full_name || 'Unbekannter Nutzer'}</h3>
+                    <Link to={getSellerUrl(seller)} className="hover:text-blue-600 transition-colors">
+                      <h3 className="font-semibold text-gray-900">{seller.full_name || 'Bilinmeyen Kullanıcı'}</h3>
                     </Link>
                     <div className="text-xs text-gray-400 mt-1">@{seller.user_number}</div>
                   </div>
                   <Link
-                    to={`/seller/${seller.user_number}`}
+                    to={getSellerUrl(seller)}
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium transition-colors"
                   >
                     Profil
@@ -2364,8 +2365,8 @@ export const Favorites = ({ favorites, toggleFavorite, isFavorite, followedSelle
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Keine gefolgten Nutzer</h3>
-              <p className="text-gray-500">Du folgst noch keinen Nutzern.</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Takip edilen kullanıcı yok</h3>
+              <p className="text-gray-500">Henüz hiçbir kullanıcıyı takip etmiyorsun.</p>
             </div>
           )
         )}
@@ -2382,7 +2383,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [showDistanceDropdown, setShowDistanceDropdown] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState('50 km');
-  const [showMeinsDropdown, setShowMeinsDropdown] = useState(false);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [userProfile, setUserProfile] = useState(null);
@@ -2539,7 +2540,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
   const categoryDropdownRef = React.useRef(null);
   const locationDropdownRef = React.useRef(null);
   const distanceDropdownRef = React.useRef(null);
-  const meinsDropdownRef = React.useRef(null);
+  const accountDropdownRef = React.useRef(null);
   const cartDropdownRef = React.useRef(null);
 
   useEffect(() => {
@@ -2553,8 +2554,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
       if (distanceDropdownRef.current && !distanceDropdownRef.current.contains(event.target)) {
         setShowDistanceDropdown(false);
       }
-      if (meinsDropdownRef.current && !meinsDropdownRef.current.contains(event.target)) {
-        setShowMeinsDropdown(false);
+      if (accountDropdownRef.current && !accountDropdownRef.current.contains(event.target)) {
+        setShowAccountDropdown(false);
       }
       if (cartDropdownRef.current && !cartDropdownRef.current.contains(event.target)) {
         setShowCart(false);
@@ -2568,7 +2569,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [categoryDropdownRef, locationDropdownRef, distanceDropdownRef, meinsDropdownRef, cartDropdownRef, recentSearchesDropdownRef, setShowCart]);
+  }, [categoryDropdownRef, locationDropdownRef, distanceDropdownRef, accountDropdownRef, cartDropdownRef, recentSearchesDropdownRef, setShowCart]);
 
   // Get user's location on component mount
   useEffect(() => {
@@ -2641,8 +2642,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
   }
 
   return (
-    <section className="bg-gradient-to-r from-red-500 to-rose-600 py-4 sm:py-8 relative overflow-visible z-40">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30"></div>
+    <section className="bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800 py-4 sm:py-8 relative overflow-visible z-40 border-b border-neutral-300 dark:border-white/10 transition-colors duration-300">
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 dark:opacity-10"></div>
       <div className="max-w-[1400px] mx-auto px-2 sm:px-4 relative z-20">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
           <form
@@ -2741,7 +2742,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                           onClick={() => {
                             setSelectedCategory(cat);
                             setShowRecentSearches(false);
-                            navigate(`/search?category=${encodeURIComponent(cat)}`);
+                            navigate(getCategoryPath(cat));
                           }}
                           className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 flex items-center gap-2 transition-colors"
                         >
@@ -2766,7 +2767,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                           key={listing.id}
                           onClick={() => {
                             setShowRecentSearches(false);
-                            navigate(`/product/${listing.id}`);
+                            navigate(getListingUrl(listing));
                           }}
                           className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
                         >
@@ -2964,7 +2965,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
           <div className="hidden lg:flex items-stretch gap-3">
             <button
               onClick={() => navigate('/add-listing')}
-              className="flex flex-col items-center justify-center text-white transition-all duration-300 font-semibold px-4 py-2 rounded-xl hover:bg-white/10 transform hover:-translate-y-0.5 group"
+              className="flex flex-col items-center justify-center text-neutral-700 dark:text-neutral-100 transition-all duration-300 font-semibold px-4 py-2 rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-800 transform hover:-translate-y-0.5 group"
             >
               <svg className="w-8 h-8 mb-0.5 transform group-hover:scale-110 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <circle cx="12" cy="12" r="10" />
@@ -2975,15 +2976,15 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
 
             <div className="relative flex items-center">
               <button
-                onClick={() => setShowMeinsDropdown(!showMeinsDropdown)}
-                className="flex flex-col items-center justify-center text-white hover:text-red-50 transition-all duration-300 font-medium px-3 py-2 relative rounded-xl hover:bg-white/10 transform hover:-translate-y-0.5 group"
+                onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                className="flex flex-col items-center justify-center text-neutral-700 dark:text-neutral-100 hover:text-neutral-900 dark:hover:text-neutral-50 transition-all duration-300 font-medium px-3 py-2 relative rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-800 transform hover:-translate-y-0.5 group"
               >
                 <svg className="w-8 h-8 mb-0.5 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <circle cx="12" cy="12" r="10" />
                   <circle cx="12" cy="9" r="3" />
                   <path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.834 2.855" strokeLinecap="round" />
                 </svg>
-                <span className="text-sm">Hesabım</span>
+                <span className="text-sm">{t.nav.myAccount}</span>
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
                     {unreadCount}
@@ -2995,21 +2996,21 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
 
         </div>
 
-        {showMeinsDropdown && (
+        {showAccountDropdown && (
           <div
             className="absolute right-4 sm:right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-[10000]"
-            ref={meinsDropdownRef}
+            ref={accountDropdownRef}
           >
             <div className="border-b border-gray-100 pb-2">
               <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">HESABIM</div>
 
-              <button onClick={() => { navigate('/profile'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+              <button onClick={() => { navigate('/profile'); setShowAccountDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 {t.nav.myProfile}
               </button>
-              <button onClick={() => { navigate('/messages'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+              <button onClick={() => { navigate('/messages'); setShowAccountDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
@@ -3020,13 +3021,13 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                   </span>
                 )}
               </button>
-              <button onClick={() => { navigate('/my-listings'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+              <button onClick={() => { navigate('/my-listings'); setShowAccountDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 {t.nav.myListings}
               </button>
-              <button onClick={() => { navigate('/settings'); setShowMeinsDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
+              <button onClick={() => { navigate('/settings'); setShowAccountDropdown(false); }} className="block w-full text-left px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors flex items-center gap-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -3036,7 +3037,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
 
               {/* Unternehmensseite PRO */}
               <button
-                onClick={() => { navigate('/packages'); setShowMeinsDropdown(false); }}
+                onClick={() => { navigate('/packages'); setShowAccountDropdown(false); }}
                 className="block w-full text-left px-3 py-2.5 mx-2 my-2 rounded-lg bg-gradient-premium text-white font-semibold transition-all hover:shadow-premium-lg transform hover:-translate-y-0.5 flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -3045,11 +3046,11 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 {t.nav.proPage}
               </button>
             </div>
-            <div className="border-t border-gray-100 py-2">
+            <div className="border-t border-gray-100 dark:border-white/10 py-2">
               <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.nav.favorites.toUpperCase()}</div>
 
               <button
-                onClick={() => { navigate('/favorites'); setShowMeinsDropdown(false); }}
+                onClick={() => { navigate('/favorites'); setShowAccountDropdown(false); }}
                 className={`block w-full text-left px-4 py-2.5 flex justify-between items-center transition-colors ${isFavoritesListingsActive
                   ? 'bg-primary-50 text-primary-600 font-medium'
                   : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
@@ -3566,30 +3567,30 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   const isMiniJob = listing.sub_category === 'Yarı Zamanlı & Ek İşler' || listing.sub_category === 'Staj';
   const displayImage = isMiniJob ? '/favicon.png' : imageUrl;
   const imageClasses = isMiniJob
-    ? "w-full h-28 object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-    : "w-full h-28 object-cover group-hover:scale-105 transition-transform duration-500";
+    ? "w-full h-28 object-contain p-4 transition-transform duration-500"
+    : "w-full h-28 object-cover transition-transform duration-500";
 
   // Determine card styles based on promotion Type
-  let cardClasses = "listing-card border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative hover:-translate-y-0.5 bg-white flex flex-col h-full ";
+  let cardClasses = "listing-card border border-gray-200 dark:border-white/10 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative bg-white dark:bg-neutral-900 flex flex-col h-full ";
 
   const pkgType = listing?.package_type?.toLowerCase();
 
   if (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType)) {
-    cardClasses += "border-2 border-purple-500 ring-2 ring-purple-100 bg-purple-50/20 scale-[1.01] ";
+    cardClasses += "border-2 border-purple-500 ring-2 ring-purple-100 dark:ring-purple-900/20 bg-purple-50/20 dark:bg-purple-950/20 scale-[1.01] ";
   } else if (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType)) {
-    cardClasses += "border-2 border-amber-400 ring-2 ring-amber-50/50 bg-amber-50/10 ";
+    cardClasses += "border-2 border-red-500 ring-4 ring-amber-400/20 dark:ring-red-900/10 bg-gradient-to-br from-amber-50/20 to-rose-50/20 dark:from-amber-950/10 dark:to-rose-950/10 ";
   } else if (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing.is_multi_bump) {
-    cardClasses += "border-2 border-orange-400 ring-2 ring-orange-50/50 bg-orange-50/10 ";
+    cardClasses += "border-2 border-orange-400 ring-2 ring-orange-50/50 dark:ring-orange-900/20 bg-orange-50/10 dark:bg-orange-950/20 ";
   } else if (listing.is_highlighted || pkgType === 'highlight' || pkgType === 'budget') {
-    cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 ";
+    cardClasses += "border-2 border-yellow-500 bg-yellow-50/5 dark:bg-yellow-950/5 ";
   }
 
   return (
-    <div className={cardClasses} onClick={() => navigate(`/product/${listing.id}`)}>
-      <div className="relative overflow-hidden rounded-t-lg bg-gray-100 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+    <div className={cardClasses} onClick={() => navigate(getListingUrl(listing))}>
+      <div className="relative overflow-hidden rounded-t-lg bg-gray-100 dark:bg-neutral-800 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
         {!imageLoaded && !isMiniJob && (
-          <div className="absolute inset-0 animate-pulse bg-gray-200 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-neutral-800 flex items-center justify-center">
+            <svg className="w-8 h-8 text-gray-300 dark:text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
@@ -3617,21 +3618,25 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         {listing?.package_type &&
           listing.package_type.toLowerCase() !== 'basic' &&
           listing.package_type.toLowerCase() !== 'top' &&
-          listing.package_type.toLowerCase() !== 'basic' &&
           listing.package_type.toLowerCase() !== 'galerie' &&
           listing.package_type.toLowerCase() !== 'gallery' &&
           listing.package_type.toLowerCase() !== 'galeri' &&
           listing.package_type.toLowerCase() !== 'vitrin' &&
           listing.package_type.toLowerCase() !== 'verlängerung' &&
           listing.package_type.toLowerCase() !== 'extension' && (
-            <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 px-2 py-1 rounded-md text-[10px] font-bold shadow-md border border-white/20 z-10 uppercase tracking-wider ${listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? 'bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]' :
+            <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 px-2.5 py-1 rounded-md text-[10px] font-black shadow-xl border border-white/30 z-10 uppercase tracking-tighter flex items-center gap-1.5 ${listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? 'bg-gradient-to-br from-red-600 via-rose-500 to-amber-500 text-white animate-shimmer scale-105' :
               listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-200' :
                 listing.package_type.toLowerCase() === 'plus' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
                   'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-200'
               }`}>
-              {listing.package_type.toLowerCase() === 'budget' || listing.package_type.toLowerCase() === 'highlight' ? 'ÖNE ÇIKAN' :
-                listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? '⚡ YUKARI' :
-                  listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? '👑 PREMIUM' :
+              {listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? (
+                <>
+                  <span className="text-sm">👑</span>
+                  <span>PREMIUM</span>
+                </>
+              ) :
+                listing.package_type.toLowerCase() === 'budget' || listing.package_type.toLowerCase() === 'highlight' ? 'ÖNE ÇIKAN' :
+                  listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? '⚡ YUKARI' :
                     listing.package_type}
             </div>
           )}
@@ -3668,7 +3673,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
               e.stopPropagation();
               if (toggleFavorite) toggleFavorite(listing.id);
             }}
-            className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
+            className="absolute top-2 right-2 w-7 h-7 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
             aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             {favorite ? (
@@ -3676,7 +3681,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                 <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             ) : (
-              <svg className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-400 dark:text-neutral-500 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             )}
@@ -3686,7 +3691,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
 
       <div className="p-2.5 flex flex-col justify-between flex-grow min-h-[140px]">
         <div>
-          <h3 className="text-[12px] font-bold text-gray-900 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors leading-snug">
+          <h3 className="text-[12px] font-bold text-gray-900 dark:text-neutral-50 mb-1 line-clamp-2 group-hover:text-red-600 transition-colors leading-snug">
             {listing.title}
           </h3>
 
@@ -3703,7 +3708,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
             return (
               <div className="flex flex-wrap gap-1 mb-2">
                 {attrs.slice(0, 2).map((attr, idx) => (
-                  <span key={idx} className="text-[9px] text-gray-500 bg-gray-50 px-1 py-0 rounded border border-gray-100 font-medium">
+                  <span key={idx} className="text-[9px] text-gray-500 dark:text-neutral-400 bg-gray-50 dark:bg-neutral-800/50 px-1 py-0 rounded border border-gray-100 dark:border-white/5 font-medium">
                     {attr}
                   </span>
                 ))}
@@ -3713,8 +3718,8 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         </div>
 
         <div className="mt-auto">
-          <div className="mb-1.5 pt-2 border-t border-gray-50">
-            <span className="text-sm font-black text-gray-900">
+          <div className="mb-1.5 pt-2 border-t border-gray-50 dark:border-white/5">
+            <span className="text-sm font-black text-gray-900 dark:text-neutral-50">
               {!hidePrice && listing.sub_category !== 'Eğitim / Meslek Eğitimi' && listing.sub_category !== 'İnşaat, Zanaat & Üretim' && listing.category !== 'İş İlanları' && (
                 listing.price_type === 'giveaway' || listing.price === 0
                   ? 'Ücretsiz'
@@ -3725,7 +3730,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-[13px] text-gray-500 pt-1.5 border-t border-gray-100">
+          <div className="flex items-center justify-between text-[13px] text-gray-500 dark:text-neutral-400 pt-1.5 border-t border-gray-100 dark:border-white/5">
             {listing.city && (
               <div className="flex items-center gap-0.5 truncate max-w-[60%]">
                 <svg className="w-2.5 h-2.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
@@ -3735,9 +3740,21 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                 <span className="truncate">{listing.city}</span>
               </div>
             )}
-            <span className="flex-shrink-0 text-gray-400 text-[12px]">
-              {listing.date || (listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR') : '')}
-            </span>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {/* View count for own listings */}
+              {isOwnListing && listing.views !== undefined && (
+                <div className="flex items-center gap-0.5 text-blue-600 font-medium">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span className="text-[11px]">{listing.views || 0}</span>
+                </div>
+              )}
+              <span className="text-gray-400 text-[12px]">
+                {listing.date || (listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR') : '')}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -3829,31 +3846,11 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
     return interleaved;
   })();
 
-  if (loading && isLatest) {
-    // Check if skeletons are enabled
-    const { SKELETON_CONFIG } = require('./config/skeletonConfig');
-
+  if (loading) {
     if (SKELETON_CONFIG.enabled) {
-      // Use modern skeleton component
-      const { ListingGridSkeleton } = require('./components/skeletons/ListingCardSkeleton');
-      return <ListingGridSkeleton count={10} />;
-    } else {
-      // Use old spinner/placeholder
-      return (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-          {[...Array(10)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-white rounded-xl shadow-md h-64 overflow-hidden border border-gray-100">
-              <div className="bg-gray-200 h-32 w-full"></div>
-              <div className="p-3 space-y-3">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      );
+      return <ListingGridSkeleton count={isLatest ? 10 : 4} />;
     }
+    return <div className="text-center py-12"><LoadingSpinner size="medium" /></div>;
   }
 
   if (displayListings.length === 0) {
@@ -3906,8 +3903,10 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
         const data = await fetchListings({}, { count: false });
         // Include both Gallery and Top listings in the showcase (Exclude Multi-Bump and Premium from Gallery)
         // Only include actual Vitrin (gallery) listings in the showcase
+        const now = new Date();
         let topListings = data.filter(listing =>
-          listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())
+          (listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) &&
+          (!listing.promotion_expiry || new Date(listing.promotion_expiry) > now)
         );
 
         // Fiyat filtresi
@@ -4009,32 +4008,8 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
             onClick={() => setShowInfoModal(true)}
             className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
           >
-            İlanınızı burada yayınlayın
+            Buraya ilanınızı ekleyin
           </button>
-          {!isMobile && (
-            <div className="flex gap-2">
-              <button
-                onClick={prevSlide}
-                disabled={currentIndex === 0}
-                className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
-                aria-label="Önceki"
-              >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                onClick={nextSlide}
-                disabled={currentIndex >= maxIndex}
-                className="p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
-                aria-label="Sonraki"
-              >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
@@ -4072,8 +4047,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
           </div>
         ) : (
           <div
-            className={`flex gap-4 ${isMobile ? 'overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4' : 'transition-transform duration-300 ease-in-out'}`}
-            style={!isMobile ? { transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)` } : {}}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4"
           >
             {galleryItems.map((item) => (
               <div
@@ -4100,14 +4074,14 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
 };
 
 // Gallery Info Modal
-const GalleryInfoModal = ({ isOpen, onClose }) => {
+export const GalleryInfoModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={(e) => { e.stopPropagation(); onClose(); }}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden shadow-neutral-950/20" onClick={e => e.stopPropagation()}>
         <div className="relative h-48 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
           <div className="text-center text-white z-10 p-6">
@@ -4123,44 +4097,44 @@ const GalleryInfoModal = ({ isOpen, onClose }) => {
 
         <div className="p-8">
           <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{t.topAds.modal.queriesTitle}</h3>
-              <p className="text-gray-600">{t.topAds.modal.queriesDesc}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-1">{t.topAds.modal.queriesTitle}</h3>
+              <p className="text-gray-600 dark:text-neutral-400">{t.topAds.modal.queriesDesc}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{t.topAds.modal.rotationTitle}</h3>
-              <p className="text-gray-600">{t.topAds.modal.rotationDesc}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-1">{t.topAds.modal.rotationTitle}</h3>
+              <p className="text-gray-600 dark:text-neutral-400">{t.topAds.modal.rotationDesc}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-4 mb-8">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{t.topAds.modal.premiumTitle}</h3>
-              <p className="text-gray-600">{t.topAds.modal.premiumDesc}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-1">{t.topAds.modal.premiumTitle}</h3>
+              <p className="text-gray-600 dark:text-neutral-400">{t.topAds.modal.premiumDesc}</p>
             </div>
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8 flex gap-3">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/40 rounded-lg p-4 mb-8 flex gap-3">
             <span className="text-2xl">💡</span>
-            <p className="text-sm text-yellow-800">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">
               <span className="font-bold">{t.topAds.modal.tip}</span> {t.topAds.modal.tipDesc}
             </p>
           </div>
@@ -4188,17 +4162,18 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
   const [galleryItems, setGalleryItems] = useState([]);
   const [itemsPerView, setItemsPerView] = useState(5);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const isMobile = window.innerWidth < 768;
   const { user } = useAuth();
 
   // Update itemsPerView based on screen size
   useEffect(() => {
     const updateItemsPerView = () => {
       if (window.innerWidth < 640) {
-        setItemsPerView(2); // Mobile: 2 columns
+        setItemsPerView(2);
       } else if (window.innerWidth < 1024) {
-        setItemsPerView(3); // Tablet: 3 columns
+        setItemsPerView(3);
       } else {
-        setItemsPerView(5); // Desktop: 5 columns
+        setItemsPerView(5);
       }
     };
 
@@ -4274,7 +4249,7 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
   return (
     <section className="mb-4 sm:mb-6 overflow-hidden">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t.topAds.title}</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-neutral-100">{t.topAds.title}</h2>
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={() => setShowInfoModal(true)}
@@ -4282,25 +4257,25 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
           >
             {t.topAds.placeAd}
           </button>
-          {galleryItems.length > 0 && (
+          {galleryItems.length > itemsPerView && !isMobile && (
             <div className="hidden md:flex gap-1 sm:gap-2">
               <button
                 onClick={prevSlide}
                 disabled={currentIndex === 0}
-                className="p-1.5 sm:p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
+                className="p-1.5 sm:p-2.5 rounded-full bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-white/10 hover:border-red-500 dark:hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
                 aria-label="Previous items"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <button
                 onClick={nextSlide}
                 disabled={currentIndex >= maxIndex}
-                className="p-1.5 sm:p-2.5 rounded-full bg-white border-2 border-gray-200 hover:border-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
+                className="p-1.5 sm:p-2.5 rounded-full bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-white/10 hover:border-red-500 dark:hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none"
                 aria-label="Next items"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -4311,18 +4286,18 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
 
       <div className="relative overflow-hidden">
         {galleryItems.length === 0 ? (
-          <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg sm:rounded-xl p-8 sm:p-12 text-center">
-            <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-gray-50 dark:bg-neutral-900/50 border-2 border-dashed border-gray-300 dark:border-white/5 rounded-lg sm:rounded-xl p-8 sm:p-12 text-center">
+            <svg className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 dark:text-neutral-600 mx-auto mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-0.707.293l-2.414 2.414a1 1 0 01-0.707.293h-3.172a1 1 0 01-0.707-0.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
-            <p className="text-sm sm:text-base text-gray-500 font-medium">{t.topAds.noAds}</p>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1 sm:mt-2">{t.topAds.checkBackLater}</p>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-neutral-400 font-medium">{t.topAds.noAds}</p>
+            <p className="text-xs sm:text-sm text-gray-400 dark:text-neutral-500 mt-1 sm:mt-2">{t.topAds.checkBackLater}</p>
           </div>
         ) : (
           <div
-            className="flex md:transition-transform md:duration-300 md:ease-in-out gap-2 sm:gap-3 overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory scrollbar-hide"
+            className="flex gap-2 sm:gap-3 overflow-x-auto md:overflow-hidden snap-x snap-mandatory scrollbar-hide md:transition-transform md:duration-500 md:ease-in-out py-1.5 px-0.5"
             style={{
-              transform: window.innerWidth >= 768 ? `translateX(-${currentIndex * (100 / itemsPerView)}%)` : 'none',
+              transform: !isMobile ? `translateX(-${currentIndex * (100 / itemsPerView)}%)` : 'none',
               scrollSnapType: 'x mandatory',
               WebkitOverflowScrolling: 'touch'
             }}
@@ -4333,7 +4308,7 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
                 className="gallery-item flex-shrink-0 snap-start"
                 style={{
                   width: window.innerWidth < 768
-                    ? 'calc(50% - 4px)'
+                    ? 'calc(45% - 8px)'
                     : `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView === 2 ? 8 : 12) / itemsPerView}px)`
                 }}
               >
@@ -4499,59 +4474,59 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
   return (
     <div className="fixed inset-0 z-[200] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="flex items-start sm:items-center justify-center min-h-screen pt-10 sm:pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={onClose}></div>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-black dark:bg-opacity-80 transition-opacity" aria-hidden="true" onClick={onClose}></div>
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div className="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-[95%] sm:max-w-xl sm:w-full relative">
+        <div className="inline-block align-middle bg-white dark:bg-neutral-900 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-[95%] sm:max-w-xl sm:w-full relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none z-10"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-neutral-300 focus:outline-none z-10"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div className="bg-white dark:bg-neutral-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="sm:flex sm:items-start text-center">
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 className="text-xl leading-8 font-bold text-gray-900 pr-8" id="modal-title">
+                <h3 className="text-xl leading-8 font-bold text-gray-900 dark:text-neutral-100 pr-8" id="modal-title">
                   {t.sellerProfile.message} - {sellerName}
                 </h3>
                 {listingTitle && (
                   <div className="mt-2">
-                    <p className="text-sm font-medium text-red-600">
+                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
                       📅 {listingTitle}
                     </p>
                   </div>
                 )}
                 <form onSubmit={handleSubmit} className="mt-4 space-y-4">
                   <div>
-                    <label htmlFor="modal-name" className="block text-sm font-medium text-gray-700">{t.addListing.name}</label>
+                    <label htmlFor="modal-name" className="block text-sm font-medium text-gray-700 dark:text-neutral-300">{t.addListing.name}</label>
                     <input
                       type="text"
                       id="modal-name"
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                      className="mt-1 block w-full border border-gray-300 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div>
-                    <label htmlFor="modal-phone" className="block text-sm font-medium text-gray-700">{t.addListing.phoneNumber}</label>
+                    <label htmlFor="modal-phone" className="block text-sm font-medium text-gray-700 dark:text-neutral-300">{t.addListing.phoneNumber}</label>
                     <input
                       type="tel"
                       id="modal-phone"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                      className="mt-1 block w-full border border-gray-300 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
                   <div>
-                    <label htmlFor="modal-message" className="block text-sm font-medium text-gray-700">{t.sellerProfile.message}</label>
+                    <label htmlFor="modal-message" className="block text-sm font-medium text-gray-700 dark:text-neutral-300">{t.sellerProfile.message}</label>
                     <textarea
                       id="modal-message"
                       required
                       rows={6}
-                      className="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-3 px-4 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-all"
+                      className="mt-1 block w-full border border-gray-300 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-xl shadow-sm py-3 px-4 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-all"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                     />
@@ -4565,7 +4540,7 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
                     </button>
                     <button
                       type="button"
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-white/10 shadow-sm px-4 py-2 bg-white dark:bg-neutral-800 text-base font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:w-auto sm:text-sm transition-colors"
                       onClick={onClose}
                     >
                       {t.common.cancel}
@@ -4645,10 +4620,10 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(5);
 
-  // Filter only commercial sellers (Gewerblicher Nutzer)
+  // Filter only commercial sellers (Kurumsal Kullanıcı)
   const companies = Object.entries(mockSellers)
     .map(([id, seller]) => ({ ...seller, id }))
-    .filter(seller => seller.sellerType === 'Gewerblicher Nutzer');
+    .filter(seller => seller.sellerType === 'Kurumsal Kullanıcı');
 
   // Update itemsPerView based on screen size
   useEffect(() => {
@@ -4682,7 +4657,7 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
   return (
     <section className="mt-8 sm:mt-12 mb-8 sm:mb-12">
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Türkiye'deki Kurumsal Sayfalar</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-neutral-50">Türkiye'deki Kurumsal Sayfalar</h2>
         <div className="flex items-center gap-2 sm:gap-4">
           <a
             href="/Unternehmensseiten"
@@ -4694,20 +4669,20 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
             <button
               onClick={prevSlide}
               disabled={currentIndex === 0}
-              className="p-1.5 sm:p-2 rounded-full border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 sm:p-2 rounded-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Previous companies"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
               onClick={nextSlide}
               disabled={currentIndex >= maxIndex}
-              className="p-1.5 sm:p-2 rounded-full border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 sm:p-2 rounded-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Next companies"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -4721,13 +4696,14 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
           style={{ transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)` }}
         >
           {companies.map((company) => (
-            <div
+            <Link
               key={company.id}
-              className="w-[calc(20%-16px)] flex-shrink-0 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer group border border-gray-100 overflow-hidden"
-              onClick={() => navigate(`/seller/${company.user_number}`)}
+              to={`/seller/${company.user_number}`}
+              state={{ sellerProfile: company }}
+              className="w-[calc(20%-16px)] flex-shrink-0 bg-white dark:bg-neutral-900 rounded-xl shadow-sm hover:shadow-lg transition-all cursor-pointer group border border-gray-100 dark:border-white/5 overflow-hidden block"
             >
               {/* Company Image - Same as listing card */}
-              <div className="relative w-full h-40 bg-gray-100">
+              <div className="relative w-full h-40 bg-gray-100 dark:bg-neutral-800">
                 <img
                   src={company.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=0D8ABC&color=fff&size=400`}
                   alt={company.name}
@@ -4738,19 +4714,19 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
               {/* Company Info - Same padding as listing card */}
               <div className="p-3">
                 {/* Company Name */}
-                <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="font-semibold text-sm text-gray-900 dark:text-neutral-100 mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {company.name}
                 </h3>
 
                 {/* Business Type/Category */}
                 {company.businessType && (
-                  <p className="text-xs text-gray-500 mb-2 font-medium">
+                  <p className="text-xs text-gray-500 dark:text-neutral-400 mb-2 font-medium">
                     {company.businessType}
                   </p>
                 )}
 
                 {/* Location */}
-                <div className="flex items-center gap-1 text-gray-500 text-xs mb-2">
+                <div className="flex items-center gap-1 text-gray-500 dark:text-neutral-400 text-xs mb-2">
                   <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -4768,7 +4744,7 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
                 </div>
 
                 {/* Stats */}
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400 mb-3">
                   <div className="flex items-center gap-1">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -4777,22 +4753,18 @@ export const SpecialSellers = ({ toggleFollowSeller, isSellerFollowed }) => {
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-yellow-500">★</span>
-                    <span className="font-medium text-gray-700">{company.rating}</span>
+                    <span className="font-medium text-gray-700 dark:text-neutral-300">{company.rating}</span>
                   </div>
                 </div>
 
-                {/* Action Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/seller/${company.user_number}`);
-                  }}
-                  className="w-full py-2 px-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-xs"
+                {/* Action Link Label */}
+                <div
+                  className="w-full py-2 px-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors text-xs text-center block"
                 >
-                  Zur Unternehmensseite
-                </button>
+                  Profili Gör
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -4871,7 +4843,7 @@ export const AddListing = () => {
   const [category, setCategory] = useState('');
   const [subCategory, setSubCategory] = useState('');
   const isJobCategory = category === 'İş İlanları' || subCategory === 'Eğitim / Meslek Eğitimi';
-  const hideConditionAndShipping = category === 'Emlak' || category === 'Eğitim & Kurslar' || isJobCategory || subCategory === 'Bebek Bakıcısı & Kreş' || subCategory === 'Balıklar' || subCategory === 'Köpekler' || subCategory === 'Kediler' || subCategory === 'Küçük Hayvanlar' || subCategory === 'Çiftlik Hayvanları' || subCategory === 'Atlar' || subCategory === 'Hayvan Bakımı & Eğitim' || subCategory === 'Kayıp Hayvanlar' || subCategory === 'Kuşlar' || subCategory === 'Konteyner' || subCategory === 'Tamir & Servis' || subCategory === 'Ticari Araçlar & Römorklar' || subCategory === 'Tekne & Tekne Malzemeleri';
+  const hideConditionAndShipping = category === 'Emlak' || category === 'Eğitim & Kurslar' || isJobCategory || subCategory === 'Bebek Bakıcısı & Kreş' || subCategory === 'Balıklar' || subCategory === 'Köpekler' || subCategory === 'Kediler' || subCategory === 'Küçük Hayvanlar' || subCategory === 'Çiftlik Hayvanları' || subCategory === 'Atlar' || subCategory === 'Hayvan Bakımı & Eğitim' || subCategory === 'Kayıp Hayvanlar' || subCategory === 'Kuşlar' || subCategory === 'Konteyner' || subCategory === 'Tamir & Servis' || subCategory === 'Ticari Araçlar & Römorklar' || subCategory === 'Tekne & Tekne Malzemeleri' || subCategory === 'Otomobiller' || subCategory === 'Karavan & Motokaravan';
   const [condition, setCondition] = useState(''); // Default to empty string for granular selection
   const [price, setPrice] = useState('');
   const [priceType, setPriceType] = useState('fixed');
@@ -4905,18 +4877,18 @@ export const AddListing = () => {
   // Auto-specific states
   const [selectedCarBrand, setSelectedCarBrand] = useState('');
   const [selectedCarModel, setSelectedCarModel] = useState('');
-  const [selectedFahrzeugtyp, setSelectedFahrzeugtyp] = useState('');
+  const [selectedVehicleType, setSelectedVehicleType] = useState('');
   const [selectedDoorCount, setSelectedDoorCount] = useState('');
   const [selectedExteriorColor, setSelectedExteriorColor] = useState('');
   const [selectedInteriorMaterial, setSelectedInteriorMaterial] = useState('');
   const [selectedEmissionBadge, setSelectedEmissionBadge] = useState('');
-  const [selectedSchadstoffklasse, setSelectedSchadstoffklasse] = useState('');
-  const [selectedHU, setSelectedHU] = useState('');
-  const [isUnfallfrei, setIsUnfallfrei] = useState(false);
-  const [isScheckheftgepflegt, setIsScheckheftgepflegt] = useState(false);
-  const [isNichtraucher, setIsNichtraucher] = useState(false);
+  const [selectedEmissionClass, setSelectedEmissionClass] = useState('');
+  const [selectedInspection, setSelectedInspection] = useState('');
+  const [isAccidentFree, setIsAccidentFree] = useState(false);
+  const [isFullServiceHistory, setIsFullServiceHistory] = useState(false);
+  const [isNonSmoking, setIsNonSmoking] = useState(false);
   const [selectedCarAmenities, setSelectedCarAmenities] = useState([]);
-  const [erstzulassungMonat, setErstzulassungMonat] = useState('');
+  const [firstRegistrationMonth, setFirstRegistrationMonth] = useState('');
 
   // Bike-specific states
   const [selectedBikeType, setSelectedBikeType] = useState('');
@@ -4925,7 +4897,7 @@ export const AddListing = () => {
   // Autoteile-specific state
   const [selectedAutoteileArt, setSelectedAutoteileArt] = useState('');
   const [selectedAutoteileAngebotstyp, setSelectedAutoteileAngebotstyp] = useState('');
-  const [selectedVersand, setSelectedVersand] = useState('');
+  const [selectedShipping, setSelectedShipping] = useState('');
 
   // Boote-specific state
   const [selectedBooteArt, setSelectedBooteArt] = useState('');
@@ -4954,11 +4926,7 @@ export const AddListing = () => {
   // Küche & Esszimmer-specific state
   const [selectedKuecheEsszimmerArt, setSelectedKuecheEsszimmerArt] = useState('');
 
-  // Kadın Giyimi (Damenbekleidung) specific states
-  const [selectedDamenbekleidungArt, setSelectedDamenbekleidungArt] = useState('');
-  const [selectedDamenbekleidungMarke, setSelectedDamenbekleidungMarke] = useState('');
-  const [selectedDamenbekleidungSize, setSelectedDamenbekleidungSize] = useState('');
-  const [selectedDamenbekleidungColor, setSelectedDamenbekleidungColor] = useState('');
+
 
   // Gartenzubehör & Pflanzen-specific state
   const [selectedGartenzubehoerArt, setSelectedGartenzubehoerArt] = useState('');
@@ -5016,7 +4984,7 @@ export const AddListing = () => {
   const [selectedHerrenschuheSize, setSelectedHerrenschuheSize] = useState('');
   const [selectedHerrenschuheColor, setSelectedHerrenschuheColor] = useState('');
 
-  // Babyschalen & Kindersitze
+  // Fashion specific states (Unified)
   const [damenbekleidungColor, setDamenbekleidungColor] = useState('');
   const [damenbekleidungMarke, setDamenbekleidungMarke] = useState('');
   const [damenbekleidungSize, setDamenbekleidungSize] = useState('');
@@ -5050,16 +5018,16 @@ export const AddListing = () => {
   const [selectedBeautyGesundheitArt, setSelectedBeautyGesundheitArt] = useState('');
 
   // Bau, Handwerk & Produktion-specific state
-  const [selectedBauHandwerkProduktionArt, setSelectedBauHandwerkProduktionArt] = useState('');
+  const [selectedConstructionType, setSelectedConstructionType] = useState('');
 
-  const [selectedBueroArbeitVerwaltungArt, setSelectedBueroArbeitVerwaltungArt] = useState('');
+  const [selectedOfficeType, setSelectedOfficeType] = useState('');
 
 
-  const [selectedGastronomieTourismusArt, setSelectedGastronomieTourismusArt] = useState('');
-  const [selectedSozialerSektorPflegeArt, setSelectedSozialerSektorPflegeArt] = useState('');
-  const [selectedTransportLogistikVerkehrArt, setSelectedTransportLogistikVerkehrArt] = useState('');
-  const [selectedVertriebEinkaufVerkaufArt, setSelectedVertriebEinkaufVerkaufArt] = useState('');
-  const [selectedWeitereJobsArt, setSelectedWeitereJobsArt] = useState('');
+  const [selectedGastronomyType, setSelectedGastronomyType] = useState('');
+  const [selectedSocialCareType, setSelectedSocialCareType] = useState('');
+  const [selectedTransportType, setSelectedTransportType] = useState('');
+  const [selectedSalesType, setSelectedSalesType] = useState('');
+  const [selectedOtherJobsType, setSelectedOtherJobsType] = useState('');
   const [selectedAudioHifiArt, setSelectedAudioHifiArt] = useState('');
   const [selectedHandyTelefonArt, setSelectedHandyTelefonArt] = useState('');
   const [selectedFotoArt, setSelectedFotoArt] = useState('');
@@ -5111,14 +5079,14 @@ export const AddListing = () => {
   const [selectedTauschangebot, setSelectedTauschangebot] = useState('');
 
   // Common Vehicle States (Motorrad, Auto, etc.)
-  const [marke, setMarke] = useState('');
+  const [brand, setBrand] = useState('');
   const [selectedSportCampingArt, setSelectedSportCampingArt] = useState('');
-  const [kilometerstand, setKilometerstand] = useState('');
-  const [erstzulassung, setErstzulassung] = useState('');
-  const [hubraum, setHubraum] = useState('');
-  const [getriebe, setGetriebe] = useState('');
-  const [leistung, setLeistung] = useState('');
-  const [kraftstoff, setKraftstoff] = useState('');
+  const [mileage, setMileage] = useState('');
+  const [firstRegistration, setFirstRegistration] = useState('');
+  const [displacement, setDisplacement] = useState('');
+  const [transmission, setTransmission] = useState('');
+  const [power, setPower] = useState('');
+  const [fuel, setFuel] = useState('');
 
   // Load categories from Supabase
   useEffect(() => {
@@ -5354,13 +5322,6 @@ export const AddListing = () => {
         const { fetchUserProfile } = await import('./api/profile');
         const profile = await fetchUserProfile(user.id);
 
-        // If seller_type is missing, redirect to settings
-        if (!profile?.seller_type) {
-          alert(t.addListing.selectAccountType);
-          navigate('/settings');
-          return;
-        }
-
         // Auto-fill form fields with user's profile data
         if (profile.full_name) {
           setContactName(profile.full_name);
@@ -5384,9 +5345,11 @@ export const AddListing = () => {
           setLegalInfo(profile.legal_info);
         }
 
-        // Set seller type
+        // Set seller type - default to 'Privatnutzer' if not set
         if (profile.seller_type) {
           setSellerType(profile.seller_type);
+        } else {
+          setSellerType('Privatnutzer'); // Default to individual user
         }
       } catch (error) {
         console.error('Error checking account type:', error);
@@ -5462,7 +5425,7 @@ export const AddListing = () => {
           if (data.autoteile_art) setSelectedAutoteileArt(data.autoteile_art);
           if (data.autoteile_angebotstyp) setSelectedAutoteileAngebotstyp(data.autoteile_angebotstyp);
           // Load versand_art only if it exists (no default value to prevent accidental overwrites)
-          if (data.versand_art) setSelectedVersand(data.versand_art);
+          if (data.versand_art) setSelectedShipping(data.versand_art);
           if (data.boote_art) setSelectedBooteArt(data.boote_art);
           if (data.motorrad_art) setSelectedMotorradArt(data.motorrad_art);
           if (data.motorradteile_art) setSelectedMotorradteileArt(data.motorradteile_art);
@@ -5480,13 +5443,13 @@ export const AddListing = () => {
           if (data.kuenstler_musiker_art) setSelectedKuenstlerMusikerArt(data.kuenstler_musiker_art);
           if (data.reise_eventservices_art) setSelectedReiseEventservicesArt(data.reise_eventservices_art);
           if (data.tierbetreuung_training_art) setSelectedTierbetreuungTrainingArt(data.tierbetreuung_training_art);
-          if (data.bau_handwerk_produktion_art) setSelectedBauHandwerkProduktionArt(data.bau_handwerk_produktion_art);
-          if (data.buero_arbeit_verwaltung_art) setSelectedBueroArbeitVerwaltungArt(data.buero_arbeit_verwaltung_art);
-          if (data.gastronomie_tourismus_art) setSelectedGastronomieTourismusArt(data.gastronomie_tourismus_art);
-          if (data.sozialer_sektor_pflege_art) setSelectedSozialerSektorPflegeArt(data.sozialer_sektor_pflege_art);
-          if (data.transport_logistik_verkehr_art) setSelectedTransportLogistikVerkehrArt(data.transport_logistik_verkehr_art);
-          if (data.vertrieb_einkauf_verkauf_art) setSelectedVertriebEinkaufVerkaufArt(data.vertrieb_einkauf_verkauf_art);
-          if (data.weitere_jobs_art) setSelectedWeitereJobsArt(data.weitere_jobs_art);
+          if (data.bau_handwerk_produktion_art) setSelectedConstructionType(data.bau_handwerk_produktion_art);
+          if (data.buero_arbeit_verwaltung_art) setSelectedOfficeType(data.buero_arbeit_verwaltung_art);
+          if (data.gastronomie_tourismus_art) setSelectedGastronomyType(data.gastronomie_tourismus_art);
+          if (data.sozialer_sektor_pflege_art) setSelectedSocialCareType(data.sozialer_sektor_pflege_art);
+          if (data.transport_logistik_verkehr_art) setSelectedTransportType(data.transport_logistik_verkehr_art);
+          if (data.vertrieb_einkauf_verkauf_art) setSelectedSalesType(data.vertrieb_einkauf_verkauf_art);
+          if (data.weitere_jobs_art) setSelectedOtherJobsType(data.weitere_jobs_art);
           if (data.taschen_accessoires_art) setSelectedTaschenAccessoiresArt(data.taschen_accessoires_art);
           if (data.uhren_schmuck_art) setSelectedUhrenSchmuckArt(data.uhren_schmuck_art);
           if (data.altenpflege_art) setSelectedAltenpflegeArt(data.altenpflege_art);
@@ -5548,13 +5511,13 @@ export const AddListing = () => {
           if (data.job_type) setJobType(data.job_type);
 
           // Load common vehicle fields
-          if (data.marke) setMarke(data.marke);
-          if (data.kilometerstand) setKilometerstand(data.kilometerstand);
-          if (data.erstzulassung) setErstzulassung(data.erstzulassung);
-          if (data.hubraum) setHubraum(data.hubraum);
-          if (data.getriebe) setGetriebe(data.getriebe);
-          if (data.leistung) setLeistung(data.leistung);
-          if (data.kraftstoff) setKraftstoff(data.kraftstoff);
+          if (data.marke) setBrand(data.marke);
+          if (data.kilometerstand) setMileage(data.kilometerstand);
+          if (data.erstzulassung) setFirstRegistration(data.erstzulassung);
+          if (data.hubraum) setDisplacement(data.hubraum);
+          if (data.getriebe) setTransmission(data.getriebe);
+          if (data.leistung) setPower(data.leistung);
+          if (data.kraftstoff) setFuel(data.kraftstoff);
 
           // Load Immobilien & Auf Zeit & WG fields
           if (data.auf_zeit_wg_art) setSelectedAufZeitWGArt(data.auf_zeit_wg_art);
@@ -5630,8 +5593,14 @@ export const AddListing = () => {
       let uploadedUrls = [];
 
       if (newFiles.length > 0) {
+        // Compress images before upload to optimize performance
+        // This converts to WebP and resizes if too large
+        const compressedFiles = await Promise.all(
+          newFiles.map(file => compressImage(file))
+        );
+
         const { uploadListingImages } = await import('./api/storage');
-        uploadedUrls = await uploadListingImages(newFiles, user.id);
+        uploadedUrls = await uploadListingImages(compressedFiles, user.id);
       }
 
       let uploadedIdx = 0;
@@ -5666,7 +5635,7 @@ export const AddListing = () => {
         contact_phone: phoneNumber ? phoneNumber.trim() : null,
         images: imageUrls,
         status: 'active',
-        versand_art: hideConditionAndShipping ? null : (selectedVersand || null),
+        versand_art: hideConditionAndShipping ? null : (selectedShipping || null),
         car_brand: selectedCarBrand || null,
         car_model: selectedCarModel || null,
         bike_type: selectedBikeType || null,
@@ -5695,13 +5664,13 @@ export const AddListing = () => {
         kuenstler_musiker_art: selectedKuenstlerMusikerArt || null,
         reise_eventservices_art: selectedReiseEventservicesArt || null,
         tierbetreuung_training_art: selectedTierbetreuungTrainingArt || null,
-        bau_handwerk_produktion_art: selectedBauHandwerkProduktionArt || null,
-        buero_arbeit_verwaltung_art: selectedBueroArbeitVerwaltungArt || null,
-        gastronomie_tourismus_art: selectedGastronomieTourismusArt || null,
-        sozialer_sektor_pflege_art: selectedSozialerSektorPflegeArt || null,
-        transport_logistik_verkehr_art: selectedTransportLogistikVerkehrArt || null,
-        vertrieb_einkauf_verkauf_art: selectedVertriebEinkaufVerkaufArt || null,
-        weitere_jobs_art: selectedWeitereJobsArt || null,
+        bau_handwerk_produktion_art: selectedConstructionType || null,
+        buero_arbeit_verwaltung_art: selectedOfficeType || null,
+        gastronomie_tourismus_art: selectedGastronomyType || null,
+        sozialer_sektor_pflege_art: selectedSocialCareType || null,
+        transport_logistik_verkehr_art: selectedTransportType || null,
+        vertrieb_einkauf_verkauf_art: selectedSalesType || null,
+        weitere_jobs_art: selectedOtherJobsType || null,
         altenpflege_art: selectedAltenpflegeArt || null,
         sprachkurse_art: selectedSprachkurseArt || null,
         kunst_gestaltung_art: selectedKunstGestaltungArt || null,
@@ -5716,10 +5685,10 @@ export const AddListing = () => {
         babyschalen_kindersitze_color: babyschalenKindersitzeColor || null,
         kinderwagen_buggys_color: kinderwagenBuggysColor || null,
         kinderwagen_buggys_art: kinderwagenBuggysArt || null,
-        damenbekleidung_art: selectedDamenbekleidungArt || null,
-        damenbekleidung_size: selectedDamenbekleidungSize || null,
-        damenbekleidung_color: selectedDamenbekleidungColor || null,
-        damenbekleidung_marke: selectedDamenbekleidungMarke || null,
+        damenbekleidung_art: damenbekleidungArt || null,
+        damenbekleidung_size: damenbekleidungSize || null,
+        damenbekleidung_color: damenbekleidungColor || null,
+        damenbekleidung_marke: damenbekleidungMarke || null,
         damenschuhe_art: damenschuheArt || null,
         damenschuhe_size: damenschuheSize || null,
         damenschuhe_color: damenschuheColor || null,
@@ -5791,29 +5760,29 @@ export const AddListing = () => {
         working_time: workingTime || null,
         hourly_wage: hourlyWage ? parseFloat(hourlyWage) : null,
         job_type: jobType || null,
-        marke: selectedCarBrand || marke || null,
+        marke: selectedCarBrand || brand || null,
         modell: selectedCarModel || null,
-        kilometerstand: kilometerstand ? parseInt(kilometerstand.toString().replace(/\D/g, '')) : null,
-        erstzulassung: erstzulassung ? parseInt(erstzulassung) : null,
-        hubraum: hubraum ? parseInt(hubraum.toString().replace(/\D/g, '')) : null,
-        getriebe: getriebe || null,
-        leistung: leistung ? parseInt(leistung.toString().replace(/\D/g, '')) : null,
-        power: leistung ? parseInt(leistung.toString().replace(/\D/g, '')) : null,
-        kraftstoff: kraftstoff || null,
-        fuel_type: kraftstoff || null,
-        fahrzeugtyp: selectedFahrzeugtyp || null,
-        vehicle_type: selectedFahrzeugtyp || null,
+        kilometerstand: mileage ? parseInt(mileage.toString().replace(/\D/g, '')) : null,
+        erstzulassung: firstRegistration ? parseInt(firstRegistration) : null,
+        hubraum: displacement ? parseInt(displacement.toString().replace(/\D/g, '')) : null,
+        getriebe: transmission || null,
+        leistung: power ? parseInt(power.toString().replace(/\D/g, '')) : null,
+        power: power ? parseInt(power.toString().replace(/\D/g, '')) : null,
+        kraftstoff: fuel || null,
+        fuel_type: fuel || null,
+        fahrzeugtyp: selectedVehicleType || null,
+        vehicle_type: selectedVehicleType || null,
         door_count: selectedDoorCount || null,
         exterior_color: selectedExteriorColor || null,
         interior_material: selectedInteriorMaterial || null,
         emission_badge: selectedEmissionBadge || null,
         emission_sticker: selectedEmissionBadge || null,
-        schadstoffklasse: selectedSchadstoffklasse || null,
-        emission_class: selectedSchadstoffklasse || null,
-        hu: selectedHU || null,
-        unfallfrei: isUnfallfrei,
-        scheckheftgepflegt: isScheckheftgepflegt,
-        nichtraucher_fahrzeug: isNichtraucher,
+        schadstoffklasse: selectedEmissionClass || null,
+        emission_class: selectedEmissionClass || null,
+        hu: selectedInspection || null,
+        unfallfrei: isAccidentFree,
+        scheckheftgepflegt: isFullServiceHistory,
+        nichtraucher_fahrzeug: isNonSmoking,
         car_amenities: selectedCarAmenities.length > 0 ? selectedCarAmenities : null,
         seller_type: sellerType || null
       };
@@ -5856,33 +5825,38 @@ export const AddListing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 py-10">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-semibold mb-6">{isEditMode ? t.addListing.editTitle : t.addListing.title}</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
+      <div className="max-w-3xl mx-auto px-0 sm:px-4 py-0 sm:py-10">
+        <div className="bg-white dark:bg-neutral-900 rounded-none sm:rounded-2xl shadow-premium p-4 sm:p-8 border-x-0 sm:border border-neutral-200 dark:border-white/10 min-h-screen sm:min-h-0">
+          <h1 className="text-3xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-8 tracking-tight">
+            {isEditMode ? t.addListing.editTitle : t.addListing.title}
+          </h1>
+
+          {/* Listing Limit Status Card */}
+
           <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">{t.addListing.offerType}</label>
+              <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.offerType}</label>
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 text-gray-700 cursor-pointer">
+                <label className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 cursor-pointer font-medium hover:text-red-500 dark:hover:text-red-400 transition-colors">
                   <input
                     type="radio"
                     name="offerType"
                     value="Angebote"
                     checked={offerType === 'Angebote'}
                     onChange={() => setOfferType('Angebote')}
-                    className="text-red-600 focus:ring-red-500"
+                    className="w-5 h-5 text-red-600 focus:ring-red-500 dark:bg-neutral-800 dark:border-neutral-700"
                   />
                   {t.addListing.offering}
                 </label>
-                <label className="flex items-center gap-2 text-gray-700 cursor-pointer">
+                <label className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 cursor-pointer font-medium hover:text-red-500 dark:hover:text-red-400 transition-colors">
                   <input
                     type="radio"
                     name="offerType"
                     value="Gesuche"
                     checked={offerType === 'Gesuche'}
                     onChange={() => setOfferType('Gesuche')}
-                    className="text-red-600 focus:ring-red-500"
+                    className="w-5 h-5 text-red-600 focus:ring-red-500 dark:bg-neutral-800 dark:border-neutral-700"
                   />
                   {t.addListing.searching}
                 </label>
@@ -5891,24 +5865,24 @@ export const AddListing = () => {
 
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1">{t.addListing.listingTitle}</label>
+              <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.listingTitle}</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                 placeholder={t.addListing.listingTitlePlaceholder}
               />
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               <div>
-                <label className="block text-sm text-gray-600 mb-1">{t.addListing.category}</label>
+                <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.category}</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                  className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                 >
                   <option value="">{t.addListing.selectCategory}</option>
                   {categories.map((cat) => (
@@ -5920,7 +5894,7 @@ export const AddListing = () => {
               {/* Sub-Category Selection */}
               {category && categories.find(c => c.name === category)?.subcategories && (
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.subcategory}</label>
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.subcategory}</label>
                   <select
                     value={subCategory}
                     onChange={(e) => {
@@ -5943,18 +5917,14 @@ export const AddListing = () => {
                       setSelectedAutoteileArt(''); // Reset Art when subcategory changes
                       setSelectedKuecheEsszimmerArt('');
                       setSelectedGartenzubehoerArt('');
-                      setSelectedKuecheEsszimmerArt('');
-                      setSelectedKuecheEsszimmerArt('');
-                      setSelectedGartenzubehoerArt('');
-                      setSelectedGartenzubehoerArt('');
                       setSelectedSammelnArt('');
                       setSelectedModellbauArt('');
                       setSelectedHandarbeitArt('');
                       setSelectedKuenstlerMusikerArt('');
                       setSelectedReiseEventservicesArt('');
-                      setSelectedReiseEventservicesArt('');
                       setSelectedTierbetreuungTrainingArt('');
-                      setSelectedBauHandwerkProduktionArt('');
+                      setSelectedConstructionType('');
+                      setSelectedSocialCareType('');
                       setSelectedSportCampingArt('');
                       setSelectedDekorationArt('');
                       setSelectedDienstleistungenHausGartenArt('');
@@ -5975,13 +5945,11 @@ export const AddListing = () => {
                       setSelectedHerrenschuheSize('');
                       setSelectedHerrenschuheColor('');
                       setSelectedHerrenschuheMarke('');
-                      setSelectedBueroArbeitVerwaltungArt('');
-                      setSelectedGastronomieTourismusArt('');
-                      setSelectedTransportLogistikVerkehrArt('');
-                      setSelectedVertriebEinkaufVerkaufArt('');
-                      setSelectedTransportLogistikVerkehrArt('');
-                      setSelectedVertriebEinkaufVerkaufArt('');
-                      setSelectedWeitereJobsArt('');
+                      setSelectedOfficeType('');
+                      setSelectedGastronomyType('');
+                      setSelectedTransportType('');
+                      setSelectedSalesType('');
+                      setSelectedOtherJobsType('');
                       setSelectedTaschenAccessoiresArt('');
                       setSelectedUhrenSchmuckArt('');
                       setSelectedAltenpflegeArt('');
@@ -6007,7 +5975,7 @@ export const AddListing = () => {
                       setSelectedAngebotsart('');
                     }}
                     required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                   >
                     <option value="">{t.addListing.selectSubcategory}</option>
                     {categories.find(c => c.name === category).subcategories.map((sub) => (
@@ -6093,57 +6061,54 @@ export const AddListing = () => {
               />
             )}
 
-            <FashionFields
-              category={category}
-              subCategory={subCategory}
-              t={t}
-              selectedBeautyGesundheitArt={selectedBeautyGesundheitArt}
-              setSelectedBeautyGesundheitArt={setSelectedBeautyGesundheitArt}
-              selectedDamenbekleidungArt={selectedDamenbekleidungArt}
-              setSelectedDamenbekleidungArt={setSelectedDamenbekleidungArt}
-              selectedDamenbekleidungMarke={selectedDamenbekleidungMarke}
-              setSelectedDamenbekleidungMarke={setSelectedDamenbekleidungMarke}
-              selectedDamenbekleidungSize={selectedDamenbekleidungSize}
-              setSelectedDamenbekleidungSize={setSelectedDamenbekleidungSize}
-              selectedDamenbekleidungColor={selectedDamenbekleidungColor}
-              setSelectedDamenbekleidungColor={setSelectedDamenbekleidungColor}
-              damenschuheArt={damenschuheArt}
-              setDamenschuheArt={setDamenschuheArt}
-              damenschuheMarke={damenschuheMarke}
-              setDamenschuheMarke={setDamenschuheMarke}
-              damenschuheSize={damenschuheSize}
-              setDamenschuheSize={setDamenschuheSize}
-              damenschuheColor={damenschuheColor}
-              setDamenschuheColor={setDamenschuheColor}
-              herrenbekleidungArt={herrenbekleidungArt}
-              setHerrenbekleidungArt={setHerrenbekleidungArt}
-              herrenbekleidungMarke={herrenbekleidungMarke}
-              setHerrenbekleidungMarke={setHerrenbekleidungMarke}
-              herrenbekleidungSize={herrenbekleidungSize}
-              setHerrenbekleidungSize={setHerrenbekleidungSize}
-              herrenbekleidungColor={herrenbekleidungColor}
-              setHerrenbekleidungColor={setHerrenbekleidungColor}
-              damenbekleidungArt={damenbekleidungArt}
-              setDamenbekleidungArt={setDamenbekleidungArt}
-              damenbekleidungMarke={damenbekleidungMarke}
-              setDamenbekleidungMarke={setDamenbekleidungMarke}
-              damenbekleidungSize={damenbekleidungSize}
-              setDamenbekleidungSize={setDamenbekleidungSize}
-              damenbekleidungColor={damenbekleidungColor}
-              setDamenbekleidungColor={setDamenbekleidungColor}
-              selectedHerrenschuheArt={selectedHerrenschuheArt}
-              setSelectedHerrenschuheArt={setSelectedHerrenschuheArt}
-              selectedHerrenschuheMarke={selectedHerrenschuheMarke}
-              setSelectedHerrenschuheMarke={setSelectedHerrenschuheMarke}
-              selectedHerrenschuheSize={selectedHerrenschuheSize}
-              setSelectedHerrenschuheSize={setSelectedHerrenschuheSize}
-              selectedHerrenschuheColor={selectedHerrenschuheColor}
-              setSelectedHerrenschuheColor={setSelectedHerrenschuheColor}
-              selectedTaschenAccessoiresArt={selectedTaschenAccessoiresArt}
-              setSelectedTaschenAccessoiresArt={setSelectedTaschenAccessoiresArt}
-              selectedUhrenSchmuckArt={selectedUhrenSchmuckArt}
-              setSelectedUhrenSchmuckArt={setSelectedUhrenSchmuckArt}
-            />
+            {/* Fashion Specific Fields */}
+            {(category === 'Moda & Güzellik' || category === 'Mode & Beauty') && (
+              <FashionFields
+                category={category}
+                subCategory={subCategory}
+                t={t}
+                damenbekleidungArt={damenbekleidungArt}
+                setDamenbekleidungArt={setDamenbekleidungArt}
+                damenbekleidungMarke={damenbekleidungMarke}
+                setDamenbekleidungMarke={setDamenbekleidungMarke}
+                damenbekleidungSize={damenbekleidungSize}
+                setDamenbekleidungSize={setDamenbekleidungSize}
+                damenbekleidungColor={damenbekleidungColor}
+                setDamenbekleidungColor={setDamenbekleidungColor}
+                damenschuheArt={damenschuheArt}
+                setDamenschuheArt={setDamenschuheArt}
+                damenschuheMarke={damenschuheMarke}
+                setDamenschuheMarke={setDamenschuheMarke}
+                damenschuheSize={damenschuheSize}
+                setDamenschuheSize={setDamenschuheSize}
+                damenschuheColor={damenschuheColor}
+                setDamenschuheColor={setDamenschuheColor}
+                herrenbekleidungArt={herrenbekleidungArt}
+                setHerrenbekleidungArt={setHerrenbekleidungArt}
+                herrenbekleidungMarke={herrenbekleidungMarke}
+                setHerrenbekleidungMarke={setHerrenbekleidungMarke}
+                herrenbekleidungSize={herrenbekleidungSize}
+                setHerrenbekleidungSize={setHerrenbekleidungSize}
+                herrenbekleidungColor={herrenbekleidungColor}
+                setHerrenbekleidungColor={setHerrenbekleidungColor}
+                selectedHerrenschuheArt={selectedHerrenschuheArt}
+                setSelectedHerrenschuheArt={setSelectedHerrenschuheArt}
+                selectedHerrenschuheMarke={selectedHerrenschuheMarke}
+                setSelectedHerrenschuheMarke={setSelectedHerrenschuheMarke}
+                selectedHerrenschuheSize={selectedHerrenschuheSize}
+                setSelectedHerrenschuheSize={setSelectedHerrenschuheSize}
+                selectedHerrenschuheColor={selectedHerrenschuheColor}
+                setSelectedHerrenschuheColor={setSelectedHerrenschuheColor}
+                selectedTaschenAccessoiresArt={selectedTaschenAccessoiresArt}
+                setSelectedTaschenAccessoiresArt={setSelectedTaschenAccessoiresArt}
+                selectedUhrenSchmuckArt={selectedUhrenSchmuckArt}
+                setSelectedUhrenSchmuckArt={setSelectedUhrenSchmuckArt}
+                selectedBeautyGesundheitArt={selectedBeautyGesundheitArt}
+                setSelectedBeautyGesundheitArt={setSelectedBeautyGesundheitArt}
+              />
+            )}
+
+
 
 
 
@@ -6255,20 +6220,20 @@ export const AddListing = () => {
                 setWorkingTime={setWorkingTime}
                 hourlyWage={hourlyWage}
                 setHourlyWage={setHourlyWage}
-                selectedSozialerSektorPflegeArt={selectedSozialerSektorPflegeArt}
-                setSelectedSozialerSektorPflegeArt={setSelectedSozialerSektorPflegeArt}
-                selectedBauHandwerkProduktionArt={selectedBauHandwerkProduktionArt}
-                setSelectedBauHandwerkProduktionArt={setSelectedBauHandwerkProduktionArt}
-                selectedBueroArbeitVerwaltungArt={selectedBueroArbeitVerwaltungArt}
-                setSelectedBueroArbeitVerwaltungArt={setSelectedBueroArbeitVerwaltungArt}
-                selectedGastronomieTourismusArt={selectedGastronomieTourismusArt}
-                setSelectedGastronomieTourismusArt={setSelectedGastronomieTourismusArt}
-                selectedTransportLogistikVerkehrArt={selectedTransportLogistikVerkehrArt}
-                setSelectedTransportLogistikVerkehrArt={setSelectedTransportLogistikVerkehrArt}
-                selectedVertriebEinkaufVerkaufArt={selectedVertriebEinkaufVerkaufArt}
-                setSelectedVertriebEinkaufVerkaufArt={setSelectedVertriebEinkaufVerkaufArt}
-                selectedWeitereJobsArt={selectedWeitereJobsArt}
-                setSelectedWeitereJobsArt={setSelectedWeitereJobsArt}
+                selectedSocialCareType={selectedSocialCareType}
+                setSelectedSocialCareType={setSelectedSocialCareType}
+                selectedConstructionType={selectedConstructionType}
+                setSelectedConstructionType={setSelectedConstructionType}
+                selectedOfficeType={selectedOfficeType}
+                setSelectedOfficeType={setSelectedOfficeType}
+                selectedGastronomyType={selectedGastronomyType}
+                setSelectedGastronomyType={setSelectedGastronomyType}
+                selectedTransportType={selectedTransportType}
+                setSelectedTransportType={setSelectedTransportType}
+                selectedSalesType={selectedSalesType}
+                setSelectedSalesType={setSelectedSalesType}
+                selectedOtherJobsType={selectedOtherJobsType}
+                setSelectedOtherJobsType={setSelectedOtherJobsType}
               />
             )}
 
@@ -6364,27 +6329,27 @@ export const AddListing = () => {
                 selectedBikeType={selectedBikeType}
                 setSelectedBikeType={setSelectedBikeType}
                 // Auto/Moto/Van Shared
-                marke={marke}
-                setMarke={setMarke}
-                getriebe={getriebe}
-                setGetriebe={setGetriebe}
-                kilometerstand={kilometerstand}
-                setKilometerstand={setKilometerstand}
-                erstzulassung={erstzulassung}
-                setErstzulassung={setErstzulassung}
-                leistung={leistung}
-                setLeistung={setLeistung}
+                brand={brand}
+                setBrand={setBrand}
+                transmission={transmission}
+                setTransmission={setTransmission}
+                mileage={mileage}
+                setMileage={setMileage}
+                firstRegistration={firstRegistration}
+                setFirstRegistration={setFirstRegistration}
+                power={power}
+                setPower={setPower}
                 // Auto Specific
                 selectedCarBrand={selectedCarBrand}
                 setSelectedCarBrand={setSelectedCarBrand}
                 selectedCarModel={selectedCarModel}
                 setSelectedCarModel={setSelectedCarModel}
-                erstzulassungMonat={erstzulassungMonat}
-                setErstzulassungMonat={setErstzulassungMonat}
-                kraftstoff={kraftstoff}
-                setKraftstoff={setKraftstoff}
-                selectedFahrzeugtyp={selectedFahrzeugtyp}
-                setSelectedFahrzeugtyp={setSelectedFahrzeugtyp}
+                firstRegistrationMonth={firstRegistrationMonth}
+                setFirstRegistrationMonth={setFirstRegistrationMonth}
+                fuel={fuel}
+                setFuel={setFuel}
+                selectedVehicleType={selectedVehicleType}
+                setSelectedVehicleType={setSelectedVehicleType}
                 selectedDoorCount={selectedDoorCount}
                 setSelectedDoorCount={setSelectedDoorCount}
                 selectedExteriorColor={selectedExteriorColor}
@@ -6393,23 +6358,23 @@ export const AddListing = () => {
                 setSelectedInteriorMaterial={setSelectedInteriorMaterial}
                 selectedEmissionBadge={selectedEmissionBadge}
                 setSelectedEmissionBadge={setSelectedEmissionBadge}
-                selectedSchadstoffklasse={selectedSchadstoffklasse}
-                setSelectedSchadstoffklasse={setSelectedSchadstoffklasse}
-                selectedHU={selectedHU}
-                setSelectedHU={setSelectedHU}
-                isUnfallfrei={isUnfallfrei}
-                setIsUnfallfrei={setIsUnfallfrei}
-                isScheckheftgepflegt={isScheckheftgepflegt}
-                setIsScheckheftgepflegt={setIsScheckheftgepflegt}
-                isNichtraucher={isNichtraucher}
-                setIsNichtraucher={setIsNichtraucher}
+                selectedEmissionClass={selectedEmissionClass}
+                setSelectedEmissionClass={setSelectedEmissionClass}
+                selectedInspection={selectedInspection}
+                setSelectedInspection={setSelectedInspection}
+                isAccidentFree={isAccidentFree}
+                setIsAccidentFree={setIsAccidentFree}
+                isFullServiceHistory={isFullServiceHistory}
+                setIsFullServiceHistory={setIsFullServiceHistory}
+                isNonSmoking={isNonSmoking}
+                setIsNonSmoking={setIsNonSmoking}
                 selectedCarAmenities={selectedCarAmenities}
                 setSelectedCarAmenities={setSelectedCarAmenities}
                 // Moto specific
                 selectedMotorradArt={selectedMotorradArt}
                 setSelectedMotorradArt={setSelectedMotorradArt}
-                hubraum={hubraum}
-                setHubraum={setHubraum}
+                displacement={displacement}
+                setDisplacement={setDisplacement}
                 // Boat specific
                 selectedBooteArt={selectedBooteArt}
                 setSelectedBooteArt={setSelectedBooteArt}
@@ -6431,11 +6396,11 @@ export const AddListing = () => {
             {!hideConditionAndShipping && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.condition}</label>
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.condition}</label>
                   <select
                     value={condition}
                     onChange={(e) => setCondition(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                   >
                     <option value="">{t.productDetail.pleaseChoose}</option>
                     <option value="defekt">{t.addListing.options.defective}</option>
@@ -6448,15 +6413,15 @@ export const AddListing = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.shipping}</label>
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.shipping}</label>
                   <select
-                    value={selectedVersand}
-                    onChange={(e) => setSelectedVersand(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                    value={selectedShipping}
+                    onChange={(e) => setSelectedShipping(e.target.value)}
+                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                   >
                     <option value="">{t.productDetail.pleaseChoose}</option>
-                    <option value="Versand möglich">{t.addListing.options.shipping}</option>
-                    <option value="Nur Abholung">{t.addListing.options.noShipping}</option>
+                    <option value="Kargo Mümkün">{t.addListing.options.shipping}</option>
+                    <option value="Sadece Elden Teslim">{t.addListing.options.noShipping}</option>
                   </select>
                 </div>
               </div>
@@ -6464,7 +6429,7 @@ export const AddListing = () => {
             {(category !== 'İş İlanları' && subCategory !== 'Eğitim / Meslek Eğitimi') && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">
                     {category === 'Emlak' && ['Kiralık Daire', 'Kiralık Müstakil Ev', 'Ticari Emlak'].includes(subCategory) ? t.addListing.rentFee :
                       category === 'Emlak' && subCategory === 'Geçici Konaklama & Paylaşımlı Oda' ? t.addListing.rent :
                         t.addListing.price}
@@ -6484,14 +6449,14 @@ export const AddListing = () => {
                       }}
                       required={priceType !== 'giveaway' && priceType !== 'negotiable'}
                       disabled={priceType === 'giveaway'}
-                      className={`flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 ${priceType === 'giveaway' ? 'bg-gray-100 text-gray-400' : ''}`}
+                      className={`flex-1 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all ${priceType === 'giveaway' ? 'opacity-50 cursor-not-allowed' : ''}`}
                       placeholder={priceType === 'giveaway' ? '' : (priceType === 'negotiable' ? t.addListing.optionalPricePlaceholder : t.addListing.pricePlaceholder)}
                     />
-                    <span className="text-gray-600 font-medium"> TL</span>
+                    <span className="text-neutral-600 dark:text-neutral-400 font-bold">TL</span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.priceType}</label>
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.priceType}</label>
                   <select
                     value={priceType}
                     onChange={(e) => {
@@ -6503,7 +6468,7 @@ export const AddListing = () => {
                         setPrice('');
                       }
                     }}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                   >
                     <option value="fixed">{t.addListing.options.fixedPrice}</option>
                     <option value="negotiable">{t.addListing.options.negotiable}</option>
@@ -6513,18 +6478,18 @@ export const AddListing = () => {
               </div>
             )}
             <div>
-              <label className="block text-sm text-gray-600 mb-1">{t.productDetail.description}</label>
+              <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.productDetail.description}</label>
               <textarea
                 rows={5}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                 placeholder={t.addListing.descriptionPlaceholder}
               />
             </div>
             <div className="order-first md:order-none">
-              <label className="block text-sm text-gray-600 mb-2">{t.addListing.images} (max. 20)</label>
+              <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.images} (max. 20)</label>
               <div className="relative">
                 <input
                   id="image-upload"
@@ -6536,23 +6501,26 @@ export const AddListing = () => {
                 />
                 <label
                   htmlFor="image-upload"
-                  className="w-full border-2 border-dashed border-gray-300 rounded-2xl px-6 py-10 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-red-400 hover:bg-red-50/30 transition-all duration-200 group"
+                  className="w-full border-2 border-dashed border-neutral-300 dark:border-white/10 rounded-2xl px-6 py-12 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-red-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
                 >
-                  <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-20 h-20 bg-red-50 dark:bg-red-900/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div className="text-center">
-                    <span className="text-lg font-bold text-gray-900 block">{t.addListing.selectImages}</span>
-                    <span className="text-sm text-gray-500">{t.addListing.dragAndDrop}</span>
+                    <span className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 block mb-1">{t.addListing.selectImages}</span>
+                    <span className="text-sm text-neutral-500 dark:text-neutral-400">{t.addListing.dragAndDrop}</span>
                   </div>
-                  <span className="text-xs text-gray-400">{t.addListing.maxImages}</span>
+                  <span className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 rounded-full text-xs font-bold text-neutral-500 dark:text-neutral-400">{t.addListing.maxImages}</span>
                 </label>
               </div>
               {imageFiles.length > 0 && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-xs text-gray-500">🖱️ {t.addListing.imageDragDropHint}</p>
+                <div className="mt-6 space-y-4">
+                  <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    {t.addListing.imageDragDropHint}
+                  </p>
                   <ul className="space-y-2">
                     {imageFiles.map((file, index) => {
                       // Create preview URL for the image
@@ -6575,17 +6543,14 @@ export const AddListing = () => {
                           onDragOver={(e) => {
                             e.preventDefault();
                             e.dataTransfer.dropEffect = 'move';
-                            e.currentTarget.style.borderColor = '#ef4444';
-                            e.currentTarget.style.backgroundColor = '#fef2f2';
+                            e.currentTarget.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
                           }}
                           onDragLeave={(e) => {
-                            e.currentTarget.style.borderColor = '';
-                            e.currentTarget.style.backgroundColor = '';
+                            e.currentTarget.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
                           }}
                           onDrop={(e) => {
                             e.preventDefault();
-                            e.currentTarget.style.borderColor = '';
-                            e.currentTarget.style.backgroundColor = '';
+                            e.currentTarget.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
 
                             const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
                             const targetIndex = index;
@@ -6597,11 +6562,11 @@ export const AddListing = () => {
                               setImageFiles(newFiles);
                             }
                           }}
-                          className="flex items-center gap-3 bg-gray-50 px-3 py-2 rounded border border-gray-200 hover:border-gray-300 transition-all cursor-move"
+                          className="flex items-center gap-4 bg-white dark:bg-neutral-800/50 p-3 rounded-2xl border border-neutral-200 dark:border-white/5 hover:border-red-500/50 transition-all group cursor-move shadow-sm"
                         >
                           {/* Drag handle icon */}
-                          <div className="text-gray-400 cursor-grab active:cursor-grabbing">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <div className="text-neutral-300 dark:text-neutral-600 group-hover:text-red-500 transition-colors">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-0.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"></path>
                             </svg>
                           </div>
@@ -6610,7 +6575,7 @@ export const AddListing = () => {
                           <img
                             src={previewUrl}
                             alt={t.addListing.imageAlt.replace('{index}', (index + 1).toString())}
-                            className="w-16 h-16 object-cover rounded border border-gray-300 pointer-events-none"
+                            className="w-20 h-20 object-cover rounded-xl border border-neutral-200 dark:border-white/10 shadow-sm"
                           />
 
                           {/* Reorder buttons */}
@@ -6624,7 +6589,7 @@ export const AddListing = () => {
                                 setImageFiles(newFiles);
                               }}
                               disabled={index === 0}
-                              className={`p-1 rounded ${index === 0 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:text-red-500 hover:bg-gray-200'}`}
+                              className={`p-1.5 rounded-lg transition-all ${index === 0 ? 'text-neutral-200 dark:text-neutral-800 cursor-not-allowed' : 'text-neutral-500 dark:text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'}`}
                               title={t.addListing.moveUp}
                             >
                               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -6640,7 +6605,7 @@ export const AddListing = () => {
                                 setImageFiles(newFiles);
                               }}
                               disabled={index === imageFiles.length - 1}
-                              className={`p-1 rounded ${index === imageFiles.length - 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:text-red-500 hover:bg-gray-200'}`}
+                              className={`p-1.5 rounded-lg transition-all ${index === imageFiles.length - 1 ? 'text-neutral-200 dark:text-neutral-800 cursor-not-allowed' : 'text-neutral-500 dark:text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'}`}
                               title={t.addListing.moveDown}
                             >
                               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -6651,12 +6616,12 @@ export const AddListing = () => {
 
                           {/* Image info */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate mb-0.5">
                               {typeof file === 'string'
                                 ? `${t.addListing.imageLabel} ${index + 1}`
                                 : file.name}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
                               {index === 0 ? `⭐ ${t.addListing.mainImage}` : t.addListing.position.replace('{pos}', (index + 1).toString())}
                             </p>
                           </div>
@@ -6668,7 +6633,7 @@ export const AddListing = () => {
                               const updated = imageFiles.filter((_, i) => i !== index);
                               setImageFiles(updated);
                             }}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded transition-colors"
+                            className="text-red-500 hover:text-white hover:bg-red-500 p-2.5 rounded-xl transition-all shadow-sm active:scale-90"
                             title={t.addListing.remove}
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -6683,48 +6648,50 @@ export const AddListing = () => {
               )}
             </div>
 
-            <hr className="my-6" />
+            <div className="my-10 border-t border-neutral-100 dark:border-white/5" />
 
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.addListing.locationTitle}</h2>
-              <div className="space-y-4">
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2 p-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+              <h2 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6">
+                {t.addListing.locationTitle}
+              </h2>
+              <div className="space-y-6">
+                <label className="flex items-center gap-3 text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all border border-transparent hover:border-red-500/20">
                   <input
                     type="checkbox"
                     checked={showLocation}
                     onChange={(e) => setShowLocation(e.target.checked)}
-                    className="text-red-400 focus:ring-red-300 rounded w-4 h-4"
+                    className="w-5 h-5 text-red-500 focus:ring-red-500/20 rounded-lg dark:bg-neutral-900 dark:border-neutral-700 transition-all"
                   />
                   {t.addListing.showLocation}
                 </label>
 
                 <div className="animate-in fade-in duration-300 space-y-4">
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.address}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.address}</label>
                     <input
                       type="text"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                       placeholder={t.addListing.addressPlaceholder}
                     />
                   </div>
                 </div>
 
-                <div className="grid gap-4 grid-cols-2">
+                <div className="grid gap-6 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.district}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.district}</label>
                     <input
                       type="text"
                       value={district}
                       onChange={(e) => setDistrict(e.target.value)}
                       required
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                       placeholder={t.addListing.districtPlaceholder}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.city}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.city}</label>
                     <select
                       value={city}
                       onChange={(e) => {
@@ -6737,7 +6704,7 @@ export const AddListing = () => {
                         }
                       }}
                       required
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                       <option value="">{t.addListing.select}</option>
                       {turkeyCities.map((c) => (
@@ -6748,72 +6715,63 @@ export const AddListing = () => {
                 </div>
 
                 <div className="animate-in fade-in duration-300">
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.region}</label>
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.region}</label>
                   <input
                     type="text"
                     value={region}
                     onChange={(e) => setRegion(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                    className="w-full bg-neutral-50 dark:bg-neutral-800/30 border border-neutral-200 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none cursor-not-allowed"
                     placeholder={t.addListing.autoFill}
                   />
                 </div>
               </div>
-
             </div>
 
-            {/* Deine Angaben Section */}
-            <div className="pt-6 border-t border-gray-200">
-              <h2 className="text-xl font-semibold mb-4">{t.addListing.yourInfo}</h2>
-              <div className="space-y-4">
+            <div className="my-10 border-t border-neutral-100 dark:border-white/5" />
+
+            <div>
+              <h2 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6">
+                {t.addListing.yourInfo}
+              </h2>
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.name}</label>
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.name}</label>
                   <input
                     type="text"
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
                     required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.phoneNumber}</label>
-                  <div className="flex flex-col gap-2">
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.phoneNumber}</label>
+                  <div className="space-y-4">
                     <input
                       type="tel"
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                     />
-                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <label className="flex items-center gap-3 text-sm font-bold text-neutral-700 dark:text-neutral-300 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all border border-transparent hover:border-red-500/20">
                       <input
                         type="checkbox"
                         checked={showPhoneNumber}
                         onChange={(e) => setShowPhoneNumber(e.target.checked)}
-                        className="text-red-400 focus:ring-red-300 rounded"
+                        className="w-5 h-5 text-red-500 focus:ring-red-500/20 rounded-lg dark:bg-neutral-900 dark:border-neutral-700 transition-all"
                       />
                       {t.addListing.showPhoneNumber}
                     </label>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm text-gray-600 mb-1">{t.addListing.legalInfo}</label>
-                  <textarea
-                    value={legalInfo}
-                    onChange={(e) => setLegalInfo(e.target.value)}
-                    rows={4}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-gray-50"
-                    placeholder={t.addListing.legalInfoPlaceholder}
-                  />
-                </div>
               </div>
             </div>
 
-
-            <div className="flex justify-end gap-3">
+            <div className="mt-10 pt-8 border-t border-neutral-100 dark:border-white/5 flex flex-col sm:flex-row justify-end gap-4">
               <button
                 type="button"
                 onClick={() => {
-                  setListingType('buying');
+                  setOfferType('Angebote');
                   setTitle('');
                   setCategory('');
                   setPrice('');
@@ -6825,59 +6783,77 @@ export const AddListing = () => {
                   setRegion('');
                   setAddress('');
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-8 py-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-2xl font-bold hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all active:scale-95"
               >
                 {t.addListing.reset}
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-semibold"
+                disabled={loading}
+                className="px-10 py-4 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-2xl font-bold shadow-xl shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3"
               >
-                {t.addListing.saveListing}
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    {t.addListing.saving}
+                  </>
+                ) : (
+                  <>
+                    {isEditMode ? t.addListing.updateLink : "İlanı Oluştur"}
+                  </>
+                )}
               </button>
             </div>
           </form>
         </div>
-      </div >
+      </div>
       {showLimitModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl">
+          <div className="bg-white dark:bg-neutral-900 rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl border border-neutral-200 dark:border-white/10">
             <div className="relative p-8 text-center">
               <button
                 onClick={() => navigate('/')}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2"
+                className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 p-2 transition-colors"
               >
                 ✕
               </button>
-              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-4xl text-red-600">🚀</span>
+              <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-4xl">🚀</span>
               </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-2">{t.addListing.limitReached.title}</h3>
-              <p className="text-gray-500 font-medium mb-8 px-4">
-                {t.addListing.limitReached.description.replace('{limit}', limitState.limit)}
+              <h3 className="text-2xl font-black text-neutral-900 dark:text-neutral-50 mb-2">{t.addListing.limitReached.title}</h3>
+              <p className="text-neutral-500 dark:text-neutral-400 font-medium mb-8 px-4">
+                {t.addListing.limitReached.description
+                  .replace('{limit}', limitState.limit)
+                  .replace('{resetDate}', limitState.nextResetDate ? new Date(limitState.nextResetDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'yakında')}
               </p>
 
               <div className="space-y-3">
                 <button
                   onClick={() => navigate('/packages')}
-                  className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black hover:bg-black transition-all shadow-lg"
+                  className="w-full py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-2xl font-black hover:scale-105 transition-all shadow-lg active:scale-95"
                 >
                   {t.addListing.limitReached.viewPackages}
                 </button>
                 <button
                   onClick={handlePayExtra}
                   disabled={payingExtra}
-                  className="w-full py-4 border-2 border-red-600 text-red-600 rounded-2xl font-black hover:bg-red-50 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 border-2 border-red-600 text-red-600 rounded-2xl font-black hover:bg-red-50 dark:hover:bg-red-900/10 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
                 >
                   {payingExtra ? (
-                    <LoadingSpinner size="small" />
+                    <div className="flex items-center gap-2">
+                      <LoadingSpinner size="small" />
+                      <span>{t.addListing.saving}</span>
+                    </div>
                   ) : (
                     <span>{t.addListing.limitReached.paySingle}</span>
                   )}
                 </button>
                 <button
                   onClick={() => navigate('/')}
-                  className="w-full py-4 text-gray-400 font-bold hover:text-gray-600 transition-colors"
+                  className="w-full py-4 text-neutral-400 font-bold hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
                 >
                   {t.addListing.limitReached.cancel}
                 </button>
@@ -6886,7 +6862,7 @@ export const AddListing = () => {
           </div>
         </div>
       )}
-    </div >
+    </div>
   );
 };
 
@@ -6933,7 +6909,7 @@ const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, currentInde
       {hasMultipleImages && (
         <button
           onClick={handlePrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-3 hover:bg-black/70 transition-all hover:scale-110"
+          className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-3 hover:bg-black/70 transition-all hover:scale-110"
         >
           <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -6981,7 +6957,7 @@ const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, currentInde
       {hasMultipleImages && (
         <button
           onClick={handleNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-3 hover:bg-black/70 transition-all hover:scale-110"
+          className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-3 hover:bg-black/70 transition-all hover:scale-110"
         >
           <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
@@ -7054,8 +7030,8 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={onClose}>
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300" onClick={onClose}>
+      <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden max-h-[90vh] flex flex-col border border-transparent dark:border-white/5 transition-colors duration-300" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 sm:p-6 text-white flex justify-between items-center">
           <div>
@@ -7076,27 +7052,27 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6">
-          <div className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden shadow-sm">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-gray-50/50 dark:bg-neutral-950/50 transition-colors duration-300">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl border-2 border-gray-100 dark:border-white/5 overflow-hidden shadow-sm transition-colors duration-300">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b-2 border-gray-100">
-                  <tr className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500">
+                <thead className="bg-gray-50 dark:bg-neutral-950/50 border-b-2 border-gray-100 dark:border-white/5 transition-colors duration-300">
+                  <tr className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-neutral-400">
                     <th className="px-3 sm:px-6 py-3 sm:py-4 w-12 sm:w-16">Seç</th>
                     <th className="px-2 sm:px-4 py-3 sm:py-4">Paket Detayı</th>
                     <th className="px-3 sm:px-6 py-3 sm:py-4">Süre</th>
                     <th className="px-3 sm:px-6 py-3 sm:py-4 text-right w-24 sm:w-32">Fiyat</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 text-xs sm:text-sm">
+                <tbody className="divide-y divide-gray-100 dark:divide-white/5 text-xs sm:text-sm transition-colors duration-300">
                   {promotionPackages.map((pkg, idx) => (
                     <tr
                       key={pkg.id}
                       onClick={() => togglePromotionSelection(pkg.id)}
-                      className={`hover:bg-red-50/40 transition-all cursor-pointer group ${idx % 2 !== 0 ? 'bg-gray-50/30' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50' : ''}`}
+                      className={`hover:bg-red-50/40 dark:hover:bg-red-900/10 transition-all cursor-pointer group ${idx % 2 !== 0 ? 'bg-gray-50/30 dark:bg-neutral-950/20' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
                     >
                       <td className="px-3 sm:px-6 py-3 sm:py-5">
-                        <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500 scale-110 shadow-lg shadow-red-200' : 'border-gray-200 bg-white group-hover:border-red-300'}`}>
+                        <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500 scale-110 shadow-lg shadow-red-200' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-neutral-800 group-hover:border-red-300'}`}>
                           {selectedPromotions.includes(pkg.id) && (
                             <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" />
@@ -7105,11 +7081,11 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
                         </div>
                       </td>
                       <td className="px-2 sm:px-4 py-3 sm:py-5">
-                        <div className="font-bold sm:font-black text-gray-900 group-hover:text-red-600 transition-colors uppercase tracking-tight">{pkg.name}</div>
-                        <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 leading-tight italic font-medium">{pkg.effect}</div>
+                        <div className="font-bold sm:font-black text-gray-900 dark:text-neutral-50 group-hover:text-red-600 transition-colors uppercase tracking-tight">{pkg.name}</div>
+                        <div className="text-[10px] sm:text-xs text-gray-500 dark:text-neutral-400 mt-0.5 leading-tight italic font-medium transition-colors">{pkg.effect}</div>
                       </td>
                       <td className="px-3 sm:px-6 py-3 sm:py-5">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 transition-colors">
                           {pkg.durationLabel || (pkg.duration === 1 ? '1x' : `${pkg.duration}G`)}
                         </span>
                       </td>
@@ -7125,7 +7101,7 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
         </div>
 
         {/* Footer / Cart Summary */}
-        <div className={`p-4 sm:p-6 bg-white border-t-2 border-gray-100 transition-all duration-500 ${selectedPromotions.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-70 grayscale pointer-events-none'}`}>
+        <div className={`p-4 sm:p-6 bg-white dark:bg-neutral-900 border-t-2 border-gray-100 dark:border-white/5 transition-all duration-500 ${selectedPromotions.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-70 grayscale pointer-events-none'}`}>
           <div className="bg-gray-900 rounded-2xl p-4 sm:p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 shadow-2xl">
             <div className="flex items-center gap-4 sm:gap-6">
               <div className={`bg-red-500 text-white p-2 sm:p-3 rounded-xl ${selectedPromotions.length > 0 ? 'animate-bounce shadow-lg shadow-red-500/50' : ''}`}>
@@ -7150,7 +7126,7 @@ const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
             </button>
           </div>
           <div className="mt-4 text-center">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2">
+            <p className="text-[10px] font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-widest flex items-center justify-center gap-2 transition-colors">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
               </svg>
@@ -7322,240 +7298,120 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
 
   const isReserved = listing?.reserved_by;
   const isVitrin = listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase());
+  const isExpired = listing?.created_at && (new Date() > new Date(new Date(listing.created_at).getTime() + 30 * 24 * 60 * 60 * 1000));
 
   return (
     <>
       <div
         className={`${isVitrin
-          ? 'bg-purple-50/30 border-purple-400 border-2 shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005] rounded-xl mx-0.5 sm:mx-0'
-          : 'bg-white border-y border-gray-200 border-x-0 sm:border sm:rounded-lg'
-          } transition-all duration-300 cursor-pointer hover:shadow-lg overflow-hidden`}
-        onClick={() => navigate(`/product/${listing.id}`)}
+          ? 'bg-purple-50/30 dark:bg-purple-900/10 border-purple-400 border-2 shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005] rounded-xl mx-0.5 sm:mx-0'
+          : 'bg-white dark:bg-neutral-800 border-y border-gray-200 dark:border-white/5 border-x-0 sm:border sm:rounded-lg'
+          } transition-all duration-300 cursor-pointer hover:shadow-lg overflow-hidden group/horizontal flex flex-col`}
+        onClick={() => navigate(getListingUrl(listing))}
       >
         <div className="flex flex-row">
-          {/* Image Section - Compact Size */}
-          <div className="w-40 sm:w-48 md:w-60 h-32 sm:h-40 md:h-48 relative group flex-shrink-0 bg-gray-100">
+          {/* Image Section */}
+          <div className="w-32 sm:w-48 md:w-60 h-32 sm:h-40 md:h-48 relative group flex-shrink-0 bg-gray-100 dark:bg-neutral-900 border-r border-gray-100 dark:border-white/5">
             <img
-              src={Array.isArray(listing?.images) && listing.images.length > 0
-                ? listing.images[0]
-                : listing?.image || 'https://via.placeholder.com/300x200?text=No+Image'}
+              src={getOptimizedImageUrl(
+                Array.isArray(listing?.images) && listing.images.length > 0
+                  ? listing.images[0]
+                  : listing?.image || 'https://via.placeholder.com/300x200?text=No+Image',
+                300, 200, 'cover'
+              )}
               alt={listing?.title || 'İlan Resmi'}
               className="w-full h-full object-cover transition-transform duration-300"
               loading="lazy"
-              decoding="async"
             />
             {/* RESERVIERT Badge - always on top */}
             {isReserved && (
-              <div className="absolute top-1 left-1 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow flex items-center gap-1 z-20">
-                <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                </svg>
-                REZERVE EDİLDİ
-              </div>
-            )}
-            {/* Package Badge */}
-            {listing?.package_type &&
-              listing.package_type.toLowerCase() !== 'basic' &&
-              listing.package_type.toLowerCase() !== 'top' &&
-              listing.package_type.toLowerCase() !== 'galerie' && // Vitrin is handled separately
-              listing.package_type.toLowerCase() !== 'gallery' &&
-              listing.package_type.toLowerCase() !== 'galeri' &&
-              listing.package_type.toLowerCase() !== 'vitrin' &&
-              listing.package_type.toLowerCase() !== 'verlängerung' &&
-              listing.package_type.toLowerCase() !== 'extension' && (
-                <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold shadow-md border border-white/20 z-10 uppercase tracking-wider ${listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? 'bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]' :
-                  listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-orange-200' :
-                    listing.package_type.toLowerCase() === 'plus' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
-                      'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-200'
-                  }`}>
-                  {listing.package_type.toLowerCase() === 'budget' || listing.package_type.toLowerCase() === 'highlight' ? 'ÖNE ÇIKAN' :
-                    listing.package_type.toLowerCase() === 'multi-bump' || listing.package_type.toLowerCase() === 'z_multi_bump' ? '⚡ YUKARI' :
-                      listing.package_type.toLowerCase() === 'premium' || listing.package_type.toLowerCase() === 'z_premium' ? '👑 PREMIUM' :
-                        listing.package_type}
-                </div>
-              )}
-
-            {/* Vitrin/Gallery Badge - Inclusive check */}
-            {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.trim().toLowerCase())) && (
-              <div className={`absolute ${isReserved ? (listing.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin', 'verlängerung', 'extension'].includes(listing.package_type.toLowerCase()) ? 'top-14' : 'top-8') : (listing.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin', 'verlängerung', 'extension'].includes(listing.package_type.toLowerCase()) ? 'top-8' : 'top-1')} left-1 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-md border border-white/20 z-10 flex items-center gap-1`}>
-                <span>⭐ VİTRİN</span>
+              <div className="absolute top-1 left-1 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm z-30">
+                REZERVE
               </div>
             )}
 
-            {/* Highlighted Fallback */}
-            {listing?.is_highlighted && !listing?.is_top && !listing?.package_type && (
-              <div className={`absolute ${isReserved ? 'top-8' : 'top-1'} left-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-1.5 py-0.5 rounded text-[9px] font-bold shadow-md z-10`}>
-                ✨ Öne Çıkarılan
+            {/* Package Badges */}
+            {!isExpired && (
+              <div className="absolute top-1 right-1 flex flex-col gap-1 items-end z-20">
+                {/* Vitrin / Gallery Badge */}
+                {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) && (
+                  <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black shadow-md border border-white/20 uppercase tracking-wider">
+                    ⭐ VİTRİN
+                  </div>
+                )}
+
+                {/* Premium / Plus Badges */}
+                {listing?.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type.toLowerCase()) && (
+                  <div className={`px-1.5 py-0.5 rounded text-[8px] font-black shadow-md border border-white/20 uppercase tracking-wider ${['premium', 'z_premium'].includes(listing.package_type.toLowerCase())
+                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white'
+                    : 'bg-neutral-800 text-white'
+                    }`}>
+                    {['premium', 'z_premium'].includes(listing.package_type.toLowerCase()) ? '👑 PREMIUM' :
+                      listing.package_type.toLowerCase() === 'plus' ? '⭐ PLUS' :
+                        listing.package_type.toUpperCase()}
+                  </div>
+                )}
               </div>
             )}
-            {/* ABGELAUFEN Badge - for owner only */}
-            {isOwnListing && listing?.created_at && (new Date() > new Date(new Date(listing.created_at).getTime() + 30 * 24 * 60 * 60 * 1000)) && (
-              <div className="absolute top-2 right-12 bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow z-20 animate-pulse">
-                ⏰ SÜRESİ DOLDU
-              </div>
-            )}
-            {/* Favorite Button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (toggleFavorite) toggleFavorite(listing.id);
-              }}
-              className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 z-30 flex items-center justify-center"
-              aria-label={favorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
-            >
-              {favorite ? (
-                <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              )}
-            </button>
           </div>
 
-          <div className={`flex-1 p-2 sm:p-3 flex flex-col justify-between ${isOwnListing ? 'h-auto min-h-[128px]' : 'h-32'} sm:h-40 md:h-48`}>
-            <div>
-              <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-0.5 line-clamp-1 group-hover:text-red-600 transition-colors">
+          {/* Info Section */}
+          <div className="flex-1 p-3 sm:p-5 flex flex-col justify-between overflow-hidden">
+            <div className="space-y-1">
+              <h4 className="text-sm sm:text-lg font-black text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover/horizontal:text-red-600 transition-colors">
                 {listing?.title}
               </h4>
-              <p className="text-xs sm:text-sm text-gray-600 mb-1 line-clamp-1">
-                {listing?.description || 'Açıklama mevcut değil'}
+              <p className="text-[11px] sm:text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1">
+                {listing?.description}
               </p>
+              <div className="text-sm sm:text-xl font-black text-neutral-900 dark:text-neutral-50 pt-1">
+                {!hidePrice && (
+                  listing?.price_type === 'giveaway' || listing?.price === 0
+                    ? 'Ücretsiz'
+                    : listing?.price
+                      ? `${listing.price.toLocaleString('tr-TR')} TL`
+                      : 'Görüşülür'
+                )}
+              </div>
             </div>
 
-            <div>
-              {/* Dynamic Features Box */}
-              {renderCustomFields ? renderCustomFields(listing) : (() => {
-                const attrs = [];
-                // Technical Attributes
-                if (listing.rooms) attrs.push(`${listing.rooms} Oda`);
-                if (listing.living_space) attrs.push(`${listing.living_space} m²`);
-                if (listing.erstzulassung) attrs.push(listing.erstzulassung);
-                if (listing.kilometerstand) attrs.push(`${listing.kilometerstand.toLocaleString('tr-TR')} km`);
-
-                // Fallback Attributes for common categories
-                if (listing.zustand && listing.zustand !== 'all') attrs.push(listing.zustand);
-                if (listing.brand) attrs.push(listing.brand);
-                if (listing.size) attrs.push(listing.size);
-
-                // Damenbekleidung specific attributes
-                if (listing.damenbekleidung_marke && !attrs.includes(listing.damenbekleidung_marke)) attrs.push(listing.damenbekleidung_marke);
-                if (listing.damenbekleidung_size && !attrs.includes(listing.damenbekleidung_size)) attrs.push(listing.damenbekleidung_size);
-                if (listing.damenbekleidung_color) attrs.push(listing.damenbekleidung_color);
-
-                // Bike specific attributes
-                if (listing.bike_type) attrs.push(listing.bike_type);
-
-                const artField = listing.audio_hifi_art || listing.dienstleistungen_elektronik_art || listing.foto_art || listing.handy_telefon_art || listing.haushaltsgeraete_art || listing.konsolen_art || listing.notebooks_art || listing.pc_zubehoer_software_art || listing.pcs_art || listing.tablets_reader_art || listing.tv_video_art || listing.videospiele_art || listing.art_type || listing.autoteile_art || listing.boote_art || listing.motorrad_art || listing.wohnwagen_art || listing.beauty_gesundheit_art || listing.damenbekleidung_art || listing.gartenzubehoer_art || listing.kueche_esszimmer_art || listing.heimwerken_art || listing.schlafzimmer_art || listing.bike_art;
-                if (artField && !attrs.includes(artField)) attrs.push(artField);
-
-                // Only show sub_category as fallback if no art field exists and it's not a service subcategory
-                const serviceSubcategories = ['Ses & Hifi', 'Elektronik Hizmetler', 'Elektronik Servisler', 'Dienstleistungen Elektronik', 'Fotoğraf & Kamera', 'Cep Telefonu & Telefon', 'Cep Telefonu & Aksesuar', 'Ev Aletleri', 'Beyaz Eşya & Ev Aletleri', 'Oyun Konsolları', 'Konsollar', 'Dizüstü Bilgisayar', 'Dizüstü Bilgisayarlar', 'Bilgisayar Aksesuar & Yazılım', 'Bilgisayar Aksesuarları & Yazılım', 'Bilgisayarlar', 'Masaüstü Bilgisayar', 'Tablet & E-Okuyucu', 'Tabletler & E-Okuyucular', 'TV & Video', 'Video Oyunları', 'Güzellik & Sağlık', 'Kişisel Bakım & Sağlık', 'Kadın Giyimi', 'Kadın Giyim'];
-                if (attrs.length === 0 && listing.sub_category && !serviceSubcategories.includes(listing.sub_category)) attrs.push(listing.sub_category);
-
-
-
-                if (attrs.length === 0) return null;
-
-                return (
-                  <div className="flex flex-wrap gap-1 mb-1.5">
-                    {attrs.slice(0, 4).map((attr, idx) => (
-                      <span key={idx} className="px-1.5 py-0.5 bg-gray-100 text-gray-500 text-[9px] sm:text-[10px] font-bold rounded-md border border-gray-200 uppercase tracking-tighter">
-                        {attr}
-                      </span>
-                    ))}
-                  </div>
-                );
-              })()}
+            {/* Location and Date */}
+            <div className="flex items-center text-[10px] text-neutral-500 dark:text-neutral-400 gap-3 mt-auto pt-2">
+              <span className="flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                {listing.city}
+              </span>
+              <span className="ml-auto flex items-center gap-2">
+                {isOwnListing && <span>{listing?.views || 0} İzlenme</span>}
+                <span>{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
+              </span>
             </div>
 
-            <div className="text-sm sm:text-base font-bold text-gray-900 mb-1">
-              {!hidePrice && listing?.category !== 'Jobs' && listing?.category !== 'İş İlanları' && (
-                listing?.price_type === 'giveaway' || listing?.price === 0
-                  ? 'Ücretsiz'
-                  : listing?.price
-                    ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
-                    : t.addListing.options.negotiable
-              )}
-            </div>
-
-            <div className="flex items-center text-xs sm:text-sm text-gray-700 gap-2 sm:gap-3 pt-1.5 border-t border-gray-200 mt-1">
-              {isOwnListing ? (
-                // Own listings: Show stats
-                <div className="flex items-center gap-3 ml-auto text-xs text-gray-400">
-                  {listing?.created_at && (
-                    <span className="flex items-center gap-1">
-                      {new Date(listing.created_at).toLocaleDateString('tr-TR')}
-                    </span>
-                  )}
-                  <span>{listing?.views || 0} İzlenme</span>
-                </div>
-              ) : (
-                // Other's listings: Show location and date
-                <>
-                  {listing?.city && (
-                    <div className="flex items-center">
-                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      {listing.district ? `${listing.district}, ${listing.city}` : listing.city}
-                    </div>
-                  )}
-                  <div className="flex items-center ml-auto">
-                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {new Date(listing.created_at).toLocaleDateString('tr-TR')}
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Action Buttons - Only show for own listings */}
+            {/* Desktop Actions - Only inside info on desktop */}
             {isOwnListing && (
-              <div className="flex flex-wrap gap-1.5 px-3 pb-3">
-                <button
-                  onClick={handleEdit}
-                  className="px-2 py-1 text-[11px] font-bold text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                >
-                  Düzenle
-                </button>
-                <button
-                  onClick={handleExtend}
-                  className="px-2 py-1 text-[11px] font-bold text-green-600 bg-white border border-gray-300 rounded hover:bg-green-50 transition-colors"
-                >
-                  Uzat
-                </button>
-                <button
-                  onClick={handleReserve}
-                  className="px-2 py-1 text-[11px] font-bold text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                >
-                  {isReserved ? 'Rezervasyonu Kaldır' : 'Rezerve Et'}
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-2 py-1 text-[11px] font-bold text-red-600 bg-white border border-gray-300 rounded hover:bg-red-50 transition-colors"
-                >
-                  Sil
-                </button>
-                <button
-                  onClick={handleBump}
-                  className="px-2 py-1 text-[11px] font-bold text-blue-600 bg-white border border-gray-300 rounded hover:bg-blue-50 transition-colors"
-                >
-                  Yukarı Çıkar
-                </button>
+              <div className="hidden sm:flex flex-wrap gap-2 mt-3 pt-3 border-t border-neutral-100 dark:border-white/5">
+                <button onClick={handleEdit} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Düzenle</button>
+                <button onClick={handleExtend} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Uzat</button>
+                <button onClick={handleReserve} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">{isReserved ? 'Rezerve Kaldır' : 'Rezerve Et'}</button>
+                <button onClick={handleDelete} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Sil</button>
+                <button onClick={handleBump} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Yukarı Çıkar</button>
               </div>
             )}
           </div>
         </div>
+
+        {/* Mobile Actions - Full width scrollable row below everything */}
+        {isOwnListing && (
+          <div className="sm:hidden flex flex-nowrap overflow-x-auto no-scrollbar gap-1.5 px-3 pb-3 pt-2 border-t border-neutral-50 dark:border-white/5 bg-neutral-50/50 dark:bg-neutral-900/50">
+            <button onClick={handleEdit} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Düzenle</button>
+            <button onClick={handleExtend} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Uzat</button>
+            <button onClick={handleReserve} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">{isReserved ? 'Dur' : 'Rezerve'}</button>
+            <button onClick={handleDelete} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px) font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Sil</button>
+            <button onClick={handleBump} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Yukarı Çıkar</button>
+          </div>
+        )}
       </div>
 
-
-
-      {/* Visibility Packages Modal */}
       <VisibilityPackagesModal
         isOpen={showVisibilityModal}
         onClose={() => setShowVisibilityModal(false)}
@@ -7628,7 +7484,7 @@ export const ListingCountdown = ({ expiryDate, onExpire }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className={`text-[10px] sm:text-lg font-black tabular-nums transition-colors duration-300 ${isLastDay ? 'text-red-500 animate-pulse' : 'text-white'}`}>
+      <div className={`text-[10px] sm:text-lg font-black tabular-nums transition-colors duration-300 ${isLastDay ? 'text-red-500' : 'text-white'}`}>
         {String(timeLeft.hours).padStart(2, '0')}:
         {String(timeLeft.minutes).padStart(2, '0')}:
         {String(timeLeft.seconds).padStart(2, '0')}
@@ -7650,6 +7506,20 @@ const amenityTranslations = {
   'neu': 'Yeni',
   'neu_mit_etikett': 'Etiketli Yeni',
   'neu mit etikett': 'Etiketli Yeni',
+  'gebraucht': 'İkinci El',
+  'Benzin': 'Benzin',
+  'Diesel': 'Dizel',
+  'Elektro': 'Elektrikli',
+  'Hybrid': 'Hibrit',
+  'Manuell': 'Manuel',
+  'Schaltgetriebe': 'Manuel',
+  'Automatik': 'Otomatik',
+  'Halbautomatik': 'Yarı Otomatik',
+  'Kombi': 'Station Wagon',
+  'Limousine': 'Sedan',
+  'Kleinwagen': 'Küçük Araç',
+  'Andere': 'Diğer',
+  'Gebraucht': 'İkinci El',
   // Residential Amenities
   'Möbliert/Teilmöbliert': 'Mobilyalı/Kısmen Mobilyalı',
   'Balkon': 'Balkon',
@@ -7718,14 +7588,14 @@ const amenityTranslations = {
   'Terrassenwohnung': 'Teraslı Daire',
   'Sonstige': 'Diğer',
   // Vehicle Types
-  'Kleinwagen': 'Küçük Araç',
-  'Limousine': 'Sedan',
-  'Kombi': 'Station Wagon',
-  'Cabrio/Roadster': 'Cabrio',
-  'Cabrio': 'Cabrio',
+  'Küçük Araç': 'Küçük Araç',
+  'Sedan': 'Sedan',
+  'Station Vagon': 'Station Wagon',
+  'Cabrio/Roadster': 'Üstü Açık',
+  'Üstü Açık': 'Üstü Açık',
   'Sportwagen/Coupé': 'Spor Araba/Kupe',
-  'Coupé': 'Kupe',
-  'SUV/Geländewagen': 'SUV/Arazi Aracı',
+  'Kupe': 'Kupe',
+  'SUV/Arazi Aracı': 'SUV/Arazi Aracı',
   'SUV': 'SUV',
   'Geländewagen': 'Arazi Aracı',
   'Van/Kleinbus': 'Minivan/Panelvan',
@@ -7733,11 +7603,12 @@ const amenityTranslations = {
   'Kleinbus': 'Minibüs',
   'Andere': 'Diğer',
   // Car Colors
-  'Blau': 'Mavi',
-  'Schwarz': 'Siyah',
+  'Kosmosschwarz Metallic': 'Kozmos Siyah Metalik',
   'Weiß': 'Beyaz',
+  'Schwarz': 'Siyah',
   'Silber': 'Gümüş',
   'Grau': 'Gri',
+  'Blau': 'Mavi',
   'Rot': 'Kırmızı',
   'Grün': 'Yeşil',
   'Gelb': 'Sarı',
@@ -7745,15 +7616,15 @@ const amenityTranslations = {
   'Braun': 'Kahverengi',
   'Beige': 'Bej',
   'Gold': 'Altın',
-  'Violett': 'Mor',
-  'Helleres Beigegrau': 'Açık Bej Gri',
-  'Kosmosschwarz Metallic': 'Kozmos Siyah Metalik',
   // Car Interiors
-  'Stoff': 'Kumaş',
-  'Teilleder': 'Yarı Deri',
-  'Vollleder': 'Tam Deri',
+  'Kumaş': 'Kumaş',
+  'Yarı Deri': 'Yarı Deri',
+  'Tam Deri': 'Tam Deri',
   'Alcantara': 'Alcantara',
-  'Velours': 'Kadife',
+  'Kadife': 'Kadife',
+  'Vollleder': 'Tam Deri',
+  'Teilleder': 'Yarı Deri',
+  'Stoff': 'Kumaş',
   // Car Amenities
   'Anhängerkupplung': 'Römork Demiri',
   'Leichtmetallfelgen': 'Alaşım Jant',
@@ -7850,7 +7721,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
               {listing.title}
             </h1>
             <div className="text-[12px] text-gray-500 font-bold uppercase tracking-widest">
-              No: {listing.listing_number || (listing.id && listing.id.slice(0, 8)) || '---'} | {new Date().toLocaleDateString('tr-TR')}
+              No: {generateListingNumber(listing)} | {new Date().toLocaleDateString('tr-TR')}
             </div>
           </div>
           <div className="bg-red-600 text-white px-6 py-4 rounded-xl text-center shadow-lg flex-shrink-0 min-w-[150px]">
@@ -7999,7 +7870,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
             )}
 
             {/* Internal Branding */}
-            <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
+            <div className="border-t border-gray-100 dark:border-white/10 pt-3 flex justify-between items-center text-gray-300 dark:text-neutral-500 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
               <div className="flex items-center gap-1">
                 <span className="text-red-600 text-[10px] font-black">ExVitrin</span>
                 <span>{t.common.onlineMarketplace}</span>
@@ -8084,46 +7955,46 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
         </div>
       </div>
 
-      <div className="p-2 sm:p-4 bg-gray-50/50">
+      <div className="p-2 sm:p-4 bg-gray-50/50 dark:bg-neutral-950/50 transition-colors duration-300">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4 sm:mb-6">
           <button
             onClick={handleEditDetail}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-red-500 dark:hover:border-red-700 hover:shadow-lg transition-all group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-red-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.edit}</span>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 transition-colors">{t.productDetail.ownerDashboard.edit}</span>
           </button>
 
           <button
             onClick={handleReserveDetail}
-            className={`flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border ${listing.reserved_by ? 'border-orange-500 bg-orange-50' : 'border-gray-200'} hover:border-blue-500 hover:shadow-lg transition-all group`}
+            className={`flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border ${listing.reserved_by ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20' : 'border-gray-200 dark:border-white/10'} hover:border-blue-500 dark:hover:border-blue-700 hover:shadow-lg transition-all group`}
           >
-            <svg className={`w-5 h-5 sm:w-5 sm:h-5 ${listing.reserved_by ? 'text-orange-500' : 'text-gray-400'} group-hover:text-blue-500 mb-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 sm:w-5 sm:h-5 ${listing.reserved_by ? 'text-orange-500' : 'text-gray-400 dark:text-neutral-500'} group-hover:text-blue-500 transition-colors mb-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center">{listing.reserved_by ? t.productDetail.ownerDashboard.unreserve : t.productDetail.ownerDashboard.reserve}</span>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 text-center transition-colors">{listing.reserved_by ? t.productDetail.ownerDashboard.unreserve : t.productDetail.ownerDashboard.reserve}</span>
           </button>
 
           <button
             onClick={handleExtendDetail}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-green-500 hover:shadow-lg transition-all group relative"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-green-500 dark:hover:border-green-700 hover:shadow-lg transition-all group relative"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-green-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-green-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-0.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center leading-none">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[10px] text-green-600 font-black">(9,99 TL)</span></span>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 text-center leading-none transition-colors">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[10px] text-green-600 dark:text-green-400 font-black">(9,99 TL)</span></span>
           </button>
 
           <button
             onClick={handleDeleteDetail}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-red-600 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-red-600 dark:hover:border-red-800 hover:shadow-lg transition-all group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-red-600 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-600 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.delete}</span>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 transition-colors">{t.productDetail.ownerDashboard.delete}</span>
           </button>
 
           <button
@@ -8131,30 +8002,30 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
               setPrintHideContact(true);
               setTimeout(() => window.print(), 100);
             }}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-purple-500 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-purple-500 dark:hover:border-purple-700 hover:shadow-lg transition-all group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-purple-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-purple-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 text-center leading-none">İlanı Yazdır</span>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 text-center leading-none transition-colors">İlanı Yazdır</span>
           </button>
 
           <button
             onClick={() => navigate('/my-invoices')}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-red-500 dark:hover:border-red-700 hover:shadow-lg transition-all group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 group-hover:text-red-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700">{t.productDetail.ownerDashboard.invoices}</span>
+            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 transition-colors">{t.productDetail.ownerDashboard.invoices}</span>
           </button>
         </div>
 
-        <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 overflow-hidden shadow-inner">
+        <div className="bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-inner transition-colors duration-300">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-gray-100/80">
-                <tr className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500">
+              <thead className="bg-gray-100/80 dark:bg-neutral-950/80 transition-colors duration-300">
+                <tr className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-neutral-400">
                   <th className="px-3 sm:px-6 py-3 w-8 sm:w-10">#</th>
                   <th className="px-3 sm:px-6 py-3">{t.productDetail.ownerDashboard.highlightTitle}</th>
                   <th className="px-3 sm:px-6 py-3 hidden sm:table-cell">{t.productDetail.ownerDashboard.effect}</th>
@@ -8162,15 +8033,15 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
                   <th className="px-3 sm:px-6 py-3 text-right">{t.productDetail.ownerDashboard.price}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-[11px] sm:text-sm">
+              <tbody className="divide-y divide-gray-100 dark:divide-white/5 text-[11px] sm:text-sm transition-colors duration-300">
                 {promotionPackages.map((pkg, idx) => (
                   <tr
                     key={pkg.id}
                     onClick={() => togglePromotionSelection(pkg.id)}
-                    className={`hover:bg-red-50/30 transition-colors group cursor-pointer ${idx % 2 !== 0 ? 'bg-red-50/10' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50' : ''}`}
+                    className={`hover:bg-red-50/30 dark:hover:bg-red-900/10 transition-colors group cursor-pointer ${idx % 2 !== 0 ? 'bg-red-50/10 dark:bg-neutral-950/20' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
                   >
                     <td className="px-3 sm:px-6 py-3">
-                      <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-all ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500' : 'border-gray-300 bg-white'}`}>
+                      <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-all ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500' : 'border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800'}`}>
                         {selectedPromotions.includes(pkg.id) && (
                           <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
@@ -8179,11 +8050,11 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
                       </div>
                     </td>
                     <td className="px-3 sm:px-6 py-3">
-                      <div className="font-black text-gray-900 group-hover:text-red-500 transition-colors text-xs sm:text-base">{pkg.name}</div>
-                      <div className="text-[10px] text-gray-400 sm:hidden mt-1 leading-relaxed">{pkg.effect}</div>
+                      <div className="font-black text-gray-900 dark:text-neutral-50 group-hover:text-red-500 transition-colors text-xs sm:text-base">{pkg.name}</div>
+                      <div className="text-[10px] text-gray-400 dark:text-neutral-500 sm:hidden mt-1 leading-relaxed transition-colors">{pkg.effect}</div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 text-gray-500 font-medium hidden sm:table-cell">{pkg.effect}</td>
-                    <td className="px-3 sm:px-6 py-3 font-bold text-gray-600 whitespace-nowrap">{pkg.duration === 1 ? t.productDetail.ownerDashboard.once : `${pkg.duration} Gün`}</td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-500 dark:text-neutral-400 font-medium hidden sm:table-cell transition-colors">{pkg.effect}</td>
+                    <td className="px-3 sm:px-6 py-3 font-bold text-gray-600 dark:text-neutral-300 whitespace-nowrap transition-colors">{pkg.duration === 1 ? t.productDetail.ownerDashboard.once : `${pkg.duration} Gün`}</td>
                     <td className="px-3 sm:px-6 py-3 text-right font-black text-red-600 whitespace-nowrap">{pkg.price} TL</td>
                   </tr>
                 ))}
@@ -8216,7 +8087,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
             </div>
           )}
 
-          <div className="bg-gray-50 px-4 sm:px-6 py-1.5 sm:py-3 text-[6px] sm:text-[10px] font-bold text-gray-400 text-right uppercase tracking-[0.1em] sm:tracking-[0.2em]">
+          <div className="bg-gray-50 dark:bg-neutral-950 px-4 sm:px-6 py-1.5 sm:py-3 text-[6px] sm:text-[10px] font-bold text-gray-400 dark:text-neutral-500 text-right uppercase tracking-[0.1em] sm:tracking-[0.2em] transition-colors duration-300">
             {t.productDetail.ownerDashboard.vatIncluded}
           </div>
         </div>
@@ -8225,27 +8096,50 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
   );
 };
 
-export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
-  const { id } = useParams();
+export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed, id: propId, slug: propSlug }) => {
+  const params = useParams();
+  const routeId = propId || params.id;
+  const slug = propSlug || params.slug || params['*'];
   const navigate = useNavigate();
   const [printHideContact, setPrintHideContact] = useState(false);
 
+  // Extract potential ID from slug if it exists (pattern: title-slug_ID or title-slug-ID)
+  // If no ID-like structure is found at the end, 'id' will be null or the whole slug
+  const idFromSlug = slug ? (slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) || [])[0] : null;
+  const id = idFromSlug || routeId;
+
+  // Cache Keys
+  const CACHE_KEY = `listing_detail_${id || slug}`;
+
+  // Load from Cache Helper
+  const getCachedData = () => {
+    try {
+      const saved = sessionStorage.getItem(CACHE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error('Error parsing listing cache:', e);
+      return null;
+    }
+  };
+
+  const cachedData = getCachedData();
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
-  // State for listing data
-  const [listing, setListing] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // State for listing data - Init from Cache
+  const [listing, setListing] = useState(cachedData?.listing || null);
+  const [loading, setLoading] = useState(!cachedData?.listing);
   const [error, setError] = useState(null);
 
-  // State for seller profile
-  const [sellerProfile, setSellerProfile] = useState(null);
-  const [sellerLoading, setSellerLoading] = useState(true);
+  // State for seller profile - Init from Cache  
+  const [sellerProfile, setSellerProfile] = useState(cachedData?.sellerProfile || null);
+  const [sellerLoading, setSellerLoading] = useState(!cachedData?.sellerProfile);
 
   const [activeImage, setActiveImage] = useState(0);
   const galleryRef = useRef(null);
+  const targetImageRef = useRef(null);
   const [showPhone, setShowPhone] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [currentStock, setCurrentStock] = useState(1); // Initialize with a default, will be updated by useEffect
+  const [currentStock, setCurrentStock] = useState(1);
   const [showContactForm, setShowContactForm] = useState(false);
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
@@ -8264,12 +8158,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
-  const [reservation, setReservation] = useState(null);
+  const [reservation, setReservation] = useState(cachedData?.reservation || null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [sellerRecentListings, setSellerRecentListings] = useState([]);
-  const [categoryListings, setCategoryListings] = useState([]);
-  const [sellerRating, setSellerRating] = useState(null);
-  const [sellerRatings, setSellerRatings] = useState([]);
+
+  // Related Listings - Init from Cache
+  const [sellerRecentListings, setSellerRecentListings] = useState(cachedData?.sellerRecentListings || []);
+  const [categoryListings, setCategoryListings] = useState(cachedData?.categoryListings || []);
+  const [sellerRating, setSellerRating] = useState(cachedData?.sellerRating || null);
+  const [sellerRatings, setSellerRatings] = useState(cachedData?.sellerRatings || []);
   const [selectedPromotions, setSelectedPromotions] = useState([]);
   const [showMobileStats, setShowMobileStats] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -8287,12 +8183,56 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   // Fetch listing from Supabase
   const isOwnListing = user && listing && user.id === listing.user_id;
 
+  // Save to Cache whenever critical data changes
   useEffect(() => {
+    if (listing) {
+      const dataToCache = {
+        listing,
+        sellerProfile,
+        sellerRecentListings,
+        categoryListings,
+        sellerRating,
+        sellerRatings,
+        reservation
+      };
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
+      } catch (e) {
+        console.warn('Could not save data to cache:', e);
+      }
+    }
+  }, [listing, sellerProfile, sellerRecentListings, categoryListings, sellerRating, sellerRatings, reservation, CACHE_KEY]);
+
+  useEffect(() => {
+    // Check if we already have the correct listing data loaded (e.g. from cache)
+    // to prevent unnecessary loading state (flash effect)
+    const hasCorrectData = listing && (
+      (id && listing.id === id) ||
+      (slug && listing.slug === slug)
+    );
+
+    if (!hasCorrectData) {
+      // Reset state immediately only if we don't have the correct data
+      setListing(null);
+      setLoading(true);
+      setError(null);
+      setActiveImage(0);
+      setSellerProfile(null);
+    }
+
     const loadListing = async () => {
       try {
-        setLoading(true);
-        const { fetchListingById } = await import('./api/listings');
-        const data = await fetchListingById(id);
+        const { fetchListingById, fetchListingBySlug } = await import('./api/listings');
+
+        let data = null;
+        if (id) {
+          data = await fetchListingById(id);
+        }
+
+        // If not found by ID, try fetching by slug
+        if (!data && slug) {
+          data = await fetchListingBySlug(slug);
+        }
         console.log('Fetched listing:', data);
 
         // Demo enhancement for VW Käfer listing (98fd3675-0163-4c93-9a81-318bedc7c31a)
@@ -8305,7 +8245,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           data.car_brand = 'Volkswagen';
           data.car_model = 'Käfer';
           data.hubraum = 1493;
-          data.fahrzeugtyp = 'Limousine';
+          data.fahrzeugtyp = 'Sedan';
           data.exterior_color = 'Helleres Beigegrau';
           data.unfallfrei = true;
           data.scheckheftgepflegt = true;
@@ -8319,7 +8259,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           data.city = "Coesfeld";
           data.address = "Alter Kirchplatz 5";
           data.views = 1;
-          data.versand_art = "Nur Abholung";
+          data.versand_art = "Sadece Elden Teslim";
         }
 
         // Demo enhancement for Mercedes A200 listing (b707bb19-ac7b-45df-a5a8-cbd8f25d9461)
@@ -8332,7 +8272,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           data.car_brand = 'Mercedes Benz';
           data.car_model = 'A 200';
           data.hubraum = 1332;
-          data.fahrzeugtyp = 'Limousine';
+          data.fahrzeugtyp = 'Sedan';
           data.exterior_color = 'Kosmosschwarz Metallic';
           data.unfallfrei = true;
           data.scheckheftgepflegt = true;
@@ -8345,7 +8285,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           data.postal_code = '48653';
           data.city = "Coesfeld";
           data.views = 6;
-          data.versand_art = "Versand möglich";
+          data.versand_art = "Kargo Mümkün";
         }
 
         // Check for expiry (Use expiry_date or default to 90 days)
@@ -8385,32 +8325,51 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
       }
     };
 
-    if (id) {
+    if (id || slug) {
       loadListing();
     }
-  }, [id]);
+  }, [id, slug, user?.id]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [id, slug]);
 
   // Sync gallery scroll with activeImage state
   useEffect(() => {
-    if (galleryRef.current && !isMobile) {
+    if (galleryRef.current) {
       const width = galleryRef.current.clientWidth;
-      galleryRef.current.scrollTo({
-        left: activeImage * width,
-        behavior: 'smooth'
-      });
+      if (width > 0) {
+        galleryRef.current.scrollTo({
+          left: activeImage * width,
+          behavior: 'smooth'
+        });
+      }
     }
-  }, [activeImage, isMobile]);
+  }, [activeImage]);
+
+  const handleThumbnailClick = (index) => {
+    targetImageRef.current = index;
+    setActiveImage(index);
+  };
 
   // Handle scroll events to update activeImage index
   const handleGalleryScroll = (e) => {
     if (isMobile) {
       const scrollLeft = e.target.scrollLeft;
       const width = e.target.clientWidth;
+      if (width <= 0) return;
+
       const newIndex = Math.round(scrollLeft / width);
+
+      // If we are currently moving towards a target (programmatically from thumbnail click), 
+      // only unlock when we reach that target index.
+      if (targetImageRef.current !== null) {
+        if (newIndex === targetImageRef.current) {
+          targetImageRef.current = null;
+        }
+        return;
+      }
+
       if (newIndex !== activeImage) {
         setActiveImage(newIndex);
       }
@@ -8448,18 +8407,30 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         if (viewedListings.length > 50) {
           viewedListings.shift();
         }
-        localStorage.setItem('viewedListings', JSON.stringify(viewedListings));
+        try {
+          localStorage.setItem('viewedListings', JSON.stringify(viewedListings));
+        } catch (e) {
+          console.warn('Could not save viewed listings to local storage:', e);
+        }
       }
 
       // Track viewed categories
       const viewedCategories = JSON.parse(localStorage.getItem('viewedCategories') || '[]');
       if (!viewedCategories.includes(listing.category)) {
         viewedCategories.push(listing.category);
-        localStorage.setItem('viewedCategories', JSON.stringify(viewedCategories));
+        try {
+          localStorage.setItem('viewedCategories', JSON.stringify(viewedCategories));
+        } catch (e) {
+          console.warn('Could not save viewed categories to local storage:', e);
+        }
       }
       if (listing.sub_category && !viewedCategories.includes(listing.sub_category)) {
         viewedCategories.push(listing.sub_category);
-        localStorage.setItem('viewedCategories', JSON.stringify(viewedCategories));
+        try {
+          localStorage.setItem('viewedCategories', JSON.stringify(viewedCategories));
+        } catch (e) {
+          console.warn('Could not save viewed categories to local storage:', e);
+        }
       }
     }
   }, [listing]);
@@ -8589,7 +8560,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
   // Increment view count (with 3 second delay to avoid counting quick bounces)
   useEffect(() => {
-    if (listing && listing.id) {
+    if (listing && listing.id && (!user || user.id !== listing.user_id)) {
       const incrementView = async () => {
         try {
           const { incrementListingView } = await import('./api/views');
@@ -8610,10 +8581,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="medium" className="mb-4" />
-          <p className="text-gray-600">İlan yükleniyor...</p>
         </div>
       </div>
     );
@@ -8622,16 +8592,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   // Show error state
   if (error || !listing) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">İlan bulunamadı</h2>
-          <p className="text-gray-600 mb-4">{error || 'Bu ilan mevcut değil.'}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-50 mb-2">İlan bulunamadı</h2>
+          <p className="text-gray-600 dark:text-neutral-400 mb-4">{error || 'Bu ilan mevcut değil.'}</p>
+          <Link
+            to="/"
+            className="inline-block px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             {t.common.backToHome}
-          </button>
+          </Link>
         </div>
       </div>
     );
@@ -8650,32 +8620,23 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     subscription_tier: listing?.profiles?.subscription_tier,
     user_number: listing?.profiles?.user_number,
     last_seen: listing?.profiles?.last_seen,
-    seller_type: listing?.profiles?.seller_type
+    seller_type: listing?.profiles?.seller_type,
+    store_slug: listing?.profiles?.store_slug,
+    subscription_expiry: listing?.profiles?.subscription_expiry
   };
+
+  // Pre-calculate seller path to avoid redundant logic in JSX
+  const getSellerPath = () => {
+    return getSellerUrl(seller);
+  };
+  const sellerPath = getSellerPath();
 
   // Calculate actual seller listing count
   // TODO: Fetch actual count from Supabase when needed
   const sellerListingsCount = 0;
 
   // NOW conditional returns AFTER all hooks
-  if (!listing) {
-    return (
-      <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">İlan bulunamadı</h2>
-          <p className="text-gray-600 mb-6">Aradığınız ilan maalesef artık mevcut değil.</p>
-          <button
-            onClick={() => navigate('/')}
-            className="px-6 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
-          >
-            Ana Sayfa'ya Dön
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const sellerId = listing.sellerId;
+  const sellerId = listing?.sellerId;
 
   const handleModalSubmit = async (data) => {
     try {
@@ -8712,7 +8673,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const activeSinceDisplay = seller.created_at
     ? new Date(seller.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
     : '-';
-  const isCommercial = seller.is_pro || seller.is_commercial || seller.seller_type === 'Gewerblicher Nutzer' || (seller && seller.seller_type === 'commercial') || sellerProfile?.seller_type === 'Gewerblicher Nutzer';
+  const isCommercial = seller.is_pro || seller.is_commercial || seller.seller_type === 'Kurumsal Kullanıcı' || (seller && seller.seller_type === 'commercial') || sellerProfile?.seller_type === 'Kurumsal Kullanıcı';
   const sellerTypeLabel = isCommercial ? t.addListing.commercial : t.addListing.private;
 
   const handleAddToCart = () => {
@@ -8738,14 +8699,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
     try {
       const { sendMessage } = await import('./api/messages');
-      await sendMessage({
-        sender_id: user.id,
-        receiver_id: listing.user_id,
-        listing_id: listing.id,
-        message: contactMessage,
-        sender_name: contactName,
-        sender_phone: contactPhone
-      });
+      await sendMessage(
+        listing.user_id,
+        contactMessage,
+        listing.id,
+        contactPhone
+      );
 
       alert(t.sellerProfile.messageSuccess);
       setContactMessage('');
@@ -8981,7 +8940,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         }
       `}</style>
 
-      <div className={`min-h-screen bg-gray-50 no-print ${isMobile ? 'pb-48' : ''}`}>
+      <div className={`min-h-screen bg-gray-50 dark:bg-neutral-950 no-print ${isMobile ? 'pb-48' : ''}`}>
         {listing && <ProductSEO product={listing} />}
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
           <div className="mb-3 sm:mb-4 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm overflow-x-auto no-print">
@@ -8994,7 +8953,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             <span className="text-gray-400">›</span>
             <button
               onClick={() => navigate(getCategoryPath(listing.category))}
-              className="text-gray-700 hover:text-red-500 font-medium transition-colors whitespace-nowrap"
+              className="text-gray-700 dark:text-neutral-400 hover:text-red-500 font-medium transition-colors whitespace-nowrap"
             >
               {listing.category}
             </button>
@@ -9003,7 +8962,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <span className="text-gray-400">›</span>
                 <button
                   onClick={() => navigate(getCategoryPath(listing.category, listing.sub_category))}
-                  className="text-gray-700 hover:text-red-500 font-medium transition-colors whitespace-nowrap truncate max-w-[150px] sm:max-w-none"
+                  className="text-gray-700 dark:text-neutral-400 hover:text-red-500 font-medium transition-colors whitespace-nowrap truncate max-w-[150px] sm:max-w-none"
                 >
                   {normalizeSubcategoryName(listing.sub_category)}
                 </button>
@@ -9038,19 +8997,19 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </button>
 
                   {showMobileStats && (
-                    <div className="fixed inset-0 z-[200] bg-gray-100 overflow-y-auto">
-                      <div className="sticky top-0 z-[210] bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center shadow-sm">
+                    <div className="fixed inset-0 z-[200] bg-gray-100 dark:bg-neutral-950 overflow-y-auto">
+                      <div className="sticky top-0 z-[210] bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-white/10 px-4 py-3 flex justify-between items-center shadow-sm">
                         <div className="flex items-center gap-2">
                           <span className="bg-red-500 text-white p-1 rounded-lg">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             </svg>
                           </span>
-                          <h2 className="text-sm font-black text-gray-900 uppercase tracking-tight">İlan Yönetimi</h2>
+                          <h2 className="text-sm font-black text-gray-900 dark:text-neutral-50 uppercase tracking-tight">İlan Yönetimi</h2>
                         </div>
                         <button
                           onClick={() => setShowMobileStats(false)}
-                          className="bg-gray-100 hover:bg-gray-200 text-gray-600 p-1.5 rounded-full transition-colors"
+                          className="bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-neutral-400 p-1.5 rounded-full transition-colors"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
@@ -9058,7 +9017,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </button>
                       </div>
                       <div className="p-2 pb-10">
-                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+                        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-white/10">
                           <DashboardContent
                             listing={listing}
                             favoriteCount={favoriteCount}
@@ -9081,7 +9040,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   )}
                 </>
               ) : (
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-red-500/20">
+                <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl overflow-hidden border-2 border-red-500/20">
                   <DashboardContent
                     listing={listing}
                     favoriteCount={favoriteCount}
@@ -9107,9 +9066,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             {/* Sol Taraf - Ürün Açıklaması */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Ürün Resmi */}
-              <div className="bg-transparent sm:bg-white rounded-none sm:rounded-lg shadow-none sm:shadow-lg overflow-hidden relative hover:shadow-xl transition-shadow duration-300 z-0 -mx-2 sm:mx-0">
-                <div className="bg-transparent sm:bg-white rounded-none sm:rounded-lg overflow-hidden shadow-none sm:shadow-inner p-0 sm:p-3">
-                  <div className="relative w-full h-[300px] sm:h-[525px] bg-gray-50 flex items-center justify-center rounded-none sm:rounded-lg overflow-hidden border-0 sm:border border-gray-100">
+              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg shadow-none sm:shadow-lg overflow-hidden relative hover:shadow-xl transition-shadow duration-300 z-0 -mx-2 sm:mx-0 border border-transparent dark:sm:border-white/5">
+                <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg overflow-hidden shadow-none sm:shadow-inner p-0 sm:p-3">
+                  <div className="relative w-full h-[300px] sm:h-[525px] bg-gray-50 dark:bg-neutral-800 flex items-center justify-center rounded-none sm:rounded-lg overflow-hidden border-0 sm:border border-gray-100 dark:sm:border-white/5">
                     {isMobile && (
                       <button
                         onClick={() => navigate(-1)}
@@ -9127,16 +9086,21 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory scrollbar-none z-10"
                       style={{ scrollBehavior: 'smooth' }}
                     >
-                      {(listing.images && listing.images.length > 0 ? listing.images : [listing.image]).map((img, index) => (
-                        <div key={index} className="w-full h-full flex-shrink-0 snap-center">
-                          <img
-                            src={img}
-                            alt={listing.title}
-                            className="w-full h-full object-cover"
-                            onClick={() => setShowLightbox(true)}
-                          />
-                        </div>
-                      ))}
+                      {(() => {
+                        const images = listing.images && listing.images.length > 0 ? listing.images : (listing.image ? [listing.image] : []);
+                        return images.map((img, index) => (
+                          <div key={index} className="w-full h-full flex-shrink-0 snap-center">
+                            <img
+                              src={getOptimizedImageUrl(img, 1000, 750, 'cover')}
+                              alt={`${listing.title} - ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onClick={() => setShowLightbox(true)}
+                              loading={index === 0 ? "eager" : "lazy"}
+                              decoding="async"
+                            />
+                          </div>
+                        ));
+                      })()}
                     </div>
 
                     {listing.images && listing.images.length > 0 && (
@@ -9220,13 +9184,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.images.map((img, index) => (
                         <button
                           key={index}
-                          onClick={() => setActiveImage(index)}
+                          onClick={() => handleThumbnailClick(index)}
                           className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === index ? 'border-red-500' : 'border-transparent hover:border-gray-200'}`}
                         >
                           <img
-                            src={img}
+                            src={getOptimizedImageUrl(img, 160, 160, 'cover')}
                             alt={`${listing.title} thumbnail ${index + 1}`}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                           {activeImage === index && (
                             <div className="absolute inset-0 bg-red-500/10" />
@@ -9237,22 +9202,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   )}
                 </div>
                 {/* Üst Araçlar - Mobil Paylaş ve Favori */}
-                <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5">
+                <div className="absolute top-6 right-6 z-30 flex items-center gap-1.5">
                   {/* Paylaş Butonu */}
-                  {isMobile && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowShareModal(true);
-                      }}
-                      className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 flex items-center justify-center text-gray-600"
-                      title="Paylaş"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-0.482-0.114-0.938-0.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                      </svg>
-                    </button>
-                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowShareModal(true);
+                    }}
+                    className="w-8 h-8 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all duration-200 flex items-center justify-center text-gray-600 dark:text-neutral-300"
+                    title="Paylaş"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-0.482-0.114-0.938-0.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                  </button>
 
                   {/* Favori Kalp Butonu */}
                   {!isOwnListing && (
@@ -9261,8 +9224,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         e.stopPropagation();
                         toggleFavorite && toggleFavorite(listing.id);
                       }}
-                      className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full shadow hover:bg-white hover:scale-110 transition-all duration-200 flex items-center justify-center"
-                      title={favorite ? 'Aus Merkliste entfernen' : 'Zur Merkliste hinzufügen'}
+                      className="w-8 h-8 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all duration-200 flex items-center justify-center"
+                      title={favorite ? 'Favorilerimden çıkar' : 'Favorilerime ekle'}
                     >
                       {favorite ? (
                         <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
@@ -9289,15 +9252,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               />
 
               {/* Birleştirilmiş İlan Bilgileri Paneli */}
-              <div className="bg-transparent sm:bg-white rounded-none sm:rounded-lg shadow-none sm:shadow-lg px-4 sm:p-6 py-6">
+              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg shadow-none sm:shadow-lg px-4 sm:p-6 py-6 border border-transparent dark:sm:border-white/5">
                 {/* Ürün Başlığı ve Bilgileri */}
                 <div className="space-y-6">
                   {/* Başlık ve Fiyat - Üst Kısım - Back to top per user request */}
-                  <div className="pb-6 border-b border-gray-100">
+                  <div className="pb-6 border-b border-gray-100 dark:border-white/5">
                     {/* Fiyat - En Üstte */}
                     {listing.sub_category !== 'Ausbildung' && listing.sub_category !== 'Bau, Handwerk & Produktion' && listing.category !== 'Jobs' && (
                       <div className="mb-4">
-                        <div className="text-lg sm:text-2xl font-normal sm:font-bold text-gray-900 mb-1">
+                        <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-neutral-50 mb-1">
                           {listing.price_type === 'giveaway' || listing.price === 0
                             ? t.productDetail.giveaway
                             : typeof listing.price === 'number'
@@ -9307,14 +9270,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                                 : listing.price ? `${listing.price} TL${listing.price_type === 'negotiable' ? ' ' + t.productDetail.negotiable : ''}` : t.productDetail.negotiable}
                         </div>
                         {listing.stock && (
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 dark:text-neutral-400">
                             {t.productDetail.stock.replace('{count}', listing.stock || 1)}
                           </div>
                         )}
 
                         {/* Favorite Count */}
                         {favoriteCount > 0 && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-neutral-400 mt-2">
                             <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                             </svg>
@@ -9326,13 +9289,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                     {/* Başlık */}
                     <div>
-                      <h1 className="text-sm sm:text-lg font-normal sm:font-bold text-gray-900 leading-tight">
+                      <h1 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-neutral-50 leading-tight">
                         {listing.title}
                       </h1>
 
                       {/* Mobil için Hızlı Bilgi Çubuğu (Konum ve Tarih) */}
                       {isMobile && (
-                        <div className="mt-3 flex justify-between items-center text-[13px] text-gray-600 font-medium border-t border-gray-50 pt-3 w-full">
+                        <div className="mt-3 flex justify-between items-center text-[13px] text-gray-600 dark:text-neutral-400 font-medium border-t border-gray-50 dark:border-white/5 pt-3 w-full">
                           <div className="flex items-center gap-1.5">
                             <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -9344,7 +9307,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-gray-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span>
@@ -9357,17 +9320,17 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
 
                   {/* General Info Grid - Below Title/Price */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b border-gray-100 mb-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b border-gray-100 dark:border-white/5 mb-12">
                     <div className="hidden md:flex justify-between">
-                      <span className="text-gray-500">{t.productDetail.postedOn}</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.postedOn}</span>
+                      <span className="font-medium text-gray-900 dark:text-neutral-50">
                         {listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
                       </span>
                     </div>
                     {listing.condition && (
                       <div className="flex justify-between">
-                        <span className="text-gray-500">{t.addListing.condition || 'Durum'}</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="text-gray-500 dark:text-neutral-400">{t.addListing.condition || 'Durum'}</span>
+                        <span className="font-medium text-gray-900 dark:text-neutral-50">
                           {listing.condition === 'defekt' ? (t.addListing?.options?.defective || 'Arızalı') :
                             listing.condition === 'in_ordnung' ? (t.addListing?.options?.okay || 'İdare Eder') :
                               listing.condition === 'gut' ? (t.addListing?.options?.good || 'İyi') :
@@ -9380,13 +9343,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-gray-500">{t.productDetail.listingId}</span>
-                      <span className="font-semibold text-gray-900">{generateListingNumber(listing)}</span>
+                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.listingId}</span>
+                      <span className="font-medium text-gray-900 dark:text-neutral-50">{generateListingNumber(listing)}</span>
                     </div>
                     <div className="hidden md:flex justify-between">
-                      <span className="text-gray-500">{t.productDetail.location}</span>
+                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.location}</span>
                       <div className="text-right">
-                        <span className="font-semibold text-gray-900 block">
+                        <span className="font-medium text-gray-900 dark:text-neutral-50 block">
                           {listing.show_location === true && listing.address ? `${listing.address}, ` : ''}
                           {listing.district ? `${listing.district}, ` : ''}
                           {listing.city || ''}
@@ -9395,15 +9358,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       </div>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">{t.productDetail.views}</span>
-                      <span className="font-semibold text-gray-900">{(listing.views || 0).toLocaleString('tr-TR')}</span>
+                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.views}</span>
+                      <span className="font-medium text-gray-900 dark:text-neutral-50">{(listing.views || 0).toLocaleString('tr-TR')}</span>
                     </div>
                     {listing.versand_art && (
                       <div className="flex justify-between">
-                        <span className="text-gray-500">{t.addListing.shipping}</span>
-                        <span className="font-semibold text-gray-900">
-                          {listing.versand_art === 'Versand möglich' ? t.addListing.options.shipping :
-                            listing.versand_art === 'Nur Abholung' ? t.addListing.options.noShipping :
+                        <span className="text-gray-500 dark:text-neutral-400">{t.addListing.shipping}</span>
+                        <span className="font-medium text-gray-900 dark:text-neutral-50">
+                          {listing.versand_art === 'Kargo Mümkün' || listing.versand_art === 'Versand möglich' ? t.addListing.options.shipping :
+                            listing.versand_art === 'Sadece Elden Teslim' || listing.versand_art === 'Nur Abholung' ? t.addListing.options.noShipping :
                               listing.versand_art}
                         </span>
                       </div>
@@ -9413,27 +9376,27 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
 
                   {/* Quantity Selector - Only for New items */}
-                  {listing.condition === 'Neu' && (
-                    <div className="flex items-center gap-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {(listing.condition === 'Neu' || listing.condition === 'Yeni') && (
+                    <div className="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-lg">
+                      <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
-                      <span className="text-sm font-medium text-gray-700">Menge:</span>
-                      <div className="flex items-center border-2 border-gray-300 rounded-full bg-white overflow-hidden">
+                      <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">Adet:</span>
+                      <div className="flex items-center border-2 border-gray-300 dark:border-white/20 rounded-full bg-white dark:bg-neutral-800 overflow-hidden">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="px-4 py-2 hover:bg-gray-50 text-gray-700 font-bold transition-colors"
+                          className="px-4 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-400 font-bold transition-colors"
                           type="button"
                         >−</button>
-                        <div className="w-16 text-center font-bold text-gray-900 border-x border-gray-300 py-2">{quantity}</div>
+                        <div className="w-16 text-center font-bold text-gray-900 dark:text-neutral-50 border-x border-gray-300 dark:border-white/20 py-2">{quantity}</div>
                         <button
                           onClick={() => setQuantity(Math.min(currentStock, quantity + 1))}
-                          className="px-4 py-2 hover:bg-gray-50 text-gray-700 font-bold transition-colors"
+                          className="px-4 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-400 font-bold transition-colors"
                           type="button"
                         >+</button>
                       </div>
-                      <span className="text-sm text-gray-600">
-                        <span className="font-semibold text-gray-900">{currentStock}</span> adet mevcut
+                      <span className="text-sm text-gray-600 dark:text-neutral-400">
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{currentStock}</span> adet mevcut
                       </span>
                     </div>
                   )}
@@ -9461,7 +9424,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div className="mb-12">
                       <div className="pb-8 mb-8">
                         <div className="mb-8">
-                          <h2 className="text-2xl font-bold text-gray-900">
+                          <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-50">
                             {t.productDetail.vehicleDetails}
                           </h2>
                         </div>
@@ -9470,92 +9433,86 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-5 text-sm mb-8">
                           {(listing.marke || listing.car_brand || listing.carBrand) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.manufacturer}</span>
-                              <span className="font-bold text-gray-900">{listing.marke || listing.car_brand || listing.carBrand}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.manufacturer}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.marke || listing.car_brand || listing.carBrand}</span>
                             </div>
                           )}
                           {(listing.modell || listing.car_model || listing.carModel) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.model}</span>
-                              <span className="font-bold text-gray-900">{listing.modell || listing.car_model || listing.carModel}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.model}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.modell || listing.car_model || listing.carModel}</span>
                             </div>
                           )}
                           {(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.propertyType || t.productDetail.art}</span>
-                              <span className="font-bold text-gray-900">{translateVal(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType)}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.propertyType || t.productDetail.art}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType)}</span>
                             </div>
                           )}
                           {(listing.kilometerstand !== undefined && listing.kilometerstand !== null || listing.kilometer !== undefined && listing.kilometer !== null || listing.kilometerStand !== undefined && listing.kilometerStand !== null) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.mileage}</span>
-                              <span className="font-bold text-gray-900">{(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.mileage}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km</span>
                             </div>
                           )}
                           {(listing.erstzulassung || listing.bj) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.firstRegistration}</span>
-                              <span className="font-bold text-gray-900">{listing.erstzulassung || listing.bj}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.firstRegistration}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.erstzulassung || listing.bj}</span>
                             </div>
                           )}
                           {(listing.kraftstoff || listing.fuel_type) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.fuelType}</span>
-                              <span className="font-bold text-gray-900">{listing.kraftstoff || listing.fuel_type}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.fuelType}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.kraftstoff || listing.fuel_type)}</span>
                             </div>
                           )}
                           {(listing.leistung || listing.power) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.power}</span>
-                              <span className="font-bold text-gray-900">{listing.leistung || listing.power} PS</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.power}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.leistung || listing.power} PS</span>
                             </div>
                           )}
                           {listing.hubraum && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.displacement}</span>
-                              <span className="font-bold text-gray-900">{listing.hubraum} cm³</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.displacement}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.hubraum} cm³</span>
                             </div>
                           )}
                           {listing.getriebe && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.transmission}</span>
-                              <span className="font-bold text-gray-900">{listing.getriebe}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.transmission}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.getriebe)}</span>
                             </div>
                           )}
                           {listing.door_count && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.doorCount}</span>
-                              <span className="font-bold text-gray-900">{listing.door_count}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.doorCount}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.door_count}</span>
                             </div>
                           )}
                           {listing.hu && (
                             <div className="flex justify-between">
-                              <span className="text-gray-500 font-medium">{t.productDetail.huUntil}</span>
-                              <span className="font-bold text-gray-900">{listing.hu}</span>
-                            </div>
-                          )}
-                          {(listing.emission_badge || listing.emission_sticker) && (
-                            <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.emissionBadge}</span>
-                              <span className="font-bold text-gray-900">{listing.emission_badge || listing.emission_sticker}</span>
+                              <span className="text-gray-500 dark:text-neutral-400 font-medium">{t.productDetail.huUntil}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.hu}</span>
                             </div>
                           )}
                           {(listing.schadstoffklasse || listing.emission_class) && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.emissionClass}</span>
-                              <span className="font-bold text-gray-900">{translateVal(listing.schadstoffklasse || listing.emission_class)}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.emissionClass}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.schadstoffklasse || listing.emission_class)}</span>
                             </div>
                           )}
                           {listing.exterior_color && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.exteriorColor}</span>
-                              <span className="font-bold text-gray-900">{translateVal(listing.exterior_color)}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.exteriorColor}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.exterior_color)}</span>
                             </div>
                           )}
                           {listing.interior_material && (
                             <div className="flex justify-between">
-                              <span className="text-gray-600 font-medium">{t.productDetail.interiorMaterial}</span>
-                              <span className="font-bold text-gray-900">{translateVal(listing.interior_material)}</span>
+                              <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.interiorMaterial}</span>
+                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.interior_material)}</span>
                             </div>
                           )}
                         </div>
@@ -9563,17 +9520,17 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {/* Status Tags */}
                         <div className="flex flex-wrap gap-8 mb-8">
                           {listing.unfallfrei && (
-                            <span className="text-gray-900 text-xs font-bold">
+                            <span className="text-gray-900 dark:text-neutral-50 text-xs font-bold">
                               Kazasız
                             </span>
                           )}
                           {listing.scheckheftgepflegt && (
-                            <span className="text-gray-900 text-xs font-bold">
+                            <span className="text-gray-900 dark:text-neutral-50 text-xs font-bold">
                               Bakımlı (Servis Bakımlı)
                             </span>
                           )}
                           {listing.nichtraucher_fahrzeug && (
-                            <span className="text-gray-900 text-xs font-bold">
+                            <span className="text-gray-900 dark:text-neutral-50 text-xs font-bold">
                               Sigara İçilmemiş
                             </span>
                           )}
@@ -9581,13 +9538,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                         {/* Car Amenities */}
                         {listing.car_amenities && listing.car_amenities.length > 0 && (
-                          <div className="pt-8 border-t border-gray-200">
-                            <h3 className="text-lg font-bold text-gray-900 mb-5">
+                          <div className="pt-8 border-t border-gray-200 dark:border-white/5">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-5">
                               {t.productDetail.amenities}
                             </h3>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
                               {listing.car_amenities.map(amenity => (
-                                <div key={amenity} className="flex items-center gap-2 text-[13px] text-gray-700 font-medium">
+                                <div key={amenity} className="flex items-center gap-2 text-[13px] text-gray-700 dark:text-neutral-300 font-medium">
                                   <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>
@@ -9608,13 +9565,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Wohnzimmer Details */}
                 {listing.wohnzimmer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.wohnzimmer_art}</span>
+                        <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.wohnzimmer_art}</span>
                       </div>
                     </div>
                   </div>
@@ -9623,32 +9580,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Schlafzimmer, Küche, Heimwerken & Beleuchtung Details */}
                 {(listing.schlafzimmer_art || listing.kueche_esszimmer_art || listing.heimwerken_art || listing.lamba_aydinlatma_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.schlafzimmer_art && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.schlafzimmer_art}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.schlafzimmer_art}</span>
                         </div>
                       )}
                       {listing.kueche_esszimmer_art && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.kueche_esszimmer_art}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kueche_esszimmer_art}</span>
                         </div>
                       )}
                       {listing.heimwerken_art && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.heimwerken_art}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.heimwerken_art}</span>
                         </div>
                       )}
                       {listing.lamba_aydinlatma_art && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.lamba_aydinlatma_art}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.lamba_aydinlatma_art}</span>
                         </div>
                       )}
                     </div>
@@ -10025,14 +9982,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Pferde Details */}
                 {(listing.pferde_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.pferde_art && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.pferde_art}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.pferde_art}</span>
                         </div>
                       )}
                     </div>
@@ -10042,14 +9999,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Vermisste Tiere Details */}
                 {(listing.vermisste_tiere_status) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.vermisste_tiere_status && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.status}</span>
-                          <span className="font-semibold text-gray-900">{listing.vermisste_tiere_status}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.status}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.vermisste_tiere_status}</span>
                         </div>
                       )}
                     </div>
@@ -10059,14 +10016,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Vögel Details */}
                 {(listing.voegel_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.voegel_art && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.voegel_art}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.voegel_art}</span>
                         </div>
                       )}
                     </div>
@@ -10125,86 +10082,86 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   listing.notebooks_art || listing.pcs_art || listing.videospiele_art ||
                   listing.weitere_elektronik_art || listing.dienstleistungen_elektronik_art) && (
                     <div className="mb-8">
-                      <h2 className="text-lg font-bold text-gray-900 mb-4">
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                         {t.productDetail.details}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                         {listing.audio_hifi_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.audio_hifi_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.audio_hifi_art}</span>
                           </div>
                         )}
                         {listing.handy_telefon_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.handy_telefon_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.handy_telefon_art}</span>
                           </div>
                         )}
                         {listing.foto_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.foto_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.foto_art}</span>
                           </div>
                         )}
                         {listing.haushaltsgeraete_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.haushaltsgeraete_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.haushaltsgeraete_art}</span>
                           </div>
                         )}
                         {listing.konsolen_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.konsolen_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.konsolen_art}</span>
                           </div>
                         )}
                         {listing.pc_zubehoer_software_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.pc_zubehoer_software_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.pc_zubehoer_software_art}</span>
                           </div>
                         )}
                         {listing.tablets_reader_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.tablets_reader_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.tablets_reader_art}</span>
                           </div>
                         )}
                         {listing.tv_video_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.tv_video_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.tv_video_art}</span>
                           </div>
                         )}
                         {listing.notebooks_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.notebooks_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.notebooks_art}</span>
                           </div>
                         )}
                         {listing.pcs_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.pcs_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.pcs_art}</span>
                           </div>
                         )}
                         {listing.videospiele_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.videospiele_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.videospiele_art}</span>
                           </div>
                         )}
                         {listing.weitere_elektronik_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.weitere_elektronik_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.weitere_elektronik_art}</span>
                           </div>
                         )}
                         {listing.dienstleistungen_elektronik_art && (
                           <div className="flex justify-between">
-                            <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.dienstleistungen_elektronik_art}</span>
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.dienstleistungen_elektronik_art}</span>
                           </div>
                         )}
                       </div>
@@ -10389,62 +10346,62 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm mt-4 pb-8 mb-8">
                       {listing.angebotsart && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.offerType}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.angebotsart)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.offerType}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.angebotsart)}</span>
                         </div>
                       )}
                       {listing.auf_zeit_wg_art && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.offerType}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.auf_zeit_wg_art)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.offerType}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.auf_zeit_wg_art)}</span>
                         </div>
                       )}
                       {listing.wohnungstyp && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.propertyType}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.wohnungstyp)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.propertyType}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.wohnungstyp)}</span>
                         </div>
                       )}
                       {listing.haustyp && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.propertyType}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.haustyp)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.propertyType}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.haustyp)}</span>
                         </div>
                       )}
                       {listing.living_space && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{['Ticari Emlak', 'Konteyner', 'Arsa & Bahçe'].includes(listing.sub_category) ? t.productDetail.totalArea : t.productDetail.livingSpace}</span>
-                          <span className="font-semibold text-gray-900">{listing.living_space} m²</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{['Ticari Emlak', 'Konteyner', 'Arsa & Bahçe'].includes(listing.sub_category) ? t.productDetail.totalArea : t.productDetail.livingSpace}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.living_space} m²</span>
                         </div>
                       )}
                       {listing.rooms && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.rooms}</span>
-                          <span className="font-semibold text-gray-900">{listing.rooms}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.rooms}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.rooms}</span>
                         </div>
                       )}
                       {listing.floor !== undefined && listing.floor !== null && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.floor}</span>
-                          <span className="font-semibold text-gray-900">{listing.floor}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.floor}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.floor}</span>
                         </div>
                       )}
                       {listing.roommates && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.roommates}</span>
-                          <span className="font-semibold text-gray-900">{listing.roommates}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.roommates}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.roommates}</span>
                         </div>
                       )}
                       {listing.construction_year && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.constructionYear}</span>
-                          <span className="font-semibold text-gray-900">{listing.construction_year}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.constructionYear}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.construction_year}</span>
                         </div>
                       )}
                       {listing.available_from && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.availableFrom}</span>
-                          <span className="font-semibold text-gray-900">
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.availableFrom}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">
                             {listing.available_from.length === 7
                               ? new Date(listing.available_from + '-01').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
                               : new Date(listing.available_from).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
@@ -10453,62 +10410,62 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {listing.warm_rent && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.warmRent}</span>
-                          <span className="font-semibold text-gray-900">{listing.warm_rent.toLocaleString('tr-TR')} TL</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.warmRent}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.warm_rent.toLocaleString('tr-TR')} TL</span>
                         </div>
                       )}
                       {listing.price_per_sqm && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.pricePerSqm}</span>
-                          <span className="font-semibold text-gray-900">{listing.price_per_sqm.toLocaleString('tr-TR')} TL/m²</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.pricePerSqm}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.price_per_sqm.toLocaleString('tr-TR')} TL/m²</span>
                         </div>
                       )}
                       {listing.plot_area && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.plotArea}</span>
-                          <span className="font-semibold text-gray-900">{listing.plot_area} m²</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.plotArea}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.plot_area} m²</span>
                         </div>
                       )}
                       {listing.grundstuecksart && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.plotType}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.grundstuecksart)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.plotType}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.grundstuecksart)}</span>
                         </div>
                       )}
                       {listing.objektart && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.objectType}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.objektart)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.objectType}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.objektart)}</span>
                         </div>
                       )}
                       {listing.garage_type && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.garage}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.garage_type)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.garage}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.garage_type)}</span>
                         </div>
                       )}
                       {listing.rental_type && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.rentalType}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.rental_type)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.rentalType}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.rental_type)}</span>
                         </div>
                       )}
                       {listing.online_viewing && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.onlineViewing}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.online_viewing)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.onlineViewing}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.online_viewing)}</span>
                         </div>
                       )}
                       {listing.commission && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.commission}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.commission)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.commission}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.commission)}</span>
                         </div>
                       )}
                       {listing.lage && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">{t.productDetail.location}</span>
-                          <span className="font-semibold text-gray-900">{translateVal(listing.lage)}</span>
+                          <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.location}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.lage)}</span>
                         </div>
                       )}
                     </div>
@@ -10517,12 +10474,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div className="mt-8 space-y-8">
                       {listing.amenities?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
                             {t.productDetail.amenities}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.amenities.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
@@ -10534,12 +10491,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {listing.general_features?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
                             {t.productDetail.features}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.general_features.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
@@ -10551,12 +10508,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {listing.apartment_features?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
                             {t.productDetail.apartmentFeatures}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.apartment_features.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
@@ -10568,12 +10525,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {listing.house_features?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
                             {t.productDetail.houseFeatures}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.house_features.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
@@ -10602,27 +10559,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
                 )}
 
-                {/* Çizgi - Beschreibung Ayırıcı */}
-                <div className="border-t border-gray-200 my-6"></div>
 
                 {/* Ürün Açıklaması */}
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">{t.productDetail.description}</h2>
-                  <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50 mb-4">{t.productDetail.description}</h2>
+                  <p className="text-sm text-gray-700 dark:text-neutral-300 whitespace-pre-line leading-relaxed">
                     {description}
                   </p>
                 </div>
 
                 {/* Çizgi - Rechtliche Angaben Ayırıcı - Only for commercial sellers */}
-                {sellerProfile?.seller_type === 'Gewerblicher Nutzer' && (
+                {sellerProfile?.seller_type === 'Kurumsal Kullanıcı' && (
                   <>
-                    <div className="border-t border-gray-200 my-6"></div>
+                    <div className="border-t border-gray-200 dark:border-white/5 my-6"></div>
 
                     {/* Rechtliche Angaben */}
                     <div>
                       <button
                         onClick={() => setShowLegal(!showLegal)}
-                        className="flex items-center justify-between w-full text-lg font-semibold text-gray-900 hover:text-red-500"
+                        className="flex items-center justify-between w-full text-lg font-semibold text-gray-900 dark:text-neutral-50 hover:text-red-500 dark:hover:text-red-400"
                       >
                         <span>{t.productDetail.legalInfo}</span>
                         <svg
@@ -10635,9 +10590,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </svg>
                       </button>
                       {showLegal && (
-                        <div className="mt-4 text-sm text-gray-600 space-y-2 border-t border-gray-100 pt-4">
+                        <div className="mt-4 text-sm text-gray-600 dark:text-neutral-400 space-y-2 border-t border-gray-100 dark:border-white/5 pt-4">
                           <p>{t.productDetail.legalText}</p>
-                          <p className="font-medium">{seller.name}</p>
+                          <p className="font-medium text-gray-900 dark:text-neutral-50">{seller.name}</p>
                           <p>Örnek Mahallesi 123</p>
                           <p>34000 İstanbul</p>
                         </div>
@@ -10656,16 +10611,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 if (sellerOtherListings.length === 0) return null;
 
                 return (
-                  <div className="bg-white rounded-lg shadow-lg p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  <div className="bg-white dark:bg-neutral-900 border border-transparent dark:border-white/5 rounded-lg shadow-lg p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-50 mb-4">
                       {seller.name}'in Diğer İlanları
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {sellerOtherListings.map((otherListing) => (
                         <div
                           key={otherListing.id}
-                          onClick={() => navigate(`/product/${otherListing.id}`)}
-                          className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group border border-gray-200"
+                          onClick={() => navigate(getListingUrl(otherListing))}
+                          className="bg-gray-50 dark:bg-neutral-800 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group border border-gray-200 dark:border-white/5"
                         >
                           <div className="relative">
                             <img
@@ -10686,18 +10641,18 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             )}
                           </div>
                           <div className="p-3">
-                            <h3 className="text-xs font-medium text-gray-800 mb-1 line-clamp-2 group-hover:text-red-500 transition-colors">
+                            <h3 className="text-xs font-medium text-gray-800 dark:text-neutral-200 mb-1 line-clamp-2 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors">
                               {otherListing.title}
                             </h3>
-                            <div className="text-sm font-semibold text-gray-900 mb-1">
+                            <div className="text-sm font-semibold text-gray-900 dark:text-neutral-50 mb-1">
                               {otherListing.price}
                             </div>
                             {otherListing.shipping && (
-                              <div className="text-xs text-gray-500 mb-1">
+                              <div className="text-xs text-gray-500 dark:text-neutral-400 mb-1">
                                 {otherListing.shipping}
                               </div>
                             )}
-                            <div className="flex items-center justify-between text-xs text-gray-500">
+                            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400">
                               <span>{otherListing.location}</span>
                               {otherListing.created_at && (
                                 <div className="flex items-center gap-1">
@@ -10713,12 +10668,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       ))}
                     </div>
                     {sellerListingsCount > sellerOtherListings.length && (
-                      <button
-                        onClick={() => navigate(`/seller/${seller?.user_number}`)}
-                        className="mt-4 text-red-500 hover:text-red-600 font-medium text-sm"
+                      <Link
+                        to={sellerPath}
+                        state={{ sellerProfile }}
+                        className="mt-4 text-red-500 hover:text-red-600 font-medium text-sm block"
                       >
                         {t.productDetail.allListings.replace('{count}', sellerListingsCount)} →
-                      </button>
+                      </Link>
                     )}
                   </div>
                 );
@@ -10729,26 +10685,21 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
             {/* Sağ Taraf - Satıcı Profili */}
             <div className="lg:col-span-1">
-              <div className={`bg-white rounded-lg shadow-lg p-6 sticky top-4 ${isMobile ? 'pb-24' : ''}`}>
+              <div className={`bg-white dark:bg-neutral-900 border border-transparent dark:border-white/5 rounded-lg shadow-lg p-6 sticky top-4 ${isMobile ? 'pb-24' : ''}`}>
                 {/* Satıcı Profil Bilgileri */}
-                <div className="flex flex-row items-start gap-4 mb-4 pb-4 border-b text-left">
+                <div className="flex flex-row items-start gap-4 mb-4 pb-4 border-b dark:border-white/5 text-left">
                   <div className="flex flex-col items-center gap-3 flex-shrink-0">
                     <div className="relative inline-block">
-                      <img
-                        key={seller.store_logo || seller.avatar_url || 'default-avatar'}
-                        src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.full_name || 'User') + '&background=ef4444&color=fff&size=200'}
-                        alt={seller.full_name}
-                        className="w-24 h-24 rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity border-4 border-gray-100 shadow-sm"
-                        onClick={() => {
-                          if (seller.is_pro || seller.is_commercial || (seller.subscription_tier && seller.subscription_tier !== 'free')) {
-                            navigate(`/store/${seller.id}`);
-                          } else {
-                            navigate(`/seller/${seller.user_number || sellerProfile?.user_number}`);
-                          }
-                        }}
-                      />
+                      <Link to={sellerPath} state={{ sellerProfile }}>
+                        <img
+                          key={seller.store_logo || seller.avatar_url || 'default-avatar'}
+                          src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.full_name || 'User') + '&background=ef4444&color=fff&size=200'}
+                          alt={seller.full_name}
+                          className="w-24 h-24 rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity border-4 border-gray-100 dark:border-neutral-800 shadow-sm"
+                        />
+                      </Link>
                       {seller.is_pro && (
-                        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full border-2 border-white shadow-lg z-10">
+                        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full border-2 border-white dark:border-neutral-900 shadow-lg z-10">
                           PRO
                         </div>
                       )}
@@ -10761,7 +10712,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         setFollowLoading(false);
                       }}
                       disabled={followLoading}
-                      className={`w-full py-1.5 px-3 rounded-lg text-[10px] font-bold transition-all border flex items-center justify-center gap-1.5 ${isSellerFollowed(listing.user_id) ? 'bg-green-50 border-green-500 text-green-700' : 'bg-gray-50 border-gray-200 text-gray-700 hovr:bg-gray-100'
+                      className={`w-full py-1.5 px-3 rounded-lg text-[10px] font-bold transition-all border flex items-center justify-center gap-1.5 ${isSellerFollowed(listing.user_id) ? 'bg-green-50 dark:bg-green-900/10 border-green-500 text-green-700 dark:text-green-400' : 'bg-gray-50 dark:bg-neutral-800 border-gray-200 dark:border-white/5 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
                         } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {followLoading ? (
@@ -10779,22 +10730,19 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
 
                   <div className="flex-1 min-w-0 pt-1">
-                    <div
-                      className="font-bold text-lg sm:text-xl text-gray-900 cursor-pointer hover:text-red-500 transition-colors mb-2 truncate"
-                      onClick={() => {
-                        if (seller.is_pro || seller.is_commercial || (seller.subscription_tier && seller.subscription_tier !== 'free')) {
-                          navigate(`/store/${seller.id}`);
-                        } else {
-                          navigate(`/seller/${seller.user_number || sellerProfile?.user_number}`);
-                        }
-                      }}
+                    <Link
+                      to={sellerPath}
+                      state={{ sellerProfile }}
+                      className="font-bold text-lg sm:text-xl text-gray-900 dark:text-neutral-50 cursor-pointer hover:text-red-500 transition-colors mb-2 flex items-center gap-1.5 truncate"
                     >
-                      {listing.contact_name || seller.full_name || t.productDetail.unknownSeller}
-                    </div>
+                      <span className="truncate">{listing.contact_name || seller.full_name || t.productDetail.unknownSeller}</span>
+                      <VerifiedBadge isVerified={seller.is_verified} size="sm" />
+                    </Link>
 
                     {/* City Location */}
+                    {/* City Location */}
                     {(listing.city || listing.address) && (
-                      <div className="flex items-center gap-1.5 mb-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-1.5 mb-2 text-sm text-gray-600 dark:text-neutral-400">
                         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -10809,13 +10757,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                     {/* Last Seen Indicator */}
                     <div className="flex items-center gap-1.5 mb-2 text-sm">
-                      <div className={`w-2 h-2 rounded-full ${seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                      <span className="font-bold text-gray-700">
+                      <div className={`w-2 h-2 rounded-full ${seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 ? 'bg-green-500 animate-pulse' : 'bg-gray-400 dark:bg-neutral-600'}`}></div>
+                      <span className="font-bold text-gray-700 dark:text-neutral-300">
                         {formatLastSeen(seller.last_seen)}
                       </span>
                     </div>
 
-                    <div className="text-xs text-gray-500 font-bold lowercase mb-2">
+                    <div className="text-xs text-gray-500 dark:text-neutral-400 font-bold lowercase mb-2">
                       {t.productDetail.memberSince} <span className="capitalize">{activeSinceDisplay}</span>
                     </div>
 
@@ -10837,7 +10785,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <button
                   type="button"
                   onClick={() => setShowMessageModal(true)}
-                  className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
+                  className="w-full border border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -10850,7 +10798,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   <button
                     type="button"
                     onClick={() => setShowPhone(true)}
-                    className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
+                    className="w-full border border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -10860,7 +10808,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 ) : (
                   <a
                     href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
-                    className="w-full border border-gray-300 hover:bg-green-50 hover:border-green-500 text-gray-700 hover:text-green-700 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
+                    className="w-full border border-gray-300 dark:border-white/10 hover:bg-green-50 dark:hover:bg-green-900/10 hover:border-green-500 text-gray-700 dark:text-neutral-300 hover:text-green-700 dark:hover:text-green-400 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -10871,14 +10819,17 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {/* Satıcının Diğer İlanlarına Hızlı Erişim */}
                 {sellerListingsCount > 0 && (
-                  <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                    {t.productDetail.moreListingsFrom.replace('{name}', seller.name)}
-                    <button
-                      onClick={() => navigate(`/seller/${listing.sellerId}`)}
-                      className="text-sm text-red-500 hover:text-red-600 font-medium"
+                  <div className="mb-4 p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5">
+                    <span className="text-gray-900 dark:text-neutral-50 block mb-1">
+                      {t.productDetail.moreListingsFrom.replace('{name}', seller.full_name || seller.name || t.productDetail.unknownSeller)}
+                    </span>
+                    <Link
+                      to={sellerPath}
+                      state={{ sellerProfile }}
+                      className="text-sm text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 font-medium block"
                     >
                       {t.productDetail.allListings.replace('{count}', '')} →
-                    </button>
+                    </Link>
                   </div>
                 )}
 
@@ -10892,9 +10843,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 />
 
                 {/* Teilen & Drucken - Hidden on mobile */}
-                <div className="mt-4 space-y-3 pt-4 border-t border-gray-100 no-print hidden sm:block">
+                <div className="mt-4 space-y-3 pt-4 border-t border-gray-100 dark:border-white/5 no-print hidden sm:block">
                   <div className="pt-2">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-1">{t.productDetail.share}</p>
+                    <p className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-3 px-1">{t.productDetail.share}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
@@ -10940,7 +10891,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             alert('Bağlantı panoya kopyalandı!');
                           });
                         }}
-                        className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg flex items-center justify-center hover:bg-gray-200 transition-all shadow-sm"
+                        className="flex-1 bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 py-2.5 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all shadow-sm"
                         title="Bağlantıyı Kopyala"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -10954,17 +10905,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       setPrintHideContact(false);
                       setTimeout(() => window.print(), 100);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/10 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-gray-700 dark:text-neutral-300"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9V2h12v7M6 18H5a2 2 0 01-2-2v-5h18v5a2 2 0 01-2 2h-1m-12 0h12v4H6v-4z" />
                     </svg>
                     {t.productDetail.printFlyer}
                   </button>
-
                   <button
                     onClick={() => setShowReportModal(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-gray-700"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/10 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800 transition-colors text-gray-700 dark:text-neutral-300"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
@@ -10973,32 +10923,30 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </button>
                 </div>
 
-                {/* Sicherheitstipps */}
-                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                {/* Sicherheitstipps - Moved back into the panel per user request */}
+                <div className="mt-6 pt-0 md:pt-6 border-t-0 md:border-t border-gray-100 dark:border-white/5">
                   <div className="flex items-start gap-2 mb-3">
-                    <span className="text-xl">💡</span>
-                    <h3 className="font-semibold text-gray-900">{t.productDetail.safetyTips}:</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-neutral-50">{t.productDetail.safetyTips}:</h3>
                   </div>
-                  <ul className="space-y-2 text-sm text-gray-700">
+                  <ul className="space-y-2 text-sm text-gray-700 dark:text-neutral-300">
                     <li className="flex items-start gap-2">
-                      <span className="text-yellow-600 mt-0.5">•</span>
+                      <span className="text-yellow-600 dark:text-yellow-500 mt-0.5">•</span>
                       <span>{t.productDetail.safetyTip1}</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-yellow-600 mt-0.5">•</span>
+                      <span className="text-yellow-600 dark:text-yellow-500 mt-0.5">•</span>
                       <span>{t.productDetail.safetyTip2}</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-yellow-600 mt-0.5">•</span>
+                      <span className="text-yellow-600 dark:text-yellow-500 mt-0.5">•</span>
                       <span>{t.productDetail.safetyTip3}</span>
                     </li>
                   </ul>
                 </div>
               </div>
+
             </div>
           </div>
-
-
 
           {/* Report Modal */}
           <ReportModal
@@ -11022,9 +10970,21 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           {/* Seller's Recent Listings */}
           {sellerRecentListings.length > 0 && (
             <div className="mt-12">
-              <h2 className="text-base md:text-xl font-bold text-gray-900 mb-6">
-                Bu Satıcının Diğer İlanları
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-neutral-50">
+                  Bu Satıcının Diğer İlanları
+                </h2>
+                <Link
+                  to={sellerPath}
+                  state={{ sellerProfile }}
+                  className="text-sm md:text-base text-red-600 hover:text-red-700 font-semibold transition-colors flex items-center gap-1"
+                >
+                  Tümünü Gör
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-6">
                 {sellerRecentListings.map(item => (
                   <ListingCard
@@ -11041,7 +11001,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           {/* Category Related Listings */}
           {categoryListings.length > 0 && (
             <div className="mt-12 mb-12">
-              <h2 className="text-base md:text-xl font-bold text-gray-900 mb-6">
+              <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-neutral-50 mb-6">
                 {listing?.category} Kategorisindeki Benzer İlanlar
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-6">
@@ -11058,7 +11018,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           )}
           {/* Mobile Sticky Contact Buttons */}
           {isMobile && !isOwnListing && (
-            <div className="fixed bottom-12 left-0 right-0 z-[100] bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 flex gap-3 pb-safe no-print">
+            <div className="fixed bottom-12 left-0 right-0 z-[100] bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-t border-gray-200 dark:border-white/10 p-4 flex gap-3 pb-safe no-print">
               <button
                 id="mobile-contact-message"
                 onClick={() => setShowMessageModal(true)}
@@ -11095,7 +11055,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             </div>
           )}
         </div>
-      </div >
+      </div>
     </>
   );
 };
@@ -11105,6 +11065,13 @@ export const AllCategories = ({ setSelectedCategory }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedCategories, setExpandedCategories] = useState([]);
+
+  const toggleCategory = (name) => {
+    setExpandedCategories(prev =>
+      prev.includes(name) ? prev.filter(c => c !== name) : [...prev, name]
+    );
+  };
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -11129,17 +11096,17 @@ export const AllCategories = ({ setSelectedCategory }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 py-8 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="medium" className="mb-4" />
-          <p className="text-gray-600">Kategoriler yükleniyor...</p>
+          <p className="text-gray-600 dark:text-neutral-400">Kategoriler yükleniyor...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-6">
           <button
@@ -11151,7 +11118,7 @@ export const AllCategories = ({ setSelectedCategory }) => {
             </svg>
             {t.common.backToHome}
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">{t.filters.allCategories}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-neutral-100">{t.filters.allCategories}</h1>
         </div>
 
         <CategoryGallery
@@ -11159,29 +11126,39 @@ export const AllCategories = ({ setSelectedCategory }) => {
           isFavorite={() => false}
         />
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.filter(c => c.name !== 'Tüm Kategoriler').map((category) => (
-              <div key={category.name} className="space-y-3">
+              <div key={category.name} className="space-y-3 bg-white dark:bg-neutral-800 p-5 rounded-2xl border border-gray-100 dark:border-white/5 hover:shadow-lg dark:hover:shadow-2xl/20 transition-all duration-300">
                 <h2
-                  onClick={() => navigate(getCategoryPath(category.name))}
-                  className="text-xl font-semibold text-gray-900 flex items-center justify-between border-b border-gray-100 pb-2 cursor-pointer hover:text-red-500 transition-colors"
+                  onClick={() => toggleCategory(category.name)}
+                  className="text-xl font-bold text-gray-900 dark:text-neutral-100 flex items-center justify-between border-b border-gray-50 dark:border-white/5 pb-3 cursor-pointer hover:text-red-500 dark:hover:text-red-400 transition-colors group"
                 >
                   <span className="flex-1">{getCategoryTranslation(category.name)}</span>
-                  <span className="text-sm font-normal text-gray-500">({category.count})</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-normal text-gray-400 dark:text-neutral-500">({category.count})</span>
+                    <svg className={`w-5 h-5 transition-transform duration-300 ${expandedCategories.includes(category.name) ? 'rotate-180 text-red-500' : 'text-gray-300 dark:text-neutral-600 group-hover:text-red-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </h2>
                 <ul className="space-y-2">
-                  {category.subcategories?.map((sub) => (
-                    <li key={sub.name}>
-                      <button
-                        onClick={() => navigate(getCategoryPath(category.name, sub.name))}
-                        className="text-gray-600 hover:text-red-500 hover:underline text-sm flex items-center justify-between w-full text-left"
-                      >
-                        <span>{getCategoryTranslation(sub.name)}</span>
-                        <span className="text-gray-400 text-xs">({sub.count})</span>
-                      </button>
-                    </li>
-                  ))}
+                  {[...(category.subcategories || [])]
+                    .sort((a, b) => (b.count || 0) - (a.count || 0))
+                    .map((sub) => (
+                      <li key={sub.name}>
+                        <button
+                          onClick={() => navigate(getCategoryPath(category.name, sub.name))}
+                          className="text-gray-600 dark:text-neutral-400 hover:text-red-500 dark:hover:text-red-400 hover:underline text-sm flex items-center justify-between w-full text-left py-1 group/sub"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-200 dark:bg-neutral-700 group-hover/sub:bg-red-200 dark:group-hover/sub:bg-red-900/40"></span>
+                            {getCategoryTranslation(sub.name)}
+                          </span>
+                          <span className="text-gray-400 dark:text-neutral-500 text-sm font-medium">({sub.count})</span>
+                        </button>
+                      </li>
+                    ))}
                 </ul>
               </div>
             ))}
@@ -11296,7 +11273,7 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
     : (seller.activeSince || '-');
 
   // Determine seller type label
-  const sellerTypeLabel = seller.seller_type === 'Gewerblicher Nutzer' ? t.addListing.commercial : t.addListing.private;
+  const sellerTypeLabel = seller.seller_type === 'Kurumsal Kullanıcı' ? t.addListing.commercial : t.addListing.private;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -11463,11 +11440,12 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
 
   const { sellerId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
-  const [seller, setSeller] = useState(null);
+  const [seller, setSeller] = useState(location.state?.sellerProfile || null);
   const [sellerListings, setSellerListings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!location.state?.sellerProfile);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(t.sellerProfile.all);
   const [activeTab, setActiveTab] = useState('listings');
@@ -11549,17 +11527,17 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
     ? sellerListings
     : sellerListings.filter(l => l.category === selectedCategory);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#FDFDFF]"><LoadingSpinner /></div>;
-  if (!seller) return <div className="min-h-screen flex items-center justify-center bg-[#FDFDFF]"><div className="text-neutral-400 font-bold">{t.sellerProfile.sellerNotFound}</div></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black"><LoadingSpinner /></div>;
+  if (!seller) return <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black"><div className="text-neutral-400 font-bold">{t.sellerProfile.sellerNotFound}</div></div>;
 
   return (
-    <div className="min-h-screen bg-[#FDFDFF]">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-black transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-8">
         <button
           onClick={() => navigate(-1)}
-          className="mb-8 group flex items-center gap-2 text-neutral-400 hover:text-red-500 transition-all duration-300 font-bold text-sm uppercase tracking-widest"
+          className="mb-8 group flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-red-500 dark:hover:text-red-400 transition-all duration-300 font-bold text-sm uppercase tracking-widest"
         >
-          <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-neutral-100 flex items-center justify-center group-hover:bg-red-50 group-hover:border-red-100 transition-all">
+          <div className="w-8 h-8 rounded-lg bg-white dark:bg-neutral-900 shadow-sm border border-neutral-100 dark:border-white/10 flex items-center justify-center group-hover:bg-red-50 dark:group-hover:bg-red-900/20 group-hover:border-red-100 dark:group-hover:border-red-900/30 transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -11569,47 +11547,65 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
-            <div className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-neutral-100/50 p-8 text-center relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-red-50 to-rose-50 opacity-40 -z-0"></div>
-              <div className="relative z-10">
+            <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-[0_2px_15px_rgb(0,0,0,0.03)] dark:shadow-none border border-neutral-200 dark:border-white/10 overflow-hidden group transition-all duration-300">
+              {/* Profile Header Background */}
+              <div className="h-32 bg-gradient-to-br from-neutral-50 to-neutral-200 dark:from-neutral-800 dark:to-neutral-950 relative">
+                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-white dark:from-neutral-900 to-transparent"></div>
+              </div>
+
+              <div className="px-8 pb-8 -mt-16 relative z-10 text-center">
                 <div className="mb-6 relative inline-block">
-                  <div className="absolute -inset-2 bg-gradient-to-tr from-red-500 to-rose-500 rounded-full opacity-10 group-hover:opacity-20 transition-opacity blur-md"></div>
-                  <img
-                    src={seller.store_logo || seller.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(seller.full_name || 'User')}&background=ef4444&color=fff&size=200`}
-                    alt={seller.full_name}
-                    className="w-28 h-28 rounded-2xl object-cover border-4 border-white mx-auto shadow-2xl relative z-10 group-hover:scale-[1.02] transition-transform duration-500"
-                  />
-                  {seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 && (
-                    <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full z-20 shadow-sm"></div>
+                  <div className="absolute -inset-1 bg-gradient-to-tr from-red-500 to-rose-500 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity blur-md"></div>
+                  {(seller.store_logo || seller.avatar_url) ? (
+                    <div className="relative">
+                      <img
+                        src={seller.store_logo || seller.avatar_url}
+                        alt={seller.full_name}
+                        className="w-32 h-32 rounded-xl object-cover border-4 border-white dark:border-neutral-800 mx-auto shadow-xl relative z-10 group-hover:scale-[1.02] transition-transform duration-500"
+                      />
+                      {seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 && (
+                        <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-4 border-white dark:border-neutral-900 rounded-full z-20 shadow-sm"></div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="w-32 h-32 rounded-xl border-4 border-white dark:border-neutral-900 mx-auto shadow-xl relative z-10 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-5xl font-black text-neutral-300">
+                      {seller.full_name?.charAt(0) || '?'}
+                    </div>
                   )}
                 </div>
-                <div className="mb-4">
-                  <h2 className="text-3xl font-display font-black text-neutral-900 tracking-tight leading-tight">
+
+                <div className="mb-6">
+                  <h2 className="text-3xl font-display font-black text-neutral-900 dark:text-neutral-50 tracking-tight leading-tight">
                     {seller.full_name || t.productDetail.unknownSeller}
                   </h2>
-                  <div className="flex items-center justify-center gap-2 mt-2">
-                    <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${(seller.sellerType || seller.seller_type) === 'Gewerblicher Nutzer'
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
-                      : 'bg-neutral-900 text-white shadow-lg shadow-neutral-100'
+                  <div className="flex items-center justify-center gap-2 mt-3">
+                    <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-[0.15em] ${(seller.sellerType || seller.seller_type) === 'Kurumsal Kullanıcı'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-neutral-900 dark:bg-neutral-800 text-white'
                       }`}>
-                      {(seller.sellerType || seller.seller_type) === 'Gewerblicher Nutzer' ? t.addListing.commercial : t.addListing.private}
+                      {(seller.sellerType || seller.seller_type) === 'Kurumsal Kullanıcı' ? t.addListing.commercial : t.addListing.private}
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col items-center gap-1 mb-6">
-                  <div className="flex items-center gap-2 text-sm font-bold text-neutral-500 uppercase tracking-tight">
+
+                <div className="flex flex-col items-center gap-2 mb-8">
+                  <div className="text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wide">
                     {formatLastSeen(seller.last_seen)}
                   </div>
-                  <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">{t.sellerProfile.memberSince} {seller.created_at ? new Date(seller.created_at).getFullYear() : 'N/A'}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-neutral-50/50 rounded-2xl p-4 border border-neutral-100 transition-colors hover:bg-white hover:border-red-100 group/stat">
-                    <div className="text-2xl font-black text-neutral-900 group-hover/stat:text-red-500 transition-colors">{sellerListings.length}</div>
-                    <div className="text-[10px] text-neutral-400 uppercase font-black tracking-widest">{t.sellerProfile.listings}</div>
+                  <div className="flex items-center gap-2 text-[10px] text-neutral-600 dark:text-neutral-400 font-bold uppercase tracking-widest">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    {t.sellerProfile.memberSince} {seller.created_at ? new Date(seller.created_at).getFullYear() : 'N/A'}
                   </div>
-                  <div className="bg-neutral-50/50 rounded-2xl p-4 border border-neutral-100 transition-colors hover:bg-white hover:border-red-100 group/stat">
-                    <div className="text-2xl font-black text-neutral-900 group-hover/stat:text-red-500 transition-colors">{followersCount}</div>
-                    <div className="text-[10px] text-neutral-400 uppercase font-black tracking-widest">{t.sellerProfile.followers}</div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mb-8">
+                  <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-lg p-3 border border-neutral-100 dark:border-white/5 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800 group/stat">
+                    <div className="text-xl font-black text-neutral-900 dark:text-neutral-100 mb-1">{sellerListings.length}</div>
+                    <div className="text-[9px] text-neutral-600 dark:text-neutral-400 uppercase font-bold tracking-widest">{t.sellerProfile.listings}</div>
+                  </div>
+                  <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-lg p-3 border border-neutral-100 dark:border-white/5 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800 group/stat">
+                    <div className="text-xl font-black text-neutral-900 dark:text-neutral-100 mb-1">{followersCount}</div>
+                    <div className="text-[9px] text-neutral-600 dark:text-neutral-400 uppercase font-bold tracking-widest">{t.sellerProfile.followers}</div>
                   </div>
                 </div>
                 {!isOwnProfile && (
@@ -11628,9 +11624,9 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                         setFollowLoading(false);
                       }}
                       disabled={followLoading}
-                      className={`w-full font-black py-4 px-6 rounded-2xl shadow-xl transition-all duration-300 flex items-center justify-center gap-3 transform active:scale-[0.98] ${isSellerFollowed(seller.id)
-                        ? 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                        : 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-red-200'
+                      className={`w-full font-black py-4 px-6 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 transform active:scale-[0.98] ${isSellerFollowed(seller.id)
+                        ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                        : 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-red-200 dark:shadow-none'
                         } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {followLoading ? <LoadingSpinner size="small" /> : (
@@ -11643,7 +11639,7 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                     </button>
                     <button
                       onClick={() => setShowMessageModal(true)}
-                      className="w-full bg-white border-2 border-neutral-100 hover:border-neutral-200 text-neutral-900 font-bold py-3.5 px-6 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2"
+                      className="w-full bg-white dark:bg-neutral-900 border-2 border-neutral-100 dark:border-white/10 hover:border-neutral-200 dark:hover:border-white/20 text-neutral-900 dark:text-neutral-100 font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
                     >
                       <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h0.01M12 10h0.01M16 10h0.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
                       {t.sellerProfile.message}
@@ -11652,8 +11648,8 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                 )}
 
                 {/* Profile Share Section Inside Card */}
-                <div className="mt-8 pt-8 border-t border-neutral-50 flex flex-col items-center">
-                  <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em] mb-4">{t.sellerProfile.shareProfile || 'Profili Paylaş'}</p>
+                <div className="mt-8 pt-8 border-t border-neutral-50 dark:border-white/5 flex flex-col items-center">
+                  <p className="text-[10px] text-neutral-600 dark:text-neutral-400 font-black uppercase tracking-[0.2em] mb-4">{t.sellerProfile.shareProfile || 'Profili Paylaş'}</p>
                   <div className="flex justify-center gap-3">
                     {[
                       { icon: <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>, color: 'bg-[#1877F2]', action: 'facebook' },
@@ -11672,7 +11668,7 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                             navigator.clipboard.writeText(url).then(() => alert('Link kopyalandı!'));
                           }
                         }}
-                        className={`w-9 h-9 ${social.color} text-white rounded-xl flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-neutral-200`}
+                        className={`w-9 h-9 ${social.color} text-white rounded-xl flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-neutral-200 dark:shadow-none`}
                       >
                         {social.icon}
                       </button>
@@ -11681,18 +11677,18 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-neutral-100/50 p-6">
-              <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em] mb-4">{t.sellerProfile.categories}</p>
+            <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-[0_2px_15px_rgb(0,0,0,0.03)] dark:shadow-none border border-neutral-200 dark:border-white/10 p-6">
+              <p className="text-[10px] text-neutral-600 dark:text-neutral-400 font-black uppercase tracking-[0.2em] mb-4">{t.sellerProfile.categories}</p>
               <nav className="space-y-1">
                 <button
                   onClick={() => setSelectedCategory(t.sellerProfile.all)}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === t.sellerProfile.all
-                    ? 'bg-red-50 text-red-600 font-black'
-                    : 'text-neutral-500 hover:bg-neutral-50 font-bold'
+                    ? 'bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-black'
+                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 font-bold'
                     }`}
                 >
                   <span className="text-sm font-bold">{t.sellerProfile.all}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${selectedCategory === t.sellerProfile.all ? 'bg-red-200 text-red-700' : 'bg-neutral-100 text-neutral-400'}`}>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${selectedCategory === t.sellerProfile.all ? 'bg-red-200 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'}`}>
                     {sellerListings.length}
                   </span>
                 </button>
@@ -11701,12 +11697,12 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                     key={catName}
                     onClick={() => setSelectedCategory(catName)}
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === catName
-                      ? 'bg-red-50 text-red-600 font-black'
-                      : 'text-neutral-500 hover:bg-neutral-50 font-bold'
+                      ? 'bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-black'
+                      : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 font-bold'
                       }`}
                   >
                     <span className="text-sm font-bold truncate pr-2">{catName}</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${selectedCategory === catName ? 'bg-red-200 text-red-700' : 'bg-neutral-100 text-neutral-400'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${selectedCategory === catName ? 'bg-red-200 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'}`}>
                       {count}
                     </span>
                   </button>
@@ -11718,34 +11714,29 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
           </div>
 
           <div className="lg:col-span-8 flex flex-col gap-8">
-            <div className="bg-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-neutral-100/50 p-2 flex gap-2">
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-none border border-neutral-200/60 dark:border-white/10 p-2 flex gap-2 overflow-x-auto no-scrollbar">
               {[
-                { id: 'listings', label: t.sellerProfile.listings, icon: '📦' },
-                { id: 'ratings', label: t.sellerProfile.reviews, icon: '⭐' },
-                ...(isOwnProfile ? [
-                  { id: 'following', label: t.sellerProfile.following, icon: '👥' },
-                  { id: 'settings', label: t.nav.settings, icon: '⚙️' }
-                ] : [])
+                { id: 'listings', label: t.sellerProfile.listings },
+                { id: 'ratings', label: t.sellerProfile.reviews },
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
-                    ? 'bg-neutral-900 text-white shadow-xl shadow-neutral-200'
-                    : 'text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50'
+                  className={`flex-1 flex items-center justify-center py-4 px-6 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === tab.id
+                    ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-lg shadow-neutral-200 dark:shadow-none'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                     }`}
                 >
-                  <span className="text-lg">{tab.icon}</span>
-                  <span className="hidden sm:inline">{tab.label}</span>
+                  {tab.label}
                 </button>
               ))}
             </div>
 
-            <div className="bg-white rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.03)] border border-neutral-100/50 p-4 sm:p-8 min-h-[600px]">
+            <div className={`${activeTab === 'listings' ? 'space-y-6' : 'bg-white dark:bg-neutral-900 rounded-xl shadow-[0_4px_25px_rgb(0,0,0,0.03)] dark:shadow-none border border-neutral-200 dark:border-white/10 p-4 sm:p-10'} min-h-[600px]`}>
               {activeTab === 'listings' && (
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between border-b border-neutral-50 pb-4">
-                    <h3 className="text-xl font-black text-neutral-900 uppercase tracking-tight">
+                  <div className="flex items-center justify-between border-b border-neutral-200 dark:border-white/10 pb-4">
+                    <h3 className="text-xl font-black text-neutral-900 dark:text-neutral-100 uppercase tracking-tight">
                       {selectedCategory === t.sellerProfile.all ? t.sellerProfile.activeListings : selectedCategory}
                     </h3>
                   </div>
@@ -11764,8 +11755,8 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                       ))
                     ) : (
                       <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200 mb-4 text-4xl">📭</div>
-                        <p className="text-neutral-400 font-bold">{t.sellerProfile.listingsNotFound || 'Henüz ilan bulunmuyor.'}</p>
+                        <div className="w-20 h-20 bg-neutral-50 dark:bg-neutral-800 rounded-full flex items-center justify-center text-neutral-300 dark:text-neutral-600 mb-4 text-4xl">📭</div>
+                        <p className="text-neutral-600 dark:text-neutral-400 font-bold">{t.sellerProfile.listingsNotFound || 'Henüz ilan bulunmuyor.'}</p>
                       </div>
                     )}
                   </div>
@@ -11774,18 +11765,18 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
 
               {activeTab === 'ratings' && (
                 <div className="space-y-10">
-                  <div className="bg-neutral-50/50 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-12 border border-neutral-100">
+                  <div className="bg-neutral-50/50 dark:bg-neutral-800/50 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-12 border border-neutral-100 dark:border-white/5">
                     <div className="text-center">
-                      <div className="text-7xl font-black text-neutral-900 leading-none mb-2">
+                      <div className="text-7xl font-black text-neutral-900 dark:text-neutral-100 leading-none mb-2">
                         {averageRating.average}
-                        <span className="text-2xl text-neutral-300 font-normal ml-2">/ 5</span>
+                        <span className="text-2xl text-neutral-300 dark:text-neutral-600 font-normal ml-2">/ 5</span>
                       </div>
                       <div className="flex items-center justify-center gap-1 mb-4 text-2xl">
                         {[1, 2, 3, 4, 5].map((s) => (
-                          <span key={s} className={`${s <= Math.round(averageRating.average) ? 'text-yellow-400' : 'text-neutral-200'}`}>★</span>
+                          <span key={s} className={`${s <= Math.round(averageRating.average) ? 'text-yellow-400' : 'text-neutral-200 dark:text-neutral-700'}`}>★</span>
                         ))}
                       </div>
-                      <div className="inline-block px-4 py-1 bg-white rounded-full text-[10px] font-black text-neutral-400 uppercase tracking-widest border border-neutral-100">
+                      <div className="inline-block px-4 py-1 bg-white dark:bg-neutral-800 rounded-full text-[10px] font-black text-neutral-600 dark:text-neutral-400 uppercase tracking-widest border border-neutral-100 dark:border-white/5">
                         {averageRating.count} {t.sellerProfile.reviews}
                       </div>
                     </div>
@@ -11795,17 +11786,17 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                         const percentage = averageRating.count > 0 ? (count / averageRating.count) * 100 : 0;
                         return (
                           <div key={star} className="flex items-center gap-4 group">
-                            <span className="text-xs font-black text-neutral-400 w-12 tracking-tighter uppercase group-hover:text-neutral-900 transition-colors">{star} Yıldız</span>
-                            <div className="flex-1 h-3 bg-white rounded-full overflow-hidden border border-neutral-100 shadow-inner">
+                            <span className="text-xs font-black text-neutral-600 dark:text-neutral-400 w-12 tracking-tighter uppercase group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors">{star} Yıldız</span>
+                            <div className="flex-1 h-3 bg-white dark:bg-neutral-800 rounded-full overflow-hidden border border-neutral-100 dark:border-white/5 shadow-inner">
                               <div className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full group-hover:from-red-500 group-hover:to-rose-500 transition-all duration-500" style={{ width: `${percentage}%` }} />
                             </div>
-                            <span className="text-xs font-black text-neutral-300 w-8 text-right group-hover:text-neutral-900 transition-colors">{count}</span>
+                            <span className="text-xs font-black text-neutral-400 dark:text-neutral-500 w-8 text-right group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors">{count}</span>
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                  <div className="divide-y divide-neutral-50">
+                  <div className="divide-y divide-neutral-50 dark:divide-white/5">
                     {ratings.length > 0 ? (
                       ratings.map((review) => (
                         <div key={review.id} className="py-8 first:pt-0 group">
@@ -11813,46 +11804,29 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                             <img
                               src={review.rater?.avatar_url || review.rater?.store_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.rater?.full_name || 'U')}&background=f3f4f6&color=4b5563&bold=true`}
                               alt={review.rater?.full_name}
-                              className="w-14 h-14 rounded-2xl object-cover shadow-sm border border-neutral-100 flex-shrink-0"
+                              className="w-14 h-14 rounded-2xl object-cover shadow-sm border border-neutral-100 dark:border-white/10 flex-shrink-0"
                             />
                             <div className="flex-1">
                               <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                                <h5 className="font-black text-neutral-900 tracking-tight">{review.rater?.full_name}</h5>
-                                <span className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
+                                <h5 className="font-black text-neutral-900 dark:text-neutral-100 tracking-tight">{review.rater?.full_name}</h5>
+                                <span className="text-[10px] font-black text-neutral-500 dark:text-neutral-500 uppercase tracking-widest">{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
                               </div>
                               <div className="flex items-center gap-1 mb-3">
                                 {[1, 2, 3, 4, 5].map((star) => (
-                                  <span key={star} className={`text-sm ${star <= review.rating ? 'text-yellow-400' : 'text-neutral-200'}`}>★</span>
+                                  <span key={star} className={`text-sm ${star <= review.rating ? 'text-yellow-400' : 'text-neutral-200 dark:text-neutral-700'}`}>★</span>
                                 ))}
                               </div>
-                              {review.comment && <p className="text-neutral-600 text-sm italic">"{review.comment}"</p>}
+                              {review.comment && <p className="text-neutral-700 dark:text-neutral-300 text-sm italic">"{review.comment}"</p>}
                             </div>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-20 bg-neutral-50 rounded-[2rem] border-2 border-dashed border-neutral-100">
-                        <p className="text-neutral-400 font-bold uppercase tracking-widest text-sm">{t.sellerProfile.noRatingsYet}</p>
+                      <div className="text-center py-20 bg-neutral-50 dark:bg-neutral-800/50 rounded-[2rem] border-2 border-dashed border-neutral-100 dark:border-white/5">
+                        <p className="text-neutral-600 dark:text-neutral-400 font-bold uppercase tracking-widest text-sm">{t.sellerProfile.noRatingsYet}</p>
                       </div>
                     )}
                   </div>
-                </div>
-              )}
-
-              {isOwnProfile && activeTab === 'following' && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200 mb-4 text-4xl">👥</div>
-                  <h3 className="text-xl font-black text-neutral-900 mb-4">Takip Ettiklerim</h3>
-                  <p className="text-neutral-400 font-bold mb-6">Bu özellik henüz geliştirilme aşamasındadır.</p>
-                  <button onClick={() => navigate('/following')} className="px-8 py-3 bg-neutral-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Takip Ettiklerime Git</button>
-                </div>
-              )}
-
-              {isOwnProfile && activeTab === 'settings' && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200 mb-4 text-4xl">⚙️</div>
-                  <h3 className="text-xl font-black text-neutral-900 mb-4">Profil Ayarları</h3>
-                  <button onClick={() => navigate('/settings')} className="px-8 py-3 bg-neutral-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Ayarlara Git</button>
                 </div>
               )}
             </div>
@@ -11873,20 +11847,18 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
 // Footer Component
 export const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 pt-12 pb-8 mt-16">
+    <footer className="bg-gray-900 dark:bg-neutral-950 text-gray-300 dark:text-neutral-400 pt-12 pb-8 mt-16 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
           {/* ExVitrin */}
           <div>
             <h3 className="text-white font-semibold mb-4">ExVitrin</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="/hakkimizda" className="hover:text-white transition-colors">{t.footer.aboutUs}</a></li>
-
-              <li><a href="/mobile-apps" className="hover:text-white transition-colors">{t.footer.mobileApps}</a></li>
-              <li><a href="/hayvan-haklari-ve-yasal-uyari" className="hover:text-white transition-colors">{t.footer.animalLawLink}</a></li>
-              <li><a href="/emlak-ilanlari-yasal-uyari" className="hover:text-white transition-colors">{t.footer.realEstateLawLink}</a></li>
-              <li><a href="/vasita-ilanlari-yasal-uyari" className="hover:text-white transition-colors">{t.footer.vehicleLawLink}</a></li>
-              <li><a href="/iletisim" className="text-red-400 hover:text-red-300 font-semibold transition-colors mt-2 inline-block">📞 {t.contact.title}</a></li>
+              <li><a href="/hakkimizda" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.aboutUs}</a></li>
+              <li><a href="/mobile-apps" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.mobileApps}</a></li>
+              <li><a href="/yasal-uyarilar" className="hover:text-white dark:hover:text-neutral-50 transition-colors font-semibold">Yasal Uyarı</a></li>
+              <li><a href="/cerez-politikasi" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Çerez Politikası</a></li>
+              <li><a href="/iletisim" className="text-red-400 hover:text-red-300 font-semibold transition-colors mt-2 inline-block">{t.contact.title}</a></li>
             </ul>
           </div>
 
@@ -11896,8 +11868,8 @@ export const Footer = () => {
             <h3 className="text-white font-semibold mb-4">{t.footer.forCompanies}</h3>
             <ul className="space-y-2 text-sm">
 
-              <li><a href="/packages" className="hover:text-white transition-colors">{t.footer.proPackages}</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">{t.footer.advertising}</a></li>
+              <li><a href="/packages" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.proPackages}</a></li>
+              <li><a href="#" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.advertising}</a></li>
             </ul>
           </div>
 
@@ -11917,13 +11889,13 @@ export const Footer = () => {
             {/* Social Media Icons */}
             <div className="flex gap-4">
               {/* Facebook */}
-              <a href="https://facebook.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Facebook">
+              <a href="https://facebook.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 dark:text-neutral-500 hover:text-white dark:hover:text-neutral-50 transition-colors" title="Facebook">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
               </a>
               {/* Instagram */}
-              <a href="https://instagram.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" title="Instagram">
+              <a href="https://instagram.com/exvitrin" target="_blank" rel="noopener noreferrer" className="text-gray-400 dark:text-neutral-500 hover:text-white dark:hover:text-neutral-50 transition-colors" title="Instagram">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2.163c3.204 0 3.584 0.012 4.85 0.07 3.252 0.148 4.771 1.691 4.919 4.919 0.058 1.265 0.069 1.645 0.069 4.849 0 3.205-0.012 3.584-0.069 4.849-0.149 3.225-1.664 4.771-4.919 4.919-1.266 0.058-1.644 0.07-4.85 0.07-3.204 0-3.584-0.012-4.849-0.07-3.26-0.149-4.771-1.699-4.919-4.92-0.058-1.265-0.07-1.644-0.07-4.849 0-3.204 0.013-3.583 0.07-4.849 0.149-3.227 1.664-4.771 4.919-4.919 1.266-0.057 1.645-0.069 4.849-0.069zm0-2.163c-3.259 0-3.667 0.014-4.947 0.072-4.358 0.2-6.78 2.618-6.98 6.98-0.059 1.281-0.073 1.689-0.073 4.948 0 3.259 0.014 3.668 0.072 4.948 0.2 4.358 2.618 6.78 6.98 6.98 1.281 0.058 1.689 0.072 4.948 0.072 3.259 0 3.668-0.014 4.948-0.072 4.354-0.2 6.782-2.618 6.979-6.98 0.059-1.28 0.073-1.689 0.073-4.948 0-3.259-0.014-3.667-0.072-4.947-0.196-4.354-2.617-6.78-6.979-6.98-1.281-0.059-1.69-0.073-4.949-0.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-0.796 0-1.441 0.645-1.441 1.44s0.645 1.44 1.441 1.44c0.795 0 1.439-0.645 1.439-1.44s-0.644-1.44-1.439-1.44z" />
                 </svg>
@@ -12023,13 +11995,13 @@ const ShareModal = ({ isOpen, onClose, url, title }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-start justify-end p-4 bg-black/20 backdrop-blur-[2px]" onClick={onClose}>
+    <div className="fixed inset-0 z-[1000] flex items-start justify-end p-4 bg-black/20 dark:bg-black/40 backdrop-blur-[2px]" onClick={onClose}>
       <div
-        className="bg-white w-64 rounded-2xl overflow-hidden shadow-2xl transition-all mt-16 animate-in slide-in-from-top-4 duration-200"
+        className="bg-white dark:bg-neutral-900 w-64 rounded-2xl overflow-hidden shadow-2xl transition-all mt-16 animate-in slide-in-from-top-4 duration-200 border border-transparent dark:border-white/5"
         onClick={e => e.stopPropagation()}
       >
-        <div className="p-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-          <h3 className="text-sm font-bold text-gray-900">İlanı Paylaş</h3>
+        <div className="p-3 border-b border-gray-100 dark:border-white/5 flex items-center justify-between bg-gray-50/50 dark:bg-neutral-950/50">
+          <h3 className="text-sm font-bold text-gray-900 dark:text-neutral-50">İlanı Paylaş</h3>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
             <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -12042,7 +12014,7 @@ const ShareModal = ({ isOpen, onClose, url, title }) => {
               <div className={`${opt.color} w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0`}>
                 {React.cloneElement(opt.icon, { className: 'w-4 h-4 fill-currentColor' })}
               </div>
-              <span className="text-[11px] font-bold text-gray-700 leading-tight">{opt.name}</span>
+              <span className="text-[11px] font-bold text-gray-700 dark:text-neutral-300 leading-tight">{opt.name}</span>
             </button>
           ))}
         </div>
@@ -12064,11 +12036,11 @@ export const ReportModal = ({ isOpen, onClose, onSubmit, reason, setReason, desc
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-xl max-w-md w-full border border-transparent dark:border-white/5">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">{t.productDetail.reportTitle}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50">{t.productDetail.reportTitle}</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -12081,13 +12053,13 @@ export const ReportModal = ({ isOpen, onClose, onSubmit, reason, setReason, desc
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-400 mb-2">
                 {t.productDetail.reportReasonTitle}
               </label>
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-neutral-50 focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               >
                 <option value="">{t.productDetail.pleaseChoose}</option>
@@ -12100,7 +12072,7 @@ export const ReportModal = ({ isOpen, onClose, onSubmit, reason, setReason, desc
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-400 mb-2">
                 {t.productDetail.reportDescriptionLabel}
               </label>
               <textarea

@@ -2,17 +2,17 @@ import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
 
-const VertriebEinkaufVerkaufPage = ({ toggleFavorite, isFavorite }) => {
+const SalesPurchasingMarketingPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
         jobType: {
-            label: 'Tür',
+            label: 'Meslek',
             type: 'multiselect',
             options: [
-                { value: 'Buchhalter/-in', label: 'Muhasebeci' },
-                { value: 'Immobilienmakler/-in', label: 'Emlak Danışmanı' },
-                { value: 'Kaufmann/-frau', label: 'Ticari Eleman' },
-                { value: 'Verkäufer/-in', label: 'Satış Elemanı' },
-                { value: 'Weitere Berufe', label: 'Diğer Meslekler' }
+                { value: 'Muhasebeci', label: 'Muhasebeci' },
+                { value: 'Emlak Danışmanı', label: 'Emlak Danışmanı' },
+                { value: 'Tüccar', label: 'Tüccar' },
+                { value: 'Satış Temsilcisi', label: 'Satış Temsilcisi' },
+                { value: 'Diğer Meslekler', label: 'Diğer Meslekler' }
             ],
             field: 'vertrieb_einkauf_verkauf_art'
         },
@@ -20,8 +20,8 @@ const VertriebEinkaufVerkaufPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Çalışma Süresi',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' }
             ],
             field: 'working_time'
         },
@@ -34,8 +34,8 @@ const VertriebEinkaufVerkaufPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -43,8 +43,8 @@ const VertriebEinkaufVerkaufPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },
@@ -75,4 +75,4 @@ const VertriebEinkaufVerkaufPage = ({ toggleFavorite, isFavorite }) => {
     );
 };
 
-export default VertriebEinkaufVerkaufPage;
+export default SalesPurchasingMarketingPage;

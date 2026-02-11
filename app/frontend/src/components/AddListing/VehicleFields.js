@@ -11,27 +11,27 @@ export const VehicleFields = ({
     selectedBikeType,
     setSelectedBikeType,
     // Auto/Moto/Van Shared
-    marke,
-    setMarke,
-    getriebe,
-    setGetriebe,
-    kilometerstand,
-    setKilometerstand,
-    erstzulassung,
-    setErstzulassung,
-    leistung,
-    setLeistung,
+    brand,
+    setBrand,
+    transmission,
+    setTransmission,
+    mileage,
+    setMileage,
+    firstRegistration,
+    setFirstRegistration,
+    power,
+    setPower,
     // Auto Specific
     selectedCarBrand,
     setSelectedCarBrand,
     selectedCarModel,
     setSelectedCarModel,
-    erstzulassungMonat,
-    setErstzulassungMonat,
-    kraftstoff,
-    setKraftstoff,
-    selectedFahrzeugtyp,
-    setSelectedFahrzeugtyp,
+    firstRegistrationMonth,
+    setFirstRegistrationMonth,
+    fuel,
+    setFuel,
+    selectedVehicleType,
+    setSelectedVehicleType,
     selectedDoorCount,
     setSelectedDoorCount,
     selectedExteriorColor,
@@ -40,23 +40,23 @@ export const VehicleFields = ({
     setSelectedInteriorMaterial,
     selectedEmissionBadge,
     setSelectedEmissionBadge,
-    selectedSchadstoffklasse,
-    setSelectedSchadstoffklasse,
-    selectedHU,
-    setSelectedHU,
-    isUnfallfrei,
-    setIsUnfallfrei,
-    isScheckheftgepflegt,
-    setIsScheckheftgepflegt,
-    isNichtraucher,
-    setIsNichtraucher,
+    selectedEmissionClass,
+    setSelectedEmissionClass,
+    selectedInspection,
+    setSelectedInspection,
+    isAccidentFree,
+    setIsAccidentFree,
+    isFullServiceHistory,
+    setIsFullServiceHistory,
+    isNonSmoking,
+    setIsNonSmoking,
     selectedCarAmenities,
     setSelectedCarAmenities,
     // Moto specific
     selectedMotorradArt,
     setSelectedMotorradArt,
-    hubraum,
-    setHubraum,
+    displacement,
+    setDisplacement,
     // Boat specific
     selectedBooteArt,
     setSelectedBooteArt,
@@ -77,14 +77,14 @@ export const VehicleFields = ({
             {/* Bike-specific fields */}
             {subCategory.startsWith('Bisiklet') && (
                 <div className="mt-4">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.productDetail.details}</h2>
+                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">{t.productDetail.details}</h2>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.art} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art} *</label>
                             <select
                                 value={selectedBikeArt}
                                 onChange={(e) => setSelectedBikeArt(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Kadın">{t.addListing.genders.female}</option>
@@ -95,11 +95,11 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.art} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art} *</label>
                             <select
                                 value={selectedBikeType}
                                 onChange={(e) => setSelectedBikeType(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="BMX">BMX</option>
@@ -123,12 +123,12 @@ export const VehicleFields = ({
             {/* Art Selection for Autoteile & Reifen */}
             {category === 'Otomobil, Bisiklet & Tekne' && subCategory.startsWith('Oto Parça') && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedAutoteileArt}
                         onChange={(e) => setSelectedAutoteileArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Araç Ses Sistemi & Navigasyon">{t.addListing.vehicles.types.audioNav}</option>
@@ -144,12 +144,12 @@ export const VehicleFields = ({
             {/* Art Selection for Boote & Bootszubehör */}
             {category === 'Otomobil, Bisiklet & Tekne' && subCategory.startsWith('Tekne') && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedBooteArt}
                         onChange={(e) => setSelectedBooteArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Motorlu Tekneler">{t.addListing.vehicles.types.motorBoats}</option>
@@ -169,12 +169,12 @@ export const VehicleFields = ({
             {category === 'Otomobil, Bisiklet & Tekne' && subCategory.startsWith('Motosiklet') && !subCategory.startsWith('Motosiklet Parça') && (
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                         <select
                             value={selectedMotorradArt}
                             onChange={(e) => setSelectedMotorradArt(e.target.value)}
                             required
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             <option value="Moped & Scooter">{t.addListing.vehicles.types.mopedScooter}</option>
@@ -187,11 +187,11 @@ export const VehicleFields = ({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.marke}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.brand}</label>
                             <select
-                                value={marke}
-                                onChange={(e) => setMarke(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                                value={brand}
+                                onChange={(e) => setBrand(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 {[
@@ -205,11 +205,11 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.getriebe}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.transmissionType}</label>
                             <select
-                                value={getriebe}
-                                onChange={(e) => setGetriebe(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                                value={transmission}
+                                onChange={(e) => setTransmission(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Otomatik">{t.addListing.vehicles.types.automatic}</option>
@@ -221,21 +221,21 @@ export const VehicleFields = ({
 
                     <div className="grid grid-cols-3 gap-4 mt-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.mileage}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.mileage}</label>
                             <input
                                 type="number"
-                                value={kilometerstand}
-                                onChange={(e) => setKilometerstand(e.target.value)}
+                                value={mileage}
+                                onChange={(e) => setMileage(e.target.value)}
                                 placeholder={t.addListing.vehicles.mileagePlaceholder}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.firstRegistration}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.firstRegistration}</label>
                             <select
-                                value={erstzulassung}
-                                onChange={(e) => setErstzulassung(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                                value={firstRegistration}
+                                onChange={(e) => setFirstRegistration(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map(year => (
@@ -244,13 +244,13 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.displacement}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.displacement}</label>
                             <input
                                 type="text"
-                                value={hubraum}
-                                onChange={(e) => setHubraum(e.target.value)}
+                                value={displacement}
+                                onChange={(e) => setDisplacement(e.target.value)}
                                 placeholder="örn. 600"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     </div>
@@ -260,12 +260,12 @@ export const VehicleFields = ({
             {/* Art Selection for Motorradteile & Zubehör */}
             {category === 'Otomobil, Bisiklet & Tekne' && subCategory.startsWith('Motosiklet Parça') && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedMotorradteileArt}
                         onChange={(e) => setSelectedMotorradteileArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Yedek Parça & Onarım">{t.addListing.vehicles.types.spareParts}</option>
@@ -278,12 +278,12 @@ export const VehicleFields = ({
             {/* Art Selection for Nutzfahrzeuge & Anhänger */}
             {category === 'Otomobil, Bisiklet & Tekne' && subCategory.startsWith('Ticari Araç') && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedNutzfahrzeugeArt}
                         onChange={(e) => setSelectedNutzfahrzeugeArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Tarım Araçları">{t.addListing.vehicles.types.agriculturalVehicles}</option>
@@ -304,16 +304,16 @@ export const VehicleFields = ({
             {/* Art Selection for Wohnwagen & -mobile */}
             {category === 'Otomobil, Bisiklet & Tekne' && subCategory.startsWith('Karavan') && (
                 <div className="space-y-5">
-                    <h2 className="text-lg font-semibold text-gray-900">{t.addListing.vehicles.vehicleDetails}</h2>
+                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{t.addListing.vehicles.vehicleDetails}</h2>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">Tür *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">Tür *</label>
                             <select
                                 value={selectedWohnwagenArt}
                                 onChange={(e) => setSelectedWohnwagenArt(e.target.value)}
                                 required
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Alkoven">Alkoven</option>
@@ -326,11 +326,11 @@ export const VehicleFields = ({
                         </div>
 
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.marke} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.brand} *</label>
                             <select
-                                value={marke}
-                                onChange={(e) => setMarke(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                                value={brand}
+                                onChange={(e) => setBrand(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 {[
@@ -348,18 +348,18 @@ export const VehicleFields = ({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.firstRegistration} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.firstRegistration} *</label>
                             <div className="grid grid-cols-2 gap-2">
-                                <select className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white">
+                                <select className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none">
                                     <option value="">Ay</option>
                                     {Array.from({ length: 12 }, (_, i) => (
                                         <option key={i + 1} value={i + 1}>{String(i + 1).padStart(2, '0')}</option>
                                     ))}
                                 </select>
                                 <select
-                                    value={erstzulassung}
-                                    onChange={(e) => setErstzulassung(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                                    value={firstRegistration}
+                                    onChange={(e) => setFirstRegistration(e.target.value)}
+                                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                                 >
                                     <option value="">Yıl</option>
                                     {Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i).map(year => (
@@ -369,26 +369,26 @@ export const VehicleFields = ({
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">Kilometre *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">Kilometre *</label>
                             <input
                                 type="text"
-                                value={kilometerstand}
-                                onChange={(e) => setKilometerstand(e.target.value)}
+                                value={mileage}
+                                onChange={(e) => setMileage(e.target.value)}
                                 placeholder="örn. 50000"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.power} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.power} *</label>
                             <input
                                 type="text"
-                                value={leistung}
-                                onChange={(e) => setLeistung(e.target.value)}
+                                value={power}
+                                onChange={(e) => setPower(e.target.value)}
                                 placeholder="örn. 140"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     </div>
@@ -397,20 +397,20 @@ export const VehicleFields = ({
 
             {/* Auto specific fields */}
             {subCategory === 'Otomobiller' && (
-                <div className="space-y-5 pt-5 border-t border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">{t.addListing.vehicles.vehicleDetails}</h2>
+                <div className="space-y-5 pt-5 border-t border-neutral-200 dark:border-white/10">
+                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{t.addListing.vehicles.vehicleDetails}</h2>
 
                     {/* Basic Auto Info */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.marke} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.brand} *</label>
                             <select
                                 value={selectedCarBrand}
                                 onChange={(e) => {
                                     setSelectedCarBrand(e.target.value);
                                     setSelectedCarModel(''); // Reset model when brand changes
                                 }}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 {carBrands.map((brand) => (
@@ -421,12 +421,12 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.model} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.model} *</label>
                             <select
                                 value={selectedCarModel}
                                 onChange={(e) => setSelectedCarModel(e.target.value)}
                                 disabled={!selectedCarBrand}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none disabled:bg-neutral-50 dark:disabled:bg-neutral-900 disabled:cursor-not-allowed"
                             >
                                 <option value="">
                                     {selectedCarBrand ? t.productDetail.pleaseChoose : t.addListing.vehicles.selectBrandFirst}
@@ -442,11 +442,11 @@ export const VehicleFields = ({
 
                     <div className="grid grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.firstRegistration} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.firstRegistration} *</label>
                             <select
-                                value={erstzulassungMonat}
-                                onChange={(e) => setErstzulassungMonat(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                value={firstRegistrationMonth}
+                                onChange={(e) => setFirstRegistrationMonth(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.addListing.vehicles.month}</option>
                                 {Array.from({ length: 12 }, (_, i) => (
@@ -455,11 +455,11 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">&nbsp;</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">&nbsp;</label>
                             <select
-                                value={erstzulassung}
-                                onChange={(e) => setErstzulassung(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                value={firstRegistration}
+                                onChange={(e) => setFirstRegistration(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.addListing.vehicles.year}</option>
                                 {Array.from({ length: 50 }, (_, i) => {
@@ -469,34 +469,34 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.mileage} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.mileage} *</label>
                             <input
                                 type="number"
-                                value={kilometerstand}
-                                onChange={(e) => setKilometerstand(e.target.value)}
+                                value={mileage}
+                                onChange={(e) => setMileage(e.target.value)}
                                 placeholder={t.addListing.vehicles.mileagePlaceholder}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.power} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.power} *</label>
                             <input
                                 type="number"
-                                value={leistung}
-                                onChange={(e) => setLeistung(e.target.value)}
+                                value={power}
+                                onChange={(e) => setPower(e.target.value)}
                                 placeholder={t.addListing.vehicles.powerPlaceholder}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.fuel} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.fuel} *</label>
                             <select
-                                value={kraftstoff}
-                                onChange={(e) => setKraftstoff(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                value={fuel}
+                                onChange={(e) => setFuel(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Benzin">{t.addListing.vehicles.types.petrol}</option>
@@ -512,11 +512,11 @@ export const VehicleFields = ({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.getriebe} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.transmissionType} *</label>
                             <select
-                                value={getriebe}
-                                onChange={(e) => setGetriebe(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                value={transmission}
+                                onChange={(e) => setTransmission(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Manuel">{t.addListing.vehicles.types.manual}</option>
@@ -524,11 +524,11 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.vehicleType} *</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.vehicleType} *</label>
                             <select
-                                value={selectedFahrzeugtyp}
-                                onChange={(e) => setSelectedFahrzeugtyp(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                value={selectedVehicleType}
+                                onChange={(e) => setSelectedVehicleType(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Kleinwagen">{t.addListing.vehicles.types.smallCar}</option>
@@ -543,27 +543,13 @@ export const VehicleFields = ({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">Kapı Sayısı</label>
-                            <select
-                                value={selectedDoorCount}
-                                onChange={(e) => setSelectedDoorCount(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
-                            >
-                                <option value="">{t.productDetail.pleaseChoose}</option>
-                                <option>2/3</option>
-                                <option>4/5</option>
-                                <option>6/7</option>
-                                <option value="Andere">{t.addListing.vehicles.types.other}</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.exteriorColor}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.exteriorColor}</label>
                             <select
                                 value={selectedExteriorColor}
                                 onChange={(e) => setSelectedExteriorColor(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Schwarz">{t.addListing.colors.black}</option>
@@ -583,11 +569,11 @@ export const VehicleFields = ({
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.interiorMaterial}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.interiorMaterial}</label>
                             <select
                                 value={selectedInteriorMaterial}
                                 onChange={(e) => setSelectedInteriorMaterial(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Vollleder">Tam Deri</option>
@@ -600,87 +586,55 @@ export const VehicleFields = ({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.emissionBadge}</label>
-                            <select
-                                value={selectedEmissionBadge}
-                                onChange={(e) => setSelectedEmissionBadge(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
-                            >
-                                <option value="">{t.productDetail.pleaseChoose}</option>
-                                <option value="4 (Grün)">4 (Yeşil)</option>
-                                <option value="3 (Gelb)">3 (Sarı)</option>
-                                <option value="2 (Rot)">2 (Kırmızı)</option>
-                                <option value="1 (Keine)">1 (Yok)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.emissionClass}</label>
-                            <select
-                                value={selectedSchadstoffklasse}
-                                onChange={(e) => setSelectedSchadstoffklasse(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
-                            >
-                                <option value="">{t.productDetail.pleaseChoose}</option>
-                                <option>Euro6</option>
-                                <option>Euro5</option>
-                                <option>Euro4</option>
-                                <option>Euro3</option>
-                                <option>Euro2</option>
-                                <option>Euro1</option>
-                            </select>
-                        </div>
-                    </div>
 
                     <div>
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.vehicles.hu}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.inspection}</label>
                         <input
                             type="month"
-                            value={selectedHU}
-                            onChange={(e) => setSelectedHU(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                            value={selectedInspection}
+                            onChange={(e) => setSelectedInspection(e.target.value)}
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm text-gray-600 mb-2">{t.addListing.vehicles.vehicleCondition}</label>
-                        <div className="flex gap-4">
-                            <label className="flex items-center gap-2">
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.vehicleCondition}</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <label className="flex items-center gap-3 text-sm font-bold text-neutral-700 dark:text-neutral-300 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all border border-transparent hover:border-red-500/20">
                                 <input
                                     type="checkbox"
-                                    checked={isUnfallfrei}
-                                    onChange={(e) => setIsUnfallfrei(e.target.checked)}
-                                    className="text-red-500 focus:ring-red-300 rounded"
+                                    checked={isAccidentFree}
+                                    onChange={(e) => setIsAccidentFree(e.target.checked)}
+                                    className="w-5 h-5 text-red-500 focus:ring-red-500/20 rounded-lg dark:bg-neutral-900 dark:border-neutral-700 transition-all"
                                 />
-                                <span className="text-sm">{t.addListing.vehicles.accidentFree}</span>
+                                {t.addListing.vehicles.accidentFree}
                             </label>
-                            <label className="flex items-center gap-2">
+                            <label className="flex items-center gap-3 text-sm font-bold text-neutral-700 dark:text-neutral-300 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all border border-transparent hover:border-red-500/20">
                                 <input
                                     type="checkbox"
-                                    checked={isScheckheftgepflegt}
-                                    onChange={(e) => setIsScheckheftgepflegt(e.target.checked)}
-                                    className="text-red-500 focus:ring-red-300 rounded"
+                                    checked={isFullServiceHistory}
+                                    onChange={(e) => setIsFullServiceHistory(e.target.checked)}
+                                    className="w-5 h-5 text-red-500 focus:ring-red-500/20 rounded-lg dark:bg-neutral-900 dark:border-neutral-700 transition-all"
                                 />
-                                <span className="text-sm">{t.addListing.vehicles.fullServiceHistory}</span>
+                                {t.addListing.vehicles.fullServiceHistory}
                             </label>
-                            <label className="flex items-center gap-2">
+                            <label className="flex items-center gap-3 text-sm font-bold text-neutral-700 dark:text-neutral-300 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all border border-transparent hover:border-red-500/20">
                                 <input
                                     type="checkbox"
-                                    checked={isNichtraucher}
-                                    onChange={(e) => setIsNichtraucher(e.target.checked)}
-                                    className="text-red-500 focus:ring-red-300 rounded"
+                                    checked={isNonSmoking}
+                                    onChange={(e) => setIsNonSmoking(e.target.checked)}
+                                    className="w-5 h-5 text-red-500 focus:ring-red-500/20 rounded-lg dark:bg-neutral-900 dark:border-neutral-700 transition-all"
                                 />
-                                <span className="text-sm">{t.addListing.vehicles.nonSmokingVehicle}</span>
+                                {t.addListing.vehicles.nonSmokingVehicle}
                             </label>
                         </div>
                     </div>
 
                     {/* Features */}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">{t.addListing.vehicles.amenities}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-6 uppercase tracking-wider">{t.addListing.vehicles.amenities}</label>
                         <div className="mb-4">
-                            <p className="text-xs text-gray-600 mb-2 font-medium">{t.addListing.vehicles.features}</p>
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-4 font-bold uppercase tracking-widest">{t.addListing.vehicles.features}</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 {[
                                     'Anhängerkupplung', 'Einparkhilfe', 'Leichtmetallfelgen', 'Xenon-/LED-Scheinwerfer',
@@ -688,7 +642,7 @@ export const VehicleFields = ({
                                     'Freisprecheinrichtung', 'Schiebedach', 'Sitzheizung', 'Tempomat',
                                     'ABS'
                                 ].map(feature => (
-                                    <label key={feature} className="flex items-center gap-2">
+                                    <label key={feature} className="flex items-center gap-3 text-sm font-bold text-neutral-700 dark:text-neutral-300 p-3 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all border border-transparent hover:border-red-500/20">
                                         <input
                                             type="checkbox"
                                             checked={selectedCarAmenities.includes(feature)}
@@ -696,7 +650,7 @@ export const VehicleFields = ({
                                                 if (e.target.checked) setSelectedCarAmenities([...selectedCarAmenities, feature]);
                                                 else setSelectedCarAmenities(selectedCarAmenities.filter(f => f !== feature));
                                             }}
-                                            className="text-red-500 focus:ring-red-300 rounded"
+                                            className="w-5 h-5 text-red-500 focus:ring-red-500/20 rounded-lg dark:bg-neutral-900 dark:border-neutral-700 transition-all"
                                         />
                                         <span className="text-sm">
                                             {feature === 'Anhängerkupplung' ? t.amenities.anhaengerkupplung :

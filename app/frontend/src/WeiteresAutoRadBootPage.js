@@ -27,8 +27,8 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Kargo',
             type: 'multiselect',
             options: [
-                { value: 'Versand möglich', label: 'Kargo Mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
+                { value: 'Kargo Mümkün', label: 'Kargo Mümkün' },
+                { value: 'Sadece Elden Teslim', label: 'Sadece Elden Teslim' }
             ],
             field: 'versand_art'
         },
@@ -36,8 +36,8 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -45,8 +45,8 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

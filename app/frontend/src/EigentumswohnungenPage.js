@@ -45,16 +45,16 @@ const EigentumswohnungenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Konut Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Çatı Katı Dairesi', label: 'Çatı Katı' },
-                { value: 'Giriş Kat Dairesi', label: 'Giriş Katı' },
-                { value: 'Ara Kat Daire', label: 'Ara Kat' },
+                { value: 'Çatı Katı', label: 'Çatı Katı' },
+                { value: 'Giriş Katı', label: 'Giriş Katı' },
+                { value: 'Ara Kat', label: 'Ara Kat' },
                 { value: 'Yüksek Giriş', label: 'Yüksek Giriş' },
                 { value: 'Loft', label: 'Loft' },
                 { value: 'Dubleks', label: 'Dubleks' },
                 { value: 'Penthouse', label: 'Penthouse' },
                 { value: 'Bodrum Kat', label: 'Bodrum Kat' },
                 { value: 'Teraslı Daire', label: 'Teraslı Daire' },
-                { value: 'Diğer Daire Tipleri', label: 'Diğer Konut Tipleri' }
+                { value: 'Diğer Konut Tipleri', label: 'Diğer Konut Tipleri' }
             ],
             field: 'wohnungstyp'
         },
@@ -67,8 +67,8 @@ const EigentumswohnungenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Komisyon',
             type: 'multiselect',
             options: [
-                { value: 'Provisionsfrei', label: 'Komisyonsuz' },
-                { value: 'Mit Provision', label: 'Komisyonlu' }
+                { value: 'Komisyonsuz', label: 'Komisyonsuz' },
+                { value: 'Komisyonlu', label: 'Komisyonlu' }
             ],
             field: 'commission'
         },
@@ -76,8 +76,8 @@ const EigentumswohnungenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Online Gösterim',
             type: 'multiselect',
             options: [
-                { value: 'Möglich', label: 'Mümkün' },
-                { value: 'Nicht möglich', label: 'Mümkün Değil' }
+                { value: 'Mümkün', label: 'Mümkün' },
+                { value: 'Mümkün Değil', label: 'Mümkün Değil' }
             ],
             field: 'online_viewing'
         },
@@ -90,14 +90,14 @@ const EigentumswohnungenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Daire Özellikleri',
             type: 'multiselect',
             options: [
-                { value: 'Möbliert/Teilmöbliert', label: 'Eşyalı/Yarı Eşyalı' },
+                { value: 'Eşyalı/Yarı Eşyalı', label: 'Eşyalı/Yarı Eşyalı' },
                 { value: 'Balkon', label: 'Balkon' },
-                { value: 'Terrasse', label: 'Teras' },
-                { value: 'Einbauküche', label: 'Ankastre Mutfak' },
-                { value: 'Badewanne', label: 'Küvet' },
-                { value: 'Gäste-WC', label: 'Misafir WC' },
-                { value: 'Stufenloser Zugang', label: 'Engelsiz Erişim' },
-                { value: 'Fußbodenheizung', label: 'Yerden Isıtma' }
+                { value: 'Teras', label: 'Teras' },
+                { value: 'Ankastre Mutfak', label: 'Ankastre Mutfak' },
+                { value: 'Küvet', label: 'Küvet' },
+                { value: 'Misafir WC', label: 'Misafir WC' },
+                { value: 'Engelsiz Erişim', label: 'Engelsiz Erişim' },
+                { value: 'Yerden Isıtma', label: 'Yerden Isıtma' }
             ],
             field: 'amenities'
         },
@@ -105,16 +105,16 @@ const EigentumswohnungenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Genel Özellikler',
             type: 'multiselect',
             options: [
-                { value: 'Altbau', label: 'Eski Yapı' },
-                { value: 'Neubau', label: 'Yeni Yapı' },
-                { value: 'Aufzug', label: 'Asansör' },
-                { value: 'Keller', label: 'Bodrum' },
-                { value: 'Dachboden', label: 'Tavan Arası' },
-                { value: 'Garage/Stellplatz', label: 'Garaj/Park Yeri' },
-                { value: 'Garten/-mitnutzung', label: 'Bahçeli/Bahçe Kullanımı' },
-                { value: 'Haustiere erlaubt', label: 'Evcil Hayvan İzni' },
-                { value: 'Denkmalobjekt', label: 'Tarihi Eser' },
-                { value: 'Aktuell vermietet', label: 'Kiracılı' }
+                { value: 'Eski Yapı', label: 'Eski Yapı' },
+                { value: 'Yeni Yapı', label: 'Yeni Yapı' },
+                { value: 'Asansör', label: 'Asansör' },
+                { value: 'Bodrum', label: 'Bodrum' },
+                { value: 'Tavan Arası', label: 'Tavan Arası' },
+                { value: 'Garaj/Park Yeri', label: 'Garaj/Park Yeri' },
+                { value: 'Bahçeli/Bahçe Kullanımı', label: 'Bahçeli/Bahçe Kullanımı' },
+                { value: 'Evcil Hayvan İzni', label: 'Evcil Hayvan İzni' },
+                { value: 'Tarihi Eser', label: 'Tarihi Eser' },
+                { value: 'Kiracılı', label: 'Kiracılı' }
             ],
             field: 'general_features'
         },
@@ -122,8 +122,8 @@ const EigentumswohnungenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -131,8 +131,8 @@ const EigentumswohnungenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

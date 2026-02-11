@@ -88,15 +88,30 @@ export const getUserStats = async (userId) => {
             .eq('user_id', userId)
             .eq('status', 'active');
 
-        // Listings created in the last 30 days (for limit calculation)
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        // Listings created in the current cyclic 30-day period (for limit calculation)
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_listing_at')
+            .eq('id', userId)
+            .single();
+
+        let periodStart;
+        if (profile?.first_listing_at) {
+            const firstListingDate = new Date(profile.first_listing_at);
+            const now = new Date();
+            const diffInDays = (now - firstListingDate) / (1000 * 60 * 60 * 24);
+            const periodIndex = Math.floor(diffInDays / 30);
+            periodStart = new Date(firstListingDate.getTime() + periodIndex * 30 * 24 * 60 * 60 * 1000);
+        } else {
+            periodStart = new Date();
+            periodStart.setDate(periodStart.getDate() - 30); // Fallback to last 30 days if no first_listing_at
+        }
+
         const { count: monthlyListings } = await supabase
             .from('listings')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId)
-            .neq('status', 'deleted')
-            .gte('created_at', thirtyDaysAgo.toISOString());
+            .gte('created_at', periodStart.toISOString());
 
         // Total views
         const { data: listings } = await supabase
@@ -194,18 +209,38 @@ export const deleteUserProfile = async (userId) => {
 };
 
 /**
- * Cancel user subscription
+ * Cancel user subscription (Disable auto-renewal)
  * @param {string} userId - User ID
  */
 export const cancelSubscription = async (userId) => {
+    // Set cancel_at_period_end to true
+    // Benefits remain until subscription_expiry
     const { data, error } = await supabase
         .from('profiles')
         .update({
-            subscription_tier: 'free',
-            subscription_expiry: null,
-            is_pro: false,
-            seller_type: 'Privatnutzer', // Revert to private
-            is_commercial: false
+            cancel_at_period_end: true
+        })
+        .eq('id', userId)
+        .select()
+        .single();
+
+    if (error) throw error;
+
+    // Optional: Mark subscription promotion as pending_cancellation if needed
+    // For now, we just update the profile flag which the UI will use
+
+    return data;
+};
+
+/**
+ * Re-activate user subscription renewal
+ * @param {string} userId - User ID
+ */
+export const reactivateSubscription = async (userId) => {
+    const { data, error } = await supabase
+        .from('profiles')
+        .update({
+            cancel_at_period_end: false
         })
         .eq('id', userId)
         .select()

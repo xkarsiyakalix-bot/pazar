@@ -40,14 +40,14 @@ const HaeuserZurMietePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Ev Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Einfamilienhaus freistehend', label: 'Müstakil Ev' },
-                { value: 'Reihenhaus', label: 'Sıra Ev' },
-                { value: 'Mehrfamilienhaus', label: 'Apartman' },
-                { value: 'Bungalow', label: 'Bungalov' },
-                { value: 'Bauernhaus', label: 'Çiftlik Evi' },
-                { value: 'Doppelhaushälfte', label: 'İkiz Ev' },
+                { value: 'Müstakil Ev', label: 'Müstakil Ev' },
+                { value: 'Sıra Ev', label: 'Sıra Ev' },
+                { value: 'Apartman', label: 'Apartman' },
+                { value: 'Bungalov', label: 'Bungalov' },
+                { value: 'Çiftlik Evi', label: 'Çiftlik Evi' },
+                { value: 'İkiz Ev', label: 'İkiz Ev' },
                 { value: 'Villa', label: 'Villa' },
-                { value: 'Andere Haustypen', label: 'Diğer Ev Tipleri' }
+                { value: 'Diğer Ev Tipleri', label: 'Diğer Ev Tipleri' }
             ],
             field: 'haustyp'
         },
@@ -55,8 +55,8 @@ const HaeuserZurMietePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Online Gösterim',
             type: 'multiselect',
             options: [
-                { value: 'Möglich', label: 'Mümkün' },
-                { value: 'Nicht möglich', label: 'Mümkün Değil' }
+                { value: 'Mümkün', label: 'Mümkün' },
+                { value: 'Mümkün Değil', label: 'Mümkün Değil' }
             ],
             field: 'online_viewing'
         },
@@ -69,16 +69,16 @@ const HaeuserZurMietePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Ev Özellikleri',
             type: 'multiselect',
             options: [
-                { value: 'Möbliert/Teilmöbliert', label: 'Eşyalı/Yarı Eşyalı' },
+                { value: 'Eşyalı/Yarı Eşyalı', label: 'Eşyalı/Yarı Eşyalı' },
                 { value: 'Balkon', label: 'Balkon' },
-                { value: 'Terrasse', label: 'Teras' },
-                { value: 'Einbauküche', label: 'Ankastre Mutfak' },
-                { value: 'Keller', label: 'Bodrum' },
-                { value: 'Dachboden', label: 'Tavan Arası' },
-                { value: 'Badewanne', label: 'Küvet' },
-                { value: 'Gäste-WC', label: 'Misafir WC' },
-                { value: 'Stufenloser Zugang', label: 'Engelsiz Erişim' },
-                { value: 'Fußbodenheizung', label: 'Yerden Isıtma' }
+                { value: 'Teras', label: 'Teras' },
+                { value: 'Ankastre Mutfak', label: 'Ankastre Mutfak' },
+                { value: 'Bodrum', label: 'Bodrum' },
+                { value: 'Tavan Arası', label: 'Tavan Arası' },
+                { value: 'Küvet', label: 'Küvet' },
+                { value: 'Misafir WC', label: 'Misafir WC' },
+                { value: 'Engelsiz Erişim', label: 'Engelsiz Erişim' },
+                { value: 'Yerden Isıtma', label: 'Yerden Isıtma' }
             ],
             field: 'amenities'
         },
@@ -86,11 +86,11 @@ const HaeuserZurMietePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Genel Özellikler',
             type: 'multiselect',
             options: [
-                { value: 'Neubau', label: 'Yeni Yapı' },
-                { value: 'WG-geeignet', label: 'Paylaşımlı Eve Uygun' },
-                { value: 'Garage/Stellplatz', label: 'Garaj/Park Yeri' },
-                { value: 'Garten/-mitnutzung', label: 'Bahçeli/Bahçe Kullanımı' },
-                { value: 'Haustiere erlaubt', label: 'Evcil Hayvan İzni' }
+                { value: 'Yeni Yapı', label: 'Yeni Yapı' },
+                { value: 'Paylaşımlı Eve Uygun', label: 'Paylaşımlı Eve Uygun' },
+                { value: 'Garaj/Park Yeri', label: 'Garaj/Park Yeri' },
+                { value: 'Bahçeli/Bahçe Kullanımı', label: 'Bahçeli/Bahçe Kullanımı' },
+                { value: 'Evcil Hayvan İzni', label: 'Evcil Hayvan İzni' }
             ],
             field: 'general_features'
         },
@@ -98,8 +98,8 @@ const HaeuserZurMietePage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Kiralık', label: 'Satılık/Kiralık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -107,8 +107,8 @@ const HaeuserZurMietePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

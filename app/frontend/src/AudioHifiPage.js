@@ -12,12 +12,12 @@ const AudioHifiPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'CD Player', label: 'CD Çalar' },
-                { value: 'Lautsprecher & Kopfhörer', label: 'Hoparlör & Kulaklık' },
-                { value: 'MP3 Player', label: 'MP3 Çalar' },
-                { value: 'Radio & Receiver', label: 'Radyo & Alıcı' },
-                { value: 'Stereoanlagen', label: 'Müzik Setleri' },
-                { value: 'Weiteres Audio & Hifi', label: 'Diğer' }
+                { value: 'CD Çalar', label: 'CD Çalar' },
+                { value: 'Hoparlör & Kulaklık', label: 'Hoparlör & Kulaklık' },
+                { value: 'MP3 Çalar', label: 'MP3 Çalar' },
+                { value: 'Radyo & Alıcı', label: 'Radyo & Alıcı' },
+                { value: 'Müzik Setleri', label: 'Müzik Setleri' },
+                { value: 'Diğer', label: 'Diğer' }
             ],
             field: 'audio_hifi_art'
         }

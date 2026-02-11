@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LoadingSpinner from './components/LoadingSpinner';
 import { trackVisit } from './api/analytics';
+import pwaManager from './utils/pwaManager';
 
 
 import './App.css';
@@ -10,10 +11,13 @@ import { supabase } from './lib/supabase';
 import { favoritesApi } from './api/favorites';
 import { getFollowing, followUser, unfollowUser } from './api/follows';
 
+
 // Critical components - static import for immediate availability
 import { Header } from './components/Header';
 import PresenceTracker from './components/PresenceTracker';
 import { Footer } from './components/Footer';
+import CookieConsent from './components/CookieConsent';
+import PWAInstallBanner from './components/PWAInstallBanner';
 import { SearchSection } from './components/SearchSection';
 import { ListingGrid } from './components/ListingGrid';
 import { CategorySidebar } from './components/CategorySidebar';
@@ -33,6 +37,8 @@ const SpecialSellers = React.lazy(() => import('./components.js').then(m => ({ d
 const AnimalProtectionPage = React.lazy(() => import('./components.js').then(m => ({ default: m.AnimalProtectionPage })));
 const RealEstateLegalPage = React.lazy(() => import('./components.js').then(m => ({ default: m.RealEstateLegalPage })));
 const VehicleLegalPage = React.lazy(() => import('./components.js').then(m => ({ default: m.VehicleLegalPage })));
+const LegalNoticesPage = React.lazy(() => import('./LegalNoticesPage'));
+const CookiesPolicyPage = React.lazy(() => import('./CookiesPolicyPage'));
 
 // Components from individual files
 const ReservationButton = React.lazy(() => import('./ReservationButton'));
@@ -151,7 +157,7 @@ const MiniNebenjobsPage = React.lazy(() => import('./MiniNebenjobsPage'));
 const PraktikaPage = React.lazy(() => import('./PraktikaPage'));
 const SozialerSektorPflegePage = React.lazy(() => import('./SozialerSektorPflegePage'));
 const TransportLogistikVerkehrPage = React.lazy(() => import('./TransportLogistikVerkehrPage'));
-const VertriebEinkaufVerkaufPage = React.lazy(() => import('./VertriebEinkaufVerkaufPage'));
+const SalesPurchasingMarketingPage = React.lazy(() => import('./SalesPurchasingMarketingPage'));
 const WeitereJobsPage = React.lazy(() => import('./WeitereJobsPage'));
 const FreizeitHobbyNachbarschaftPage = React.lazy(() => import('./FreizeitHobbyNachbarschaftPage'));
 const EsoterikSpirituellesPage = React.lazy(() => import('./EsoterikSpirituellesPage'));
@@ -241,7 +247,9 @@ const AdminReports = React.lazy(() => import('./admin/AdminReports'));
 const AdminPromotions = React.lazy(() => import('./admin/AdminPromotions'));
 const AdminCommercialSellers = React.lazy(() => import('./admin/AdminCommercialSellers'));
 const AdminSettings = React.lazy(() => import('./admin/AdminSettings'));
+const AdminCategories = React.lazy(() => import('./admin/AdminCategories'));
 const AdminRoute = React.lazy(() => import('./admin/AdminRoute'));
+const AdminStats = React.lazy(() => import('./admin/AdminStats'));
 import { useIsMobile } from './hooks/useIsMobile';
 import { useAuth } from './contexts/AuthContext';
 const MobileBottomNavigation = React.lazy(() => import('./components/MobileBottomNavigation'));
@@ -254,15 +262,20 @@ function ScrollToTop() {
   const { pathname } = useLocation();
   const navigationType = useNavigationType();
 
+  const isFirstMount = React.useRef(true);
+
   React.useEffect(() => {
     // Only scroll to top if navigation is NOT 'POP' (which is back/forward button navigation)
-    // This allows the browser's default scroll restoration to work when going back.
-    if (navigationType !== 'POP') {
+    // AND it's not the initial load of the application.
+    // This allows the browser's default scroll restoration to work when reloading or coming back.
+    if (!isFirstMount.current && navigationType !== 'POP') {
       window.scrollTo(0, 0);
     }
 
     // Track the visit
     trackVisit(pathname);
+
+    isFirstMount.current = false;
   }, [pathname, navigationType]);
 
   return null;
@@ -501,10 +514,64 @@ function App() {
   const isMobile = useIsMobile();
   const { user } = useAuth(); // Get authenticated user
 
+  // PWA States
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [isPWAInstalled, setIsPWAInstalled] = useState(false);
+
   // Filtreleme state'leri
   const [priceRange, setPriceRange] = useState('all');
   const [filterLocation, setFilterLocation] = useState('Tüm Şehirler');
   const [sortBy, setSortBy] = useState('relevance');
+
+  // Initialize PWA
+  useEffect(() => {
+    const initPWA = async () => {
+      // Register service worker
+      const registered = await pwaManager.init();
+
+      if (registered) {
+        console.log('✅ PWA initialized');
+
+        // Check if already installed
+        setIsPWAInstalled(pwaManager.isInstalled());
+
+        // Listen for install prompt
+        pwaManager.listenForInstallPrompt();
+
+        // Listen for PWA events
+        window.addEventListener('pwa-install-available', () => {
+          setShowInstallBanner(true);
+        });
+
+        window.addEventListener('pwa-install-completed', () => {
+          setShowInstallBanner(false);
+          setIsPWAInstalled(true);
+        });
+      }
+    };
+
+    initPWA();
+
+
+  }, []);
+
+  // Setup push notifications when user logs in
+  useEffect(() => {
+    if (user) {
+      // Subscribe to push notifications
+      const setupNotifications = async () => {
+        const hasPermission = await pwaManager.requestNotificationPermission();
+        if (hasPermission) {
+          await pwaManager.subscribeToPushNotifications(user.id);
+
+          // Register periodic sync for new messages
+          await pwaManager.registerPeriodicSync('check-new-messages', 15 * 60 * 1000); // Every 15 minutes
+        }
+      };
+
+      setupNotifications();
+    }
+  }, [user]);
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -673,13 +740,12 @@ function App() {
     <>
       <ScrollToTop />
       <CategorySync setSelectedCategory={setSelectedCategory} />
-      <div className="App min-h-screen bg-gray-50">
+      <div className="App min-h-screen bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
         <PresenceTracker />
         <React.Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950">
             <div className="text-center">
               <LoadingSpinner size="large" />
-              <p className="text-gray-600 mt-4">Yükleniyor...</p>
             </div>
           </div>
         }>
@@ -788,6 +854,8 @@ function App() {
                 isSellerFollowed={isSellerFollowed}
               />
             } />
+            <Route path="/yasal-uyarilar" element={<LegalNoticesPage />} />
+            <Route path="/cerez-politikasi" element={<CookiesPolicyPage />} />
             <Route path="/hayvan-haklari-ve-yasal-uyari" element={<AnimalProtectionPage />} />
             <Route path="/emlak-ilanlari-yasal-uyari" element={<RealEstateLegalPage />} />
             <Route path="/vasita-ilanlari-yasal-uyari" element={<VehicleLegalPage />} />
@@ -883,7 +951,7 @@ function App() {
             <Route path="/Aile-Cocuk-Bebek/Bebek-Cocuk-Giyimi" element={<BabyKinderkleidungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Bebek-Cocuk-Ayakkabilari" element={<BabyKinderschuhePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Bebek-Ekipmanlari" element={
-              <React.Suspense fallback={<div>Yükleniyor...</div>}>
+              <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><LoadingSpinner size="large" /></div>}>
                 <BabyAusstattungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />
               </React.Suspense>
             } />
@@ -904,7 +972,7 @@ function App() {
             <Route path="/Is-Ilanlari/Staj" element={<PraktikaPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Sosyal-Sektor-Bakim" element={<SozialerSektorPflegePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Tasimacilik-Lojistik" element={<TransportLogistikVerkehrPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Is-Ilanlari/Satis-Pazarlama" element={<VertriebEinkaufVerkaufPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Is-Ilanlari/Satis-Pazarlama" element={<SalesPurchasingMarketingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Diger-Is-Ilanlari" element={<WeitereJobsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Eglence-Hobi-Mahalle" element={<FreizeitHobbyNachbarschaftPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Eglence-Hobi-Mahalle/Ezoterizm-Spiritualizm" element={<EsoterikSpirituellesFreizeitPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
@@ -997,16 +1065,31 @@ function App() {
                 <Route path="commercial" element={<AdminCommercialSellers />} />
                 <Route path="reports" element={<AdminReports />} />
                 <Route path="sales-reports" element={<AdminSalesReport />} />
+                <Route path="stats" element={<AdminStats />} />
                 <Route path="settings" element={<AdminSettings />} />
+                <Route path="categories" element={<AdminCategories />} />
               </Route>
             </Route>
 
             {/* 404 Catch-all Route - Must be last */}
-            {/* Smart Catch-all Route: Checks for store slug first, then 404 */}
-            <Route path="*" element={<SmartRoute />} />
+            {/* Smart Catch-all Route: Checks for listing slug or store slug first, then 404 */}
+            <Route path="*" element={
+              <SmartRoute
+                addToCart={addToCart}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                toggleFollowSeller={toggleFollowSeller}
+                isSellerFollowed={isSellerFollowed}
+              />
+            } />
           </Routes>
           <Footer />
           {isMobile && <MobileBottomNavigation />}
+
+          <CookieConsent />
+          {showInstallBanner && !isPWAInstalled && (
+            <PWAInstallBanner onClose={() => setShowInstallBanner(false)} />
+          )}
           <ScrollToTopButton />
         </React.Suspense>
       </div>

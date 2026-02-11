@@ -28,8 +28,8 @@ const SprachkursePage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -37,8 +37,8 @@ const SprachkursePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },
@@ -52,13 +52,13 @@ const SprachkursePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Dil',
             type: 'multiselect',
             options: [
-                { value: 'Deutsch', label: 'Almanca' },
-                { value: 'Englisch', label: 'İngilizce' },
-                { value: 'Französisch', label: 'Fransızca' },
-                { value: 'Spanisch', label: 'İspanyolca' },
-                { value: 'Italienisch', label: 'İtalyanca' },
-                { value: 'Russisch', label: 'Rusça' },
-                { value: 'Andere', label: 'Diğer' }
+                { value: 'Almanca', label: 'Almanca' },
+                { value: 'İngilizce', label: 'İngilizce' },
+                { value: 'Fransızca', label: 'Fransızca' },
+                { value: 'İspanyolca', label: 'İspanyolca' },
+                { value: 'İtalyanca', label: 'İtalyanca' },
+                { value: 'Rusça', label: 'Rusça' },
+                { value: 'Diğer', label: 'Diğer' }
             ],
             field: 'sprachkurse_art'
         }

@@ -36,7 +36,7 @@ function PressePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 transition-colors duration-300">
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
                 <div className="max-w-6xl mx-auto px-4">
@@ -49,7 +49,7 @@ function PressePage() {
                 {/* Press Releases */}
                 <div className="space-y-8">
                     {pressReleases.map((release, index) => (
-                        <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                        <div key={index} className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg dark:shadow-none overflow-hidden hover:shadow-xl transition-shadow border border-transparent dark:border-white/5">
                             <div className="md:flex">
                                 <div className="md:w-1/3">
                                     <img
@@ -62,10 +62,10 @@ function PressePage() {
                                     <div className="text-sm text-red-600 font-semibold mb-2">
                                         {release.date} | ExVitrin tarafından
                                     </div>
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-50 mb-4">
                                         {release.title}
                                     </h2>
-                                    <p className="text-gray-700 mb-6 leading-relaxed">
+                                    <p className="text-gray-700 dark:text-neutral-400 mb-6 leading-relaxed">
                                         {release.excerpt}
                                     </p>
                                     <button className="text-red-600 hover:text-red-700 font-semibold flex items-center gap-2">
@@ -88,17 +88,17 @@ function PressePage() {
                 </div>
 
                 {/* Contact Section */}
-                <div className="mt-16 bg-white rounded-2xl shadow-lg p-8 md:p-12">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-6">{t.presse.contact.title}</h2>
+                <div className="mt-16 bg-white dark:bg-neutral-900 rounded-2xl shadow-lg dark:shadow-none p-8 md:p-12 border border-transparent dark:border-white/5">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-neutral-50 mb-6">{t.presse.contact.title}</h2>
                     <div className="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h3 className="font-bold text-lg mb-2">{t.presse.contact.generalTitle}</h3>
-                            <p className="text-gray-700 mb-2">E-Posta: presse@exvitrin.de</p>
-                            <p className="text-gray-700">Telefon: +49 30 12345678</p>
+                            <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-neutral-50">{t.presse.contact.generalTitle}</h3>
+                            <p className="text-gray-700 dark:text-neutral-400 mb-2">E-Posta: presse@exvitrin.de</p>
+                            <p className="text-gray-700 dark:text-neutral-400">Telefon: +49 30 12345678</p>
                         </div>
                         <div>
-                            <h3 className="font-bold text-lg mb-2">{t.presse.contact.materialTitle}</h3>
-                            <p className="text-gray-700 mb-4">
+                            <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-neutral-50">{t.presse.contact.materialTitle}</h3>
+                            <p className="text-gray-700 dark:text-neutral-400 mb-4">
                                 {t.presse.contact.materialDescription}
                             </p>
                             <button className="text-red-600 hover:text-red-700 font-semibold">

@@ -51,17 +51,17 @@ export const RealEstateFields = ({
     setSelectedGeneralFeatures
 }) => {
     return (
-        <div className="space-y-4 pt-4 border-t border-gray-200">
+        <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
             {/* Specific Art Selectors */}
             {['Konteyner', 'Tatil Evi & Yurt Dışı Emlak', 'Ticari Emlak', 'Arsa & Bahçe', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Kiralık Daire', 'Satılık Daire', 'Satılık Yazlık'].includes(subCategory) && (
                 <div className="space-y-4 mb-4">
                     {subCategory === 'Ticari Emlak' && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.type}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.type}</label>
                             <select
                                 value={selectedObjektart}
                                 onChange={(e) => setSelectedObjektart(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Büros & Praxen">Ofis & Muayenehane</option>
@@ -74,11 +74,11 @@ export const RealEstateFields = ({
                     )}
                     {subCategory === 'Arsa & Bahçe' && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.landType}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.landType}</label>
                             <select
                                 value={selectedGrundstuecksart}
                                 onChange={(e) => setSelectedGrundstuecksart(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Baugrundstück">İmar Parseli</option>
@@ -90,11 +90,11 @@ export const RealEstateFields = ({
                     )}
                     {['Kiralık Daire', 'Satılık Daire'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.apartmentType}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.apartmentType}</label>
                             <select
                                 value={selectedWohnungstyp}
                                 onChange={(e) => setSelectedWohnungstyp(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 {['Çatı Katı Dairesi', 'Giriş Kat Dairesi', 'Ara Kat Daire', 'Yüksek Giriş', 'Loft', 'Dubleks', 'Penthouse', 'Bodrum Kat', 'Teraslı Daire', 'Diğer Daire Tipleri'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -103,11 +103,11 @@ export const RealEstateFields = ({
                     )}
                     {['Kiralık Müstakil Ev', 'Satılık Müstakil Ev'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.houseType}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.houseType}</label>
                             <select
                                 value={selectedHaustyp}
                                 onChange={(e) => setSelectedHaustyp(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Einfamilienhaus freistehend">Bağımsız Müstakil Ev</option>
@@ -123,11 +123,11 @@ export const RealEstateFields = ({
                     )}
                     {!['Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Kiralık Daire', 'Satılık Daire', 'Satılık Yazlık'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                             <select
                                 value={selectedAngebotsart}
                                 onChange={(e) => setSelectedAngebotsart(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Kaufen">Satılık</option>
@@ -139,7 +139,7 @@ export const RealEstateFields = ({
             )}
 
             {!['Taşımacılık & Nakliye', 'Diğer Emlak'].includes(subCategory) && (
-                <h3 className="font-semibold text-gray-900">{t.addListing.realEstate.title}</h3>
+                <h3 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6 flex items-center gap-3">{t.addListing.realEstate.title}</h3>
             )}
 
             {!['Taşımacılık & Nakliye', 'Diğer Emlak'].includes(subCategory) && (
@@ -147,13 +147,13 @@ export const RealEstateFields = ({
                     {/* Living Space */}
                     {!['Taşımacılık & Nakliye', 'Diğer Emlak', 'Garaj & Otopark', 'Arsa & Bahçe', 'Konteyner'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.area}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.area}</label>
                             <input
                                 type="number"
                                 value={livingSpace}
                                 onChange={(e) => setLivingSpace(e.target.value)}
                                 placeholder="Örn: 75"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -161,14 +161,14 @@ export const RealEstateFields = ({
                     {/* Rooms */}
                     {!['Taşımacılık & Nakliye', 'Diğer Emlak', 'Garaj & Otopark', 'Arsa & Bahçe', 'Konteyner'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.rooms}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.rooms}</label>
                             <input
                                 type="number"
                                 step="0.5"
                                 value={rooms}
                                 onChange={(e) => setRooms(e.target.value)}
                                 placeholder="Örn: 3"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -176,13 +176,13 @@ export const RealEstateFields = ({
                     {/* Floor */}
                     {['Kiralık Daire', 'Satılık Daire', 'Geçici Konaklama & Paylaşımlı Ev'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.floor}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.floor}</label>
                             <input
                                 type="number"
                                 value={floor}
                                 onChange={(e) => setFloor(e.target.value)}
                                 placeholder="Örn: 2"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -190,12 +190,12 @@ export const RealEstateFields = ({
                     {/* Available From */}
                     {!['Umzug & Transport', 'Weitere Immobilien'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.availableFrom}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.availableFrom}</label>
                             <input
                                 type="date"
                                 value={availableFrom}
                                 onChange={(e) => setAvailableFrom(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -203,11 +203,11 @@ export const RealEstateFields = ({
                     {/* Online Viewing */}
                     {!['Umzug & Transport', 'Weitere Immobilien'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.onlineViewing}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.onlineViewing}</label>
                             <select
                                 value={selectedOnlineViewing}
                                 onChange={(e) => setSelectedOnlineViewing(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Möglich">Mümkün</option>
@@ -219,13 +219,13 @@ export const RealEstateFields = ({
                     {/* Plot Area */}
                     {['Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Arsa & Bahçe', 'Satılık Yazlık'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.lotArea}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.lotArea}</label>
                             <input
                                 type="number"
                                 value={plotArea}
                                 onChange={(e) => setPlotArea(e.target.value)}
                                 placeholder="Örn: 400"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -233,12 +233,12 @@ export const RealEstateFields = ({
                     {/* Area (Generic) */}
                     {['Ticari Emlak', 'Konteyner'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.totalArea}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.totalArea}</label>
                             <input
                                 type="number"
                                 value={livingSpace}
                                 onChange={(e) => setLivingSpace(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -246,12 +246,12 @@ export const RealEstateFields = ({
                     {/* Price Per Sqm */}
                     {['Ticari Emlak', 'Konteyner'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.sqmPrice}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.sqmPrice}</label>
                             <input
                                 type="number"
                                 value={pricePerSqm}
                                 onChange={(e) => setPricePerSqm(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -259,13 +259,13 @@ export const RealEstateFields = ({
                     {/* Warm Rent */}
                     {['Kiralık Daire', 'Geçici Konaklama & Paylaşımlı Ev', 'Kiralık Müstakil Ev'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.warmRent}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.warmRent}</label>
                             <input
                                 type="number"
                                 value={warmRent}
                                 onChange={(e) => setWarmRent(e.target.value)}
                                 placeholder="Örn: 950"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -273,13 +273,13 @@ export const RealEstateFields = ({
                     {/* Roommates */}
                     {subCategory === 'Geçici Konaklama & Paylaşımlı Ev' && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.roommates}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.roommates}</label>
                             <input
                                 type="number"
                                 value={roommates}
                                 onChange={(e) => setRoommates(e.target.value)}
                                 placeholder="Örn: 2"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -287,13 +287,13 @@ export const RealEstateFields = ({
                     {/* Construction Year */}
                     {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Satılık Yazlık'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.buildYear}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.buildYear}</label>
                             <input
                                 type="number"
                                 value={constructionYear}
                                 onChange={(e) => setConstructionYear(e.target.value)}
                                 placeholder="Örn: 1995"
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
                             />
                         </div>
                     )}
@@ -301,11 +301,11 @@ export const RealEstateFields = ({
                     {/* Tauschangebot */}
                     {['Kiralık Daire', 'Geçici Konaklama & Paylaşımlı Ev'].includes(subCategory) && (
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">{t.addListing.realEstate.exchange}</label>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.exchange}</label>
                             <select
                                 value={selectedTauschangebot}
                                 onChange={(e) => setSelectedTauschangebot(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Ja">Evet</option>
@@ -321,7 +321,7 @@ export const RealEstateFields = ({
                             <select
                                 value={selectedCommission}
                                 onChange={(e) => setSelectedCommission(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Provisionsfrei">Komisyonsuz</option>
@@ -337,7 +337,7 @@ export const RealEstateFields = ({
                                 <select
                                     value={selectedGarageType}
                                     onChange={(e) => setSelectedGarageType(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                                 >
                                     <option value="">{t.productDetail.pleaseChoose}</option>
                                     <option value="Garage">Garaj</option>
@@ -349,7 +349,7 @@ export const RealEstateFields = ({
                                 <select
                                     value={selectedAngebotsart}
                                     onChange={(e) => setSelectedAngebotsart(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                                 >
                                     <option value="">{t.productDetail.pleaseChoose}</option>
                                     <option value="Kaufen">Satılık</option>
@@ -366,7 +366,7 @@ export const RealEstateFields = ({
                                 <select
                                     value={selectedAufZeitWGArt}
                                     onChange={(e) => setSelectedAufZeitWGArt(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                                 >
                                     <option value="">{t.productDetail.pleaseChoose}</option>
                                     <option value="Gesamte Unterkunft">Tüm Konut</option>
@@ -379,7 +379,7 @@ export const RealEstateFields = ({
                                 <select
                                     value={selectedRentalType}
                                     onChange={(e) => setSelectedRentalType(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                                 >
                                     <option value="">{t.productDetail.pleaseChoose}</option>
                                     <option value="befristet">Süreli</option>
@@ -395,7 +395,7 @@ export const RealEstateFields = ({
                             <select
                                 value={selectedLage}
                                 onChange={(e) => setSelectedLage(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Inland">Yurt İçi</option>
@@ -409,7 +409,7 @@ export const RealEstateFields = ({
             {/* Features (Checkboxes) */}
             {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Geçici Konaklama & Paylaşımlı Ev', 'Tatil Evi & Yurt Dışı Emlak', 'Satılık Yazlık'].includes(subCategory) && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-2">{t.addListing.realEstate.amenities}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.amenities}</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {[
                             { val: 'Möbliert/Teilmöbliert', label: 'Mobilyalı/Kısmen Mobilyalı' },
@@ -426,7 +426,7 @@ export const RealEstateFields = ({
                             { val: 'Spülmaschine', label: 'Bulaşık Makinesi' },
                             { val: 'TV', label: 'Televizyon' }
                         ].map(item => (
-                            <label key={item.val} className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+                            <label key={item.val} className="flex items-center space-x-2 text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={selectedAmenities.includes(item.val)}
@@ -434,7 +434,7 @@ export const RealEstateFields = ({
                                         if (e.target.checked) setSelectedAmenities([...selectedAmenities, item.val]);
                                         else setSelectedAmenities(selectedAmenities.filter(a => a !== item.val));
                                     }}
-                                    className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                                    className="rounded border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-red-600 focus:ring-red-500"
                                 />
                                 <span>{item.label}</span>
                             </label>
@@ -446,7 +446,7 @@ export const RealEstateFields = ({
             {/* Commercial Amenities (Ticari Emlak & Konteyner) */}
             {['Ticari Emlak', 'Konteyner'].includes(subCategory) && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-2">{t.addListing.realEstate.amenities}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.amenities}</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {[
                             { val: 'Starkstrom', label: 'Yüksek Akım' },
@@ -457,7 +457,7 @@ export const RealEstateFields = ({
                             { val: 'Küche', label: 'Mutfak' },
                             { val: 'Fußbodenheizung', label: 'Yerden Isıtma' }
                         ].map(item => (
-                            <label key={item.val} className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+                            <label key={item.val} className="flex items-center space-x-2 text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={selectedAmenities.includes(item.val)}
@@ -465,7 +465,7 @@ export const RealEstateFields = ({
                                         if (e.target.checked) setSelectedAmenities([...selectedAmenities, item.val]);
                                         else setSelectedAmenities(selectedAmenities.filter(a => a !== item.val));
                                     }}
-                                    className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                                    className="rounded border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-red-600 focus:ring-red-500"
                                 />
                                 <span>{item.label}</span>
                             </label>
@@ -477,7 +477,7 @@ export const RealEstateFields = ({
             {/* General Features */}
             {['Kiralık Daire', 'Satılık Daire', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Geçici Konaklama & Paylaşımlı Ev', 'Tatil Evi & Yurt Dışı Emlak', 'Ticari Emlak', 'Satılık Yazlık'].includes(subCategory) && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-2">{t.addListing.realEstate.generalFeatures}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.realEstate.generalFeatures}</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {[
                             { val: 'Altbau', label: 'Eski Yapı' },
@@ -492,7 +492,7 @@ export const RealEstateFields = ({
                             { val: 'Denkmalobjekt', label: 'Tarihi Eser/Anıt' },
                             { val: 'Aktuell vermietet', label: 'Halen Kirada' }
                         ].map(item => (
-                            <label key={item.val} className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+                            <label key={item.val} className="flex items-center space-x-2 text-sm text-neutral-700 dark:text-neutral-300 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={selectedGeneralFeatures.includes(item.val)}
@@ -500,7 +500,7 @@ export const RealEstateFields = ({
                                         if (e.target.checked) setSelectedGeneralFeatures([...selectedGeneralFeatures, item.val]);
                                         else setSelectedGeneralFeatures(selectedGeneralFeatures.filter(f => f !== item.val));
                                     }}
-                                    className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                                    className="rounded border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-red-600 focus:ring-red-500"
                                 />
                                 <span>{item.label}</span>
                             </label>

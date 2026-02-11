@@ -8,7 +8,7 @@ END
 $$;
 
 -- Add admin_role column to profiles table
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS admin_role admin_role DEFAULT 'admin';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS admin_role admin_role;
 
 -- Update existing admins to have a role
 -- We'll set Kerem and user 1001 as super_admin by default

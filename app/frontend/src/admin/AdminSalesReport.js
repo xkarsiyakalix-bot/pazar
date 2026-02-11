@@ -207,15 +207,10 @@ const AdminSalesReport = () => {
             )
             .subscribe();
 
-        // Periodic refresh every 30 seconds to update charts and "now" relative data
-        const refreshInterval = setInterval(() => {
-            console.log('Automated periodic refresh...');
-            calculateReport();
-        }, 30000);
+
 
         return () => {
             supabase.removeChannel(channel);
-            clearInterval(refreshInterval);
         };
     }, []);
 
@@ -231,10 +226,10 @@ const AdminSalesReport = () => {
         <div className="space-y-8 pb-12 animate-fade-in">
             <div className="flex flex-col md:flex-row justify-between items-end gap-4">
                 <div>
-                    <h1 className="text-3xl font-display font-bold text-neutral-900 tracking-tight">Satış Raporları</h1>
+                    <h1 className="text-3xl font-display font-bold text-neutral-900 dark:text-neutral-50 tracking-tight transition-colors duration-300">Satış Raporları</h1>
                     <div className="flex items-center gap-3 mt-1.5">
-                        <p className="text-neutral-500 font-medium tracking-wide">Gelir Özeti ve Canlı Analiz</p>
-                        <span className="flex items-center gap-1.5 text-[10px] bg-neutral-100 text-neutral-600 px-2.5 py-1 rounded-full font-bold border border-neutral-200">
+                        <p className="text-neutral-500 dark:text-neutral-400 font-medium tracking-wide transition-colors duration-300">Gelir Özeti ve Canlı Analiz</p>
+                        <span className="flex items-center gap-1.5 text-[10px] bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 px-2.5 py-1 rounded-full font-bold border border-neutral-200 dark:border-white/10 transition-colors duration-300">
                             <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                             {lastUpdated.toLocaleTimeString('tr-TR')}
                         </span>
@@ -243,19 +238,19 @@ const AdminSalesReport = () => {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={playNotification}
-                        className="p-3 bg-white border border-neutral-200 text-neutral-500 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-all shadow-sm active:scale-95"
+                        className="p-3 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 text-neutral-500 dark:text-neutral-400 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-200 transition-all shadow-sm active:scale-95"
                         title="Ses Testi"
                     >
                         🔊
                     </button>
-                    <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-wider bg-white px-3 py-2 rounded-xl border border-neutral-200 shadow-sm">
+                    <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider bg-white dark:bg-neutral-800 px-3 py-2 rounded-xl border border-neutral-200 dark:border-white/10 shadow-sm transition-colors duration-300">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                         CANLI AKIŞ
                     </div>
                     <button
                         onClick={() => calculateReport(true)}
                         disabled={isRefreshing}
-                        className="px-5 py-2.5 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-700 hover:border-blue-300 hover:text-blue-600 transition-all shadow-sm hover:shadow active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                        className="px-5 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-xl text-sm font-bold text-neutral-700 dark:text-neutral-300 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm hover:shadow active:scale-95 disabled:opacity-50 flex items-center gap-2"
                     >
                         <div className={`w-2 h-2 rounded-full ${isRefreshing ? 'bg-blue-500 animate-spin' : 'bg-blue-500'}`}></div>
                         {isRefreshing ? 'Yenileniyor...' : 'Yenile'}
@@ -297,19 +292,19 @@ const AdminSalesReport = () => {
 
             {/* Minute-by-Minute Live Graph and Package Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-neutral-100 relative overflow-hidden">
+                <div className="lg:col-span-2 bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5 relative overflow-hidden transition-colors duration-300">
                     <div className="absolute top-6 right-8">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold tracking-wider border border-red-100">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-[10px] font-bold tracking-wider border border-red-100 dark:border-red-900/30 transition-colors">
                             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
                             CANLI
                         </div>
                     </div>
 
                     <div className="mb-8">
-                        <h3 className="text-xl font-display font-bold text-neutral-900 flex items-center gap-2">
+                        <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 transition-colors">
                             Kazanç Analizi
                         </h3>
-                        <p className="text-neutral-400 font-medium text-xs mt-1">Son 60 Dakika Performansı</p>
+                        <p className="text-neutral-400 dark:text-neutral-500 font-medium text-xs mt-1 transition-colors">Son 60 Dakika Performansı</p>
                     </div>
 
                     <div className="h-[300px] w-full mt-4">
@@ -321,7 +316,7 @@ const AdminSalesReport = () => {
                                         <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="opacity-0 dark:opacity-[0.05]" />
                                 <XAxis
                                     dataKey="time"
                                     axisLine={false}
@@ -342,10 +337,23 @@ const AdminSalesReport = () => {
                                         border: '1px solid #e5e7eb',
                                         boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                                         padding: '12px',
-                                        backgroundColor: 'white'
+                                        backgroundColor: 'var(--tooltip-bg, white)'
                                     }}
-                                    formatter={(value) => [`${value.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL`, 'Gelir']}
-                                    labelStyle={{ fontWeight: 700, color: '#1e293b', marginBottom: '4px', fontSize: '12px' }}
+                                    wrapperClassName="dark:!bg-neutral-900 dark:!border-white/10 dark:!rounded-xl"
+                                    itemStyle={{ color: '#ef4444' }}
+                                    content={({ active, payload, label }) => {
+                                        if (active && payload && payload.length) {
+                                            return (
+                                                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 p-3 rounded-xl shadow-xl">
+                                                    <p className="text-xs font-bold text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-wider">{label}</p>
+                                                    <p className="text-sm font-black text-neutral-900 dark:text-neutral-50">
+                                                        {payload[0].value.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL
+                                                    </p>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
                                 />
                                 <Area
                                     type="monotone"
@@ -361,9 +369,9 @@ const AdminSalesReport = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-neutral-100 flex flex-col">
-                    <h3 className="text-xl font-display font-bold text-neutral-900 mb-1">Paket Dağılımı</h3>
-                    <p className="text-neutral-400 font-medium text-xs mb-6">Gelir Kaynağı Analizi</p>
+                <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5 flex flex-col transition-colors duration-300">
+                    <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 mb-1 transition-colors">Paket Dağılımı</h3>
+                    <p className="text-neutral-400 dark:text-neutral-500 font-medium text-xs mb-6 transition-colors">Gelir Kaynağı Analizi</p>
 
                     <div className="h-[220px] w-full flex-shrink-0">
                         <ResponsiveContainer width="100%" height="100%">
@@ -383,8 +391,21 @@ const AdminSalesReport = () => {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                    formatter={(value) => [`${value.toLocaleString('tr-TR')} TL`, 'Toplam']}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                    wrapperClassName="dark:!bg-neutral-900 dark:!border-white/10 dark:!rounded-xl"
+                                    content={({ active, payload }) => {
+                                        if (active && payload && payload.length) {
+                                            return (
+                                                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 p-3 rounded-xl shadow-xl">
+                                                    <p className="text-xs font-bold text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-wider">{payload[0].name}</p>
+                                                    <p className="text-sm font-black text-neutral-900 dark:text-neutral-50">
+                                                        {payload[0].value.toLocaleString('tr-TR')} TL
+                                                    </p>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
@@ -395,9 +416,9 @@ const AdminSalesReport = () => {
                             <div key={pkg.name} className="flex items-center justify-between group py-1">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                                    <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wide">{pkg.name}</span>
+                                    <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wide transition-colors">{pkg.name}</span>
                                 </div>
-                                <span className="text-sm font-bold text-neutral-900">
+                                <span className="text-sm font-bold text-neutral-900 dark:text-neutral-200 transition-colors">
                                     {pkg.value.toLocaleString('tr-TR')} TL
                                 </span>
                             </div>
@@ -409,9 +430,9 @@ const AdminSalesReport = () => {
             {/* Yearly and Monthly Breakdown Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Yearly Breakdown */}
-                <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
-                    <div className="p-6 border-b border-neutral-50 bg-neutral-50/30">
-                        <h3 className="text-lg font-display font-bold text-neutral-900 flex items-center gap-2">
+                <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5 overflow-hidden transition-colors duration-300">
+                    <div className="p-6 border-b border-neutral-50 dark:border-white/5 bg-neutral-50/30 dark:bg-neutral-950/30">
+                        <h3 className="text-lg font-display font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2">
                             Yıllık Trend
                         </h3>
                     </div>
@@ -420,12 +441,12 @@ const AdminSalesReport = () => {
                             {history.yearly.map((row) => (
                                 <div key={row.year} className="group">
                                     <div className="flex justify-between items-end mb-2">
-                                        <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                                        <span className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
                                             {row.year}
                                         </span>
-                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
+                                        <span className="text-lg font-bold text-neutral-900 dark:text-neutral-50">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
                                     </div>
-                                    <div className="h-2.5 bg-neutral-100 rounded-full overflow-hidden">
+                                    <div className="h-2.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors">
                                         <div
                                             className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
                                             style={{ width: `${(row.amount / Math.max(...history.yearly.map(m => m.amount))) * 100}%` }}
@@ -441,9 +462,9 @@ const AdminSalesReport = () => {
                 </div>
 
                 {/* Monthly Breakdown */}
-                <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
-                    <div className="p-6 border-b border-neutral-50 bg-neutral-50/30">
-                        <h3 className="text-lg font-display font-bold text-neutral-900 flex items-center gap-2">
+                <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5 overflow-hidden transition-colors duration-300">
+                    <div className="p-6 border-b border-neutral-50 dark:border-white/5 bg-neutral-50/30 dark:bg-neutral-950/30">
+                        <h3 className="text-lg font-display font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 transition-colors">
                             Aylık Trend
                         </h3>
                     </div>
@@ -452,12 +473,12 @@ const AdminSalesReport = () => {
                             {history.monthly.map((row) => (
                                 <div key={row.month} className="group">
                                     <div className="flex justify-between items-end mb-2">
-                                        <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                                        <span className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
                                             {new Date(row.month + '-01').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
                                         </span>
-                                        <span className="text-lg font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
+                                        <span className="text-lg font-bold text-neutral-900 dark:text-neutral-50">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</span>
                                     </div>
-                                    <div className="h-2.5 bg-neutral-100 rounded-full overflow-hidden">
+                                    <div className="h-2.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden transition-colors">
                                         <div
                                             className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
                                             style={{ width: `${(row.amount / Math.max(...history.monthly.map(m => m.amount))) * 100}%` }}
@@ -473,37 +494,37 @@ const AdminSalesReport = () => {
                 </div>
 
                 {/* Daily Table */}
-                <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden xl:col-span-1 flex flex-col">
-                    <div className="p-6 border-b border-neutral-50 bg-neutral-50/30">
-                        <h3 className="text-lg font-display font-bold text-neutral-900 flex items-center gap-2">
+                <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5 overflow-hidden xl:col-span-1 flex flex-col transition-colors duration-300">
+                    <div className="p-6 border-b border-neutral-50 dark:border-white/5 bg-neutral-50/30 dark:bg-neutral-950/30">
+                        <h3 className="text-lg font-display font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 transition-colors">
                             Günlük Kayıt
                         </h3>
                     </div>
                     <div className="flex-1 overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider bg-neutral-50/30">
+                                <tr className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider bg-neutral-50/30 dark:bg-neutral-950/30">
                                     <th className="px-6 py-3">Tarih</th>
                                     <th className="px-6 py-3">Tip</th>
                                     <th className="px-6 py-3 text-right">Kazanç</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-neutral-50">
+                            <tbody className="divide-y divide-neutral-50 dark:divide-white/5">
                                 {history.daily.map(row => (
-                                    <tr key={row.date} className="hover:bg-neutral-50 transition-colors">
+                                    <tr key={row.date} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <div className="font-bold text-neutral-800 text-sm">
+                                            <div className="font-bold text-neutral-800 dark:text-neutral-200 text-sm transition-colors">
                                                 {new Date(row.date).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                             </div>
-                                            <div className="text-[10px] text-neutral-400 font-medium">
+                                            <div className="text-[10px] text-neutral-400 dark:text-neutral-500 font-medium transition-colors">
                                                 {new Date(row.date).toLocaleDateString('tr-TR', { weekday: 'long' })}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">SATIŞ</span>
+                                            <span className="bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border border-neutral-200 dark:border-white/5">SATIŞ</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="font-bold text-neutral-900">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</div>
+                                            <div className="font-bold text-neutral-900 dark:text-neutral-50 transition-colors">{row.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</div>
                                         </td>
                                     </tr>
                                 ))}
@@ -519,23 +540,23 @@ const AdminSalesReport = () => {
             </div>
 
             {/* Live Sales Feed */}
-            <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden">
-                <div className="p-6 border-b border-neutral-50 bg-neutral-900 flex justify-between items-center">
+            <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-100 dark:border-white/5 overflow-hidden transition-colors duration-300">
+                <div className="p-6 border-b border-neutral-50 dark:border-white/5 bg-neutral-900 dark:bg-neutral-950 flex justify-between items-center transition-colors">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        <span className="flex items-center justify-center w-8 h-8 bg-neutral-800 rounded-lg text-lg">⚡</span> Canlı Satış Akışı
+                        <span className="flex items-center justify-center w-8 h-8 bg-neutral-800 dark:bg-neutral-900 rounded-lg text-lg">⚡</span> Canlı Satış Akışı
                     </h3>
                     <div className="flex items-center gap-2">
                         <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                         </span>
-                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">CANLI</span>
+                        <span className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">CANLI</span>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider border-b border-neutral-100 bg-neutral-50/50">
+                            <tr className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider border-b border-neutral-100 dark:border-white/5 bg-neutral-50/50 dark:bg-neutral-950/50">
                                 <th className="px-8 py-4">Zaman</th>
                                 <th className="px-8 py-4">Kullanıcı</th>
                                 <th className="px-8 py-4">Paket Detayı</th>
@@ -543,23 +564,23 @@ const AdminSalesReport = () => {
                                 <th className="px-8 py-4 text-right">Tutar</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-50">
+                        <tbody className="divide-y divide-neutral-50 dark:divide-white/5">
                             {recentSales.map(sale => (
-                                <tr key={sale.id} className="group hover:bg-neutral-50/80 transition-colors">
+                                <tr key={sale.id} className="group hover:bg-neutral-50/80 dark:hover:bg-neutral-800/50 transition-colors">
                                     <td className="px-8 py-4">
-                                        <div className="font-medium text-neutral-900 text-sm">
+                                        <div className="font-medium text-neutral-900 dark:text-neutral-100 text-sm transition-colors">
                                             {new Date(sale.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                                         </div>
-                                        <div className="text-[10px] text-neutral-400">
+                                        <div className="text-[10px] text-neutral-400 dark:text-neutral-500 transition-colors">
                                             {new Date(sale.created_at).toLocaleDateString('tr-TR')}
                                         </div>
                                     </td>
                                     <td className="px-8 py-4">
                                         <Link to={`/admin/users?search=${sale.profiles?.user_number}`} className="flex flex-col group/link">
-                                            <div className="font-bold text-neutral-800 group-hover/link:text-blue-600 transition-colors text-sm">
+                                            <div className="font-bold text-neutral-800 dark:text-neutral-200 group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors text-sm">
                                                 {sale.profiles?.full_name || 'Bilinmiyor'}
                                             </div>
-                                            <div className="text-[10px] text-neutral-400 font-mono">
+                                            <div className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono transition-colors">
                                                 ID: {sale.profiles?.user_number}
                                             </div>
                                         </Link>
@@ -567,27 +588,27 @@ const AdminSalesReport = () => {
                                     <td className="px-8 py-4">
                                         <div className="flex flex-col gap-1">
                                             {sale.listings ? (
-                                                <Link to={`/product/${sale.listing_id}`} target="_blank" className="font-medium text-xs text-neutral-600 hover:text-neutral-900 hover:underline truncate max-w-[200px]">
+                                                <Link to={`/product/${sale.listing_id}`} target="_blank" className="font-medium text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:underline truncate max-w-[200px] transition-colors">
                                                     {sale.listings.title}
                                                 </Link>
                                             ) : (
-                                                <span className="text-neutral-400 text-xs italic">İlan Silinmiş</span>
+                                                <span className="text-neutral-400 dark:text-neutral-500 text-xs italic">İlan Silinmiş</span>
                                             )}
                                             <div className="flex items-center gap-1.5">
                                                 <span className={`w-1.5 h-1.5 rounded-full ${['galerie', 'vitrin'].includes(sale.package_type?.toLowerCase()) ? 'bg-purple-500' : 'bg-red-500'}`}></span>
-                                                <span className="font-bold text-[10px] text-neutral-500 uppercase tracking-wide">
+                                                <span className="font-bold text-[10px] text-neutral-500 dark:text-neutral-400 uppercase tracking-wide transition-colors">
                                                     {['galerie', 'vitrin'].includes(sale.package_type?.toLowerCase()) ? 'VİTRİN' : sale.package_type === 'z_premium' ? 'PREMIUM' : sale.package_type === 'highlight' ? 'ÖNE ÇIKARILAN' : sale.package_type?.toUpperCase() || 'STANDART'}
                                                 </span>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-8 py-4">
-                                        <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase border ${sale.status === 'active' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
+                                        <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase border transition-colors duration-300 ${sale.status === 'active' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-900/30' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-900/30'}`}>
                                             {sale.status === 'active' ? 'AKTİF' : 'ÖDENDİ'}
                                         </span>
                                     </td>
                                     <td className="px-8 py-4 text-right">
-                                        <div className="font-black text-neutral-900 text-base">+{parseFloat(sale.price).toLocaleString('tr-TR')} TL</div>
+                                        <div className="font-black text-neutral-900 dark:text-neutral-50 text-base transition-colors">+{parseFloat(sale.price).toLocaleString('tr-TR')} TL</div>
                                     </td>
                                 </tr>
                             ))}
@@ -605,27 +626,27 @@ const AdminSalesReport = () => {
 };
 
 const ReportCard = ({ title, value, icon, color, subtitle }) => (
-    <div className="relative group bg-white p-6 rounded-2xl border border-neutral-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${color} opacity-5 rounded-bl-[100px] -mr-6 -mt-6 transition-transform group-hover:scale-110`}></div>
+    <div className="relative group bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${color} opacity-5 dark:opacity-10 rounded-bl-[100px] -mr-6 -mt-6 transition-transform group-hover:scale-110`}></div>
 
         <div className="relative flex justify-between items-start mb-4">
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-2xl text-white shadow-lg`}>
                 {icon}
             </div>
             <div className="text-right">
-                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">{title}</p>
+                <p className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-0.5 transition-colors">{title}</p>
                 <div className="flex items-baseline justify-end gap-1">
-                    <span className="text-2xl font-display font-black text-neutral-900 tracking-tight">
+                    <span className="text-2xl font-display font-black text-neutral-900 dark:text-neutral-50 tracking-tight transition-colors">
                         {value.toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
-                    <span className="text-sm font-bold text-neutral-400"> TL</span>
+                    <span className="text-sm font-bold text-neutral-400 dark:text-neutral-500 transition-colors"> TL</span>
                 </div>
             </div>
         </div>
 
         <div className="relative">
-            <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-neutral-300"></span>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium flex items-center gap-1 transition-colors">
+                <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
                 {subtitle}
             </p>
         </div>

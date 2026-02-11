@@ -14,12 +14,12 @@ export const ServiceFields = ({
             {/* Evcil Hayvan Bakımı & Eğitim */}
             {category === 'Hizmetler' && subCategory === 'Evcil Hayvan Bakımı & Eğitim' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedTierbetreuungTrainingArt}
                         onChange={(e) => setSelectedTierbetreuungTrainingArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Bakım">{t.addListing.services.types.care}</option>
@@ -34,12 +34,12 @@ export const ServiceFields = ({
             {/* Yaşlı Bakımı (Altenpflege) */}
             {subCategory === 'Yaşlı Bakımı' && (
                 <div className="mt-4">
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedAltenpflegeArt}
                         onChange={(e) => setSelectedAltenpflegeArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="24 Saat Bakım">{t.addListing.services.types.twentyFourHourCare}</option>

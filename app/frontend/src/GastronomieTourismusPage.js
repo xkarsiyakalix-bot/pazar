@@ -8,14 +8,14 @@ const GastronomieTourismusPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Barkeeper/-in', label: 'Barmen/Barmaid' },
-                { value: 'Hotelfachmann/-frau', label: 'Otel Elemanı' },
-                { value: 'Kellner/-in', label: 'Garson' },
-                { value: 'Koch/Köchin', label: 'Aşçı' },
-                { value: 'Küchenhilfe', label: 'Mutfak Yardımcısı' },
-                { value: 'Servicekraft', label: 'Servis Elemanı' },
-                { value: 'Housekeeping', label: 'Kat Hizmetleri' },
-                { value: 'Weitere Berufe', label: 'Diğer Meslekler' }
+                { value: 'Barmen/Barmaid', label: 'Barmen/Barmaid' },
+                { value: 'Otel Elemanı', label: 'Otel Elemanı' },
+                { value: 'Garson', label: 'Garson' },
+                { value: 'Aşçı', label: 'Aşçı' },
+                { value: 'Mutfak Yardımcısı', label: 'Mutfak Yardımcısı' },
+                { value: 'Servis Elemanı', label: 'Servis Elemanı' },
+                { value: 'Kat Hizmetleri', label: 'Kat Hizmetleri' },
+                { value: 'Diğer Meslekler', label: 'Diğer Meslekler' }
             ],
             field: 'gastronomie_tourismus_art'
         },
@@ -23,8 +23,8 @@ const GastronomieTourismusPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Çalışma Süresi',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' }
             ],
             field: 'working_time'
         },
@@ -32,12 +32,12 @@ const GastronomieTourismusPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İş Türü',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' },
-                { value: 'Minijob', label: 'Mini İş' },
-                { value: 'Praktikum', label: 'Staj' },
-                { value: 'Werkstudent', label: 'Çalışan Öğrenci' },
-                { value: 'Selbstständig', label: 'Serbest Çalışan' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' },
+                { value: 'Mini İş', label: 'Mini İş' },
+                { value: 'Staj', label: 'Staj' },
+                { value: 'Çalışan Öğrenci', label: 'Çalışan Öğrenci' },
+                { value: 'Serbest Çalışan', label: 'Serbest Çalışan' }
             ],
             field: 'job_type'
         },
@@ -50,8 +50,8 @@ const GastronomieTourismusPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -59,8 +59,8 @@ const GastronomieTourismusPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

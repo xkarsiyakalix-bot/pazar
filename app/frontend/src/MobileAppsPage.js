@@ -53,7 +53,7 @@ function MobileAppsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-white font-sans selection:bg-rose-100 selection:text-rose-600">
+        <div className="min-h-screen bg-white dark:bg-neutral-950 text-gray-900 dark:text-neutral-100 font-sans selection:bg-rose-100 selection:text-rose-600 transition-colors duration-300">
             {/* Custom Styles for this page */}
             <style>{`
                 @keyframes float {
@@ -69,6 +69,10 @@ function MobileAppsPage() {
                     backdrop-filter: blur(12px);
                     border: 1px solid rgba(255, 255, 255, 0.3);
                 }
+                .dark .glass-card {
+                    background: rgba(23, 23, 23, 0.8);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                }
                 .gradient-text-red {
                     background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
                     -webkit-background-clip: text;
@@ -77,10 +81,10 @@ function MobileAppsPage() {
             `}</style>
 
             {/* Hero Section - iOS Perspective */}
-            <div className="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden bg-[#fafafa]">
+            <div className="relative pt-32 pb-20 md:pt-48 md:pb-40 overflow-hidden bg-[#fafafa] dark:bg-neutral-900">
                 {/* Background Blobs */}
-                <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-rose-50 rounded-full blur-3xl opacity-60"></div>
-                <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-blue-50 rounded-full blur-3xl opacity-60"></div>
+                <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-rose-50 dark:bg-rose-900/10 rounded-full blur-3xl opacity-60"></div>
+                <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl opacity-60"></div>
 
                 <div className="max-w-7xl mx-auto px-4 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -88,11 +92,11 @@ function MobileAppsPage() {
                             <span className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-rose-600 uppercase bg-rose-50 rounded-full">
                                 YEPYENİ EXVİTRİN DENEYİMİ
                             </span>
-                            <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-tight mb-8">
+                            <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-neutral-50 leading-tight mb-8">
                                 Cebinizdeki <br />
                                 <span className="gradient-text-red">Dijital Vitrinimiz.</span>
                             </h1>
-                            <p className="text-xl text-gray-600 leading-relaxed mb-10 max-w-xl">
+                            <p className="text-xl text-gray-600 dark:text-neutral-400 leading-relaxed mb-10 max-w-xl">
                                 Alışverişin en akıllı hali artık cebinizde. ExVitrin mobil uygulaması ile binlerce ilana saniyeler içinde ulaşın, satın veya kolayca yayınlayın.
                             </p>
 
@@ -107,8 +111,8 @@ function MobileAppsPage() {
                                     </div>
                                 </button>
 
-                                <button className="flex items-center gap-3 bg-white border-2 border-gray-100 text-gray-900 px-8 py-4 rounded-2xl hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 group">
-                                    <svg className="w-8 h-8 text-gray-900 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                <button className="flex items-center gap-3 bg-white dark:bg-neutral-800 border-2 border-gray-100 dark:border-white/10 text-gray-900 dark:text-neutral-100 px-8 py-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 group">
+                                    <svg className="w-8 h-8 text-gray-900 dark:text-neutral-100 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
                                     </svg>
                                     <div className="text-left">
@@ -132,21 +136,21 @@ function MobileAppsPage() {
             </div>
 
             {/* Features Section */}
-            <div className="py-24 bg-white">
+            <div className="py-24 bg-white dark:bg-neutral-950">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="text-center max-w-3xl mx-auto mb-20">
-                        <h2 className="text-4xl font-black text-gray-900 mb-6">Neden ExVitrin Mobil?</h2>
-                        <p className="text-xl text-gray-600">Her özelliği sizin için en hızlı ve en kolay hale getirdik.</p>
+                        <h2 className="text-4xl font-black text-gray-900 dark:text-neutral-50 mb-6">Neden ExVitrin Mobil?</h2>
+                        <p className="text-xl text-gray-600 dark:text-neutral-400">Her özelliği sizin için en hızlı ve en kolay hale getirdik.</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
                         {features.map((f, i) => (
-                            <div key={i} className="group p-10 rounded-[2.5rem] bg-[#fdfdfd] border border-gray-100 hover:border-rose-100 hover:bg-rose-50/30 transition-all duration-500 shadow-sm hover:shadow-xl hover:-translate-y-2">
+                            <div key={i} className="group p-10 rounded-[2.5rem] bg-[#fdfdfd] dark:bg-neutral-900 border border-gray-100 dark:border-white/5 hover:border-rose-100 dark:hover:border-rose-900/30 hover:bg-rose-50/30 dark:hover:bg-rose-950/10 transition-all duration-500 shadow-sm hover:shadow-xl hover:-translate-y-2">
                                 <div className={`w-16 h-16 ${f.color} text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg group-hover:scale-110 transition-transform duration-500`}>
                                     {f.icon}
                                 </div>
-                                <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">{f.title}</h3>
-                                <p className="text-gray-600 leading-relaxed text-lg">{f.desc}</p>
+                                <h3 className="text-2xl font-black text-gray-900 dark:text-neutral-50 mb-4 tracking-tight">{f.title}</h3>
+                                <p className="text-gray-600 dark:text-neutral-400 leading-relaxed text-lg">{f.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -229,14 +233,14 @@ function MobileAppsPage() {
             </div>
 
             {/* A to Z Selling Tips - Creative Grid */}
-            <div className="py-32 bg-[#fafafa] relative overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+            <div className="py-32 bg-[#fafafa] dark:bg-neutral-900 relative overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/10 to-transparent"></div>
 
                 <div className="max-w-7xl mx-auto px-4 relative z-10">
                     <div className="text-center mb-20">
                         <span className="text-rose-600 font-black tracking-[0.3em] text-xs mb-4 block uppercase">Kategorilerimiz</span>
-                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Neler Satabilirsin?</h2>
-                        <p className="text-xl text-gray-500 max-w-2xl mx-auto">ExVitrin'de her eşyanın bir değeri, her ilanın bir alıcısı vardır. İşte popüler kategorilerimizden bazıları:</p>
+                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-neutral-50 mb-6 tracking-tight">Neler Satabilirsin?</h2>
+                        <p className="text-xl text-gray-500 dark:text-neutral-400 max-w-2xl mx-auto">ExVitrin'de her eşyanın bir değeri, her ilanın bir alıcısı vardır. İşte popüler kategorilerimizden bazıları:</p>
                     </div>
 
                     <div className="flex flex-wrap justify-center gap-4">
@@ -244,7 +248,7 @@ function MobileAppsPage() {
                             <a
                                 key={index}
                                 href={`/search?q=${tip}`}
-                                className="px-8 py-4 rounded-[1.5rem] bg-white border border-gray-100 text-gray-800 font-bold text-base hover:border-rose-200 hover:text-rose-600 hover:bg-rose-50/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1.5 flex items-center gap-2 group"
+                                className="px-8 py-4 rounded-[1.5rem] bg-white dark:bg-neutral-800 border border-gray-100 dark:border-white/5 text-gray-800 dark:text-neutral-200 font-bold text-base hover:border-rose-200 dark:hover:border-rose-900 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/50 dark:hover:bg-rose-950/10 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1.5 flex items-center gap-2 group"
                             >
                                 <span className="w-1.5 h-1.5 bg-gray-200 rounded-full group-hover:bg-rose-500 transition-colors"></span>
                                 {tip}
@@ -264,12 +268,12 @@ function MobileAppsPage() {
             </div>
 
             {/* Premium Download CTA */}
-            <div className="py-24 bg-white">
+            <div className="py-24 bg-white dark:bg-neutral-950">
                 <div className="max-w-5xl mx-auto px-4">
-                    <div className="glass-card p-12 md:p-20 rounded-[4rem] text-center border-2 border-rose-50 shadow-2xl relative overflow-hidden">
+                    <div className="glass-card p-12 md:p-20 rounded-[4rem] text-center border-2 border-rose-50 dark:border-white/5 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-rose-500 to-amber-500"></div>
-                        <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-8 tracking-tighter">İndirmeye Hazır Mısın?</h2>
-                        <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto font-medium">Binlerce kullanıcı arasına katıl, alışverişin keyfini ExVitrin mobil hızıyla çıkar.</p>
+                        <h2 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-neutral-50 mb-8 tracking-tighter">İndirmeye Hazır Mısın?</h2>
+                        <p className="text-xl text-gray-600 dark:text-neutral-400 mb-12 max-w-2xl mx-auto font-medium">Binlerce kullanıcı arasına katıl, alışverişin keyfini ExVitrin mobil hızıyla çıkar.</p>
 
                         <div className="flex flex-wrap justify-center gap-6">
                             <img src="/images/mobile_ios.png" className="h-16 w-auto grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" alt="App Store" />

@@ -27,16 +27,16 @@ export const HomeGardenFields = ({
     setSelectedDienstleistungenHausGartenArt
 }) => {
     return (
-        <div className="space-y-4 pt-4 border-t border-gray-200">
+        <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
             {/* Wohnzimmer */}
             {category === 'Ev & Bahçe' && subCategory === 'Oturma Odası' && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedWohnzimmerArt}
                         onChange={(e) => setSelectedWohnzimmerArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Raflar">{t.addListing.homeGarden.types.shelves}</option>
@@ -53,12 +53,12 @@ export const HomeGardenFields = ({
             {/* Schlafzimmer */}
             {category === 'Ev & Bahçe' && subCategory === 'Yatak Odası' && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedSchlafzimmerArt}
                         onChange={(e) => setSelectedSchlafzimmerArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Yatak">{t.addListing.homeGarden.types.bed}</option>
@@ -74,12 +74,12 @@ export const HomeGardenFields = ({
             {/* Küche & Esszimmer */}
             {category === 'Ev & Bahçe' && subCategory === 'Mutfak & Yemek Odası' && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedKuecheEsszimmerArt}
                         onChange={(e) => setSelectedKuecheEsszimmerArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Çatal Bıçak Takımı">{t.addListing.homeGarden.types.cutlery}</option>
@@ -97,12 +97,12 @@ export const HomeGardenFields = ({
             {/* Gartenzubehör & Pflanzen */}
             {category === 'Ev & Bahçe' && subCategory === 'Bahçe Malzemeleri & Bitkiler' && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedGartenzubehoerArt}
                         onChange={(e) => setSelectedGartenzubehoerArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Çiçek Saksısı">{t.addListing.homeGarden.types.pot}</option>
@@ -118,12 +118,12 @@ export const HomeGardenFields = ({
             {/* Lamba & Aydınlatma */}
             {category === 'Ev & Bahçe' && (subCategory === 'Lamba & Aydınlatma' || subCategory === 'Aydınlatma') && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedLambaAydinlatmaArt}
                         onChange={(e) => setSelectedLambaAydinlatmaArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Tavan Lambası">{t.addListing.homeGarden.types.ceilingLamp}</option>
@@ -139,12 +139,12 @@ export const HomeGardenFields = ({
             {/* Dekoration */}
             {category === 'Ev & Bahçe' && subCategory === 'Dekorasyon' && (
                 <div>
-                    <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                     <select
                         value={selectedDekorationArt}
                         onChange={(e) => setSelectedDekorationArt(e.target.value)}
                         required
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
                         <option value="Resim & Poster">{t.addListing.homeGarden.types.poster}</option>
@@ -160,12 +160,12 @@ export const HomeGardenFields = ({
             {((category === 'Ev & Bahçe' && (subCategory === 'Ev & Bahçe Hizmetleri' || subCategory === 'Ev & Bahçe')) ||
                 (category === 'Hizmetler' && (subCategory === 'Ev & Bahçe Hizmetleri' || subCategory === 'Ev & Bahçe'))) && (
                     <div className="mt-4">
-                        <label className="block text-sm text-gray-600 mb-1">{t.addListing.art}</label>
+                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
                         <select
                             value={selectedDienstleistungenHausGartenArt}
                             onChange={(e) => setSelectedDienstleistungenHausGartenArt(e.target.value)}
                             required
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 bg-white text-gray-700"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
                             <option value="Bau & Handwerk">{t.addListing.services.types.construction}</option>

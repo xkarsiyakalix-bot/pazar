@@ -41,7 +41,7 @@ const BannerSlider = () => {
     };
 
     return (
-        <div className="mb-6 sm:mb-8 overflow-hidden shadow-lg relative bg-gray-100 h-[180px] sm:h-[250px] md:h-[300px] group">
+        <div className="mb-6 sm:mb-8 overflow-hidden shadow-lg relative bg-gray-100 dark:bg-neutral-900 h-[180px] sm:h-[250px] md:h-[300px] group">
             {/* Slides */}
             {slides.map((slide, index) => (
                 <div

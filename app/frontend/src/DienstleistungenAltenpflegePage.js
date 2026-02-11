@@ -13,8 +13,8 @@ const DienstleistungenAltenpflegePage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -22,8 +22,8 @@ const DienstleistungenAltenpflegePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },
@@ -37,11 +37,11 @@ const DienstleistungenAltenpflegePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: '24h Betreuung', label: '24 Saat Bakım' },
-                { value: 'Stundenweise Betreuung', label: 'Saatlik Bakım' },
-                { value: 'Kurzzeitpflege', label: 'Kısa Süreli Bakım' },
-                { value: 'Begleitung & Alltagshilfe', label: 'Refakat & Günlük Yardım' },
-                { value: 'Sonstige', label: 'Diğer' }
+                { value: '24 Saat Bakım', label: '24 Saat Bakım' },
+                { value: 'Saatlik Bakım', label: 'Saatlik Bakım' },
+                { value: 'Kısa Süreli Bakım', label: 'Kısa Süreli Bakım' },
+                { value: 'Refakat & Günlük Yardım', label: 'Refakat & Günlük Yardım' },
+                { value: 'Diğer', label: 'Diğer' }
             ],
             field: 'altenpflege_art'
         }

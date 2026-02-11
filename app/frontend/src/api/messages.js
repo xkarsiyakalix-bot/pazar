@@ -101,7 +101,7 @@ export const getConversations = async () => {
     // Fetch profiles for all users
     const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url, store_logo')
+        .select('id, full_name, avatar_url, store_logo, is_pro, is_commercial, subscription_tier, subscription_expiry, store_slug, user_number')
         .in('id', Array.from(userIds));
 
     // Create a map of profiles
@@ -121,7 +121,7 @@ export const getConversations = async () => {
     if (listingIds.size > 0) {
         const { data: listings } = await supabase
             .from('listings')
-            .select('id, title, images, status')
+            .select('id, title, images, status, slug, listing_number')
             .in('id', Array.from(listingIds));
 
         listings?.forEach(listing => {
@@ -154,6 +154,7 @@ export const getConversations = async () => {
                     id: message.listing_id,
                     title: foundListing?.title || 'İlan Artık Mevcut Değil',
                     is_deleted: true,
+                    listing_number: foundListing?.listing_number,
                     images: foundListing?.images || ['https://premium.exvitrin.com/storage/v1/object/public/listing-images/placeholder_listing.png']
                 };
             }
@@ -222,7 +223,7 @@ export const getConversation = async (userId) => {
     // Fetch profiles for both users
     const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url, store_logo')
+        .select('id, full_name, avatar_url, store_logo, is_pro, is_commercial, subscription_tier, subscription_expiry, store_slug, user_number')
         .in('id', [user.id, userId]);
 
     // Create profile map

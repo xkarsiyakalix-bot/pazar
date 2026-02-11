@@ -16,8 +16,8 @@ const ProfileLayout = ({ children }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-[35px] sm:pt-24 pb-12">
-            <div className="max-w-7xl mx-auto px-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 pt-[35px] sm:pt-24 pb-12 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto px-2 sm:px-4">
                 {children}
             </div>
         </div>

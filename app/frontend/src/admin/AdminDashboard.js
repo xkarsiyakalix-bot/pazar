@@ -25,7 +25,23 @@ const AdminDashboard = () => {
     const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
     const [realtimeOnlineCount, setRealtimeOnlineCount] = useState(0);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [profile, setProfile] = useState(null);
     const refreshTimerRef = useRef(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase
+                    .from('profiles')
+                    .select('admin_role, email, user_number')
+                    .eq('id', user.id)
+                    .single();
+                setProfile(data);
+            }
+        };
+        fetchProfile();
+    }, []);
 
     const loadDashboardData = async (silent = false) => {
         try {
@@ -48,7 +64,9 @@ const AdminDashboard = () => {
                 { data: promotions, error: promotionsError },
                 visitStats
             ] = await Promise.all([
+                // Total listings count - ALL listings ever created (including deleted, sold, etc.)
                 supabase.from('listings').select('*', { count: 'exact', head: true }),
+                // Active listings count - only currently active listings
                 supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
@@ -68,23 +86,23 @@ const AdminDashboard = () => {
 
             if (listingsError) throw listingsError;
 
-            // Update stats
-            setStats({
+            // Update stats - use functional update to preserve real-time values like onlineUsers
+            setStats(prev => ({
                 totalListings: listingsCount || 0,
                 activeListings: activeCount || 0,
                 totalUsers: usersCount || 0,
-                onlineUsers: realtimeOnlineCount, // This will be updated by the presence effect
+                onlineUsers: prev.onlineUsers, // Keep current real-time count
                 newUsersToday: newUsersCount || 0,
                 newListingsToday: newListingsCount || 0,
                 totalVisitorsToday: visitStats.totalVisitorsToday,
                 loggedInUsersToday: visitStats.loggedInUsersToday,
                 guestsToday: visitStats.guestsToday
-            });
+            }));
 
             // Calculate Revenue
             if (!allPromotionsError && allPromotions) {
                 const total = allPromotions
-                    .filter(p => p.status === 'active' || p.status === 'paid')
+                    .filter(p => p.status === 'active' || p.status === 'paid' || p.status === 'expired')
                     .reduce((acc, p) => acc + (parseFloat(p.price) || 0), 0);
                 setTotalRevenue(total);
             }
@@ -127,10 +145,10 @@ const AdminDashboard = () => {
     useEffect(() => {
         loadDashboardData();
 
-        // 1. Polling Fallback (every 2 minutes for baseline stats)
-        const intervalId = setInterval(() => {
-            debouncedRefresh();
-        }, 120000);
+        // 1. Periodic refresh as fallback (every 30 seconds)
+        const pollInterval = setInterval(() => {
+            loadDashboardData(true);
+        }, 30000);
 
         // 2. Real-time subscriptions
         // Only trigger for significant changes to avoid "flickering"
@@ -154,43 +172,56 @@ const AdminDashboard = () => {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'promotions' }, debouncedRefresh)
             .subscribe();
 
+        const visitsSubscription = supabase
+            .channel('admin_visits_changes')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'page_visits' }, debouncedRefresh)
+            .subscribe();
+
         // 3. Presence Subscription for Real-time Online Count (Whole Site)
         const presenceChannel = supabase.channel('site-presence');
 
         const updateOnlineCount = () => {
             const state = presenceChannel.presenceState();
-            // Filter out different sessions from same user to count unique users but also count guests
-            const count = Object.keys(state).length;
-            setRealtimeOnlineCount(count);
+            if (!state) return;
+
+            // Count unique keys in presence state
+            // Each key is a userId or guestId
+            const uniqueKeys = Object.keys(state);
+            const count = uniqueKeys.length;
+            setRealtimeOnlineCount(count > 0 ? count : 0);
         };
 
         presenceChannel
-            .on('presence', { event: 'sync' }, updateOnlineCount)
-            .on('presence', { event: 'join' }, updateOnlineCount)
-            .on('presence', { event: 'leave' }, updateOnlineCount)
+            .on('presence', { event: 'sync' }, () => {
+                updateOnlineCount();
+            })
+            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                updateOnlineCount();
+            })
+            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                updateOnlineCount();
+            })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
-                    // Initial sync after subscription
+                    // Force a sync check
                     updateOnlineCount();
                 }
             });
 
         return () => {
             if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
-            clearInterval(intervalId);
+            clearInterval(pollInterval);
             listingsSubscription.unsubscribe();
             profilesSubscription.unsubscribe();
             promotionsSubscription.unsubscribe();
+            visitsSubscription.unsubscribe();
             presenceChannel.unsubscribe();
         };
     }, []);
 
-    // Sync stats.onlineUsers with realtimeOnlineCount - use a more stable update
+    // Sync stats.onlineUsers with realtimeOnlineCount - immediately reflect in UI
     useEffect(() => {
-        setStats(prev => {
-            if (prev.onlineUsers === realtimeOnlineCount) return prev;
-            return { ...prev, onlineUsers: realtimeOnlineCount };
-        });
+        setStats(prev => ({ ...prev, onlineUsers: realtimeOnlineCount }));
     }, [realtimeOnlineCount]);
 
     if (loading) {
@@ -203,12 +234,6 @@ const AdminDashboard = () => {
 
     return (
         <div className="space-y-8 animate-fade-in relative">
-            {isRefreshing && (
-                <div className="absolute -top-6 right-0 flex items-center gap-2 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full animate-pulse z-10">
-                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                    VERİLER GÜNCELLENİYOR
-                </div>
-            )}
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <StatsCard
@@ -276,20 +301,22 @@ const AdminDashboard = () => {
                 />
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 {/* Payments Section (Left) */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 hover:shadow-md transition-shadow duration-300">
+                <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-neutral-100 dark:border-white/5 hover:shadow-md transition-all duration-300">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-display font-bold text-neutral-900 tracking-tight">Ödemeler & Promosyonlar</h3>
-                        <Link to="/admin/sales-reports" className="px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1">
+                        <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 tracking-tight">Ödemeler & Promosyonlar</h3>
+                        <Link to="/admin/sales-reports" className="px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors flex items-center gap-1">
                             Raporları Gör 📊
                         </Link>
                     </div>
                     <div className="space-y-3">
                         {recentPromotions.map(promo => (
-                            <div key={promo.id} className="group p-4 bg-white rounded-xl border border-neutral-100 hover:border-blue-200 hover:shadow-sm transition-all duration-200">
+                            <div key={promo.id} className="group p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-white/5 hover:border-blue-200 dark:hover:border-blue-900/50 hover:shadow-sm transition-all duration-200">
                                 <div className="flex justify-between items-start mb-1">
-                                    <div className="font-bold text-neutral-800">{promo.profiles?.full_name || 'Bilinmiyor'}</div>
+                                    <div className="font-bold text-neutral-800 dark:text-neutral-200">{promo.profiles?.full_name || 'Bilinmiyor'}</div>
                                     <div className="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-600">
                                         {promo.price?.toLocaleString('de-DE')} TL
                                     </div>
@@ -297,8 +324,8 @@ const AdminDashboard = () => {
                                 <div className="flex justify-between items-center mt-2">
                                     <div className="flex items-center gap-2">
                                         <span className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${promo.status === 'cancelled'
-                                            ? 'bg-red-50 text-red-600 ring-1 ring-red-100'
-                                            : 'bg-neutral-50 text-neutral-600 ring-1 ring-neutral-200'
+                                            ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 ring-1 ring-red-100 dark:ring-red-900/30'
+                                            : 'bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-400 ring-1 ring-neutral-200 dark:ring-white/5'
                                             }`}>
                                             {promo.package_type === 'highlight' ? 'Öne Çıkarılan' :
                                                 ['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase()) ? 'Vitrin' :
@@ -312,7 +339,7 @@ const AdminDashboard = () => {
                                             <span className="text-[10px] font-black text-red-500 uppercase tracking-tighter">İPTAL</span>
                                         )}
                                     </div>
-                                    <span className="text-xs font-medium text-neutral-400">
+                                    <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
                                         {new Date(promo.created_at).toLocaleDateString('de-DE')}
                                     </span>
                                 </div>
@@ -320,44 +347,44 @@ const AdminDashboard = () => {
                         ))}
                         {recentPromotions.length === 0 && (
                             <div className="text-center py-12">
-                                <div className="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <div className="w-16 h-16 bg-neutral-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <span className="text-2xl opacity-30">💰</span>
                                 </div>
-                                <p className="text-neutral-400 font-medium text-sm">Henüz ödeme kaydı yok</p>
+                                <p className="text-neutral-400 dark:text-neutral-500 font-medium text-sm">Henüz ödeme kaydı yok</p>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Recent Listings (Middle) */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 hover:shadow-md transition-shadow duration-300">
+                <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-neutral-100 dark:border-white/5 hover:shadow-md transition-all duration-300">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-display font-bold text-neutral-900 tracking-tight">Son İlanlar</h3>
-                        <a href="/admin/listings" className="text-sm text-neutral-500 hover:text-red-600 font-medium transition-colors">Tümünü İncele →</a>
+                        <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 tracking-tight">Son İlanlar</h3>
+                        <a href="/admin/listings" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500 font-medium transition-colors">Tümünü İncele →</a>
                     </div>
-                    <div className="overflow-hidden bg-white rounded-xl border border-neutral-100">
+                    <div className="overflow-hidden bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-white/5">
                         <table className="w-full text-left">
-                            <thead className="text-[10px] uppercase font-bold text-neutral-400 bg-neutral-50/50">
+                            <thead className="text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-50/50 dark:bg-neutral-950/50">
                                 <tr>
                                     <th className="px-4 py-3 tracking-wider">İlan Detayı</th>
                                     <th className="px-4 py-3 text-right tracking-wider">Tarih</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-neutral-50">
+                            <tbody className="divide-y divide-neutral-50 dark:divide-white/5">
                                 {recentListings.map(listing => (
-                                    <tr key={listing.id} className="group hover:bg-neutral-50/80 transition-colors cursor-default">
+                                    <tr key={listing.id} className="group hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 transition-colors cursor-default">
                                         <td className="px-4 py-3.5">
-                                            <div className="font-bold text-neutral-800 truncate max-w-[180px] group-hover:text-red-600 transition-colors">{listing.title}</div>
+                                            <div className="font-bold text-neutral-800 dark:text-neutral-200 truncate max-w-[180px] group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">{listing.title}</div>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-neutral-100 text-neutral-500">
+                                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">
                                                     #{generateListingNumber(listing)}
                                                 </span>
-                                                <span className="text-[10px] text-neutral-400 font-medium truncate max-w-[100px]">
+                                                <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-medium truncate max-w-[100px]">
                                                     {listing.profiles?.full_name}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3.5 text-xs font-medium text-neutral-500 text-right tabular-nums">
+                                        <td className="px-4 py-3.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 text-right tabular-nums">
                                             {new Date(listing.created_at).toLocaleDateString('de-DE')}
                                         </td>
                                     </tr>
@@ -366,41 +393,70 @@ const AdminDashboard = () => {
                         </table>
                     </div>
                 </div>
-
-                {/* Quick Actions (Right) */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 hover:shadow-md transition-shadow duration-300">
-                    <h3 className="text-xl font-display font-bold text-neutral-900 mb-6 tracking-tight">Hızlı İşlemler</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <Link to="/admin/promotions" className="group p-5 bg-gradient-to-br from-neutral-50 to-white rounded-2xl border border-neutral-100 hover:border-purple-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform">🚀</div>
-                            <span className="font-bold text-neutral-900 group-hover:text-purple-700 transition-colors">Promosyonlar</span>
-                        </Link>
-                        <Link to="/admin/users" className="group p-5 bg-gradient-to-br from-neutral-50 to-white rounded-2xl border border-neutral-100 hover:border-red-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-10 h-10 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform">🚫</div>
-                            <span className="font-bold text-neutral-900 group-hover:text-red-700 transition-colors">Kullanıcılar</span>
-                        </Link>
-                        <Link to="/admin/settings" className="group p-5 bg-gradient-to-br from-neutral-50 to-white rounded-2xl border border-neutral-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform">⚙️</div>
-                            <span className="font-bold text-neutral-900 group-hover:text-blue-700 transition-colors">Sistem</span>
-                        </Link>
-                        <button className="group p-5 bg-gradient-to-br from-neutral-50 to-white rounded-2xl border border-neutral-100 hover:border-emerald-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left">
-                            <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform">✉️</div>
-                            <span className="font-bold text-neutral-900 group-hover:text-emerald-700 transition-colors">Bülten</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     );
 };
 
+const QuickActionCard = ({ to, icon, title, color, description }) => {
+    const colorClasses = {
+        blue: 'from-blue-50 to-white border-blue-100 text-blue-600 hover:border-blue-300 group-hover:from-blue-600 group-hover:to-blue-700',
+        amber: 'from-amber-50 to-white border-amber-100 text-amber-600 hover:border-amber-300 group-hover:from-amber-600 group-hover:to-amber-700',
+        indigo: 'from-indigo-50 to-white border-indigo-100 text-indigo-600 hover:border-indigo-300 group-hover:from-indigo-600 group-hover:to-indigo-700',
+        emerald: 'from-emerald-50 to-white border-emerald-100 text-emerald-600 hover:border-emerald-300 group-hover:from-emerald-600 group-hover:to-emerald-700',
+        purple: 'from-purple-50 to-white border-purple-100 text-purple-600 hover:border-purple-300 group-hover:from-purple-600 group-hover:to-purple-700',
+        rose: 'from-rose-50 to-white border-rose-100 text-rose-600 hover:border-rose-300 group-hover:from-rose-600 group-hover:to-rose-700',
+        cyan: 'from-cyan-50 to-white border-cyan-100 text-cyan-600 hover:border-cyan-300 group-hover:from-cyan-600 group-hover:to-cyan-700',
+        orange: 'from-orange-50 to-white border-orange-100 text-orange-600 hover:border-orange-300 group-hover:from-orange-600 group-hover:to-orange-700',
+        slate: 'from-slate-50 to-white border-slate-100 text-slate-600 hover:border-slate-300 group-hover:from-slate-600 group-hover:to-slate-700',
+        neutral: 'from-neutral-50 to-white border-neutral-100 text-neutral-600 hover:border-neutral-300 group-hover:from-neutral-600 group-hover:to-neutral-700',
+    };
+
+    const iconBgClasses = {
+        blue: 'bg-blue-100/50 text-blue-600 group-hover:bg-white group-hover:text-blue-600',
+        amber: 'bg-amber-100/50 text-amber-600 group-hover:bg-white group-hover:text-amber-600',
+        indigo: 'bg-indigo-100/50 text-indigo-600 group-hover:bg-white group-hover:text-indigo-600',
+        emerald: 'bg-emerald-100/50 text-emerald-600 group-hover:bg-white group-hover:text-emerald-600',
+        purple: 'bg-purple-100/50 text-purple-600 group-hover:bg-white group-hover:text-purple-600',
+        rose: 'bg-rose-100/50 text-rose-600 group-hover:bg-white group-hover:text-rose-600',
+        cyan: 'bg-cyan-100/50 text-cyan-600 group-hover:bg-white group-hover:text-cyan-600',
+        orange: 'bg-orange-100/50 text-orange-600 group-hover:bg-white group-hover:text-orange-600',
+        slate: 'bg-slate-100/50 text-slate-600 group-hover:bg-white group-hover:text-slate-600',
+        neutral: 'bg-neutral-100/50 text-neutral-600 group-hover:bg-white group-hover:text-neutral-600',
+    };
+
+    const baseClasses = colorClasses[color];
+
+    return (
+        <Link
+            to={to}
+            className={`flex flex-col p-5 bg-gradient-to-br ${baseClasses} dark:from-neutral-900 dark:to-neutral-900 rounded-3xl border dark:border-white/5 transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 group relative overflow-hidden`}
+        >
+            <div className={`w-12 h-12 ${iconBgClasses[color]} dark:bg-neutral-800/50 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:rotate-6`}>
+                {icon}
+            </div>
+            <div className="relative z-10 transition-colors duration-300 group-hover:text-white">
+                <span className="font-black text-neutral-900 dark:text-neutral-50 group-hover:text-white transition-colors duration-300 block mb-0.5 tracking-tight group-hover:scale-[1.02] origin-left">
+                    {title}
+                </span>
+                <span className="text-[10px] uppercase font-black tracking-widest opacity-40 dark:opacity-60 group-hover:opacity-100 group-hover:text-white/80 transition-all duration-300">
+                    {description}
+                </span>
+            </div>
+
+            {/* Subtle background ornament */}
+            <div className={`absolute -bottom-4 -right-4 w-20 h-20 bg-current opacity-[0.03] dark:opacity-[0.05] rounded-full group-hover:scale-150 transition-transform duration-500`}></div>
+        </Link>
+    );
+};
+
 const StatsCard = ({ title, value, icon, gradient, iconColor, isPremium }) => (
     <div className={`
-        relative overflow-hidden bg-white p-6 rounded-2xl border border-neutral-100 
+        relative overflow-hidden bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-white/5 
         hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group
-        ${isPremium ? 'ring-2 ring-amber-100 hover:ring-amber-300' : ''}
+        ${isPremium ? 'ring-2 ring-amber-100 dark:ring-amber-900/20 hover:ring-amber-300 dark:hover:ring-amber-900/40' : ''}
     `}>
-        <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${gradient} opacity-10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110`}></div>
+        <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${gradient} opacity-10 dark:opacity-20 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110`}></div>
 
         <div className="relative flex items-center">
             <div className={`
@@ -410,8 +466,8 @@ const StatsCard = ({ title, value, icon, gradient, iconColor, isPremium }) => (
                 {icon}
             </div>
             <div>
-                <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">{title}</p>
-                <p className="text-2xl sm:text-3xl font-display font-black text-neutral-900 tracking-tight">{value}</p>
+                <p className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest mb-1">{title}</p>
+                <p className="text-2xl sm:text-3xl font-display font-black text-neutral-900 dark:text-neutral-50 tracking-tight">{value}</p>
             </div>
         </div>
     </div>

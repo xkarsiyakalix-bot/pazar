@@ -46,12 +46,9 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         let mounted = true;
 
-        // Check active session on mount
         const initAuth = async () => {
-            // Safety timeout: if auth doesn't initialize within 5 seconds, move on
             const timeoutId = setTimeout(() => {
                 if (mounted && loading) {
-                    console.warn('Auth initialization timed out, continuing...');
                     setLoading(false);
                 }
             }, 5000);
@@ -59,25 +56,12 @@ export const AuthProvider = ({ children }) => {
             try {
                 const { data: { session }, error } = await supabase.auth.getSession();
                 if (error) throw error;
-
                 if (mounted) {
-                    const currentUser = session?.user ?? null;
-                    setUser(currentUser);
+                    setUser(session?.user ?? null);
                     setLoading(false);
                     clearTimeout(timeoutId);
-
-                    // Check ban status and update last seen
-                    if (currentUser) {
-                        checkBanStatus(currentUser.id);
-                        // Update online status immediately on mount if logged in
-                        supabase
-                            .from('profiles')
-                            .update({ last_seen: new Date().toISOString() })
-                            .eq('id', currentUser.id);
-                    }
                 }
             } catch (error) {
-                console.error('Error getting session:', error);
                 if (mounted) {
                     setLoading(false);
                     clearTimeout(timeoutId);
@@ -87,45 +71,74 @@ export const AuthProvider = ({ children }) => {
 
         initAuth();
 
-        // Listen for auth changes
-        const authListener = supabase.auth.onAuthStateChange(
+        const { data: authListener } = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 if (mounted) {
                     const currentUser = session?.user ?? null;
                     setUser(currentUser);
                     setLoading(false);
 
-                    // Check ban status and update last seen
                     if (currentUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
                         checkBanStatus(currentUser.id);
-                        // Update online status on these events
-                        supabase
-                            .from('profiles')
-                            .update({ last_seen: new Date().toISOString() })
-                            .eq('id', currentUser.id);
                     }
                 }
             }
         );
 
-        // Heartbeat: Update last_seen every 5 minutes if user is logged in
-        const heartbeat = setInterval(() => {
-            if (user) {
-                supabase
-                    .from('profiles')
-                    .update({ last_seen: new Date().toISOString() })
-                    .eq('id', user.id);
-            }
-        }, 1000 * 60 * 5);
-
         return () => {
             mounted = false;
-            if (authListener && authListener.data && authListener.data.subscription) {
-                authListener.data.subscription.unsubscribe();
+            if (authListener?.subscription) {
+                authListener.subscription.unsubscribe();
             }
-            clearInterval(heartbeat);
         };
     }, []);
+
+    // Effect for Presence and Last Seen
+    useEffect(() => {
+        if (!user) {
+            // Guest Presence
+            let guestId = sessionStorage.getItem('presence_guest_id');
+            if (!guestId) {
+                guestId = `guest-${Math.random().toString(36).substring(7)}`;
+                sessionStorage.setItem('presence_guest_id', guestId);
+            }
+
+            const channel = supabase.channel('site-presence', {
+                config: { presence: { key: guestId } }
+            });
+
+            channel.subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({ user_id: 'guest', online_at: new Date().toISOString() });
+                }
+            });
+
+            return () => { channel.unsubscribe(); };
+        } else {
+            // Logged-in User Presence & Activity
+            const channel = supabase.channel('site-presence', {
+                config: { presence: { key: user.id } }
+            });
+
+            const updateActivity = async () => {
+                await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', user.id);
+            };
+
+            channel.subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({ user_id: user.id, online_at: new Date().toISOString() });
+                    updateActivity();
+                }
+            });
+
+            const heartbeat = setInterval(updateActivity, 1000 * 60 * 5); // 5 mins
+
+            return () => {
+                channel.unsubscribe();
+                clearInterval(heartbeat);
+            };
+        }
+    }, [user?.id]);
 
     const value = {
         user,

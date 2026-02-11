@@ -8,16 +8,16 @@ const BuecherZeitschriftenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Antiquarische Bücher', label: 'Eski Kitaplar' },
-                { value: 'Kinderbücher', label: 'Çocuk Kitapları' },
-                { value: 'Krimis & Thriller', label: 'Polisiye & Gerilim' },
-                { value: 'Kunst & Kultur', label: 'Sanat & Kültür' },
-                { value: 'Sachbücher', label: 'Kurgu Dışı' },
-                { value: 'Science Fiction', label: 'Bilim Kurgu' },
-                { value: 'Unterhaltungsliteratur', label: 'Eğlence Edebiyatı' },
-                { value: 'Zeitgenössische Literatur & Klassiker', label: 'Çağdaş Edebiyat & Klasikler' },
-                { value: 'Zeitschriften', label: 'Dergiler' },
-                { value: 'Weitere Bücher & Zeitschriften', label: 'Diğer Kitap & Dergi' }
+                { value: 'Eski Kitaplar', label: 'Eski Kitaplar' },
+                { value: 'Çocuk Kitapları', label: 'Çocuk Kitapları' },
+                { value: 'Polisiye & Gerilim', label: 'Polisiye & Gerilim' },
+                { value: 'Sanat & Kültür', label: 'Sanat & Kültür' },
+                { value: 'Kurgu Dışı', label: 'Kurgu Dışı' },
+                { value: 'Bilim Kurgu', label: 'Bilim Kurgu' },
+                { value: 'Eğlence Edebiyatı', label: 'Eğlence Edebiyatı' },
+                { value: 'Çağdaş Edebiyat & Klasikler', label: 'Çağdaş Edebiyat & Klasikler' },
+                { value: 'Dergiler', label: 'Dergiler' },
+                { value: 'Diğer Kitap & Dergi', label: 'Diğer Kitap & Dergi' }
             ],
             field: 'buecher_zeitschriften_art'
         },
@@ -25,8 +25,8 @@ const BuecherZeitschriftenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Teslimat',
             type: 'multiselect',
             options: [
-                { value: 'Versand möglich', label: 'Kargo Mümkün' },
-                { value: 'Nur Abholung', label: 'Sadece Elden Teslim' }
+                { value: 'Kargo Mümkün', label: 'Kargo Mümkün' },
+                { value: 'Sadece Elden Teslim', label: 'Sadece Elden Teslim' }
             ],
             field: 'versand_art'
         },
@@ -34,11 +34,11 @@ const BuecherZeitschriftenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Durum',
             type: 'multiselect',
             options: [
-                { value: 'neu', label: 'Yeni' },
-                { value: 'sehr_gut', label: 'Çok İyi' },
-                { value: 'gut', label: 'İyi' },
-                { value: 'in_ordnung', label: 'Makul' },
-                { value: 'defekt', label: 'Defolu' }
+                { value: 'Yeni', label: 'Yeni' },
+                { value: 'Çok İyi', label: 'Çok İyi' },
+                { value: 'İyi', label: 'İyi' },
+                { value: 'Makul', label: 'Makul' },
+                { value: 'Defolu', label: 'Defolu' }
             ],
             field: 'condition'
         },
@@ -51,8 +51,8 @@ const BuecherZeitschriftenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -60,8 +60,8 @@ const BuecherZeitschriftenPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privatnutzer', label: 'Bireysel' },
-                { value: 'Gewerblicher Nutzer', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

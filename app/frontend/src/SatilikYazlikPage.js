@@ -8,8 +8,8 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -17,8 +17,8 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },
@@ -31,14 +31,14 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Oda Sayısı',
             type: 'multiselect',
             options: [
-                { value: '1', label: '1+0' },
-                { value: '1.5', label: '1+1' },
-                { value: '2', label: '2+1' },
-                { value: '2.5', label: '2+2' },
-                { value: '3', label: '3+1' },
-                { value: '3.5', label: '3+2' },
-                { value: '4', label: '4+1' },
-                { value: '4+', label: '4+1 ve üzeri' }
+                { value: '1+0', label: '1+0' },
+                { value: '1+1', label: '1+1' },
+                { value: '2+1', label: '2+1' },
+                { value: '2+2', label: '2+2' },
+                { value: '3+1', label: '3+1' },
+                { value: '3+2', label: '3+2' },
+                { value: '4+1', label: '4+1' },
+                { value: '4+1 ve üzeri', label: '4+1 ve üzeri' }
             ],
             field: 'rooms'
         },
@@ -61,19 +61,19 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Donanım',
             type: 'multiselect',
             options: [
-                { value: 'Möbliert/Teilmöbliert', label: 'Mobilyalı/Kısmen Mobilyalı' },
+                { value: 'Mobilyalı/Kısmen Mobilyalı', label: 'Mobilyalı/Kısmen Mobilyalı' },
                 { value: 'Balkon', label: 'Balkon' },
-                { value: 'Terrasse', label: 'Teras' },
-                { value: 'Einbauküche', label: 'Ankastre Mutfak' },
-                { value: 'Badewanne', label: 'Küvet' },
-                { value: 'Gäste-WC', label: 'Misafir Tuvaleti' },
-                { value: 'Stufenloser Zugang', label: 'Engelsiz Erişim' },
-                { value: 'Fußbodenheizung', label: 'Yerden Isıtma' },
-                { value: 'WLAN', label: 'Wi-Fi' },
-                { value: 'Kühlschrank', label: 'Buzdolabı' },
-                { value: 'Waschmaschine', label: 'Çamaşır Makinesi' },
-                { value: 'Spülmaschine', label: 'Bulaşık Makinesi' },
-                { value: 'TV', label: 'Televizyon' }
+                { value: 'Teras', label: 'Teras' },
+                { value: 'Ankastre Mutfak', label: 'Ankastre Mutfak' },
+                { value: 'Küvet', label: 'Küvet' },
+                { value: 'Misafir Tuvaleti', label: 'Misafir Tuvaleti' },
+                { value: 'Engelsiz Erişim', label: 'Engelsiz Erişim' },
+                { value: 'Yerden Isıtma', label: 'Yerden Isıtma' },
+                { value: 'Wi-Fi', label: 'Wi-Fi' },
+                { value: 'Buzdolabı', label: 'Buzdolabı' },
+                { value: 'Çamaşır Makinesi', label: 'Çamaşır Makinesi' },
+                { value: 'Bulaşık Makinesi', label: 'Bulaşık Makinesi' },
+                { value: 'Televizyon', label: 'Televizyon' }
             ],
             field: 'amenities'
         },
@@ -81,17 +81,17 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Özellikler',
             type: 'multiselect',
             options: [
-                { value: 'Altbau', label: 'Eski Yapı' },
-                { value: 'Neubau', label: 'Yeni Yapı' },
-                { value: 'Aufzug', label: 'Asansör' },
-                { value: 'Keller', label: 'Kiler/Bodrum' },
-                { value: 'Dachboden', label: 'Çatı Katı' },
-                { value: 'Garage/Stellplatz', label: 'Garaj/Park Yeri' },
-                { value: 'Garten/-mitnutzung', label: 'Bahçe' },
-                { value: 'Haustiere erlaubt', label: 'Evcil Hayvan İzni' },
-                { value: 'WG-geeignet', label: 'Paylaşımlı Eve Uygun' },
-                { value: 'Denkmalobjekt', label: 'Tarihi Eser/Anıt' },
-                { value: 'Aktuell vermietet', label: 'Halen Kirada' }
+                { value: 'Eski Yapı', label: 'Eski Yapı' },
+                { value: 'Yeni Yapı', label: 'Yeni Yapı' },
+                { value: 'Asansör', label: 'Asansör' },
+                { value: 'Kiler/Bodrum', label: 'Kiler/Bodrum' },
+                { value: 'Çatı Katı', label: 'Çatı Katı' },
+                { value: 'Garaj/Park Yeri', label: 'Garaj/Park Yeri' },
+                { value: 'Bahçe', label: 'Bahçe' },
+                { value: 'Evcil Hayvan İzni', label: 'Evcil Hayvan İzni' },
+                { value: 'Paylaşımlı Eve Uygun', label: 'Paylaşımlı Eve Uygun' },
+                { value: 'Tarihi Eser/Anıt', label: 'Tarihi Eser/Anıt' },
+                { value: 'Halen Kirada', label: 'Halen Kirada' }
             ],
             field: 'general_features'
         },
@@ -99,8 +99,8 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Komisyon',
             type: 'multiselect',
             options: [
-                { value: 'Provisionsfrei', label: 'Komisyonsuz' },
-                { value: 'Mit Provision', label: 'Komisyonlu' }
+                { value: 'Komisyonsuz', label: 'Komisyonsuz' },
+                { value: 'Komisyonlu', label: 'Komisyonlu' }
             ],
             field: 'commission'
         },

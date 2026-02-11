@@ -1,7 +1,7 @@
 {
     "short_name": "ExVitrin",
     "name": "ExVitrin - Türkiye'nin İlan Pazaryeri",
-    "description": "Araba, emlak, elektronik ve daha fazlasını ExVitrin'de keşfedin",
+    "description": "Araba, emlak, elektronik ve daha fazlasını ExVitrin'de keşfedin. Offline çalışma ve bildirim desteği ile mobil uygulama deneyimi.",
     "icons": [
         {
             "src": "logo_exvitrin_2026_cropped.png",
@@ -25,13 +25,94 @@
     "start_url": "/",
     "scope": "/",
     "display": "standalone",
+    "display_override": [
+        "window-controls-overlay",
+        "standalone",
+        "minimal-ui"
+    ],
     "orientation": "portrait-primary",
     "theme_color": "#EF4444",
     "background_color": "#FFFFFF",
     "categories": [
         "shopping",
-        "lifestyle"
+        "lifestyle",
+        "business"
     ],
     "lang": "tr",
-    "dir": "ltr"
+    "dir": "ltr",
+    "shortcuts": [
+        {
+            "name": "İlan Ver",
+            "short_name": "İlan Ver",
+            "description": "Hızlıca yeni ilan oluştur",
+            "url": "/add-listing",
+            "icons": [
+                {
+                    "src": "logo_exvitrin_2026_cropped.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Mesajlar",
+            "short_name": "Mesajlar",
+            "description": "Mesajlarını kontrol et",
+            "url": "/messages",
+            "icons": [
+                {
+                    "src": "logo_exvitrin_2026_cropped.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Favoriler",
+            "short_name": "Favoriler",
+            "description": "Favori ilanlarını gör",
+            "url": "/favorites",
+            "icons": [
+                {
+                    "src": "logo_exvitrin_2026_cropped.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Aramalar",
+            "short_name": "Ara",
+            "description": "İlan ara",
+            "url": "/search",
+            "icons": [
+                {
+                    "src": "logo_exvitrin_2026_cropped.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ],
+    "share_target": {
+        "action": "/share",
+        "method": "POST",
+        "enctype": "multipart/form-data",
+        "params": {
+            "title": "title",
+            "text": "text",
+            "url": "url",
+            "files": [
+                {
+                    "name": "images",
+                    "accept": [
+                        "image/*"
+                    ]
+                }
+            ]
+        }
+    },
+    "protocol_handlers": [
+        {
+            "protocol": "web+exvitrin",
+            "url": "/?listing=%s"
+        }
+    ],
+    "prefer_related_applications": false
 }

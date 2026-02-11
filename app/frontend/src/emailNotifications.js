@@ -8,13 +8,13 @@ export const emailNotifications = {
 
     console.log('📧 ORDER CONFIRMATION EMAIL');
     console.log('To:', orderData.email);
-    console.log('Subject: Ihre Bestellung wurde bestätigt');
+    console.log('Subject: Siparişiniz onaylandı');
     console.log('Order ID:', orderData.orderId);
     console.log('Items:', orderData.items);
     console.log('Total:', orderData.total);
 
     // Simüle edilmiş email
-    showNotification('Bestellbestätigung per E-Mail gesendet!', 'success');
+    showNotification('Sipariş onayı e-posta ile gönderildi!', 'success');
   },
 
   // Kargo bildirimi
@@ -24,10 +24,10 @@ export const emailNotifications = {
 
     console.log('📧 SHIPPING NOTIFICATION EMAIL');
     console.log('To:', orderData.email);
-    console.log('Subject: Ihre Bestellung wurde versandt');
+    console.log('Subject: Siparişiniz kargoya verildi');
     console.log('Tracking Number:', orderData.trackingNumber);
 
-    showNotification('Versandbestätigung per E-Mail gesendet!', 'success');
+    showNotification('Kargo bildirimi e-posta ile gönderildi!', 'success');
   },
 
   // Teslimat bildirimi
@@ -37,9 +37,9 @@ export const emailNotifications = {
 
     console.log('📧 DELIVERY NOTIFICATION EMAIL');
     console.log('To:', orderData.email);
-    console.log('Subject: Ihre Bestellung wurde zugestellt');
+    console.log('Subject: Siparişiniz teslim edildi');
 
-    showNotification('Zustellbestätigung per E-Mail gesendet!', 'success');
+    showNotification('Teslimat bildirimi e-posta ile gönderildi!', 'success');
   },
 
   // Yeni mesaj bildirimi
@@ -50,10 +50,10 @@ export const emailNotifications = {
     console.log('📧 NEW MESSAGE NOTIFICATION EMAIL');
     console.log('To:', messageData.recipientEmail);
     console.log('From:', messageData.senderName);
-    console.log('Subject: Neue Nachricht von', messageData.senderName);
+    console.log('Subject: Yeni mesaj gönderen: ' + messageData.senderName);
     console.log('Message Preview:', messageData.messagePreview);
 
-    showNotification('Nachrichtenbenachrichtigung per E-Mail gesendet!', 'success');
+    showNotification('Mesaj bildirimi e-posta ile gönderildi!', 'success');
   },
 
   // Fiyat düşüşü bildirimi
@@ -62,12 +62,12 @@ export const emailNotifications = {
     if (!settings.priceDrops) return;
 
     console.log('📧 PRICE DROP NOTIFICATION EMAIL');
-    console.log('Subject: Preissenkung bei', productData.title);
+    console.log('Subject: Fiyat düştü: ' + productData.title);
     console.log('Old Price:', productData.oldPrice);
     console.log('New Price:', productData.newPrice);
     console.log('Discount:', productData.discount);
 
-    showNotification('Preissenkungsbenachrichtigung per E-Mail gesendet!', 'success');
+    showNotification('Fiyat düşüş bildirimi e-posta ile gönderildi!', 'success');
   },
 
   // Yeni ilan bildirimi
@@ -76,11 +76,11 @@ export const emailNotifications = {
     if (!settings.newListings) return;
 
     console.log('📧 NEW LISTING NOTIFICATION EMAIL');
-    console.log('Subject: Neue Anzeige in', listingData.category);
+    console.log('Subject: Yeni ilan: ' + listingData.category);
     console.log('Title:', listingData.title);
     console.log('Price:', listingData.price);
 
-    showNotification('Neue Anzeige Benachrichtigung per E-Mail gesendet!', 'success');
+    showNotification('Yeni ilan bildirimi e-posta ile gönderildi!', 'success');
   },
 
   // Rechnungs-E-Mail
@@ -91,10 +91,10 @@ export const emailNotifications = {
 
     console.log('📧 INVOICE NOTIFICATION EMAIL');
     console.log('To:', invoiceData.email);
-    console.log('Subject: Ihre Rechnung von ExVitrin', invoiceData.invoiceNumber);
+    console.log('Subject: ExVitrin Faturanız - ' + invoiceData.invoiceNumber);
     console.log('Total:', invoiceData.amount, ' TL');
 
-    showNotification('Rechnung erfolgreich per E-Mail versendet!', 'success');
+    showNotification('Fatura başarıyla e-posta ile gönderildi!', 'success');
   },
 
   // Haftalık özet
@@ -104,11 +104,11 @@ export const emailNotifications = {
 
     console.log('📧 WEEKLY DIGEST EMAIL');
     console.log('To:', userData.email);
-    console.log('Subject: Ihre wöchentliche Zusammenfassung');
+    console.log('Subject: Haftalık özetiniz');
     console.log('New Listings:', userData.newListingsCount);
     console.log('Messages:', userData.messagesCount);
 
-    showNotification('Wöchentliche Zusammenfassung per E-Mail gesendet!', 'success');
+    showNotification('Haftalık özet e-posta ile gönderildi!', 'success');
   }
 };
 
@@ -154,20 +154,20 @@ export const emailTemplates = {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Bestellbestätigung</h1>
+          <h1>Sipariş Onayı</h1>
         </div>
         <div class="content">
-          <h2>Vielen Dank für Ihre Bestellung!</h2>
-          <p>Ihre Bestellung #${orderData.orderId} wurde erfolgreich aufgegeben.</p>
-          <h3>Bestelldetails:</h3>
+          <h2>Siparişiniz için teşekkür ederiz!</h2>
+          <p>Siparişiniz #${orderData.orderId} başarıyla oluşturuldu.</p>
+          <h3>Sipariş Detayları:</h3>
           <ul>
             ${orderData.items.map(item => `<li>${item.title} - ${item.price}</li>`).join('')}
           </ul>
-          <p><strong>Gesamtsumme: ${orderData.total}</strong></p>
-          <a href="#" class="button">Bestellung ansehen</a>
+          <p><strong>Toplam Tutar: ${orderData.total}</strong></p>
+          <a href="#" class="button">Siparişi Görüntüle</a>
         </div>
         <div class="footer">
-          <p>© 2024 ExVitrin. Alle Rechte vorbehalten.</p>
+          <p>© 2026 ExVitrin. Tüm hakları saklıdır.</p>
         </div>
       </div>
     </body>
@@ -190,14 +190,14 @@ export const emailTemplates = {
     <body>
       <div class="container">
         <div class="header">
-          <h1>💬 Neue Nachricht</h1>
+          <h1>💬 Yeni Mesaj</h1>
         </div>
         <div class="content">
-          <p>Sie haben eine neue Nachricht von <strong>${messageData.senderName}</strong> erhalten:</p>
+          <p><strong>${messageData.senderName}</strong> size yeni bir mesaj gönderdi:</p>
           <div class="message-box">
             <p>${messageData.messagePreview}</p>
           </div>
-          <a href="#" class="button">Nachricht anzeigen</a>
+          <a href="#" class="button">Mesajı Görüntüle</a>
         </div>
       </div>
     </body>
@@ -227,24 +227,24 @@ export const emailTemplates = {
           <div class="logo">EXVITRIN</div>
         </div>
         <div class="content">
-          <h1>Ihre Rechnung ist da</h1>
-          <p>Hallo ${invoiceData.customerName},</p>
-          <p>vielen Dank für Ihren Einkauf bei ExVitrin. Hier ist Ihre Rechnung für das gebuchte Promotion-Paket.</p>
+          <h1>Faturanız hazır</h1>
+          <p>Merhaba ${invoiceData.customerName},</p>
+          <p>ExVitrin'den yaptığınız alışveriş için teşekkür ederiz. İşte satın aldığınız tanıtım paketi için faturanız.</p>
           
           <div class="invoice-card">
             <div class="invoice-id">${invoiceData.invoiceNumber}</div>
             <div class="amount">${invoiceData.amount} TL</div>
             <p><strong>Paket:</strong> ${invoiceData.packageType}</p>
-            <p><strong>Anzeige:</strong> ${invoiceData.listingTitle}</p>
+            <p><strong>İlan:</strong> ${invoiceData.listingTitle}</p>
           </div>
           
           <p style="margin-top: 30px;">
-            <a href="${invoiceData.invoiceUrl}" class="button">Rechnung Online ansehen</a>
+            <a href="${invoiceData.invoiceUrl}" class="button">Faturayı Online Görüntüle</a>
           </p>
         </div>
         <div class="footer">
-          <p>© 2025 ExVitrin | Berlin, Deutschland</p>
-          <p>Sie erhalten diese E-Mail, da Sie eine kostenpflichtige Promotion auf unserer Plattform gebucht haben.</p>
+          <p>© 2026 ExVitrin | Berlin, Almanya</p>
+          <p>Bu e-postayı, platformumuzda ücretli bir tanıtım satın aldığınız için alıyorsunuz.</p>
         </div>
       </div>
     </body>

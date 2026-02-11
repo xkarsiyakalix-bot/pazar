@@ -65,7 +65,7 @@ function MagazinPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 transition-colors duration-300">
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
                 <div className="max-w-6xl mx-auto px-4">
@@ -80,7 +80,7 @@ function MagazinPage() {
                 {/* Articles Grid */}
                 <div className="grid md:grid-cols-2 gap-8 mb-12">
                     {articles.map((article, index) => (
-                        <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
+                        <div key={index} className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg dark:shadow-none overflow-hidden hover:shadow-xl transition-shadow cursor-pointer border border-transparent dark:border-white/5">
                             <img
                                 src={article.image}
                                 alt={article.title}
@@ -89,16 +89,16 @@ function MagazinPage() {
                             <div className="p-6">
                                 <div className="flex items-center gap-3 mb-3">
                                     <span className="text-sm text-red-600 font-semibold">{article.date}</span>
-                                    <span className="text-gray-400">|</span>
-                                    <span className="text-sm text-gray-600">ExVitrin tarafından</span>
+                                    <span className="text-gray-400 dark:text-neutral-600">|</span>
+                                    <span className="text-sm text-gray-600 dark:text-neutral-400">ExVitrin tarafından</span>
                                 </div>
-                                <span className="inline-block px-3 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-full mb-3">
+                                <span className="inline-block px-3 py-1 bg-red-100 dark:bg-red-900/20 text-red-600 text-xs font-semibold rounded-full mb-3">
                                     {article.category}
                                 </span>
-                                <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-red-600 transition-colors">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50 mb-3 hover:text-red-600 transition-colors">
                                     {article.title}
                                 </h2>
-                                <p className="text-gray-700 mb-4 leading-relaxed">
+                                <p className="text-gray-700 dark:text-neutral-400 mb-4 leading-relaxed">
                                     {article.excerpt}
                                 </p>
                                 <button className="text-red-600 hover:text-red-700 font-semibold flex items-center gap-2">
@@ -121,27 +121,27 @@ function MagazinPage() {
                             className={`px-4 py-2 rounded-lg font-semibold transition-colors ${page === currentPage
                                 ? 'bg-red-600 text-white'
                                 : page === '...'
-                                    ? 'text-gray-400 cursor-default'
-                                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                                    ? 'text-gray-400 dark:text-neutral-600 cursor-default'
+                                    : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
                                 }`}
                         >
                             {page}
                         </button>
                     ))}
-                    <button className="px-4 py-2 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    <button className="px-4 py-2 bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors">
                         İleri →
                     </button>
                 </div>
 
                 {/* Selling Tips Section */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8">A'dan Z'ye Satış İpuçları</h2>
+                <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg dark:shadow-none p-8 md:p-12 border border-transparent dark:border-white/5">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-neutral-50 mb-8">A'dan Z'ye Satış İpuçları</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {sellingTips.map((tip, index) => (
                             <a
                                 key={index}
                                 href="#"
-                                className="text-gray-700 hover:text-red-600 transition-colors py-2 flex items-center gap-2"
+                                className="text-gray-700 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500 transition-colors py-2 flex items-center gap-2"
                             >
                                 <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

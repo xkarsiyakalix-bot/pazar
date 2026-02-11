@@ -265,7 +265,7 @@ const SettingsPage = () => {
             );
 
             // Sync is_commercial flag if seller_type is corporate
-            if (cleanedData.seller_type === 'Gewerblicher Nutzer') {
+            if (cleanedData.seller_type === 'Kurumsal Kullanıcı') {
                 cleanedData.is_commercial = true;
             }
 
@@ -542,14 +542,14 @@ const SettingsPage = () => {
                                             navigate('/packages');
                                         }
                                     }}
-                                    className={`p-3 rounded-xl border-2 text-left transition-all ${formData.seller_type === 'Gewerblicher Nutzer'
+                                    className={`p-3 rounded-xl border-2 text-left transition-all ${formData.seller_type === 'Kurumsal Kullanıcı'
                                         ? 'border-blue-600 bg-blue-50'
                                         : 'border-gray-200 bg-white hover:border-blue-200'
                                         }`}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="text-lg">🏢</span>
-                                        <span className={`text-sm font-bold ${formData.seller_type === 'Gewerblicher Nutzer' ? 'text-blue-600' : 'text-gray-900'}`}>
+                                        <span className={`text-sm font-bold ${formData.seller_type === 'Kurumsal Kullanıcı' ? 'text-blue-600' : 'text-gray-900'}`}>
                                             Kurumsal
                                         </span>
                                     </div>

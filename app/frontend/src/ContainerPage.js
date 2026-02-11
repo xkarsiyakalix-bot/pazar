@@ -25,8 +25,8 @@ const ContainerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Kaufen', label: 'Satılık' },
-                { value: 'Mieten', label: 'Kiralık' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Kiralık', label: 'Kiralık' }
             ],
             field: 'angebotsart'
         },
@@ -49,8 +49,8 @@ const ContainerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Online Gösterim',
             type: 'multiselect',
             options: [
-                { value: 'Möglich', label: 'Mümkün' },
-                { value: 'Nicht möglich', label: 'Mümkün Değil' }
+                { value: 'Mümkün', label: 'Mümkün' },
+                { value: 'Mümkün Değil', label: 'Mümkün Değil' }
             ],
             field: 'online_viewing'
         },
@@ -63,12 +63,12 @@ const ContainerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Donanım',
             type: 'multiselect',
             options: [
-                { value: 'Starkstrom', label: 'Yüksek Akım' },
-                { value: 'Klimaanlage', label: 'Klima' },
-                { value: 'DV-Verkabelung', label: 'DV Kablolama' },
-                { value: 'Stufenloser Zugang', label: 'Engelsiz Erişim' },
-                { value: 'Küche', label: 'Mutfak' },
-                { value: 'Fußbodenheizung', label: 'Yerden Isıtma' }
+                { value: 'Yüksek Akım', label: 'Yüksek Akım' },
+                { value: 'Klima', label: 'Klima' },
+                { value: 'DV Kablolama', label: 'DV Kablolama' },
+                { value: 'Engelsiz Erişim', label: 'Engelsiz Erişim' },
+                { value: 'Mutfak', label: 'Mutfak' },
+                { value: 'Yerden Isıtma', label: 'Yerden Isıtma' }
             ],
             field: 'amenities'
         },
@@ -76,8 +76,8 @@ const ContainerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık/Kiralık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık/Kiralık', label: 'Satılık/Kiralık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -85,8 +85,8 @@ const ContainerPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

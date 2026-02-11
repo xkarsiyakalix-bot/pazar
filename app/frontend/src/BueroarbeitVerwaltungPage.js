@@ -8,11 +8,11 @@ const BueroarbeitVerwaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                { value: 'Buchhalter/-in', label: 'Muhasebeci' },
-                { value: 'Bürokaufmann/-frau', label: 'Ofis Elemanı' },
-                { value: 'Sachbearbeiter/-in', label: 'Dosya Sorumlusu' },
-                { value: 'Sekretär/-in', label: 'Sekreter' },
-                { value: 'Weitere Berufe', label: 'Diğer Meslekler' }
+                { value: 'Muhasebeci', label: 'Muhasebeci' },
+                { value: 'Ofis Elemanı', label: 'Ofis Elemanı' },
+                { value: 'Dosya Sorumlusu', label: 'Dosya Sorumlusu' },
+                { value: 'Sekreter', label: 'Sekreter' },
+                { value: 'Diğer Meslekler', label: 'Diğer Meslekler' }
             ],
             field: 'buero_arbeit_verwaltung_art'
         },
@@ -20,8 +20,8 @@ const BueroarbeitVerwaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Çalışma Süresi',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' }
             ],
             field: 'working_time'
         },
@@ -29,12 +29,12 @@ const BueroarbeitVerwaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İş Türü',
             type: 'multiselect',
             options: [
-                { value: 'Vollzeit', label: 'Tam Zamanlı' },
-                { value: 'Teilzeit', label: 'Yarı Zamanlı' },
-                { value: 'Minijob', label: 'Mini İş' },
-                { value: 'Praktikum', label: 'Staj' },
-                { value: 'Werkstudent', label: 'Çalışan Öğrenci' },
-                { value: 'Selbstständig', label: 'Serbest Çalışan' }
+                { value: 'Tam Zamanlı', label: 'Tam Zamanlı' },
+                { value: 'Yarı Zamanlı', label: 'Yarı Zamanlı' },
+                { value: 'Mini İş', label: 'Mini İş' },
+                { value: 'Staj', label: 'Staj' },
+                { value: 'Çalışan Öğrenci', label: 'Çalışan Öğrenci' },
+                { value: 'Serbest Çalışan', label: 'Serbest Çalışan' }
             ],
             field: 'job_type'
         },
@@ -47,8 +47,8 @@ const BueroarbeitVerwaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
-                { value: 'Angebote', label: 'Satılık' },
-                { value: 'Gesuche', label: 'Aranıyor' }
+                { value: 'Satılık', label: 'Satılık' },
+                { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'
         },
@@ -56,8 +56,8 @@ const BueroarbeitVerwaltungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Satıcı',
             type: 'multiselect',
             options: [
-                { value: 'Privat', label: 'Bireysel' },
-                { value: 'Gewerblich', label: 'Kurumsal' }
+                { value: 'Bireysel', label: 'Bireysel' },
+                { value: 'Kurumsal', label: 'Kurumsal' }
             ],
             field: 'seller_type'
         },

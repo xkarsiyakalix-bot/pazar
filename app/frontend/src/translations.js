@@ -6,7 +6,7 @@ export const t = {
         login: 'Giriş Yap',
         register: 'Kayıt Ol',
         logout: 'Çıkış Yap',
-        meins: 'Benimkiler',
+        myAccount: 'Hesabım',
         messages: 'Mesajlar',
         myListings: 'İlanlarım',
         settings: 'Ayarlar',
@@ -112,7 +112,7 @@ export const t = {
         select: 'Seçiniz',
         limitReached: {
             title: 'İlan Limitine Ulaştınız',
-            description: 'Aylık ücretsiz ilan limitiniz ({limit} adet) dolmuştur. Devam etmek için bir paket seçebilir veya bu ilan için tek seferlik ödeme yapabilirsiniz.',
+            description: 'Aylık ücretsiz ilan limitiniz ({limit} adet) dolmuştur. Yeni ilan haklarınız {resetDate} tarihinde tanımlanacaktır. Devam etmek için bir paket seçebilir veya bu ilan için tek seferlik ödeme yapabilirsiniz.',
             viewPackages: 'Paketleri İncele & Yükselt',
             paySingle: 'Sadece Bu İlan İçin Öde (9,90 TL)',
             cancel: 'Vazgeç'
@@ -415,7 +415,7 @@ export const t = {
         smallCar: 'Küçük Araç',
         sedan: 'Sedan',
         stationWagon: 'Station Wagon',
-        cabrio: 'Cabrio',
+        cabrio: 'Üstü Açık',
         suv: 'SUV/Arazi Aracı',
         minivan: 'Minivan/Panelvan',
         coupe: 'Kupe',
@@ -437,14 +437,14 @@ export const t = {
             breeds: {
                 mixed: 'Karışık',
                 beagle: 'Beagle',
-                stBernard: 'Bernhardiner',
+                stBernard: 'St. Bernard',
                 borderCollie: 'Border Collie',
                 cockerSpaniel: 'Cocker Spaniel',
                 collie: 'Collie',
-                dachshund: 'Dackel',
+                dachshund: 'Sosis Köpek (Dackel)',
                 dalmatian: 'Dalmaçyalı',
                 dobermann: 'Dobermann',
-                greatDane: 'Dogge',
+                greatDane: 'Danua (Dogge)',
                 goldenRetriever: 'Golden Retriever',
                 husky: 'Husky',
                 jackRussell: 'Jack Russell Terrier',
@@ -708,7 +708,7 @@ export const t = {
                 smallCar: 'Küçük Araç',
                 sedan: 'Sedan',
                 stationWagon: 'Station Wagon',
-                cabrio: 'Cabrio',
+                cabrio: 'Üstü Açık',
                 suv: 'SUV/Arazi Aracı',
                 minivan: 'Minivan/Panelvan',
                 coupe: 'Kupe',
@@ -718,7 +718,7 @@ export const t = {
                 semiAutomatic: 'Yarı Otomatik'
             },
             vehicleDetails: 'Araç Detayları ve Donanım',
-            marke: 'Marka',
+            brand: 'Marka',
             model: 'Model',
             selectBrandFirst: 'Önce marka seçin',
             firstRegistration: 'İlk Tescil',
@@ -735,7 +735,7 @@ export const t = {
             exteriorColor: 'Dış Renk',
             interiorMaterial: 'Döşeme',
             doorCount: 'Kapı Sayısı',
-            hu: 'Muayene (HU)',
+            inspection: 'Muayene (HU)',
             emissionBadge: 'Çevre Etiketi',
             emissionClass: 'Emisyon Sınıfı',
             vehicleCondition: 'Araç Durumu',
@@ -745,7 +745,7 @@ export const t = {
             amenities: 'Donanım',
             features: 'Özellikler',
             vehicleType: 'Araç Tipi',
-            getriebe: 'Şanzıman',
+            transmissionType: 'Şanzıman',
             other: 'Diğer Araçlar'
         },
         electronics: {
@@ -1336,7 +1336,7 @@ export const t = {
     // Top Ads (Gallery)
     topAds: {
         title: 'ExVitrin İlanları',
-        placeAd: 'Buraya ilan verin',
+        placeAd: 'Buraya ilanınızı ekleyin',
         noAds: 'Öne çıkan ilan bulunmuyor',
         checkBackLater: 'Daha sonra tekrar kontrol edin',
         modal: {
@@ -1516,7 +1516,7 @@ export const t = {
         error: 'Takip durumu güncellenirken hata oluştu. Lütfen tekrar deneyin.'
     },
 
-    karriere: {
+    career: {
         hero: {
             title: 'Büyük etki yaratan harika işler.',
             cta: 'Tüm açık pozisyonları görün',

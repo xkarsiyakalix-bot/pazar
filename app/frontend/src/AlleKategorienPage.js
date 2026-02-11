@@ -1,13 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { CategoryGallery, HorizontalListingCard, ListingCard, getCategoryPath } from './components';
 import { getTurkishCities, getCategoryTranslation } from './translations';
 import { fetchListings } from './api/listings';
 import { Breadcrumb } from './components/Breadcrumb';
 import LoadingSpinner from './components/LoadingSpinner';
+import { supabase } from './lib/supabase';
+
+const areSubCategoriesEquivalent = (sub1, sub2) => {
+    if (!sub1 || !sub2) return sub1 === sub2;
+    const normalize = s => String(s).toLowerCase().trim();
+    const n1 = normalize(sub1);
+    const n2 = normalize(sub2);
+    if (n1 === n2) return true;
+
+    const mappings = [
+        ['kiralık daireler', 'kiralık daire', 'mietwohnungen'],
+        ['satılık daireler', 'satılık daire', 'eigentumswohnungen'],
+        ['kiralık evler', 'kiralık müstakil ev', 'kiralık ev', 'häuser zur miete'],
+        ['satılık evler', 'satılık müstakil ev', 'satılık ev', 'häuser zum kauf'],
+        ['otomobil, bisiklet & tekne', 'oto, bisiklet & tekne', 'auto, rad & boot']
+    ];
+    return mappings.some(group => group.includes(n1) && group.includes(n2));
+};
 
 const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [searchParams] = useSearchParams();
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,6 +37,16 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     const [priceTo, setPriceTo] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [inactiveCategories, setInactiveCategories] = useState(new Set());
+    const [expandedCategories, setExpandedCategories] = useState([]);
+
+    const toggleCategory = (categoryName) => {
+        setExpandedCategories(prev =>
+            prev.includes(categoryName)
+                ? prev.filter(c => c !== categoryName)
+                : [...prev, categoryName]
+        );
+    };
 
     const categories = [
         { name: 'Tüm Kategoriler', icon: '🏪', count: 0, subcategories: [] },
@@ -94,6 +123,24 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
     const federalStates = getTurkishCities();
 
+    // Fetch inactive categories on mount
+    useEffect(() => {
+        const fetchInactive = async () => {
+            try {
+                const { data } = await supabase
+                    .from('category_settings')
+                    .select('category_name')
+                    .eq('is_active', false);
+                if (data) {
+                    setInactiveCategories(new Set(data.map(item => item.category_name)));
+                }
+            } catch (err) {
+                console.error('Error fetching inactive categories:', err);
+            }
+        };
+        fetchInactive();
+    }, [location.pathname]);
+
     // Read URL parameters on mount and when they change
     useEffect(() => {
         const search = searchParams.get('search') || '';
@@ -109,7 +156,17 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
         setSelectedLocations(loc ? loc.split(',') : []);
         setPriceFrom(priceFromParam);
         setPriceTo(priceToParam);
-    }, [searchParams]);
+
+        // Redirect to clean SEO URL if category/subcategory is present in query params
+        if (category && category !== 'Tüm Kategoriler') {
+            const path = getCategoryPath(category, subCategory);
+            const params = new URLSearchParams(searchParams);
+            params.delete('category');
+            params.delete('subCategory');
+            const qs = params.toString();
+            navigate(`${path}${qs ? `?${qs}` : ''}`, { replace: true });
+        }
+    }, [searchParams, navigate]);
 
     // Update URL when filters change
     const updateFilters = (newFilters) => {
@@ -126,13 +183,15 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
             if (newFilters.priceTo) params.set('priceTo', newFilters.priceTo);
             else params.delete('priceTo');
         }
-        if (newFilters.category !== undefined) {
-            if (newFilters.category && newFilters.category !== 'Tüm Kategoriler') params.set('category', newFilters.category);
-            else params.delete('category');
-        }
-        if (newFilters.subCategory !== undefined) {
-            if (newFilters.subCategory) params.set('subCategory', newFilters.subCategory);
-            else params.delete('subCategory');
+        if (newFilters.category !== undefined || newFilters.subCategory !== undefined) {
+            const cat = newFilters.category !== undefined ? newFilters.category : selectedCategory;
+            const sub = newFilters.subCategory !== undefined ? newFilters.subCategory : selectedSubCategory;
+            const path = getCategoryPath(cat, sub);
+            params.delete('category');
+            params.delete('subCategory');
+            const qs = params.toString();
+            navigate(`${path}${qs ? `?${qs}` : ''}`);
+            return;
         }
         navigate(`?${params.toString()}`);
     };
@@ -184,44 +243,60 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
     // Calculate category counts based on current filters (except category)
     const categoriesWithCounts = React.useMemo(() => {
-        return categories.map(cat => {
-            let count = 0;
-            if (cat.name === 'Tüm Kategoriler') {
+        return categories
+            .filter(cat => !inactiveCategories.has(cat.name)) // Filter inactive main
+            .map(cat => {
+                let count = 0;
+                if (cat.name === 'Tüm Kategoriler') {
+                    count = listings.filter(listing => {
+                        if (searchTerm && listing.title) {
+                            const searchLower = searchTerm.toLowerCase();
+                            if (!listing.title.toLowerCase().includes(searchLower) && !listing.description?.toLowerCase().includes(searchLower)) return false;
+                        }
+                        if (priceFrom && listing.price < parseFloat(priceFrom)) return false;
+                        if (priceTo && listing.price > parseFloat(priceTo)) return false;
+                        if (selectedLocations.length > 0 && !selectedLocations.includes(listing.federal_state)) return false;
+                        return true;
+                    }).length;
+                    return { ...cat, count };
+                }
+
                 count = listings.filter(listing => {
+                    // Search term
                     if (searchTerm && listing.title) {
                         const searchLower = searchTerm.toLowerCase();
                         if (!listing.title.toLowerCase().includes(searchLower) && !listing.description?.toLowerCase().includes(searchLower)) return false;
                     }
+                    // Price
                     if (priceFrom && listing.price < parseFloat(priceFrom)) return false;
                     if (priceTo && listing.price > parseFloat(priceTo)) return false;
+                    // Location
                     if (selectedLocations.length > 0 && !selectedLocations.includes(listing.federal_state)) return false;
-                    return true;
+
+                    // Category match
+                    if (cat.name === 'Müzik, Film & Kitap') {
+                        return listing.category === 'Müzik, Film & Kitap' || listing.category === 'Müzik, Filme & Bücher';
+                    }
+                    return listing.category === cat.name;
                 }).length;
-                return { ...cat, count };
-            }
 
-            count = listings.filter(listing => {
-                // Search term
-                if (searchTerm && listing.title) {
-                    const searchLower = searchTerm.toLowerCase();
-                    if (!listing.title.toLowerCase().includes(searchLower) && !listing.description?.toLowerCase().includes(searchLower)) return false;
-                }
-                // Price
-                if (priceFrom && listing.price < parseFloat(priceFrom)) return false;
-                if (priceTo && listing.price > parseFloat(priceTo)) return false;
-                // Location
-                if (selectedLocations.length > 0 && !selectedLocations.includes(listing.federal_state)) return false;
+                // Filter inactive subcategories
+                const filteredSubcategories = cat.subcategories?.filter(sub => !inactiveCategories.has(sub));
 
-                // Category match
-                if (cat.name === 'Müzik, Film & Kitap') {
-                    return listing.category === 'Müzik, Film & Kitap' || listing.category === 'Müzik, Filme & Bücher';
-                }
-                return listing.category === cat.name;
-            }).length;
+                // Calculate top 2 subcategories for quick preview
+                const topSubs = filteredSubcategories
+                    ? filteredSubcategories
+                        .map(subName => ({
+                            name: subName,
+                            count: listings.filter(l => (l.category === cat.name || (cat.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === subName).length
+                        }))
+                        .sort((a, b) => b.count - a.count)
+                        .slice(0, 2)
+                    : [];
 
-            return { ...cat, count };
-        }).filter(cat => cat.count > 0 || cat.name === 'Tüm Kategoriler' || cat.name === selectedCategory);
-    }, [listings, searchTerm, selectedLocations, priceFrom, priceTo, selectedCategory]);
+                return { ...cat, count, subcategories: filteredSubcategories || cat.subcategories, topSubcategories: topSubs };
+            }).filter(cat => cat.count > 0 || cat.name === 'Tüm Kategoriler' || cat.name === selectedCategory);
+    }, [listings, searchTerm, selectedLocations, priceFrom, priceTo, selectedCategory, inactiveCategories]);
 
     // Filter listings
     const filteredListings = listings.filter(listing => {
@@ -258,25 +333,37 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const handleCategoryClick = (categoryName) => {
-        if (selectedCategory === categoryName) {
-            setSelectedCategory('Tüm Kategoriler');
-            setSelectedSubCategory('');
-            updateFilters({ category: 'Tüm Kategoriler', subCategory: '' });
-        } else {
-            setSelectedCategory(categoryName);
-            setSelectedSubCategory('');
-            updateFilters({ category: categoryName, subCategory: '' });
+        if (categoryName === 'Tüm Kategoriler') {
+            navigate('/Butun-Kategoriler');
+            return;
         }
+
+        // Navigate to category page without preserving query params
+        const path = getCategoryPath(categoryName);
+        navigate(path);
     };
 
     const handleSubCategoryClick = (subName, e) => {
         e.stopPropagation();
+
+        // Find which category this subcategory belongs to
+        const parentCategory = categories.find(cat =>
+            cat.subcategories && cat.subcategories.includes(subName)
+        );
+
+        if (!parentCategory) {
+            console.error('Parent category not found for subcategory:', subName);
+            return;
+        }
+
         if (selectedSubCategory === subName) {
-            setSelectedSubCategory('');
-            updateFilters({ subCategory: '' });
+            // If clicking the same subcategory, go back to main category
+            const path = getCategoryPath(parentCategory.name);
+            navigate(path);
         } else {
-            setSelectedSubCategory(subName);
-            updateFilters({ subCategory: subName });
+            // Navigate to subcategory
+            const path = getCategoryPath(parentCategory.name, subName);
+            navigate(path);
         }
     };
 
@@ -320,30 +407,37 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
 
 
-                {/* Mobile/Tablet Filter Button - Fixed to left */}
-                <button
-                    onClick={() => setShowMobileFilters(true)}
-                    className="xl:hidden fixed left-4 top-24 z-[1001] w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center group"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    {(selectedCategory !== 'Tüm Kategoriler' || selectedSubCategory || selectedLocations.length > 0 || priceFrom || priceTo) && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                            !
-                        </span>
-                    )}
-                </button>
+                <div className="flex items-center gap-3 mb-6 bg-white dark:bg-neutral-800/50 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                    {/* Mobile/Tablet Filter Button */}
+                    <button
+                        onClick={() => setShowMobileFilters(true)}
+                        className="xl:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 group shrink-0"
+                    >
+                        <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        <span className="text-sm font-bold">Filtrele</span>
+                        {(selectedCategory !== 'Tüm Kategoriler' || selectedSubCategory || selectedLocations.length > 0 || priceFrom || priceTo) && (
+                            <span className="w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                                !
+                            </span>
+                        )}
+                    </button>
+
+                    <div className="flex-1 overflow-hidden">
+                        <Breadcrumb items={breadcrumbItems} />
+                    </div>
+                </div>
 
                 <div className="flex flex-col xl:flex-row gap-8">
                     {/* Left Sidebar - Categories & Filters (Drawer on Mobile) */}
                     <aside className={`
-                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-96 xl:block
+                        fixed inset-0 z-[1002] xl:relative xl:inset-auto xl:z-0 xl:w-[20%] xl:min-w-[320px] xl:block
                         ${showMobileFilters ? 'block' : 'hidden xl:block'}
                     `}>
                         {/* Mobile Overlay Backdrop */}
@@ -354,13 +448,13 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
                         {/* Sidebar Content Column - Half screen width on mobile */}
                         <div className={`
-                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
-                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white dark:bg-neutral-800 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
+                            overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0 border-r dark:border-white/5 xl:border-none
                             ${showMobileFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>
                             {/* Mobile Header */}
-                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b">
-                                <h3 className="font-bold text-gray-900 text-lg">Filtreleme</h3>
+                            <div className="flex items-center justify-between xl:hidden mb-6 pb-4 border-b dark:border-white/5">
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 text-lg">Filtreleme</h3>
                                 <button
                                     onClick={() => setShowMobileFilters(false)}
                                     className="p-2 -mr-2 text-gray-400 hover:text-red-600 transition-colors"
@@ -371,8 +465,8 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                 </button>
                             </div>
                             {/* Categories Section */}
-                            <div className="mb-6 pb-6 border-b border-gray-200">
-                                <h3 className="font-bold text-gray-900 text-lg mb-4">Kategoriler</h3>
+                            <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/5">
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 text-lg mb-4">Kategoriler</h3>
                                 <div className="space-y-1">
                                     {categoriesWithCounts.map((category) => (
                                         <div key={category.name} className="mb-1">
@@ -386,7 +480,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                 <div className="flex items-center gap-3">
                                                     <span className={`text-sm font-medium ${selectedCategory === category.name
                                                         ? 'text-white'
-                                                        : 'group-hover:text-red-600'
+                                                        : 'text-gray-700 dark:text-neutral-300 group-hover:text-red-600 dark:group-hover:text-rose-400'
                                                         }`}>
                                                         {getCategoryTranslation(category.name)}
                                                     </span>
@@ -395,7 +489,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                     {category.name !== 'Tüm Kategoriler' && (
                                                         <span className={`text-xs ${selectedCategory === category.name
                                                             ? 'text-white/80'
-                                                            : 'text-gray-400'
+                                                            : 'text-gray-400 dark:text-neutral-500'
                                                             }`}>
                                                             ({category.count.toLocaleString('tr-TR')})
                                                         </span>
@@ -403,7 +497,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                     <svg
                                                         className={`w-4 h-4 ${selectedCategory === category.name
                                                             ? 'text-white rotate-90'
-                                                            : 'text-gray-400 group-hover:text-red-600'
+                                                            : 'text-gray-400 dark:text-neutral-500 group-hover:text-red-600 dark:group-hover:text-rose-400'
                                                             } transition-all duration-200`}
                                                         fill="none"
                                                         stroke="currentColor"
@@ -414,25 +508,51 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                 </div>
                                             </button>
 
-                                            {/* Subcategories */}
-                                            {selectedCategory === category.name && category.subcategories && category.subcategories.length > 0 && (
-                                                <div className="ml-4 pl-4 border-l-2 border-gray-100 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
-                                                    {category.subcategories.map(sub => {
-                                                        const subCount = listings.filter(l => l.category === category.name && l.sub_category === sub).length;
-                                                        return (
-                                                            <button
-                                                                key={sub}
-                                                                onClick={(e) => handleSubCategoryClick(sub, e)}
-                                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between items-center ${selectedSubCategory === sub
-                                                                    ? 'bg-gradient-to-r from-red-50 to-rose-50 text-red-600 font-bold'
-                                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
-                                                                    }`}
-                                                            >
-                                                                <span>{getCategoryTranslation(sub)}</span>
-                                                                <span className={`text-xs ${selectedSubCategory === sub ? 'text-red-400' : 'text-gray-400'}`}>({subCount})</span>
-                                                            </button>
-                                                        );
-                                                    })}
+                                            {/* Subcategories (Top 2 by default, All when selected OR expanded) */}
+                                            {category.subcategories && category.subcategories.length > 0 && category.name !== 'Tüm Kategoriler' && (
+                                                <div className="ml-4 pl-4 border-l-2 border-gray-100 dark:border-white/5 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                                                    {(selectedCategory === category.name || expandedCategories.includes(category.name)
+                                                        ? [...(category.subcategories || [])]
+                                                            .filter(sub => {
+                                                                // On mobile/tablet, if a subcategory is selected, hide other subcategories
+                                                                if (window.innerWidth < 1280 && selectedSubCategory) {
+                                                                    const isAll = sub === 'Tümü' || sub === 'Alle' || sub === 'Tüm';
+                                                                    return areSubCategoriesEquivalent(sub, selectedSubCategory) || isAll;
+                                                                }
+                                                                return true;
+                                                            })
+                                                            .map(sub => ({
+                                                                name: sub,
+                                                                count: listings.filter(l => (l.category === category.name || (category.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === sub).length
+                                                            })).sort((a, b) => b.count - a.count)
+                                                        : category.topSubcategories
+                                                    ).map(sub => (
+                                                        <button
+                                                            key={sub.name}
+                                                            onClick={(e) => handleSubCategoryClick(sub.name, e)}
+                                                            className={`w-full text-left px-3 py-1.5 rounded-lg text-sm transition-all flex justify-between items-center ${selectedSubCategory === sub.name
+                                                                ? 'bg-gradient-to-r from-red-50 to-rose-50 dark:from-rose-500/10 dark:to-red-500/10 text-red-600 dark:text-rose-400 font-bold'
+                                                                : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-700 hover:text-red-600 dark:hover:text-rose-400'
+                                                                }`}
+                                                        >
+                                                            <span>{getCategoryTranslation(sub.name)}</span>
+                                                            <span className={`text-sm font-medium ${selectedSubCategory === sub.name ? 'text-red-400 dark:text-rose-300' : 'text-gray-400 dark:text-neutral-500'}`}>({sub.count})</span>
+                                                        </button>
+                                                    ))}
+                                                    {selectedCategory !== category.name && !expandedCategories.includes(category.name) && category.subcategories.length > 2 && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCategory(category.name);
+                                                            }}
+                                                            className="w-full text-left px-3 py-1 text-[11px] font-bold text-gray-900 dark:text-neutral-400 hover:text-red-500 hover:underline transition-colors flex items-center gap-1"
+                                                        >
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                            {category.subcategories.length - 2} alt kategori daha
+                                                        </button>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -442,7 +562,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
                             {/* Filters Section */}
                             <div className="flex items-center justify-between mb-6">
-                                <h3 className="font-bold text-gray-900 text-lg">Filtreler</h3>
+                                <h3 className="font-bold text-gray-900 dark:text-neutral-100 text-lg">Filtreler</h3>
                                 <button
                                     onClick={() => {
                                         updateFilters({
@@ -452,7 +572,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                             category: 'Tüm Kategoriler'
                                         });
                                     }}
-                                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                                    className="text-sm text-red-600 dark:text-rose-400 hover:text-red-700 dark:hover:text-rose-300 font-medium"
                                 >
                                     Sıfırla
                                 </button>
@@ -472,7 +592,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                 updateFilters({ priceFrom: e.target.value });
                                             }}
                                             placeholder="0"
-                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                            className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-rose-500/20"
                                         />
                                     </div>
                                     <div>
@@ -485,7 +605,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                 updateFilters({ priceTo: e.target.value });
                                             }}
                                             placeholder="∞"
-                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+                                            className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-rose-500/20"
                                         />
                                     </div>
                                 </div>
@@ -511,11 +631,11 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                         setSelectedLocations(newLocations);
                                                         updateFilters({ locations: newLocations });
                                                     }}
-                                                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                                                    className="w-4 h-4 text-red-600 dark:text-rose-500 border-gray-300 dark:border-white/10 rounded focus:ring-red-500 dark:focus:ring-rose-500/20 dark:bg-neutral-800"
                                                 />
-                                                <span className="text-sm text-gray-700">{state}</span>
+                                                <span className="text-sm text-gray-700 dark:text-neutral-300">{state}</span>
                                             </div>
-                                            <span className="text-xs text-gray-400">({getLocationCount(state)})</span>
+                                            <span className="text-xs text-gray-400 dark:text-neutral-500">({getLocationCount(state)})</span>
                                         </label>
                                     ))}
                                 </div>
@@ -555,7 +675,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                     <div className="hidden lg:flex items-center gap-6 text-white">
                                         <div className="text-center">
                                             <div className="text-3xl font-bold">{listings.length}</div>
-                                            <div className="text-sm opacity-80">İlanlar</div>
+                                            <div className="text-sm opacity-90">İlanlar</div>
                                         </div>
                                     </div>
                                 </div>
@@ -574,7 +694,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
                         {/* Listings */}
                         <div className="w-full">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4 px-0 sm:px-4 md:px-0">
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-100 mb-4 px-0 sm:px-4 md:px-0">
                                 {filteredListings.length} İlan
                             </h2>
 

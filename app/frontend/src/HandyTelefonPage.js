@@ -14,9 +14,9 @@ const HandyTelefonPage = ({ toggleFavorite, isFavorite }) => {
             options: [
                 'Apple', 'Google', 'HTC', 'Huawei', 'LG', 'Motorola',
                 'Nokia', 'Samsung', 'Siemens', 'Sony', 'Xiaomi',
-                { value: 'Faxgeräte', label: 'Faks Cihazları' },
-                { value: 'Telefone', label: 'Telefonlar' },
-                { value: 'Weitere Handys & Telefone', label: 'Diğer Cep Telefonu & Telefonlar' }
+                { value: 'Faks Cihazları', label: 'Faks Cihazları' },
+                { value: 'Telefonlar', label: 'Telefonlar' },
+                { value: 'Diğer Cep Telefonu & Telefonlar', label: 'Diğer Cep Telefonu & Telefonlar' }
             ],
             field: 'handy_telefon_art'
         }
