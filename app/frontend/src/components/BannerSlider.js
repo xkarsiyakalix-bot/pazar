@@ -98,6 +98,7 @@ export const BannerSlider = () => {
             {/* Arrow Controls (Visible on Hover) */}
             <button
                 onClick={() => setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
+                aria-label="Önceki Slayt"
                 className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -106,6 +107,7 @@ export const BannerSlider = () => {
             </button>
             <button
                 onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+                aria-label="Sonraki Slayt"
                 className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">

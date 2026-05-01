@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { categories } from '../data/categories';
 import { supabase } from '../lib/supabase';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export const getCategoryPath = (categoryName, subcategoryName = null) => {
     const mainMappings = {
@@ -285,6 +286,7 @@ const areSubCategoriesEquivalent = (sub1, sub2) => {
 
 
 export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
+    const isMobile = useIsMobile();
     const [expandedCategories, setExpandedCategories] = useState([]);
     const [categoriesWithCounts, setCategoriesWithCounts] = useState(categories);
     const navigate = useNavigate();
@@ -371,6 +373,8 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                 : [...prev, categoryName]
         );
     };
+
+    if (isMobile) return null;
 
     return (
         <aside className="w-96 flex-shrink-0 bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-6 h-fit border border-gray-100 dark:border-white/5 hidden lg:block transition-colors duration-300">

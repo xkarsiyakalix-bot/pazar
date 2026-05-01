@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const LazyImage = ({ src, alt, className, imgClassName, ...props }) => {
+export const LazyImage = ({ src, alt, className, imgClassName, loading = 'lazy', fetchpriority, ...props }) => {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [error, setError] = React.useState(false);
 
@@ -12,6 +12,8 @@ export const LazyImage = ({ src, alt, className, imgClassName, ...props }) => {
       <img
         src={src}
         alt={alt}
+        loading={loading}
+        fetchpriority={fetchpriority}
         className={`${imgClassName} transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setIsLoaded(true)}
         onError={() => setError(true)}
