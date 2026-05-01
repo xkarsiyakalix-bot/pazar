@@ -237,32 +237,26 @@ function ProPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
                             {
-                                icon: '🚀',
                                 title: t.pro.benefits.visibility.title,
                                 description: t.pro.benefits.visibility.description
                             },
                             {
-                                icon: '⭐',
                                 title: t.pro.benefits.appearance.title,
                                 description: t.pro.benefits.appearance.description
                             },
                             {
-                                icon: '📊',
                                 title: t.pro.benefits.stats.title,
                                 description: t.pro.benefits.stats.description
                             },
                             {
-                                icon: '🎯',
                                 title: t.pro.benefits.target.title,
                                 description: t.pro.benefits.target.description
                             },
                             {
-                                icon: '💼',
                                 title: t.pro.benefits.management.title,
                                 description: t.pro.benefits.management.description
                             },
                             {
-                                icon: '🔒',
                                 title: t.pro.benefits.trust.title,
                                 description: t.pro.benefits.trust.description
                             }

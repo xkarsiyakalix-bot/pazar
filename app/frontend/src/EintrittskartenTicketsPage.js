@@ -21,7 +21,6 @@ const EintrittskartenTicketsPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🎫',
         bgColor: 'bg-gradient-to-r from-blue-600 to-indigo-700',
         description: 'Biletler'
     };

@@ -1,71 +1,232 @@
 export const categories = [
-    {
-        name: 'Otomobil, Bisiklet & Tekne', icon: '🚗',
-        subcategories: [
-            'Otomobiller', 'Oto Parça & Lastik', 'Tekne & Tekne Malzemeleri',
-            'Bisiklet & Aksesuarlar', 'Motosiklet & Scooter', 'Motosiklet Parça & Aksesuarlar',
-            'Ticari Araçlar & Römorklar', 'Tamir & Servis', 'Karavan & Motokaravan', 'Diğer Otomobil, Bisiklet & Tekne'
-        ]
-    },
-    {
-        name: 'Emlak', icon: '🏠',
-        subcategories: [
-            'Geçici Konaklama & Paylaşımlı Ev', 'Konteyner', 'Satılık Daire', 'Satılık Yazlık',
-            'Tatil Evi & Yurt Dışı Emlak', 'Garaj & Otopark', 'Ticari Emlak', 'Arsa & Bahçe',
-            'Satılık Müstakil Ev', 'Kiralık Müstakil Ev', 'Kiralık Daire', 'Yeni Projeler',
-            'Taşımacılık & Nakliye', 'Diğer Emlak'
-        ]
-    },
-    {
-        name: 'Ev & Bahçe', icon: '🏡',
-        subcategories: ['Banyo', 'Ofis', 'Dekorasyon', 'Ev Hizmetleri', 'Bahçe Malzemeleri & Bitkiler', 'Ev Tekstili', 'Ev Tadilatı', 'Mutfak & Yemek Odası', 'Lamba & Aydınlatma', 'Yatak Odası', 'Oturma Odası', 'Diğer Ev & Bahçe']
-    },
-    {
-        name: 'Moda & Güzellik', icon: '👗',
-        subcategories: ['Güzellik & Sağlık', 'Kadın Giyimi', 'Kadın Ayakkabıları', 'Erkek Giyimi', 'Erkek Ayakkabıları', 'Çanta & Aksesuarlar', 'Saat & Takı', 'Diğer Moda & Güzellik']
-    },
-    {
-        name: 'Elektronik', icon: '📱',
-        subcategories: ['Ses & Hifi', 'Elektronik Hizmetler', 'Fotoğraf & Kamera', 'Cep Telefonu & Telefon', 'Ev Aletleri', 'Konsollar', 'Dizüstü Bilgisayarlar', 'Bilgisayarlar', 'Bilgisayar Aksesuarları & Yazılım', 'Tabletler & E-Okuyucular', 'TV & Video', 'Video Oyunları', 'Diğer Elektronik']
-    },
-    {
-        name: 'Evcil Hayvanlar', icon: '🐾',
-        subcategories: ['Balıklar', 'Köpekler', 'Kediler', 'Küçük Hayvanlar', 'Çiftlik Hayvanları', 'Atlar', 'Hayvan Bakımı & Eğitim', 'Kayıp Hayvanlar', 'Kuşlar', 'Aksesuarlar']
-    },
-    {
-        name: 'Aile, Çocuk & Bebek', icon: '👶',
-        subcategories: ['Yaşlı Bakımı', 'Bebek & Çocuk Giyimi', 'Bebek & Çocuk Ayakkabıları', 'Bebek Ekipmanları', 'Bebek Koltuğu & Oto Koltukları', 'Babysitter & Çocuk Bakımı', 'Bebek Arabaları & Pusetler', 'Bebek Odası Mobilyaları', 'Oyuncaklar', 'Diğer Aile, Çocuk & Bebek']
-    },
-    {
-        name: 'İş İlanları', icon: '💼',
-        subcategories: ['Mesleki Eğitim', 'İnşaat, El Sanatları & Üretim', 'Büro İşleri & Yönetim', 'Gastronomi & Turizm', 'Müşteri Hizmetleri & Çağrı Merkezi', 'Ek İşler', 'Staj', 'Sosyal Sektör & Bakım', 'Taşımacılık & Lojistik', 'Satış & Pazarlama', 'Diğer İş İlanları']
-    },
-    {
-        name: 'Eğlence, Hobi & Mahalle', icon: '⚽',
-        subcategories: ['Ezoterizm & Spiritüalizm', 'Yiyecek & İçecek', 'Boş Zaman Aktiviteleri', 'El Sanatları & Hobi', 'Sanat & Antikalar', 'Sanatçılar & Müzisyenler', 'Model Yapımı', 'Seyahat & Etkinlik Hizmetleri', 'Koleksiyon', 'Spor & Camping', 'Bit Pazarı', 'Kayıp & Buluntu', 'Diğer Eğlence, Hobi & Mahalle']
-    },
-    {
-        name: 'Müzik, Film & Kitap', icon: '🎵',
-        subcategories: ['Kitap & Dergi', 'Kırtasiye', 'Çizgi Romanlar', 'Ders Kitapları, Okul & Eğitim', 'Film & DVD', "Müzik & CD'ler", 'Müzik Enstrümanları', 'Diğer Müzik, Film & Kitap']
-    },
-    {
-        name: 'Biletler', icon: '🎫',
-        subcategories: ['Tren & Toplu Taşıma', 'Komedi & Kabare', 'Hediye Çekleri', 'Çocuk Etkinlikleri', 'Konserler', 'Spor', 'Tiyatro & Müzikal', 'Diğer Biletler']
-    },
-    {
-        name: 'Hizmetler', icon: '🔧',
-        subcategories: ['Yaşlı Bakımı', 'Otomobil, Bisiklet & Tekne', 'Babysitter & Çocuk Bakımı', 'Elektronik', 'Ev & Bahçe', 'Sanatçılar & Müzisyenler', 'Seyahat & Etkinlik', 'Hayvan Bakımı & Eğitim', 'Taşımacılık & Nakliye', 'Diğer Hizmetler']
-    },
-    {
-        name: 'Ücretsiz & Takas', icon: '🎁',
-        subcategories: ['Takas', 'Kiralama', 'Ücretsiz']
-    },
-    {
-        name: 'Eğitim & Kurslar', icon: '📚',
-        subcategories: ['Bilgisayar Kursları', 'Ezoterizm & Spiritüalizm', 'Yemek & Pastacılık', 'Sanat & Tasarım', 'Müzik & Şan', 'Özel Ders', 'Spor Kursları', 'Dil Kursları', 'Dans Kursları', 'Sürekli Eğitim', 'Diğer Eğitim & Kurslar']
-    },
-    {
-        name: 'Komşu Yardımı', icon: '🤝',
-        subcategories: ['Komşu Yardımı']
-    }
+  { name: 'Tüm Kategoriler', count: 0 },
+  {
+    name: 'Otomobil, Bisiklet & Tekne',
+    count: 0,
+    subcategories: [
+      { name: 'Otomobiller', count: 0 },
+      { name: 'Oto Parça & Lastik', count: 0 },
+      { name: 'Tekne & Tekne Malzemeleri', count: 0 },
+      { name: 'Bisiklet & Aksesuarlar', count: 0 },
+      { name: 'Motosiklet & Scooter', count: 0 },
+      { name: 'Motosiklet Parça & Aksesuarlar', count: 0 },
+      { name: 'Ticari Araçlar & Römorklar', count: 0 },
+      { name: 'Tamir & Servis', count: 0 },
+      { name: 'Karavan & Motokaravan', count: 0 },
+      { name: 'Diğer Otomobil, Bisiklet & Tekne', count: 0 },
+    ]
+  },
+  {
+    name: 'Emlak',
+    count: 0,
+    subcategories: [
+      { name: 'Geçici Konaklama & Paylaşımlı Ev', count: 0 },
+      { name: 'Konteyner', count: 0 },
+      { name: 'Satılık Daire', count: 0 },
+      { name: 'Satılık Yazlık', count: 0 },
+      { name: 'Tatil Evi & Yurt Dışı Emlak', count: 0 },
+      { name: 'Garaj & Otopark', count: 0 },
+      { name: 'Ticari Emlak', count: 0 },
+      { name: 'Arsa & Bahçe', count: 0 },
+      { name: 'Satılık Müstakil Ev', count: 0 },
+      { name: 'Kiralık Müstakil Ev', count: 0 },
+      { name: 'Kiralık Daire', count: 0 },
+      { name: 'Yeni Projeler', count: 0 },
+      { name: 'Taşımacılık & Nakliye', count: 0 },
+      { name: 'Diğer Emlak', count: 0 },
+    ]
+  },
+  {
+    name: 'Ev & Bahçe',
+    count: 0,
+    subcategories: [
+      { name: 'Banyo', count: 0 },
+      { name: 'Ofis', count: 0 },
+      { name: 'Dekorasyon', count: 0 },
+      { name: 'Ev Hizmetleri', count: 0 },
+      { name: 'Bahçe Malzemeleri & Bitkiler', count: 0 },
+      { name: 'Ev Tekstili', count: 0 },
+      { name: 'Ev Tadilatı', count: 0 },
+      { name: 'Mutfak & Yemek Odası', count: 0 },
+      { name: 'Lamba & Aydınlatma', count: 0 },
+      { name: 'Yatak Odası', count: 0 },
+      { name: 'Oturma Odası', count: 0 },
+      { name: 'Diğer Ev & Bahçe', count: 0 },
+    ]
+  },
+  {
+    name: 'Moda & Güzellik',
+    count: 0,
+    subcategories: [
+      { name: 'Güzellik & Sağlık', count: 0 },
+      { name: 'Kadın Giyimi', count: 0 },
+      { name: 'Kadın Ayakkabıları', count: 0 },
+      { name: 'Erkek Giyimi', count: 0 },
+      { name: 'Erkek Ayakkabıları', count: 0 },
+      { name: 'Çanta & Aksesuarlar', count: 0 },
+      { name: 'Saat & Takı', count: 0 },
+      { name: 'Diğer Moda & Güzellik', count: 0 },
+    ]
+  },
+  {
+    name: 'Elektronik',
+    count: 0,
+    subcategories: [
+      { name: 'Ses & Hifi', count: 0 },
+      { name: 'Elektronik Hizmetler', count: 0 },
+      { name: 'Fotoğraf & Kamera', count: 0 },
+      { name: 'Cep Telefonu & Telefon', count: 0 },
+      { name: 'Ev Aletleri', count: 0 },
+      { name: 'Konsollar', count: 0 },
+      { name: 'Dizüstü Bilgisayarlar', count: 0 },
+      { name: 'Bilgisayarlar', count: 0 },
+      { name: 'Bilgisayar Aksesuarları & Yazılım', count: 0 },
+      { name: 'Tabletler & E-Okuyucular', count: 0 },
+      { name: 'TV & Video', count: 0 },
+      { name: 'Video Oyunları', count: 0 },
+      { name: 'Diğer Elektronik', count: 0 },
+    ]
+  },
+  {
+    name: 'Evcil Hayvanlar',
+    count: 0,
+    subcategories: [
+      { name: 'Balıklar', count: 0 },
+      { name: 'Köpekler', count: 0 },
+      { name: 'Kediler', count: 0 },
+      { name: 'Küçük Hayvanlar', count: 0 },
+      { name: 'Çiftlik Hayvanları', count: 0 },
+      { name: 'Atlar', count: 0 },
+      { name: 'Hayvan Bakımı & Eğitim', count: 0 },
+      { name: 'Kayıp Hayvanlar', count: 0 },
+      { name: 'Kuşlar', count: 0 },
+      { name: 'Aksesuarlar', count: 0 },
+    ]
+  },
+  {
+    name: 'Aile, Çocuk & Bebek',
+    count: 0,
+    subcategories: [
+      { name: 'Yaşlı Bakımı', count: 0 },
+      { name: 'Bebek & Çocuk Giyimi', count: 0 },
+      { name: 'Bebek & Çocuk Ayakkabıları', count: 0 },
+      { name: 'Bebek Ekipmanları', count: 0 },
+      { name: 'Bebek Koltuğu & Oto Koltukları', count: 0 },
+      { name: 'Babysitter & Çocuk Bakımı', count: 0 },
+      { name: 'Bebek Arabaları & Pusetler', count: 0 },
+      { name: 'Bebek Odası Mobilyaları', count: 0 },
+      { name: 'Oyuncaklar', count: 0 },
+      { name: 'Diğer Aile, Çocuk & Bebek', count: 0 },
+    ]
+  },
+  {
+    name: 'İş İlanları',
+    count: 0,
+    subcategories: [
+      { name: 'Mesleki Eğitim', count: 0 },
+      { name: 'İnşaat, El Sanatları & Üretim', count: 0 },
+      { name: 'Büro İşleri & Yönetim', count: 0 },
+      { name: 'Gastronomi & Turizm', count: 0 },
+      { name: 'Müşteri Hizmetleri & Çağrı Merkezi', count: 0 },
+      { name: 'Ek İşler', count: 0 },
+      { name: 'Staj', count: 0 },
+      { name: 'Sosyal Sektör & Bakım', count: 0 },
+      { name: 'Taşımacılık & Lojistik', count: 0 },
+      { name: 'Satış & Pazarlama', count: 0 },
+      { name: 'Diğer İş İlanları', count: 0 },
+    ]
+  },
+  {
+    name: 'Eğlence, Hobi & Mahalle',
+    count: 0,
+    subcategories: [
+      { name: 'Ezoterizm & Spiritüalizm', count: 0 },
+      { name: 'Yiyecek & İçecek', count: 0 },
+      { name: 'Boş Zaman Aktiviteleri', count: 0 },
+      { name: 'El Sanatları & Hobi', count: 0 },
+      { name: 'Sanat & Antikalar', count: 0 },
+      { name: 'Sanatçılar & Müzisyenler', count: 0 },
+      { name: 'Model Yapımı', count: 0 },
+      { name: 'Seyahat & Etkinlik Hizmetleri', count: 0 },
+      { name: 'Koleksiyon', count: 0 },
+      { name: 'Spor & Camping', count: 0 },
+      { name: 'Bit Pazarı', count: 0 },
+      { name: 'Kayıp & Buluntu', count: 0 },
+      { name: 'Diğer Eğlence, Hobi & Mahalle', count: 0 },
+    ]
+  },
+  {
+    name: 'Müzik, Film & Kitap',
+    count: 0,
+    subcategories: [
+      { name: 'Kitap & Dergi', count: 0 },
+      { name: 'Kırtasiye', count: 0 },
+      { name: 'Çizgi Romanlar', count: 0 },
+      { name: 'Ders Kitapları, Okul & Eğitim', count: 0 },
+      { name: 'Film & DVD', count: 0 },
+      { name: "Müzik & CD'ler", count: 0 },
+      { name: 'Müzik Enstrümanları', count: 0 },
+      { name: 'Diğer Müzik, Film & Kitap', count: 0 },
+    ]
+  },
+  {
+    name: 'Biletler',
+    count: 0,
+    subcategories: [
+      { name: 'Tren & Toplu Taşıma', count: 0 },
+      { name: 'Komedi & Kabare', count: 0 },
+      { name: 'Hediye Çekleri', count: 0 },
+      { name: 'Çocuk Etkinlikleri', count: 0 },
+      { name: 'Konserler', count: 0 },
+      { name: 'Spor', count: 0 },
+      { name: 'Tiyatro & Müzikal', count: 0 },
+      { name: 'Diğer Biletler', count: 0 },
+    ]
+  },
+  {
+    name: 'Hizmetler',
+    count: 0,
+    subcategories: [
+      { name: 'Yaşlı Bakımı', count: 0 },
+      { name: 'Otomobil, Bisiklet & Tekne', count: 0 },
+      { name: 'Babysitter & Çocuk Bakımı', count: 0 },
+      { name: 'Elektronik', count: 0 },
+      { name: 'Ev & Bahçe', count: 0 },
+      { name: 'Sanatçılar & Müzisyenler', count: 0 },
+      { name: 'Seyahat & Etkinlik', count: 0 },
+      { name: 'Hayvan Bakımı & Eğitim', count: 0 },
+      { name: 'Taşımacılık & Nakliye', count: 0 },
+      { name: 'Diğer Hizmetler', count: 0 },
+    ]
+  },
+  {
+    name: 'Ücretsiz & Takas',
+    count: 0,
+    subcategories: [
+      { name: 'Takas', count: 0 },
+      { name: 'Kiralama', count: 0 },
+      { name: 'Ücretsiz', count: 0 },
+    ]
+  },
+  {
+    name: 'Eğitim & Kurslar',
+    count: 0,
+    subcategories: [
+      { name: 'Bilgisayar Kursları', count: 0 },
+      { name: 'Ezoterizm & Spiritüalizm', count: 0 },
+      { name: 'Yemek & Pastacılık', count: 0 },
+      { name: 'Sanat & Tasarım', count: 0 },
+      { name: 'Müzik & Şan', count: 0 },
+      { name: 'Özel Ders', count: 0 },
+      { name: 'Spor Kursları', count: 0 },
+      { name: 'Dil Kursları', count: 0 },
+      { name: 'Dans Kursları', count: 0 },
+      { name: 'Sürekli Eğitim', count: 0 },
+      { name: 'Diğer Eğitim & Kurslar', count: 0 },
+    ]
+  },
+  {
+    name: 'Komşu Yardımı',
+    count: 0
+  }
 ];

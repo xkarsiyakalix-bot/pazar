@@ -118,7 +118,6 @@ const showNotification = (message, type = 'info') => {
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification('ExVitrin', {
       body: message,
-      icon: '/logo192.png'
     });
   }
 

@@ -9,7 +9,7 @@ import StarRating from './StarRating';
  * @param {boolean} showDetails - Detaylı puanları göster
  * @param {string} size - Boyut: 'small', 'medium', 'large'
  */
-function RatingDisplay({ userRating, showDetails = false, size = 'medium', center = false }) {
+export function RatingDisplay({ userRating, showDetails = false, size = 'medium', center = false }) {
     const ratingCount = userRating?.count !== undefined ? userRating.count : userRating?.total_ratings;
 
     if (!userRating || ratingCount === 0 || ratingCount === undefined) {
@@ -107,3 +107,4 @@ function DetailRating({ label, rating, size }) {
 }
 
 export default RatingDisplay;
+

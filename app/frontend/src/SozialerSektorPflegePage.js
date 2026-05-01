@@ -71,7 +71,6 @@ const SozialerSektorPflegePage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🏥',
         bgColor: 'bg-gradient-to-r from-red-500 to-rose-600',
         description: 'Sosyal Sektör & Bakım'
     };

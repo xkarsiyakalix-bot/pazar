@@ -1373,7 +1373,7 @@ function AutosPage() {
 
                                             {/* Sub-models */}
                                             {brand.subModels && isBrandSelected && (
-                                                <div className="ml-7 mt-2 mb-3 space-y-1 border-l-2 border-red-100 dark:border-rose-500/20 pl-4">
+                                                <div className="ml-7 mt-2 mb-3 space-y-1 pl-4">
                                                     {brand.subModels.map((model) => {
                                                         const modelCount = getModelCount(model.name);
                                                         const isModelSelected = selectedModels.includes(model.name);

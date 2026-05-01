@@ -4,14 +4,20 @@ import { supabase } from './lib/supabase';
 import StorePage from './components/Store/StorePage';
 import NotFoundPage from './NotFoundPage';
 import LoadingSpinner from './components/LoadingSpinner';
-import { ProductDetail } from './components.js';
+import { ProductDetail } from './components';
+import { slugToCategoryMap, slugToSubCategoryMap } from './config/categoryConfigs';
+import DynamicCategoryPage from './pages/DynamicCategoryPage';
 
 const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isStore, setIsStore] = useState(null); // null = loading, true = found, false = not found
     const [isListing, setIsListing] = useState(false);
-    const slug = decodeURIComponent(location.pathname.substring(1)); // Remove leading slash and decode
+    const [listingId, setListingId] = useState(null);
+    const [isCategory, setIsCategory] = useState(false);
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    const slug = decodeURIComponent(pathParts[0] || "");
+    const subSlug = decodeURIComponent(pathParts[1] || "");
     const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
@@ -30,6 +36,15 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
         }
 
         const checkSlug = async () => {
+            // 0. Check if it's a Category
+            const isCat = Object.keys(slugToCategoryMap).some(key => key.toLowerCase() === slug.toLowerCase());
+            if (isCat) {
+                setIsCategory(true);
+                setIsStore(false);
+                setIsListing(false);
+                return;
+            }
+
             try {
                 // 1. Check if it's a Store Slug
                 const { data: storeData, error: storeError } = await supabase
@@ -45,13 +60,22 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                 }
 
                 // 2. Check if it's a Listing Slug
-                const { data: listingData, error: listingError } = await supabase
-                    .from('listings')
-                    .select('id')
-                    .eq('slug', slug)
-                    .single();
+                // Extract UUID if present at the end of the slug
+                const idMatch = slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+                const extractedId = idMatch ? idMatch[0] : null;
 
-                if (listingData && !listingError) {
+                let listingQuery = supabase.from('listings').select('id');
+                
+                if (extractedId) {
+                    listingQuery = listingQuery.eq('id', extractedId);
+                } else {
+                    listingQuery = listingQuery.eq('slug', slug);
+                }
+
+                const { data: listingData } = await listingQuery.single();
+
+                if (listingData) {
+                    setListingId(listingData.id);
                     setIsListing(true);
                     setIsStore(false);
                 } else {
@@ -67,6 +91,7 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
 
         setIsStore(null);
         setIsListing(false);
+        setIsCategory(false);
         checkSlug();
     }, [slug]);
 
@@ -82,9 +107,21 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
         return <StorePage sellerId={slug} />;
     }
 
+    if (isCategory) {
+        return (
+            <DynamicCategoryPage
+                category={slug}
+                subCategory={subSlug}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+            />
+        );
+    }
+
     if (isListing) {
         return (
             <ProductDetail
+                id={listingId}
                 slug={slug}
                 addToCart={addToCart}
                 toggleFavorite={toggleFavorite}

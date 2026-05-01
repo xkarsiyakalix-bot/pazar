@@ -436,7 +436,6 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                 </label>
                                 <div className="space-y-1">
                                     {categories
-                                        .filter(cat => cat.name === 'Tüm Kategoriler' || (categoryCounts[cat.name] && categoryCounts[cat.name] > 0) || category === cat.name)
                                         .map((cat) => (
                                             <div key={cat.name}>
                                                 <button
@@ -473,7 +472,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
 
                                                 {/* Subcategories - Expanded if main category selected */}
                                                 {category === cat.name && cat.subcategories && cat.subcategories.length > 0 && (
-                                                    <div className="ml-4 pl-3 border-l-2 border-red-100 dark:border-white/5 my-1 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
+                                                    <div className="ml-4 pl-3 my-1 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
                                                         {cat.subcategories.map(sub => (
                                                             <button
                                                                 key={sub}

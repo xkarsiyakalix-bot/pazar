@@ -23,7 +23,6 @@ const MusikFilmeBuecherPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '📚',
         bgColor: 'bg-gradient-to-r from-red-600 to-red-700',
         description: 'Müzik, Film & Kitap'
     };

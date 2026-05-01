@@ -1,7 +1,7 @@
 import React from 'react';
 import pwaManager from '../utils/pwaManager';
 
-const PWAInstallBanner = ({ onClose }) => {
+export const PWAInstallBanner = ({ onClose }) => {
   const handleInstall = async () => {
     const installed = await pwaManager.promptInstall();
     if (installed) {
@@ -85,3 +85,4 @@ const PWAInstallBanner = ({ onClose }) => {
 };
 
 export default PWAInstallBanner;
+

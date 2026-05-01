@@ -12,31 +12,33 @@ import { favoritesApi } from './api/favorites';
 import { getFollowing, followUser, unfollowUser } from './api/follows';
 
 
-// Critical components - static import for immediate availability
-import { Header } from './components/Header';
-import PresenceTracker from './components/PresenceTracker';
-import { Footer } from './components/Footer';
-import CookieConsent from './components/CookieConsent';
-import PWAInstallBanner from './components/PWAInstallBanner';
-import { SearchSection } from './components/SearchSection';
-import { ListingGrid } from './components/ListingGrid';
-import { CategorySidebar } from './components/CategorySidebar';
-import { Gallery } from './components/Gallery';
-import BannerSlider from './components/BannerSlider';
+// Critical components - static import from barrel
+import {
+  Header,
+  Footer,
+  PresenceTracker,
+  CookieConsent,
+  PWAInstallBanner,
+  SearchSection,
+  ListingGrid,
+  CategorySidebar,
+  Gallery,
+  BannerSlider
+} from './components';
 
 // Non-critical components - lazy load
-const CategoryGallery = React.lazy(() => import('./components.js').then(m => ({ default: m.CategoryGallery })));
-const WelcomeModal = React.lazy(() => import('./components.js').then(m => ({ default: m.WelcomeModal })));
-const ProductDetail = React.lazy(() => import('./components.js').then(m => ({ default: m.ProductDetail })));
-const AddListing = React.lazy(() => import('./components.js').then(m => ({ default: m.AddListing })));
-const SellerProfile = React.lazy(() => import('./components.js').then(m => ({ default: m.SellerProfile })));
-const AllCategories = React.lazy(() => import('./components.js').then(m => ({ default: m.AllCategories })));
-const Checkout = React.lazy(() => import('./components.js').then(m => ({ default: m.Checkout })));
-const SellerPage = React.lazy(() => import('./components.js').then(m => ({ default: m.SellerPage })));
-const SpecialSellers = React.lazy(() => import('./components.js').then(m => ({ default: m.SpecialSellers })));
-const AnimalProtectionPage = React.lazy(() => import('./components.js').then(m => ({ default: m.AnimalProtectionPage })));
-const RealEstateLegalPage = React.lazy(() => import('./components.js').then(m => ({ default: m.RealEstateLegalPage })));
-const VehicleLegalPage = React.lazy(() => import('./components.js').then(m => ({ default: m.VehicleLegalPage })));
+const CategoryGallery = React.lazy(() => import('./components/CategoryGallery'));
+const WelcomeModal = React.lazy(() => import('./components/WelcomeModal'));
+const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
+const AddListing = React.lazy(() => import('./pages/AddListing'));
+const SellerProfile = React.lazy(() => import('./components/SellerProfile'));
+const AllCategories = React.lazy(() => import('./components/AllCategories'));
+const Checkout = React.lazy(() => import('./pages/Checkout'));
+const SellerPage = React.lazy(() => import('./pages/SellerPage'));
+const SpecialSellers = React.lazy(() => import('./components/SpecialSellers'));
+const AnimalProtectionPage = React.lazy(() => import('./components/LegalPages').then(m => ({ default: m.AnimalProtectionPage })));
+const RealEstateLegalPage = React.lazy(() => import('./components/LegalPages').then(m => ({ default: m.RealEstateLegalPage })));
+const VehicleLegalPage = React.lazy(() => import('./components/LegalPages').then(m => ({ default: m.VehicleLegalPage })));
 const LegalNoticesPage = React.lazy(() => import('./LegalNoticesPage'));
 const CookiesPolicyPage = React.lazy(() => import('./CookiesPolicyPage'));
 
@@ -44,6 +46,8 @@ const CookiesPolicyPage = React.lazy(() => import('./CookiesPolicyPage'));
 const ReservationButton = React.lazy(() => import('./ReservationButton'));
 const StorePage = React.lazy(() => import('./components/Store/StorePage'));
 const SmartRoute = React.lazy(() => import('./SmartRoute'));
+const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
+
 // Lazy load page components
 const Register = React.lazy(() => import('./Register'));
 const AlleKategorienPage = React.lazy(() => import('./AlleKategorienPage'));
@@ -52,63 +56,21 @@ const ForgotPassword = React.lazy(() => import('./ForgotPassword'));
 const ResetPassword = React.lazy(() => import('./ResetPassword'));
 const SubscriptionPackages = React.lazy(() => import('./SubscriptionPackages'));
 
-const AutosPage = React.lazy(() => import('./AutosPage'));
-const AutoRadBootPage = React.lazy(() => import('./AutoRadBootPage'));
-const BikesPage = React.lazy(() => import('./BikesPage'));
-const AutoteilePage = React.lazy(() => import('./AutoteilePage'));
-const BootePage = React.lazy(() => import('./BootePage'));
-const MotorradPage = React.lazy(() => import('./MotorradPage'));
-const MotorradteilePage = React.lazy(() => import('./MotorradteilePage'));
-const NutzfahrzeugePage = React.lazy(() => import('./NutzfahrzeugePage'));
-const ReparaturenPage = React.lazy(() => import('./ReparaturenPage'));
-const WohnwagenPage = React.lazy(() => import('./WohnwagenPage'));
-const WeiteresAutoRadBootPage = React.lazy(() => import('./WeiteresAutoRadBootPage'));
-const AufZeitWGPage = React.lazy(() => import('./AufZeitWGPage'));
-const ContainerPage = React.lazy(() => import('./ContainerPage'));
-const EigentumswohnungenPage = React.lazy(() => import('./EigentumswohnungenPage'));
-const SatilikYazlikPage = React.lazy(() => import('./SatilikYazlikPage'));
-const FerienAuslandsimmobilienPage = React.lazy(() => import('./FerienAuslandsimmobilienPage'));
-const GaragenStellplaetzePage = React.lazy(() => import('./GaragenStellplaetzePage'));
-const GewerbeimmobilienPage = React.lazy(() => import('./GewerbeimmobilienPage'));
-const GrundstueckeGaertenPage = React.lazy(() => import('./GrundstueckeGaertenPage'));
-const HaeuserZumKaufPage = React.lazy(() => import('./HaeuserZumKaufPage'));
-const HaeuserZurMietePage = React.lazy(() => import('./HaeuserZurMietePage'));
-const MietwohnungenPage = React.lazy(() => import('./MietwohnungenPage'));
-const NeubauprojektePage = React.lazy(() => import('./NeubauprojektePage'));
-const UmzugTransportPage = React.lazy(() => import('./UmzugTransportPage'));
-const WeitereImmobilienPage = React.lazy(() => import('./WeitereImmobilienPage'));
-const BadezimmerPage = React.lazy(() => import('./BadezimmerPage'));
-const BueroPage = React.lazy(() => import('./BueroPage'));
-const DekorationPage = React.lazy(() => import('./DekorationPage'));
-const DienstleistungenHausGartenPage = React.lazy(() => import('./DienstleistungenHausGartenPage'));
-const GartenzubehoerPflanzenPage = React.lazy(() => import('./GartenzubehoerPflanzenPage'));
-const HeimtextilienPage = React.lazy(() => import('./HeimtextilienPage'));
-const HeimwerkenPage = React.lazy(() => import('./HeimwerkenPage'));
-const KuecheEsszimmerPage = React.lazy(() => import('./KuecheEsszimmerPage'));
-const LampenLichtPage = React.lazy(() => import('./LampenLichtPage'));
-const SchlafzimmerPage = React.lazy(() => import('./SchlafzimmerPage'));
-const WohnzimmerPage = React.lazy(() => import('./WohnzimmerPage'));
-const WeiteresHausGartenPage = React.lazy(() => import('./WeiteresHausGartenPage'));
-const BeautyGesundheitPage = React.lazy(() => import('./BeautyGesundheitPage'));
-const DamenbekleidungPage = React.lazy(() => import('./DamenbekleidungPage'));
-const DamenschuhePage = React.lazy(() => import('./DamenschuhePage'));
-const HerrenbekleidungPage = React.lazy(() => import('./HerrenbekleidungPage'));
-const HerrenschuhePage = React.lazy(() => import('./HerrenschuhePage'));
 const ModeBeautyPage = React.lazy(() => import('./ModeBeautyPage'));
-const ImmobilienPage = React.lazy(() => import('./ImmobilienPage'));
-const ElektronikPage = React.lazy(() => import('./ElektronikPage'));
-const HausGartenPage = React.lazy(() => import('./HausGartenPage'));
-const HaustierePage = React.lazy(() => import('./HaustierePage'));
+const DamenbekleidungPage = React.lazy(() => import('./DamenbekleidungPage'));
+const HerrenbekleidungPage = React.lazy(() => import('./HerrenbekleidungPage'));
+const DamenschuhePage = React.lazy(() => import('./DamenschuhePage'));
+const HerrenschuhePage = React.lazy(() => import('./HerrenschuhePage'));
 const TaschenAccessoiresPage = React.lazy(() => import('./TaschenAccessoiresPage'));
 const UhrenSchmuckPage = React.lazy(() => import('./UhrenSchmuckPage'));
 const WeiteresModeBeautyPage = React.lazy(() => import('./WeiteresModeBeautyPage'));
-const AudioHifiPage = React.lazy(() => import('./AudioHifiPage'));
-const DienstleistungenElektronikPage = React.lazy(() => import('./DienstleistungenElektronikPage'));
+const ImmobilienPage = React.lazy(() => import('./ImmobilienPage'));
+const ElektronikPage = React.lazy(() => import('./ElektronikPage'));
 const FotoPage = React.lazy(() => import('./FotoPage'));
+const NotebooksPage = React.lazy(() => import('./NotebooksPage'));
 const HandyTelefonPage = React.lazy(() => import('./HandyTelefonPage'));
 const HaushaltsgeraetePage = React.lazy(() => import('./HaushaltsgeraetePage'));
 const KonsolenPage = React.lazy(() => import('./KonsolenPage'));
-const NotebooksPage = React.lazy(() => import('./NotebooksPage'));
 const PCsPage = React.lazy(() => import('./PCsPage'));
 const PCZubehoerSoftwarePage = React.lazy(() => import('./PCZubehoerSoftwarePage'));
 const TabletsReaderPage = React.lazy(() => import('./TabletsReaderPage'));
@@ -116,6 +78,29 @@ const TVVideoPage = React.lazy(() => import('./TVVideoPage'));
 const VideospielePage = React.lazy(() => import('./VideospielePage'));
 const WeitereElektronikPage = React.lazy(() => import('./WeitereElektronikPage'));
 const ElektronikDienstleistungenPage = React.lazy(() => import('./ElektronikDienstleistungenPage'));
+const MietwohnungenPage = React.lazy(() => import('./MietwohnungenPage'));
+const EigentumswohnungenPage = React.lazy(() => import('./EigentumswohnungenPage'));
+const HaeuserZumKaufPage = React.lazy(() => import('./HaeuserZumKaufPage'));
+const HaeuserZurMietePage = React.lazy(() => import('./HaeuserZurMietePage'));
+const FerienAuslandsimmobilienPage = React.lazy(() => import('./FerienAuslandsimmobilienPage'));
+const GaragenStellplaetzePage = React.lazy(() => import('./GaragenStellplaetzePage'));
+const GewerbeimmobilienPage = React.lazy(() => import('./GewerbeimmobilienPage'));
+const GrundstueckeGaertenPage = React.lazy(() => import('./GrundstueckeGaertenPage'));
+const SatilikYazlikPage = React.lazy(() => import('./SatilikYazlikPage'));
+const NeubauprojektePage = React.lazy(() => import('./NeubauprojektePage'));
+const UmzugTransportPage = React.lazy(() => import('./UmzugTransportPage'));
+const WeitereImmobilienPage = React.lazy(() => import('./WeitereImmobilienPage'));
+const WohnzimmerPage = React.lazy(() => import('./WohnzimmerPage'));
+const SchlafzimmerPage = React.lazy(() => import('./SchlafzimmerPage'));
+const KuecheEsszimmerPage = React.lazy(() => import('./KuecheEsszimmerPage'));
+const LampenLichtPage = React.lazy(() => import('./LampenLichtPage'));
+const GartenzubehoerPflanzenPage = React.lazy(() => import('./GartenzubehoerPflanzenPage'));
+const HeimtextilienPage = React.lazy(() => import('./HeimtextilienPage'));
+const HeimwerkenPage = React.lazy(() => import('./HeimwerkenPage'));
+const DekorationPage = React.lazy(() => import('./DekorationPage'));
+const BueroPage = React.lazy(() => import('./BueroPage'));
+const HausGartenPage = React.lazy(() => import('./HausGartenPage'));
+const WeiteresHausGartenPage = React.lazy(() => import('./WeiteresHausGartenPage'));
 const FischePage = React.lazy(() => import('./FischePage'));
 const HundePage = React.lazy(() => import('./HundePage'));
 const KatzenPage = React.lazy(() => import('./KatzenPage'));
@@ -125,42 +110,27 @@ const PferdePage = React.lazy(() => import('./PferdePage'));
 const TierbetreuungTrainingPage = React.lazy(() => import('./TierbetreuungTrainingPage'));
 const VermissTierePage = React.lazy(() => import('./VermissTierePage'));
 const VoegelPage = React.lazy(() => import('./VoegelPage'));
-const MyListingsPage = React.lazy(() => import('./MyListingsPage'));
-const SettingsPage = React.lazy(() => import('./SettingsPage'));
-const PaymentPage = React.lazy(() => import('./PaymentPage'));
-const FavoritesPage = React.lazy(() => import('./FavoritesPage'));
-const ProfileOverviewPage = React.lazy(() => import('./ProfileOverviewPage'));
-const FollowingPage = React.lazy(() => import('./FollowingPage'));
-const FollowersPage = React.lazy(() => import('./FollowersPage'));
-const UserInvoicesPage = React.lazy(() => import('./UserInvoicesPage'));
-const AdminSalesReport = React.lazy(() => import('./admin/AdminSalesReport'));
-const AdminAdmins = React.lazy(() => import('./admin/AdminAdmins'));
-const UserDetailsModal = React.lazy(() => import('./admin/UserDetailsModal'));
 const TierzubehoerPage = React.lazy(() => import('./TierzubehoerPage'));
-const BabyKinderkleidungPage = React.lazy(() => import('./BabyKinderkleidungPage'));
-const BabyKinderschuhePage = React.lazy(() => import('./BabyKinderschuhePage'));
-const BabyAusstattungPage = React.lazy(() => import('./BabyAusstattungPage'));
-const BabyschalenKindersitzePage = React.lazy(() => import('./BabyschalenKindersitzePage'));
-const BabysitterKinderbetreuungPage = React.lazy(() => import('./BabysitterKinderbetreuungPage'));
+const SpielzeugPage = React.lazy(() => import('./SpielzeugPage'));
 const KinderwagenBuggysPage = React.lazy(() => import('./KinderwagenBuggysPage'));
 const KinderzimmermobelPage = React.lazy(() => import('./KinderzimmermobelPage'));
-const SpielzeugPage = React.lazy(() => import('./SpielzeugPage'));
-const FamilieKindBabyPage = React.lazy(() => import('./FamilieKindBabyPage'));
+const AltenpflegePage = React.lazy(() => import('./AltenpflegePage'));
+const BabyAusstattungPage = React.lazy(() => import('./BabyAusstattungPage'));
+const BabyKinderkleidungPage = React.lazy(() => import('./BabyKinderkleidungPage'));
+const BabyKinderschuhePage = React.lazy(() => import('./BabyKinderschuhePage'));
+const BabyschalenKindersitzePage = React.lazy(() => import('./BabyschalenKindersitzePage'));
+const BabysitterKinderbetreuungPage = React.lazy(() => import('./BabysitterKinderbetreuungPage'));
 const WeiteresFamilieKindBabyPage = React.lazy(() => import('./WeiteresFamilieKindBabyPage'));
-const JobsPage = React.lazy(() => import('./JobsPage'));
-const AusbildungPage = React.lazy(() => import('./AusbildungPage'));
-const BauHandwerkProduktionPage = React.lazy(() => import('./BauHandwerkProduktionPage'));
-const BueroarbeitVerwaltungPage = React.lazy(() => import('./BueroarbeitVerwaltungPage'));
 const GastronomieTourismusPage = React.lazy(() => import('./GastronomieTourismusPage'));
 const KundenserviceCallCenterPage = React.lazy(() => import('./KundenserviceCallCenterPage'));
 const MiniNebenjobsPage = React.lazy(() => import('./MiniNebenjobsPage'));
-const PraktikaPage = React.lazy(() => import('./PraktikaPage'));
 const SozialerSektorPflegePage = React.lazy(() => import('./SozialerSektorPflegePage'));
 const TransportLogistikVerkehrPage = React.lazy(() => import('./TransportLogistikVerkehrPage'));
 const SalesPurchasingMarketingPage = React.lazy(() => import('./SalesPurchasingMarketingPage'));
+const PraktikaPage = React.lazy(() => import('./PraktikaPage'));
 const WeitereJobsPage = React.lazy(() => import('./WeitereJobsPage'));
-const FreizeitHobbyNachbarschaftPage = React.lazy(() => import('./FreizeitHobbyNachbarschaftPage'));
-const EsoterikSpirituellesPage = React.lazy(() => import('./EsoterikSpirituellesPage'));
+const BueroarbeitVerwaltungPage = React.lazy(() => import('./BueroarbeitVerwaltungPage'));
+const EsoterikSpirituellesFreizeitPage = React.lazy(() => import('./EsoterikSpirituellesFreizeitPage'));
 const EssenTrinkenPage = React.lazy(() => import('./EssenTrinkenPage'));
 const FreizeitaktivitaetenPage = React.lazy(() => import('./FreizeitaktivitaetenPage'));
 const HandarbeitBastelnKunsthandwerkPage = React.lazy(() => import('./HandarbeitBastelnKunsthandwerkPage'));
@@ -173,54 +143,51 @@ const SportCampingPage = React.lazy(() => import('./SportCampingPage'));
 const TroedelPage = React.lazy(() => import('./TroedelPage'));
 const VerlorenGefundenPage = React.lazy(() => import('./VerlorenGefundenPage'));
 const WeiteresFreizeitHobbyNachbarschaftPage = React.lazy(() => import('./WeiteresFreizeitHobbyNachbarschaftPage'));
-const EsoterikSpirituellesFreizeitPage = React.lazy(() => import('./EsoterikSpirituellesFreizeitPage'));
-const MusikFilmeBuecherPage = React.lazy(() => import('./MusikFilmeBuecherPage'));
-const WeitereMusikFilmeBuecherPage = React.lazy(() => import('./WeitereMusikFilmeBuecherPage'));
 const MusikCDsPage = React.lazy(() => import('./MusikCDsPage'));
-const FilmDVDPage = React.lazy(() => import('./FilmDVDPage'));
 const MusikinstrumentePage = React.lazy(() => import('./MusikinstrumentePage'));
-const BuecherZeitschriftenPage = React.lazy(() => import('./BuecherZeitschriftenPage'));
-const ComicsPage = React.lazy(() => import('./ComicsPage'));
+const FilmDVDPage = React.lazy(() => import('./FilmDVDPage'));
 const FachbuecherSchuleStudiumPage = React.lazy(() => import('./FachbuecherSchuleStudiumPage'));
-const BueroSchreibwarenPage = React.lazy(() => import('./BueroSchreibwarenPage'));
-const EintrittskartenTicketsPage = React.lazy(() => import('./EintrittskartenTicketsPage'));
-const BahnOEPNVPage = React.lazy(() => import('./BahnOEPNVPage'));
-const ComedyKabarettPage = React.lazy(() => import('./ComedyKabarettPage'));
-const GutscheinePage = React.lazy(() => import('./GutscheinePage'));
-const KinderTicketsPage = React.lazy(() => import('./KinderTicketsPage'));
+const WeitereMusikFilmeBuecherPage = React.lazy(() => import('./WeitereMusikFilmeBuecherPage'));
 const KonzertePage = React.lazy(() => import('./KonzertePage'));
 const SportTicketsPage = React.lazy(() => import('./SportTicketsPage'));
 const TheaterMusicalPage = React.lazy(() => import('./TheaterMusicalPage'));
+const GutscheinePage = React.lazy(() => import('./GutscheinePage'));
+const KinderTicketsPage = React.lazy(() => import('./KinderTicketsPage'));
 const WeitereEintrittskartenTicketsPage = React.lazy(() => import('./WeitereEintrittskartenTicketsPage'));
-const DienstleistungenPage = React.lazy(() => import('./DienstleistungenPage'));
-const AltenpflegePage = React.lazy(() => import('./AltenpflegePage'));
-const DienstleistungenAltenpflegePage = React.lazy(() => import('./DienstleistungenAltenpflegePage'));
-const DienstleistungenAutoRadBootPage = React.lazy(() => import('./DienstleistungenAutoRadBootPage'));
-const DienstleistungenBabysitterPage = React.lazy(() => import('./DienstleistungenBabysitterPage'));
 const DienstleistungenKuenstlerMusikerPage = React.lazy(() => import('./DienstleistungenKuenstlerMusikerPage'));
-const DienstleistungenReiseEventPage = React.lazy(() => import('./DienstleistungenReiseEventPage'));
-const DienstleistungenTierbetreuungPage = React.lazy(() => import('./DienstleistungenTierbetreuungPage'));
 const DienstleistungenUmzugTransportPage = React.lazy(() => import('./DienstleistungenUmzugTransportPage'));
 const DienstleistungenWeiterePage = React.lazy(() => import('./DienstleistungenWeiterePage'));
-const VerschenkenTauschenPage = React.lazy(() => import('./VerschenkenTauschenPage'));
 const TauschenPage = React.lazy(() => import('./TauschenPage'));
 const VerleihenPage = React.lazy(() => import('./VerleihenPage'));
 const VerschenkenPage = React.lazy(() => import('./VerschenkenPage'));
-const UnterrichtKursePage = React.lazy(() => import('./UnterrichtKursePage'));
-
-const ComputerkursePage = React.lazy(() => import('./ComputerkursePage'));
-const UnterrichtEsoterikPage = React.lazy(() => import('./UnterrichtEsoterikPage'));
+const TanzkursePage = React.lazy(() => import('./TanzkursePage'));
+const SportkursePage = React.lazy(() => import('./SportkursePage'));
+const MusikGesangPage = React.lazy(() => import('./MusikGesangPage'));
+const SprachkursePage = React.lazy(() => import('./SprachkursePage'));
+const NachhilfePage = React.lazy(() => import('./NachhilfePage'));
 const KochenBackenPage = React.lazy(() => import('./KochenBackenPage'));
 const KunstGestaltungPage = React.lazy(() => import('./KunstGestaltungPage'));
-const MusikGesangPage = React.lazy(() => import('./MusikGesangPage'));
-const NachhilfePage = React.lazy(() => import('./NachhilfePage'));
-const SportkursePage = React.lazy(() => import('./SportkursePage'));
-const SprachkursePage = React.lazy(() => import('./SprachkursePage'));
-const TanzkursePage = React.lazy(() => import('./TanzkursePage'));
 const WeiterbildungPage = React.lazy(() => import('./WeiterbildungPage'));
 const WeitereUnterrichtKursePage = React.lazy(() => import('./WeitereUnterrichtKursePage'));
-const NachbarschaftshilfeMainPage = React.lazy(() => import('./NachbarschaftshilfeMainPage'));
-const NachbarschaftshilfePage = React.lazy(() => import('./NachbarschaftshilfePage'));
+const EsoterikSpirituellesPage = React.lazy(() => import('./EsoterikSpirituellesPage'));
+const MotorradPage = React.lazy(() => import('./MotorradPage'));
+const MotorradteilePage = React.lazy(() => import('./MotorradteilePage'));
+const NutzfahrzeugePage = React.lazy(() => import('./NutzfahrzeugePage'));
+const WohnwagenPage = React.lazy(() => import('./WohnwagenPage'));
+const ReparaturenPage = React.lazy(() => import('./ReparaturenPage'));
+const WeiteresAutoRadBootPage = React.lazy(() => import('./WeiteresAutoRadBootPage'));
+const MyListingsPage = React.lazy(() => import('./MyListingsPage'));
+const SettingsPage = React.lazy(() => import('./SettingsPage'));
+const PaymentPage = React.lazy(() => import('./PaymentPage'));
+const FavoritesPage = React.lazy(() => import('./FavoritesPage'));
+const ProfileOverviewPage = React.lazy(() => import('./ProfileOverviewPage'));
+const FollowingPage = React.lazy(() => import('./FollowingPage'));
+const FollowersPage = React.lazy(() => import('./FollowersPage'));
+const UserInvoicesPage = React.lazy(() => import('./UserInvoicesPage'));
+const AdminSalesReport = React.lazy(() => import('./admin/AdminSalesReport'));
+const AdminAdmins = React.lazy(() => import('./admin/AdminAdmins'));
+const UserDetailsModal = React.lazy(() => import('./admin/UserDetailsModal'));
+const JobsPage = React.lazy(() => import('./JobsPage'));
 const SmartRecommendations = React.lazy(() => import('./SmartRecommendations').then(module => ({ default: module.SmartRecommendations })));
 const Unternehmensseiten = React.lazy(() => import('./Unternehmensseiten'));
 const BMWListingDetail = React.lazy(() => import('./BMWListingDetail'));
@@ -233,6 +200,21 @@ const MobileAppsPage = React.lazy(() => import('./MobileAppsPage'));
 const MessagesPage = React.lazy(() => import('./MessagesPage'));
 const ProPage = React.lazy(() => import('./ProPage'));
 const ContactPage = React.lazy(() => import('./ContactPage'));
+const NachbarschaftshilfePage = React.lazy(() => import('./NachbarschaftshilfePage'));
+const AutosPage = React.lazy(() => import('./AutosPage'));
+const AutoteilePage = React.lazy(() => import('./AutoteilePage'));
+const BootePage = React.lazy(() => import('./BootePage'));
+const BikesPage = React.lazy(() => import('./BikesPage'));
+const AutoRadBootPage = React.lazy(() => import('./AutoRadBootPage'));
+const HaustierePage = React.lazy(() => import('./HaustierePage'));
+const FamilieKindBabyPage = React.lazy(() => import('./FamilieKindBabyPage'));
+const FreizeitHobbyNachbarschaftPage = React.lazy(() => import('./FreizeitHobbyNachbarschaftPage'));
+const MusikFilmeBuecherPage = React.lazy(() => import('./MusikFilmeBuecherPage'));
+const EintrittskartenTicketsPage = React.lazy(() => import('./EintrittskartenTicketsPage'));
+const DienstleistungenPage = React.lazy(() => import('./DienstleistungenPage'));
+const VerschenkenTauschenPage = React.lazy(() => import('./VerschenkenTauschenPage'));
+const UnterrichtKursePage = React.lazy(() => import('./UnterrichtKursePage'));
+const NachbarschaftshilfeMainPage = React.lazy(() => import('./NachbarschaftshilfeMainPage'));
 
 const SearchResultsPage = React.lazy(() => import('./SearchResultsPage'));
 const FilterSidebar = React.lazy(() => import('./FilterSidebar'));
@@ -734,6 +716,7 @@ function App() {
   };
 
   const isSellerFollowed = (sellerId) => followedSellers.includes(sellerId);
+  const smartRouteProps = { addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed };
 
 
   return (
@@ -871,71 +854,53 @@ function App() {
             <Route path="/unternehmensseite-pro" element={<ProPage />} />
             <Route path="/iletisim" element={<ContactPage />} />
             <Route path="/search" element={<SearchResultsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/notifications" element={<NotificationSettingsPage />} />
-            <Route path="/Butun-Kategoriler" element={<AlleKategorienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne" element={<AutoRadBootPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Otomobiller" element={<AutosPage />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Bisiklet-Aksesuarlar" element={<BikesPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Oto-Parca-Lastik" element={<AutoteilePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Tekne-Tekne-Malzemeleri" element={<BootePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Motosiklet-Scooter" element={<MotorradPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Motosiklet-Parca-Aksesuarlar" element={<MotorradteilePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Ticari-Araclar-Romorklar" element={<NutzfahrzeugePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Tamir-Servis" element={<ReparaturenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Karavan-Motokaravan" element={<WohnwagenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Otomobil-Bisiklet-Tekne/Diger-Otomobil-Bisiklet-Tekne" element={<WeiteresAutoRadBootPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak" element={<ImmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Gecici-Konaklama-Paylasimli-Ev" element={<AufZeitWGPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Konteyner" element={<ContainerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Satilik-Daireler" element={<EigentumswohnungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Satilik-Yazlik" element={<SatilikYazlikPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Tatil-Evi-Yurt-Disi-Emlak" element={<FerienAuslandsimmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Garaj-Otopark" element={<GaragenStellplaetzePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Ticari-Emlak" element={<GewerbeimmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Arsa-Bahce" element={<GrundstueckeGaertenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Satilik-Evler" element={<HaeuserZumKaufPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Kiralik-Evler" element={<HaeuserZurMietePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Kiralik-Daireler" element={<MietwohnungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Yeni-Projeler" element={<NeubauprojektePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Tasimacilik-Nakliye" element={<UmzugTransportPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Emlak/Diger-Emlak" element={<WeitereImmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce" element={<HausGartenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Banyo" element={<BadezimmerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Ofis" element={<BueroPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Dekorasyon" element={<DekorationPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Ev-Hizmetleri" element={<DienstleistungenHausGartenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Bahce-Malzemeleri-Bitkiler" element={<GartenzubehoerPflanzenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Ev-Tekstili" element={<HeimtextilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Ev-Tadilati" element={<HeimwerkenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Mutfak-Yemek-Odasi" element={<KuecheEsszimmerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Lamba-Aydinlatma" element={<LampenLichtPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Yatak-Odasi" element={<SchlafzimmerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Oturma-Odasi" element={<WohnzimmerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ev-Bahce/Diger-Ev-Bahce" element={<WeiteresHausGartenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Moda-Guzellik" element={<ModeBeautyPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Moda-Guzellik/Guzellik-Saglik" element={<BeautyGesundheitPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* Dynamic Routing - Handled by SmartRoute for categories, listings, and stores */}
+            {/* === MODA & GÜZELLİK === */}
             <Route path="/Moda-Guzellik/Kadin-Giyimi" element={<DamenbekleidungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Moda-Guzellik/Kadin-Ayakkabilari" element={<DamenschuhePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Moda-Guzellik/Erkek-Giyimi" element={<HerrenbekleidungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Moda-Guzellik/Kadin-Ayakkabilari" element={<DamenschuhePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Moda-Guzellik/Erkek-Ayakkabilari" element={<HerrenschuhePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Moda-Guzellik/Canta-Aksesuarlar" element={<TaschenAccessoiresPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Moda-Guzellik/Saat-Taki" element={<UhrenSchmuckPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Moda-Guzellik/Diger-Moda-Guzellik" element={<WeiteresModeBeautyPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Elektronik" element={<ElektronikPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Elektronik/Ses-Hifi" element={<AudioHifiPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Elektronik/Elektronik-Hizmetler" element={<ElektronikDienstleistungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === ELEKTRONİK === */}
             <Route path="/Elektronik/Fotograf-Kamera" element={<FotoPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Elektronik/Dizustu-Bilgisayarlar" element={<NotebooksPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Cep-Telefonu-Telefon" element={<HandyTelefonPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Ev-Aletleri" element={<HaushaltsgeraetePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Konsollar" element={<KonsolenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Elektronik/Dizustu-Bilgisayarlar" element={<NotebooksPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Bilgisayarlar" element={<PCsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Bilgisayar-Aksesuarlari-Yazilim" element={<PCZubehoerSoftwarePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Tabletler-E-Okuyucular" element={<TabletsReaderPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/TV-Video" element={<TVVideoPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Video-Oyunlari" element={<VideospielePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Elektronik/Diger-Elektronik" element={<WeitereElektronikPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Evcil-Hayvanlar" element={<HaustierePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Elektronik/Elektronik-Hizmetler" element={<ElektronikDienstleistungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === EMLAK === */}
+            <Route path="/Emlak/Kiralik-Daireler" element={<MietwohnungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Satilik-Daireler" element={<EigentumswohnungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Satilik-Evler" element={<HaeuserZumKaufPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Kiralik-Evler" element={<HaeuserZurMietePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Tatil-Evi-Yurt-Disi-Emlak" element={<FerienAuslandsimmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Garaj-Otopark" element={<GaragenStellplaetzePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Ticari-Emlak" element={<GewerbeimmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Arsa-Bahce" element={<GrundstueckeGaertenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Satilik-Yazlik" element={<SatilikYazlikPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Yeni-Projeler" element={<NeubauprojektePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Tasimacilik-Nakliye" element={<UmzugTransportPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak/Diger-Emlak" element={<WeitereImmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === EV & BAHÇE === */}
+            <Route path="/Ev-Bahce/Oturma-Odasi" element={<WohnzimmerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Yatak-Odasi" element={<SchlafzimmerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Mutfak-Yemek-Odasi" element={<KuecheEsszimmerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Lamba-Aydinlatma" element={<LampenLichtPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Bahce-Malzemeleri-Bitkiler" element={<GartenzubehoerPflanzenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Ev-Tekstili" element={<HeimtextilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Ev-Tadilati" element={<HeimwerkenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Dekorasyon" element={<DekorationPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Ofis" element={<BueroPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce/Diger-Ev-Bahce" element={<WeiteresHausGartenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === EVCİL HAYVANLAR === */}
             <Route path="/Evcil-Hayvanlar/Baliklar" element={<FischePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Evcil-Hayvanlar/Kopekler" element={<HundePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Evcil-Hayvanlar/Kedi" element={<KatzenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
@@ -945,36 +910,29 @@ function App() {
             <Route path="/Evcil-Hayvanlar/Hayvan-Bakimi-Egitimi" element={<TierbetreuungTrainingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Evcil-Hayvanlar/Kayip-Hayvanlar" element={<VermissTierePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Evcil-Hayvanlar/Kuslar" element={<VoegelPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Aile-Cocuk-Bebek" element={<FamilieKindBabyPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Evcil-Hayvanlar/Aksesuarlar" element={<TierzubehoerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-
+            {/* === AİLE, ÇOCUK & BEBEK === */}
+            <Route path="/Aile-Cocuk-Bebek/Yasli-Bakimi" element={<AltenpflegePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Bebek-Cocuk-Giyimi" element={<BabyKinderkleidungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Bebek-Cocuk-Ayakkabilari" element={<BabyKinderschuhePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Aile-Cocuk-Bebek/Bebek-Ekipmanlari" element={
-              <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><LoadingSpinner size="large" /></div>}>
-                <BabyAusstattungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />
-              </React.Suspense>
-            } />
+            <Route path="/Aile-Cocuk-Bebek/Bebek-Ekipmanlari" element={<BabyAusstattungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Oto-Koltuklari" element={<BabyschalenKindersitzePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Babysitter-Cocuk-Bakimi" element={<BabysitterKinderbetreuungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Aile-Cocuk-Bebek/Yasli-Bakimi" element={<AltenpflegePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Aile-Cocuk-Bebek/Oyuncaklar" element={<SpielzeugPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Bebek-Arabalari-Pusetler" element={<KinderwagenBuggysPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Cocuk-Odasi-Mobilyalari" element={<KinderzimmermobelPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Aile-Cocuk-Bebek/Oyuncaklar" element={<SpielzeugPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Aile-Cocuk-Bebek/Diger-Aile-Cocuk-Bebek" element={<WeiteresFamilieKindBabyPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Is-Ilanlari" element={<JobsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Is-Ilanlari/Mesleki-Egitim" element={<AusbildungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Is-Ilanlari/Insaat-Sanat-Uretim" element={<BauHandwerkProduktionPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Is-Ilanlari/Buroarbeit-Yonetim" element={<BueroarbeitVerwaltungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === İŞ İLANLARI === */}
             <Route path="/Is-Ilanlari/Gastronomi-Turizm" element={<GastronomieTourismusPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Musteri-Hizmetleri-Cagri-Merkezi" element={<KundenserviceCallCenterPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Ek-Isler" element={<MiniNebenjobsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Is-Ilanlari/Staj" element={<PraktikaPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Sosyal-Sektor-Bakim" element={<SozialerSektorPflegePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Tasimacilik-Lojistik" element={<TransportLogistikVerkehrPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Satis-Pazarlama" element={<SalesPurchasingMarketingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Is-Ilanlari/Staj" element={<PraktikaPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Is-Ilanlari/Diger-Is-Ilanlari" element={<WeitereJobsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Eglence-Hobi-Mahalle" element={<FreizeitHobbyNachbarschaftPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Is-Ilanlari/Buroarbeit-Yonetim" element={<BueroarbeitVerwaltungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === EĞLENCE, HOBİ & MAHALLE === */}
             <Route path="/Eglence-Hobi-Mahalle/Ezoterizm-Spiritualizm" element={<EsoterikSpirituellesFreizeitPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Eglence-Hobi-Mahalle/Yiyecek-Icecek" element={<EssenTrinkenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Eglence-Hobi-Mahalle/Bos-Zaman-Aktiviteleri" element={<FreizeitaktivitaetenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
@@ -988,52 +946,68 @@ function App() {
             <Route path="/Eglence-Hobi-Mahalle/Bit-Pazari" element={<TroedelPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Eglence-Hobi-Mahalle/Kayip-Buluntu" element={<VerlorenGefundenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Eglence-Hobi-Mahalle/Diger-Eglence-Hobi-Mahalle" element={<WeiteresFreizeitHobbyNachbarschaftPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Muzik-Film-Kitap" element={<MusikFilmeBuecherPage />} />
-            <Route path="/Muzik-Film-Kitap/Kitap-Dergi" element={<BuecherZeitschriftenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Muzik-Film-Kitap/Kirtasiye" element={<BueroSchreibwarenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Muzik-Film-Kitap/Cizgi-Romanlar" element={<ComicsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Muzik-Film-Kitap/Ders-Kitaplari-Okul-Egitim" element={<FachbuecherSchuleStudiumPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Muzik-Film-Kitap/Film-DVD" element={<FilmDVDPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === MÜZİK, FİLM & KİTAP === */}
             <Route path="/Muzik-Film-Kitap/Muzik-CDler" element={<MusikCDsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Muzik-Film-Kitap/Muzik-Enstrumanlari" element={<MusikinstrumentePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Muzik-Film-Kitap/Film-DVD" element={<FilmDVDPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Muzik-Film-Kitap/Ders-Kitaplari-Okul-Egitim" element={<FachbuecherSchuleStudiumPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Muzik-Film-Kitap/Diger-Muzik-Film-Kitap" element={<WeitereMusikFilmeBuecherPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Biletler" element={<EintrittskartenTicketsPage />} />
-            <Route path="/Biletler/Tren-Toplu-Tasima" element={<BahnOEPNVPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Biletler/Komedi-Kabare" element={<ComedyKabarettPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Biletler/Hediye-Kartlari" element={<GutscheinePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Biletler/Cocuk" element={<KinderTicketsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === BİLETLER === */}
             <Route path="/Biletler/Konserler" element={<KonzertePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Biletler/Spor" element={<SportTicketsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Biletler/Tiyatro-Muzikal" element={<TheaterMusicalPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Biletler/Hediye-Kartlari" element={<GutscheinePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Biletler/Cocuk" element={<KinderTicketsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Biletler/Diger-Biletler" element={<WeitereEintrittskartenTicketsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler" element={<DienstleistungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler/Yasli-Bakimi" element={<DienstleistungenAltenpflegePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler/Otomobil-Bisiklet-Tekne-Servisi" element={<DienstleistungenAutoRadBootPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler/Babysitter-Cocuk-Bakimi" element={<DienstleistungenBabysitterPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler/Elektronik" element={<DienstleistungenElektronikPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler/Ev-Bahce" element={<DienstleistungenHausGartenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === HİZMETLER === */}
             <Route path="/Hizmetler/Sanatcilar-Muzisyenler" element={<DienstleistungenKuenstlerMusikerPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler/Seyahat-Etkinlik" element={<DienstleistungenReiseEventPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Hizmetler/Hayvan-Bakimi-Egitimi" element={<DienstleistungenTierbetreuungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Hizmetler/Tasimacilik-Nakliye" element={<DienstleistungenUmzugTransportPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Hizmetler/Diger-Hizmetler" element={<DienstleistungenWeiterePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Ucretsiz-Takas" element={<VerschenkenTauschenPage />} />
+            {/* === ÜCRETSİZ & TAKAS === */}
             <Route path="/Ucretsiz-Takas/Takas" element={<TauschenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Ucretsiz-Takas/Kiralama" element={<VerleihenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Ucretsiz-Takas/Ucretsiz" element={<VerschenkenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Egitim-Kurslar" element={<UnterrichtKursePage />} />
-            <Route path="/Egitim-Kurslar/Bilgisayar-Kurslari" element={<ComputerkursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Egitim-Kurslar/Ezoterizm-Spiritualizm" element={<EsoterikSpirituellesPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* === EĞİTİM & KURSLAR === */}
+            <Route path="/Egitim-Kurslar/Dans-Kurslari" element={<TanzkursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Egitim-Kurslar/Spor-Kurslari" element={<SportkursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Egitim-Kurslar/Muzik-San-Dersleri" element={<MusikGesangPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Egitim-Kurslar/Dil-Kurslari" element={<SprachkursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Egitim-Kurslar/Ozel-Ders" element={<NachhilfePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Egitim-Kurslar/Yemek-Pastacilik-Kurslari" element={<KochenBackenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Egitim-Kurslar/Sanat-Tasarim-Kurslari" element={<KunstGestaltungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Egitim-Kurslar/Muzik-San-Dersleri" element={<MusikGesangPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Egitim-Kurslar/Ozel-Ders" element={<NachhilfePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Egitim-Kurslar/Spor-Kurslari" element={<SportkursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Egitim-Kurslar/Dil-Kurslari" element={<SprachkursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
-            <Route path="/Egitim-Kurslar/Dans-Kurslari" element={<TanzkursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Egitim-Kurslar/Surekli-Egitim" element={<WeiterbildungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Egitim-Kurslar/Diger-Dersler-Kurslar" element={<WeitereUnterrichtKursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Egitim-Kurslar/Ezoterizm-Spiritualizm" element={<EsoterikSpirituellesPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Otomobiller" element={<AutosPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Oto-Parca-Lastik" element={<AutoteilePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Tekne-Tekne-Malzemeleri" element={<BootePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Bisiklet-Aksesuarlar" element={<BikesPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Motosiklet-Scooter" element={<MotorradPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Motosiklet-Parca-Aksesuarlar" element={<MotorradteilePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Ticari-Araclar-Romorklar" element={<NutzfahrzeugePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Karavan-Motokaravan" element={<WohnwagenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Tamir-Servis" element={<ReparaturenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne/Diger-Otomobil-Bisiklet-Tekne" element={<WeiteresAutoRadBootPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+
+            {/* === MAIN CATEGORIES === */}
+            <Route path="/Butun-Kategoriler" element={<AlleKategorienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Otomobil-Bisiklet-Tekne" element={<AutoRadBootPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Emlak" element={<ImmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ev-Bahce" element={<HausGartenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Moda-Guzellik" element={<ModeBeautyPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Elektronik" element={<ElektronikPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Evcil-Hayvanlar" element={<HaustierePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Aile-Cocuk-Bebek" element={<FamilieKindBabyPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Is-Ilanlari" element={<JobsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Eglence-Hobi-Mahalle" element={<FreizeitHobbyNachbarschaftPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Muzik-Film-Kitap" element={<MusikFilmeBuecherPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Biletler" element={<EintrittskartenTicketsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Hizmetler" element={<DienstleistungenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Ucretsiz-Takas" element={<VerschenkenTauschenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/Egitim-Kurslar" element={<UnterrichtKursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Komsu-Yardimi" element={<NachbarschaftshilfeMainPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/:slug" element={<SmartRoute {...smartRouteProps} />} />
+            <Route path="/:slug/:subSlug" element={<SmartRoute {...smartRouteProps} />} />
             <Route path="/Komsu-Yardimi/Komsu-Yardimi" element={<NachbarschaftshilfePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Unternehmensseiten" element={<Unternehmensseiten />} />
             <Route path="/listing/bmw-320d-sample" element={<BMWListingDetail />} />
@@ -1073,15 +1047,7 @@ function App() {
 
             {/* 404 Catch-all Route - Must be last */}
             {/* Smart Catch-all Route: Checks for listing slug or store slug first, then 404 */}
-            <Route path="*" element={
-              <SmartRoute
-                addToCart={addToCart}
-                toggleFavorite={toggleFavorite}
-                isFavorite={isFavorite}
-                toggleFollowSeller={toggleFollowSeller}
-                isSellerFollowed={isSellerFollowed}
-              />
-            } />
+            <Route path="*" element={<SmartRoute {...smartRouteProps} />} />
           </Routes>
           <Footer />
           {isMobile && <MobileBottomNavigation />}

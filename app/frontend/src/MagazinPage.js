@@ -10,42 +10,36 @@ function MagazinPage() {
             title: 'Plak Satmak: Plakların Değeri Nedir?',
             excerpt: 'Plak satmak ve değeri belirlemek: Bu ipuçlarıyla başarıya ulaşın. Vinilinizden en iyi şekilde yararlanın.',
             category: t.magazin.categories.selling,
-            image: 'https://images.unsplash.com/photo-1619983081563-430f63602796?w=800&q=80'
         },
         {
             date: '23.09.2025',
             title: 'Sürpriz Yumurta Figürleri: Değer Belirleme ve Satış',
             excerpt: 'Hangi sürpriz yumurta figürleri değerlidir? En pahalı sürpriz yumurta figürleri hakkında daha fazla bilgi edinin.',
             category: t.magazin.categories.selling,
-            image: 'https://images.unsplash.com/photo-1599687267812-35c05ff70ee9?w=800&q=80'
         },
         {
             date: '16.09.2025',
             title: 'Hutschenreuther Porselen: Alım ve Satım İçin Değer Belirleme',
             excerpt: 'Hutschenreuther porseleninin ne kadar değerli olduğunu bilmek ister misiniz? Rehberimizle en iyi fiyatları alın!',
             category: t.magazin.categories.lifestyle,
-            image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800&q=80'
         },
         {
             date: '15.09.2025',
             title: 'Eski Lastikleri Satmak: İşte Bu Kadar Kolay',
             excerpt: 'İkinci el lastik satmak zor değil. Bu makalede lastiklerinizi nasıl paraya dönüştürebileceğiniz hakkında daha fazla bilgi edinin.',
             category: t.magazin.categories.selling,
-            image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=800&q=80'
         },
         {
             date: '15.09.2025',
             title: 'Daireye İlgi Bildirmek: Örnek Yazı',
             excerpt: 'Daireyi bu şekilde tutun ▶ Doğru zamanlama ✔ Gerekli belgeler ✔ Kredi notu ve maaş bordrosu ✔ Ev sahibini ikna etmek',
             category: t.magazin.categories.lifestyle,
-            image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80'
         },
         {
             date: '08.02.2025',
             title: 'Dresden\'de Yaşam Maliyeti: Burada Yaşamak Ne Kadar Pahalı?',
             excerpt: 'Dresden\'de yaşam maliyeti nedir? Burada yaşamanın maliyeti ne kadar? İstatistiklere dayanarak Dresden\'in gerçekte ne kadar pahalı olduğunu öğrenin.',
             category: t.magazin.categories.lifestyle,
-            image: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&q=80'
         }
     ];
 

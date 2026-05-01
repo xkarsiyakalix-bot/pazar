@@ -45,7 +45,6 @@ const WeiteresFreizeitHobbyNachbarschaftPage = ({ toggleFavorite, isFavorite }) 
     };
 
     const bannerConfig = {
-        icon: '🧩',
         bgColor: 'bg-teal-600',
         description: 'Diğer Eğlence, Hobi & Mahalle'
     };

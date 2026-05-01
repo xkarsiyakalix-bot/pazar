@@ -57,7 +57,6 @@ const EsoterikSpirituellesFreizeitPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🔮',
         bgColor: 'bg-indigo-600',
         description: 'Ezoterizm & Spiritüalizm'
     };

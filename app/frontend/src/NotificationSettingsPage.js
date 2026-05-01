@@ -46,7 +46,6 @@ const NotificationSettingsPage = () => {
     const notificationGroups = [
         {
             title: 'Sipariş Bildirimleri',
-            icon: '📦',
             settings: [
                 { key: 'orderConfirmation', label: 'Sipariş Onayı', description: 'Siparişiniz onaylandığında e-posta alın' },
                 { key: 'orderShipped', label: 'Kargo Bildirimi', description: 'Siparişiniz kargoya verildiğinde bildirim alın' },
@@ -55,14 +54,12 @@ const NotificationSettingsPage = () => {
         },
         {
             title: 'Mesajlar',
-            icon: '💬',
             settings: [
                 { key: 'newMessage', label: 'Yeni Mesajlar', description: 'Alıcılardan veya satıcılardan yeni mesaj geldiğinde bildirim alın' }
             ]
         },
         {
             title: 'İlanlar & Teklifler',
-            icon: '🏷️',
             settings: [
                 { key: 'priceDrops', label: 'Fiyat Düşüşleri', description: 'Favori listenizdeki ürünlerin fiyatı düştüğünde bildirim alın' },
                 { key: 'newListings', label: 'Yeni İlanlar', description: 'Favori kategorilerinizdeki yeni ilanlar hakkında bildirim alın' }
@@ -70,7 +67,6 @@ const NotificationSettingsPage = () => {
         },
         {
             title: 'Bülten & Pazarlama',
-            icon: '📧',
             settings: [
                 { key: 'weeklyDigest', label: 'Haftalık Özet', description: 'Yeni teklifler hakkında haftalık özet e-postası alın' },
                 { key: 'marketingEmails', label: 'Pazarlama E-postaları', description: 'Özel teklifler, indirimler ve promosyonlar' }

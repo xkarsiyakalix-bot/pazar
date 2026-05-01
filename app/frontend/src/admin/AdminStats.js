@@ -59,8 +59,10 @@ const AdminStats = () => {
                 { data: trendPromos },
                 { data: trendListings }
             ] = await Promise.all([
-                supabase.from('listings').select('*', { count: 'exact', head: true }),
-                supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+                supabase.from('listings')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'active')
+                    .or(`expiry_date.gt.${now.toISOString()},expiry_date.is.null`),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }),
                 supabase.from('profiles').select('id').gte('created_at', startOfDay),
                 supabase.from('profiles').select('id').gte('created_at', startOfMonth),
@@ -203,9 +205,10 @@ const AdminStats = () => {
             </div>
 
             {/* Main Stats Card Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <StatsCard title="Toplam Üye" value={stats.totalUsers} icon="👥" gradient="from-indigo-500 to-purple-600" />
-                <StatsCard title="Aktif İlanlar" value={stats.activeListings} icon="📦" gradient="from-emerald-400 to-teal-600" />
+                <StatsCard title="Aktif İlanlar" value={stats.activeListings} icon="✅" gradient="from-emerald-400 to-teal-600" />
+                <StatsCard title="Toplam İlan" value={stats.totalListings} icon="📦" gradient="from-blue-500 to-blue-700" />
                 <StatsCard title="Aylık Kazanç" value={`${stats.monthly.revenue.toLocaleString('tr-TR')} TL`} icon="💎" gradient="from-amber-400 to-orange-500" />
                 <StatsCard title="Çevrimiçi" value={realtimeOnlineCount} icon="⚡" gradient="from-rose-500 to-pink-600" />
             </div>

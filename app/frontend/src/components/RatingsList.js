@@ -5,7 +5,7 @@ import StarRating from './StarRating';
  * RatingsList Component
  * Displays a list of individual ratings with comments
  */
-function RatingsList({ ratings }) {
+export function RatingsList({ ratings }) {
     if (!ratings || ratings.length === 0) {
         return (
             <div className="text-center py-8 text-gray-500 dark:text-neutral-500">
@@ -59,3 +59,4 @@ function RatingsList({ ratings }) {
 }
 
 export default RatingsList;
+

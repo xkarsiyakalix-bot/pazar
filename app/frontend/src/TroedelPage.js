@@ -58,7 +58,6 @@ const TroedelPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '📦',
         bgColor: 'bg-orange-500',
         description: 'Bit Pazarı'
     };

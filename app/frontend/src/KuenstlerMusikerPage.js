@@ -71,7 +71,6 @@ const KuenstlerMusikerPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🎭',
         bgColor: 'bg-purple-600',
         description: 'Sanatçılar & Müzisyenler'
     };

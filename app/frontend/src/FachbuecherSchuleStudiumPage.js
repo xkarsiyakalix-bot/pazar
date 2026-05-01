@@ -57,7 +57,6 @@ const FachbuecherSchuleStudiumPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🎓',
         bgColor: 'bg-indigo-600',
         description: 'Ders Kitapları, Okul & Eğitim'
     };

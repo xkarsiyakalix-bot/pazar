@@ -6,6 +6,8 @@ import { fetchListings } from './api/listings';
 import { Breadcrumb } from './components/Breadcrumb';
 import LoadingSpinner from './components/LoadingSpinner';
 import { supabase } from './lib/supabase';
+import { CategorySEO } from './SEO';
+import { categoryConfigs, slugToCategoryMap, slugToSubCategoryMap } from './config/categoryConfigs';
 
 const areSubCategoriesEquivalent = (sub1, sub2) => {
     if (!sub1 || !sub2) return sub1 === sub2;
@@ -24,14 +26,14 @@ const areSubCategoriesEquivalent = (sub1, sub2) => {
     return mappings.some(group => group.includes(n1) && group.includes(n2));
 };
 
-const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
+export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory, initialSubCategory }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
-    const [selectedSubCategory, setSelectedSubCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'Tüm Kategoriler');
+    const [selectedSubCategory, setSelectedSubCategory] = useState(initialSubCategory || '');
     const [selectedLocations, setSelectedLocations] = useState([]);
     const [priceFrom, setPriceFrom] = useState('');
     const [priceTo, setPriceTo] = useState('');
@@ -49,9 +51,10 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const categories = [
-        { name: 'Tüm Kategoriler', icon: '🏪', count: 0, subcategories: [] },
+        { name: 'Tüm Kategoriler', count: 0, subcategories: [], slug: 'all' },
         {
-            name: 'Otomobil, Bisiklet & Tekne', icon: '🚗', count: 0,
+            name: 'Vasıta (Otomobil, Bisiklet & Tekne)', count: 0,
+            slug: 'vasita',
             subcategories: [
                 'Otomobiller', 'Oto Parça & Lastik', 'Tekne & Tekne Malzemeleri',
                 'Bisiklet & Aksesuarlar', 'Motosiklet & Scooter', 'Motosiklet Parça & Aksesuarlar',
@@ -59,7 +62,8 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
             ]
         },
         {
-            name: 'Emlak', icon: '🏠', count: 0,
+            name: 'Emlak', count: 0,
+            slug: 'emlak',
             subcategories: [
                 'Geçici Konaklama & Paylaşımlı Ev', 'Konteyner', 'Satılık Daire', 'Satılık Yazlık',
                 'Tatil Evi & Yurt Dışı Emlak', 'Garaj & Otopark', 'Ticari Emlak', 'Arsa & Bahçe',
@@ -68,55 +72,68 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
             ]
         },
         {
-            name: 'Ev & Bahçe', icon: '🏡', count: 0,
+            name: 'Ev & Bahçe', count: 0,
+            slug: 'ev-bahce',
             subcategories: ['Banyo', 'Ofis', 'Dekorasyon', 'Ev Hizmetleri', 'Bahçe Malzemeleri & Bitkiler', 'Ev Tekstili', 'Ev Tadilatı', 'Mutfak & Yemek Odası', 'Lamba & Aydınlatma', 'Yatak Odası', 'Oturma Odası', 'Diğer Ev & Bahçe']
         },
         {
-            name: 'Moda & Güzellik', icon: '👗', count: 0,
+            name: 'Moda & Güzellik', count: 0,
+            slug: 'moda-guzellik',
             subcategories: ['Güzellik & Sağlık', 'Kadın Giyimi', 'Kadın Ayakkabıları', 'Erkek Giyimi', 'Erkek Ayakkabıları', 'Çanta & Aksesuarlar', 'Saat & Takı', 'Diğer Moda & Güzellik']
         },
         {
-            name: 'Elektronik', icon: '📱', count: 0,
+            name: 'Elektronik', count: 0,
+            slug: 'elektronik',
             subcategories: ['Ses & Hifi', 'Elektronik Hizmetler', 'Fotoğraf & Kamera', 'Cep Telefonu & Telefon', 'Ev Aletleri', 'Konsollar', 'Dizüstü Bilgisayarlar', 'Bilgisayarlar', 'Bilgisayar Aksesuarları & Yazılım', 'Tabletler & E-Okuyucular', 'TV & Video', 'Video Oyunları', 'Diğer Elektronik']
         },
         {
-            name: 'Evcil Hayvanlar', icon: '🐾', count: 0,
+            name: 'Evcil Hayvanlar', count: 0,
+            slug: 'evcil-hayvanlar',
             subcategories: ['Balıklar', 'Köpekler', 'Kediler', 'Küçük Hayvanlar', 'Çiftlik Hayvanları', 'Atlar', 'Hayvan Bakımı & Eğitim', 'Kayıp Hayvanlar', 'Kuşlar', 'Aksesuarlar']
         },
         {
-            name: 'Aile, Çocuk & Bebek', icon: '👶', count: 0,
+            name: 'Aile, Çocuk & Bebek', count: 0,
+            slug: 'aile-cocuk-bebek',
             subcategories: ['Yaşlı Bakımı', 'Bebek & Çocuk Giyimi', 'Bebek & Çocuk Ayakkabıları', 'Bebek Ekipmanları', 'Bebek Koltuğu & Oto Koltukları', 'Babysitter & Çocuk Bakımı', 'Bebek Arabaları & Pusetler', 'Bebek Odası Mobilyaları', 'Oyuncaklar', 'Diğer Aile, Çocuk & Bebek']
         },
         {
-            name: 'İş İlanları', icon: '💼', count: 0,
+            name: 'İş İlanları', count: 0,
+            slug: 'is-ilanlari',
             subcategories: ['Mesleki Eğitim', 'İnşaat, El Sanatları & Üretim', 'Büro İşleri & Yönetim', 'Gastronomi & Turizm', 'Müşteri Hizmetleri & Çağrı Merkezi', 'Ek İşler', 'Staj', 'Sosyal Sektör & Bakım', 'Taşımacılık & Lojistik', 'Satış & Pazarlama', 'Diğer İş İlanları']
         },
         {
-            name: 'Eğlence, Hobi & Mahalle', icon: '⚽', count: 0,
+            name: 'Eğlence, Hobi & Mahalle', count: 0,
+            slug: 'eglence-hobi-mahalle',
             subcategories: ['Ezoterizm & Spiritüalizm', 'Yiyecek & İçecek', 'Boş Zaman Aktiviteleri', 'El Sanatları & Hobi', 'Sanat & Antikalar', 'Sanatçılar & Müzisyenler', 'Model Yapımı', 'Seyahat & Etkinlik Hizmetleri', 'Koleksiyon', 'Spor & Camping', 'Bit Pazarı', 'Kayıp & Buluntu', 'Diğer Eğlence, Hobi & Mahalle']
         },
         {
-            name: 'Müzik, Film & Kitap', icon: '🎵', count: 0,
+            name: 'Müzik, Film & Kitap', count: 0,
+            slug: 'muzik-film-kitap',
             subcategories: ['Kitap & Dergi', 'Kırtasiye', 'Çizgi Romanlar', 'Ders Kitapları, Okul & Eğitim', 'Film & DVD', "Müzik & CD'ler", 'Müzik Enstrümanları', 'Diğer Müzik, Film & Kitap']
         },
         {
-            name: 'Biletler', icon: '🎫', count: 0,
+            name: 'Biletler', count: 0,
+            slug: 'biletler',
             subcategories: ['Tren & Toplu Taşıma', 'Komedi & Kabare', 'Hediye Çekleri', 'Çocuk Etkinlikleri', 'Konserler', 'Spor', 'Tiyatro & Müzikal', 'Diğer Biletler']
         },
         {
-            name: 'Hizmetler', icon: '🔧', count: 0,
+            name: 'Hizmetler', count: 0,
+            slug: 'hizmetler',
             subcategories: ['Yaşlı Bakımı', 'Otomobil, Bisiklet & Tekne', 'Babysitter & Çocuk Bakımı', 'Elektronik', 'Ev & Bahçe', 'Sanatçılar & Müzisyenler', 'Seyahat & Etkinlik', 'Hayvan Bakımı & Eğitim', 'Taşımacılık & Nakliye', 'Diğer Hizmetler']
         },
         {
-            name: 'Ücretsiz & Takas', icon: '🎁', count: 0,
+            name: 'Ücretsiz & Takas', count: 0,
+            slug: 'ucretsiz-takas',
             subcategories: ['Takas', 'Kiralama', 'Ücretsiz']
         },
         {
-            name: 'Eğitim & Kurslar', icon: '📚', count: 0,
+            name: 'Eğitim & Kurslar', count: 0,
+            slug: 'egitim-kurslar',
             subcategories: ['Bilgisayar Kursları', 'Ezoterizm & Spiritüalizm', 'Yemek & Pastacılık', 'Sanat & Tasarım', 'Müzik & Şan', 'Özel Ders', 'Spor Kursları', 'Dil Kursları', 'Dans Kursları', 'Sürekli Eğitim', 'Diğer Eğitim & Kurslar']
         },
         {
-            name: 'Komşu Yardımı', icon: '🤝', count: 0,
+            name: 'Komşu Yardımı', count: 0,
+            slug: 'komsu-yardimi',
             subcategories: ['Komşu Yardımı']
         }
     ];
@@ -144,8 +161,8 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
     // Read URL parameters on mount and when they change
     useEffect(() => {
         const search = searchParams.get('search') || '';
-        const category = searchParams.get('category') || 'Tüm Kategoriler';
-        const subCategory = searchParams.get('subCategory') || '';
+        const category = initialCategory || searchParams.get('category') || 'Tüm Kategoriler';
+        const subCategory = initialSubCategory || searchParams.get('subCategory') || '';
         const loc = searchParams.get('location') || '';
         const priceFromParam = searchParams.get('priceFrom') || '';
         const priceToParam = searchParams.get('priceTo') || '';
@@ -157,8 +174,8 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
         setPriceFrom(priceFromParam);
         setPriceTo(priceToParam);
 
-        // Redirect to clean SEO URL if category/subcategory is present in query params
-        if (category && category !== 'Tüm Kategoriler') {
+        // Redirect to clean SEO URL if category/subcategory is present in query params (and NOT already in clean URL)
+        if (!initialCategory && category && category !== 'Tüm Kategoriler') {
             const path = getCategoryPath(category, subCategory);
             const params = new URLSearchParams(searchParams);
             params.delete('category');
@@ -166,7 +183,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
             const qs = params.toString();
             navigate(`${path}${qs ? `?${qs}` : ''}`, { replace: true });
         }
-    }, [searchParams, navigate]);
+    }, [searchParams, initialCategory, initialSubCategory, navigate]);
 
     // Update URL when filters change
     const updateFilters = (newFilters) => {
@@ -291,11 +308,11 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                             count: listings.filter(l => (l.category === cat.name || (cat.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === subName).length
                         }))
                         .sort((a, b) => b.count - a.count)
-                        .slice(0, 2)
+                        .slice(0, 5)
                     : [];
 
                 return { ...cat, count, subcategories: filteredSubcategories || cat.subcategories, topSubcategories: topSubs };
-            }).filter(cat => cat.count > 0 || cat.name === 'Tüm Kategoriler' || cat.name === selectedCategory);
+            });
     }, [listings, searchTerm, selectedLocations, priceFrom, priceTo, selectedCategory, inactiveCategories]);
 
     // Filter listings
@@ -408,6 +425,11 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors">
+            <CategorySEO 
+                category={selectedCategory} 
+                subCategory={selectedSubCategory} 
+                listingCount={sortedListings.length}
+            />
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
 
@@ -509,18 +531,10 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                             </button>
 
                                             {/* Subcategories (Top 2 by default, All when selected OR expanded) */}
-                                            {category.subcategories && category.subcategories.length > 0 && category.name !== 'Tüm Kategoriler' && (
-                                                <div className="ml-4 pl-4 border-l-2 border-gray-100 dark:border-white/5 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                                            {category.subcategories && category.subcategories.length > 0 && category.name !== 'Tüm Kategoriler' && (selectedCategory === 'Tüm Kategoriler' || selectedCategory === category.name || expandedCategories.includes(category.name) || (category.subcategories.includes(selectedSubCategory))) && (
+                                                <div className="ml-4 pl-4 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
                                                     {(selectedCategory === category.name || expandedCategories.includes(category.name)
                                                         ? [...(category.subcategories || [])]
-                                                            .filter(sub => {
-                                                                // On mobile/tablet, if a subcategory is selected, hide other subcategories
-                                                                if (window.innerWidth < 1280 && selectedSubCategory) {
-                                                                    const isAll = sub === 'Tümü' || sub === 'Alle' || sub === 'Tüm';
-                                                                    return areSubCategoriesEquivalent(sub, selectedSubCategory) || isAll;
-                                                                }
-                                                                return true;
-                                                            })
                                                             .map(sub => ({
                                                                 name: sub,
                                                                 count: listings.filter(l => (l.category === category.name || (category.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === sub).length
@@ -539,7 +553,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                             <span className={`text-sm font-medium ${selectedSubCategory === sub.name ? 'text-red-400 dark:text-rose-300' : 'text-gray-400 dark:text-neutral-500'}`}>({sub.count})</span>
                                                         </button>
                                                     ))}
-                                                    {selectedCategory !== category.name && !expandedCategories.includes(category.name) && category.subcategories.length > 2 && (
+                                                    {selectedCategory !== category.name && !expandedCategories.includes(category.name) && category.subcategories.length > 5 && (
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
@@ -550,7 +564,7 @@ const AlleKategorienPage = ({ toggleFavorite, isFavorite }) => {
                                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                                                             </svg>
-                                                            {category.subcategories.length - 2} alt kategori daha
+                                                            {category.subcategories.length - 5} alt kategori daha
                                                         </button>
                                                     )}
                                                 </div>

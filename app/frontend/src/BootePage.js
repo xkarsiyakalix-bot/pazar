@@ -58,7 +58,6 @@ const BootePage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '⛵',
         bgColor: 'bg-gradient-to-r from-blue-500 to-indigo-600',
         description: 'Su maceralarınız için tekneleri ve aksesuarları keşfedin'
     };

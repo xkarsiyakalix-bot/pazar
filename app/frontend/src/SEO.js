@@ -1,139 +1,202 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, keywords, image, url, type = 'website', children }) => {
-    const siteTitle = 'ExVitrin';
-    const titleTemplate = `%s | ${siteTitle}`;
-    const defaultTitle = `${siteTitle} - Ücretsiz İlanlar`;
-    const defaultDescription = "Türkiye'nin en büyük ilan pazaryeri ExVitrin. İkinci el ve sıfır araba, emlak, elektronik, moda, mobilya ve çocuk eşyalarını güvenle alın ve satın.";
-    const defaultKeywords = "ilan, ücretsiz ilan, ikinci el, sıfır, yeni, sahibinden, alım satım, araba, emlak, elektronik, moda, mobilya, çocuk eşyası, iş ilanları, türkiye, güvenli alışveriş";
+/**
+ * Enhanced SEO component with Structured Data support
+ */
+export const SEO = ({ 
+  title, 
+  description, 
+  keywords, 
+  image, 
+  url, 
+  type = 'website',
+  schema,
+  breadcrumbs = []
+}) => {
+  const siteName = 'ExVitrin';
+  const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - Ücretsiz İlanlar`;
+  const siteUrl = 'https://exvitrin.com';
+  const canonicalUrl = url ? `${siteUrl}${url}` : siteUrl;
 
-    const metaDescription = description || defaultDescription;
-    const metaKeywords = keywords || defaultKeywords;
-    const currentUrl = typeof window !== 'undefined' ? window.location.origin + window.location.pathname + window.location.search : 'https://exvitrin.com/';
-    const metaUrl = url || currentUrl;
+  // Global Organization Schema
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': siteName,
+    'url': siteUrl,
+    'logo': `${siteUrl}/logo_exvitrin_2026_cropped.png`,
+    'sameAs': [
+      'https://facebook.com/exvitrin',
+      'https://instagram.com/exvitrin',
+      'https://twitter.com/exvitrin'
+    ]
+  };
 
-    const siteName = 'ExVitrin';
+  // WebSite Schema for Search Box
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    'url': siteUrl,
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': `${siteUrl}/search?q={search_term_string}`,
+      'query-input': 'required name=search_term_string'
+    }
+  };
 
-    // Structured Data for Organization
-    const metaImage = image || '/logo_exvitrin_2026.png';
-
-    const schemaData = {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "ExVitrin",
-        "url": "https://exvitrin.com",
-        "logo": "https://exvitrin.com/logo_exvitrin_2026.png",
-        "sameAs": [
-            "https://www.facebook.com/exvitrin",
-            "https://www.twitter.com/exvitrin",
-            "https://www.instagram.com/exvitrin"
-        ],
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+90-212-1234567",
-            "contactType": "customer service",
-            "areaServed": "TR",
-            "availableLanguage": "Turkish"
+  // Breadcrumb Schema
+  let breadcrumbSchema = null;
+  if (breadcrumbs && breadcrumbs.length > 0) {
+    breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': breadcrumbs.map((crumb, index) => ({
+        '@type': 'ListItem',
+        'position': index + 1,
+        'item': {
+          '@id': crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`,
+          'name': crumb.name
         }
+      }))
     };
+  }
 
-    return (
-        <Helmet
-            title={title}
-            titleTemplate={titleTemplate}
-            defaultTitle={defaultTitle}
-        >
-            <link rel="canonical" href={metaUrl} />
-            <meta name="description" content={metaDescription} />
-            <meta name="keywords" content={metaKeywords} />
-            <meta property="og:type" content={type} />
-            <meta property="og:url" content={metaUrl} />
-            <meta property="og:title" content={title ? `${title} | ${siteTitle}` : defaultTitle} />
-            <meta property="og:description" content={metaDescription} />
-            <meta property="og:image" content={metaImage} />
-            <meta property="og:site_name" content={siteName} />
+  return (
+    <Helmet>
+      {/* Basic Meta Tags */}
+      <title>{fullTitle}</title>
+      <meta name="description" content={description} />
+      {keywords && <meta name="keywords" content={keywords} />}
+      <link rel="canonical" href={canonicalUrl} />
 
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:creator" content="@ExVitrin" />
-            <meta name="twitter:title" content={title ? `${title} | ${siteTitle}` : defaultTitle} />
-            <meta name="twitter:description" content={metaDescription} />
-            <meta name="twitter:image" content={metaImage} />
+      {/* Open Graph */}
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={description} />
+      <meta property="og:type" content={type} />
+      <meta property="og:url" content={canonicalUrl} />
+      {image && <meta property="og:image" content={image} />}
+      <meta property="og:site_name" content={siteName} />
 
-            <script type="application/ld+json">
-                {JSON.stringify(schemaData)}
-            </script>
+      {/* Twitter */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={description} />
+      {image && <meta name="twitter:image" content={image} />}
 
-            {children}
-        </Helmet>
-    );
+      {/* Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify(organizationSchema)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(websiteSchema)}
+      </script>
+      {breadcrumbSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+      )}
+      {schema && (
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      )}
+    </Helmet>
+  );
 };
 
-// Ürün detay sayfası için özel SEO
-export const ProductSEO = ({ product }) => {
-    if (!product) return <SEO />;
+export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
+  const title = subCategory 
+    ? `${subCategory} İlanları - ${category}` 
+    : `${category} İlanları - Satılık & Kiralık`;
+    
+  const description = listingCount > 0
+    ? `ExVitrin'de ${category} ${subCategory ? `/ ${subCategory}` : ''} kategorisinde ${listingCount} güncel ilan sizi bekliyor. En iyi fiyatlarla güvenle alışveriş yapın.`
+    : `En güncel ${category} ${subCategory ? `(${subCategory})` : ''} ilanları ExVitrin'de. Ücretsiz ilan verin, hızlıca satın veya kiralayın.`;
 
-    const productSchema = {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": product.title,
-        "image": product.image,
-        "description": product.description,
-        "offers": {
-            "@type": "Offer",
-            "price": String(product.price || '0').replace(' TL', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.'),
-            "priceCurrency": "TRY",
-            "itemCondition": product.condition === 'Yeni' ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
-            "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-            "seller": {
-                "@type": "Person",
-                "name": product.seller
-            }
-        },
-        "category": product.category
-    };
+  const keywords = `${category}, ${subCategory || ''}, ilanlar, satılık, kiralık, ikinci el, exvitrin`.replace(/, ,/g, ',');
 
-    // Use only product title for SEO
-    const pageTitle = product.title;
+  const breadcrumbs = [
+    { name: 'Ana Sayfa', url: '/' },
+    { name: category, url: `/${category?.replace(/\s+/g, '-').toLowerCase()}` }
+  ];
+  
+  if (subCategory) {
+    breadcrumbs.push({ 
+      name: subCategory, 
+      url: `/${category?.replace(/\s+/g, '-').toLowerCase()}/${subCategory?.replace(/\s+/g, '-').toLowerCase()}` 
+    });
+  }
 
-    return (
-        <SEO
-            title={pageTitle}
-            description={`${product.title} - ${product.price} - Hemen ExVitrin'de keşfedin! ${product.description ? product.description.substring(0, 100) : ''}...`}
-            keywords={`${product.category}, ${product.title}, ikinci el, sıfır, satın al, ${product.location}, ilan`}
-            image={product.image}
-            type="product"
-        >
-            <script type="application/ld+json">
-                {JSON.stringify(productSchema)}
-            </script>
-        </SEO>
-    );
-};
-
-// Arama sonuçları için SEO
-export const SearchSEO = ({ query, resultsCount }) => (
-    <SEO
-        title={`"${query}" için arama sonuçları`}
-        description={`"${query}" için ${resultsCount} sonuç bulundu. ExVitrin'deki en iyi teklifleri keşfedin.`}
-        keywords={`${query}, ilanlar, ara, satın al`}
+  return (
+    <SEO 
+      title={title}
+      description={description}
+      keywords={keywords}
+      breadcrumbs={breadcrumbs}
     />
-);
+  );
+};
 
-// Kategori sayfası için SEO
-export const CategorySEO = ({ category, subCategory, itemCount }) => {
-    const displayCategory = subCategory ? `${category} > ${subCategory}` : category;
-    const keywords = subCategory
-        ? `${subCategory}, ${category}, ilanlar, satın al, satış, uygun fiyat`
-        : `${category}, ilanlar, satın al, satış, uygun fiyat`;
+export const ProductSEO = ({ listing }) => {
+  if (!listing) return null;
 
-    return (
-        <SEO
-            title={`${displayCategory} İlanları`}
-            description={`ExVitrin'de ${itemCount} adet ${displayCategory} ilanı bulundu. ${displayCategory} ürünlerini kolayca ve uygun fiyata alın veya satın.`}
-            keywords={keywords}
-        />
-    );
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    'name': listing.title,
+    'description': listing.description,
+    'image': listing.images?.[0],
+    'offers': {
+      '@type': 'Offer',
+      'price': listing.price,
+      'priceCurrency': 'TRY',
+      'availability': 'https://schema.org/InStock'
+    }
+  };
+
+  const breadcrumbs = [
+    { name: 'Ana Sayfa', url: '/' },
+    { name: listing.category, url: `/${listing.category?.replace(/\s+/g, '-').toLowerCase()}` },
+    { name: listing.title, url: `/listing/${listing.id}` }
+  ];
+
+  return (
+    <SEO 
+      title={listing.title}
+      description={listing.description?.substring(0, 160)}
+      image={listing.images?.[0]}
+      type="article"
+      schema={productSchema}
+      breadcrumbs={breadcrumbs}
+    />
+  );
+};
+
+export const SellerSEO = ({ seller, listingCount = 0, averageRating = 0 }) => {
+  if (!seller) return null;
+
+  const name = seller.full_name || 'Satıcı';
+  const title = `${name} Profili ve İlanları - ExVitrin`;
+  const description = `${name} kullanıcısının ExVitrin'deki ${listingCount} güncel ilanını ve ${averageRating > 0 ? `${averageRating}/5 puanlı ` : ''}müşteri yorumlarını inceleyin.`;
+  
+  const keywords = `${name}, satıcı profili, ilanlar, exvitrin`;
+
+  const breadcrumbs = [
+    { name: 'Ana Sayfa', url: '/' },
+    { name: 'Satıcılar', url: '/search' },
+    { name: name, url: `/seller/${seller.id}` }
+  ];
+
+  return (
+    <SEO 
+      title={title}
+      description={description}
+      keywords={keywords}
+      image={seller.store_logo || seller.avatar_url}
+      breadcrumbs={breadcrumbs}
+    />
+  );
 };
 
 export default SEO;

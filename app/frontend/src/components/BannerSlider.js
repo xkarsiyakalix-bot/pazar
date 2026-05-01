@@ -25,7 +25,7 @@ const slides = [
     }
 ];
 
-const BannerSlider = () => {
+export const BannerSlider = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
 
     useEffect(() => {
@@ -117,3 +117,4 @@ const BannerSlider = () => {
 };
 
 export default BannerSlider;
+

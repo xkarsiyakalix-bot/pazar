@@ -69,7 +69,6 @@ const ReiseEventservicesPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🎫',
         bgColor: 'bg-indigo-600',
         description: 'Seyahat & Etkinlik Hizmetleri'
     };

@@ -6969,7 +6969,7 @@ const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, currentInde
 };
 
 // Visibility Packages Modal
-const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
+export const VisibilityPackagesModal = ({ isOpen, onClose, listing }) => {
   const [selectedPromotions, setSelectedPromotions] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();

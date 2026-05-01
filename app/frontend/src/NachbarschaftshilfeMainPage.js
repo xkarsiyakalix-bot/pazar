@@ -8,7 +8,6 @@ const NachbarschaftshilfeMainPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     const bannerConfig = {
-        icon: '🤝',
         bgColor: 'bg-gradient-to-r from-pink-500 to-rose-600',
         description: 'Komşu Yardımı & Topluluk'
     };

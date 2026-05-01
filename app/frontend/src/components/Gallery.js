@@ -4,7 +4,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import { ListingCard } from './ListingCard';
 import { t } from '../translations';
 import { useNavigate } from 'react-router-dom';
-import { GalleryInfoModal } from '../components.js';
+import { GalleryInfoModal } from './GalleryInfoModal';
 
 export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filterLocation = 'Tüm Şehirler', sortBy = 'relevance' }) => {
     const [galleryItems, setGalleryItems] = useState([]);
@@ -196,3 +196,6 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
         </section>
     );
 };
+
+export default Gallery;
+

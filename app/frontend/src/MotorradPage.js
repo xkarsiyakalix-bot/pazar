@@ -92,7 +92,6 @@ const MotorradPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🏍️',
         bgColor: 'bg-gray-800',
         description: 'Hayalinizdeki motosiklet veya scooterı bulun'
     };

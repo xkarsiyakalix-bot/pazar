@@ -57,7 +57,6 @@ const VerlorenGefundenPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🔍',
         bgColor: 'bg-gray-600',
         description: 'Kayıp & Buluntu'
     };

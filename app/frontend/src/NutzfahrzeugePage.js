@@ -59,7 +59,6 @@ const NutzfahrzeugePage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🚛',
         bgColor: 'bg-orange-600',
         description: 'Kamyonlar, Ticari Araçlar, Römorklar ve daha fazlası'
     };

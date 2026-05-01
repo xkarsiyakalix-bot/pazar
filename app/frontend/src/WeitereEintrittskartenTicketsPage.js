@@ -45,7 +45,6 @@ const WeitereEintrittskartenTicketsPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🎫',
         bgColor: 'bg-gray-600',
         description: 'Diğer Biletler'
     };

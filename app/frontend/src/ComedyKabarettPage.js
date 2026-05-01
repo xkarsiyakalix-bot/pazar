@@ -45,7 +45,6 @@ const ComedyKabarettPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🎭',
         bgColor: 'bg-purple-600',
         description: 'Komedi & Kabare Biletleri'
     };

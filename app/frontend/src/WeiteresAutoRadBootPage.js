@@ -59,7 +59,6 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🔧',
         bgColor: 'bg-gray-500',
         description: 'Mobilite hakkında diğer her şey'
     };

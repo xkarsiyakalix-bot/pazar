@@ -461,3 +461,5 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
         </>
     );
 };
+
+export default Header;

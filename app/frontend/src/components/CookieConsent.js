@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const CookieConsent = () => {
+export const CookieConsent = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -59,3 +59,4 @@ const CookieConsent = () => {
 };
 
 export default CookieConsent;
+

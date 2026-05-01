@@ -7,31 +7,26 @@ function PressePage() {
             date: '20.11.2025',
             title: 'Tehlikeli Özgüven: Tüketicilerin dörtte üçü sahte mağaza uyarı sinyallerini yetersiz tanıyor',
             excerpt: 'Giderek daha fazla sahte mağaza profesyonel tasarım ve sahte incelemelerle aldatıyor. Aynı zamanda birçok tüketicinin uyanıklığı azalıyor: Yüzde 80\'den fazlası sahte mağazaların ne olduğunu bildiğini söylese de, sadece yaklaşık dörtte biri tüm önemli uyarı sinyallerini tanıyor.',
-            image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80'
         },
         {
             date: '18.11.2025',
             title: 'Fotoğraftan Satışa: ExVitrin\'in yeni yapay zeka asistanı saniyeler içinde ilan oluşturuyor',
             excerpt: 'ExVitrin, uygulama içindeki yapay zeka tabanlı ilan oluşturma fonksiyonunu yeniden genişletiyor. Gelecekte birçok kategoride yeni bir ilan oluşturmak için sadece bir fotoğraf yeterli olacak.',
-            image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80'
         },
         {
             date: '06.11.2025',
             title: 'Konut ve Ev Piyasası: Kiralık daire arzı fark edilir şekilde toparlanıyor',
             excerpt: 'Almanya\'daki büyük şehirlerde devam eden konut sıkıntısının gölgesinde, konut ve ev piyasasında olumlu bir gelişme görülüyor.',
-            image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80'
         },
         {
             date: '04.11.2025',
             title: 'Ghosting, Pazarlık, Ani İptaller: İşte ankete göre ExVitrin anlaşmalarındaki en büyük "yapılmaması gerekenler"',
             excerpt: 'Özel kişiler arasında alım satım bir güven meselesidir - ve genellikle gerçek bir denge oyunudur. ExVitrin adına yapılan güncel bir YouGov anketi, kullanıcıları gerçekte neyin rahatsız ettiğini gösteriyor.',
-            image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80'
         },
         {
             date: '29.10.2025',
             title: '"Korku Evleri": Neredeyse her iki kişiden biri cinayetten korkmuyor',
             excerpt: 'Bir kişinin şiddet görerek öldüğü mülkler, emlakçıları her zaman büyük zorluklarla karşı karşıya bırakır. Temsili bir ankete göre, her on katılımcıdan dördü sözde bir "cinayet evi"ne taşınabilir.',
-            image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&q=80'
         }
     ];
 

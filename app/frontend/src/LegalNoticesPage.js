@@ -13,21 +13,18 @@ const LegalNoticesPage = () => {
         {
             id: 'animal',
             title: 'Hayvan Hakları ve Yasal Uyarı',
-            icon: '🐾',
             color: 'from-green-500 to-emerald-600',
             link: '/hayvan-haklari-ve-yasal-uyari'
         },
         {
             id: 'realestate',
             title: 'Emlak İlanları Yasal Uyarı',
-            icon: '🏠',
             color: 'from-blue-500 to-cyan-600',
             link: '/emlak-ilanlari-yasal-uyari'
         },
         {
             id: 'vehicle',
             title: 'Vasıta İlanları Yasal Uyarı',
-            icon: '🚗',
             color: 'from-purple-500 to-indigo-600',
             link: '/vasita-ilanlari-yasal-uyari'
         }

@@ -53,6 +53,9 @@ const AdminDashboard = () => {
             }
 
             // Execute fetches in parallel for better performance
+            const now = new Date().toISOString();
+            const startOfToday = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+
             const [
                 { count: listingsCount },
                 { count: activeCount },
@@ -66,11 +69,14 @@ const AdminDashboard = () => {
             ] = await Promise.all([
                 // Total listings count - ALL listings ever created (including deleted, sold, etc.)
                 supabase.from('listings').select('*', { count: 'exact', head: true }),
-                // Active listings count - only currently active listings
-                supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+                // Active listings count - only currently active AND not expired listings
+                supabase.from('listings')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'active')
+                    .or(`expiry_date.gt.${now},expiry_date.is.null`),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }),
-                supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
-                supabase.from('listings').select('*', { count: 'exact', head: true }).gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString()),
+                supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', startOfToday),
+                supabase.from('listings').select('*', { count: 'exact', head: true }).eq('status', 'active').gte('created_at', startOfToday),
                 supabase.from('listings').select('*').order('created_at', { ascending: false }).limit(5),
                 supabase.from('promotions').select('price, status'),
                 supabase.from('promotions').select(`
@@ -237,17 +243,10 @@ const AdminDashboard = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <StatsCard
-                    title="Toplam Kullanıcı"
+                    title="Toplam Üye"
                     value={stats.totalUsers}
                     icon="👥"
                     gradient="from-purple-500 to-indigo-600"
-                    iconColor="text-white"
-                />
-                <StatsCard
-                    title="Toplam İlan"
-                    value={stats.totalListings}
-                    icon="📝"
-                    gradient="from-blue-500 to-cyan-500"
                     iconColor="text-white"
                 />
                 <StatsCard
@@ -255,6 +254,20 @@ const AdminDashboard = () => {
                     value={stats.activeListings}
                     icon="✅"
                     gradient="from-emerald-400 to-green-600"
+                    iconColor="text-white"
+                />
+                <StatsCard
+                    title="Toplam İlan"
+                    value={stats.totalListings}
+                    icon="📊"
+                    gradient="from-blue-500 to-blue-700"
+                    iconColor="text-white"
+                />
+                <StatsCard
+                    title="Bugünkü İlanlar"
+                    value={stats.newListingsToday}
+                    icon="📝"
+                    gradient="from-cyan-400 to-cyan-600"
                     iconColor="text-white"
                 />
                 <Link to="/admin/sales-reports" className="block transform transition-transform hover:scale-[1.02]">

@@ -57,7 +57,6 @@ const EssenTrinkenPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🍽️',
         bgColor: 'bg-orange-600',
         description: 'Yiyecek & İçecek'
     };

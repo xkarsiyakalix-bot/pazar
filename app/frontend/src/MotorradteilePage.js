@@ -60,7 +60,6 @@ const MotorradteilePage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '⚙️',
         bgColor: 'bg-gray-600',
         description: 'Motosikletiniz için her şey - parçalar ve aksesuarlar'
     };

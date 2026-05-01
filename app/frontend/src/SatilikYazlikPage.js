@@ -113,7 +113,6 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
     };
 
     const bannerConfig = {
-        icon: '🏖️',
         bgColor: 'bg-gradient-to-r from-blue-500 to-cyan-600',
         description: 'Satılık Yazlık İlanlarını Keşfedin'
     };

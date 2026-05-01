@@ -23,11 +23,11 @@ export const Footer = () => {
                     <div className="hidden md:block">
                         <h3 className="text-white font-semibold mb-4">{t.footer.popularSearches}</h3>
                         <ul className="space-y-2 text-sm">
-                            <li><a href="/categories" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Emlak</a></li>
-                            <li><a href="/categories" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Vasıta</a></li>
-                            <li><a href="/categories" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Yedek Parça</a></li>
-                            <li><a href="/categories" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Elektronik</a></li>
-                            <li><a href="/categories" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Evcil Hayvanlar</a></li>
+                            <li><a href="/emlak" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Emlak</a></li>
+                            <li><a href="/vasita" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Vasıta</a></li>
+                            <li><a href="/vasita/oto-parca-lastik" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Yedek Parça</a></li>
+                            <li><a href="/elektronik" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Elektronik</a></li>
+                            <li><a href="/evcil-hayvanlar" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Evcil Hayvanlar</a></li>
                         </ul>
                     </div>
 
@@ -98,3 +98,5 @@ export const Footer = () => {
         </footer>
     );
 };
+
+export default Footer;
