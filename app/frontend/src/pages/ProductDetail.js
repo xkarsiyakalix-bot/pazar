@@ -21,6 +21,7 @@ import { ListingCard } from '../components/ListingCard';
 import { normalizeSubcategoryName, ReportModal } from '../components.legacy';
 import { generateListingNumber } from '../utils/format';
 import VerifiedBadge from '../components/VerifiedBadge';
+import LocationMap from '../components/LocationMap';
 
 const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleReserveDetail, handleExtendDetail, handleDeleteDetail, promotionPackages, selectedPromotions, togglePromotionSelection, calculateTotal, handlePromotionPurchase, navigate, setPrintHideContact, t }) => {
   return (
@@ -2897,6 +2898,23 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     {description}
                   </p>
                 </div>
+
+                {/* Konum Haritası */}
+                {(listing.city || listing.address) && (
+                  <div className="mt-8 border-t border-gray-200 dark:border-white/5 pt-8">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      {t.productDetail.location || 'Konum'}
+                    </h2>
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mb-4">
+                      {listing.address ? `${listing.address}, ` : ''}{listing.district ? `${listing.district}, ` : ''}{listing.city}
+                    </p>
+                    <LocationMap city={listing.city} address={listing.address || listing.district} />
+                  </div>
+                )}
 
                 {/* Çizgi - Rechtliche Angaben Ayırıcı - Only for commercial sellers */}
                 {sellerProfile?.seller_type === 'Kurumsal Kullanıcı' && (

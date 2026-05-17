@@ -35,19 +35,25 @@ module.exports = {
           900: '#881337',
         },
         // Neutral Palette
+        // Neutral Palette (Obsidian Style)
         neutral: {
           50: '#fafafa',
-          100: '#f5f5f5',
-          200: '#e5e5e5',
-          300: '#d4d4d4',
-          400: '#a3a3a3',
-          500: '#737373',
-          600: '#525252',
-          700: '#404040',
-          800: '#262626',
-          900: '#1c1f24',
-          950: '#14171a',
+          100: '#f4f4f5',
+          200: '#e4e4e7',
+          300: '#d4d4d8',
+          400: '#a1a1aa',
+          500: '#71717a',
+          600: '#52525b',
+          700: '#3f3f46',
+          800: '#27272a',
+          900: '#18181b',
+          950: '#09090b',
         },
+        gold: {
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+        }
       },
       fontFamily: {
         sans: ['Nunito Sans', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
@@ -63,6 +69,7 @@ module.exports = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-premium': 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
         'gradient-accent': 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)',
+        'gradient-gold': 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
