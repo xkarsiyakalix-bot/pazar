@@ -53,3 +53,8 @@
 [[edge_functions]]
   path = "/api/generate-description"
   function = "generate-description"
+
+# Edge Function for AI Category Detection
+[[edge_functions]]
+  path = "/api/detect-category"
+  function = "detect-category"

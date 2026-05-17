@@ -137,6 +137,46 @@ export const AddListing = () => {
     }
   };
 
+  const [isDetectingCategory, setIsDetectingCategory] = useState(false);
+
+  const autoDetectCategory = async (file) => {
+    try {
+      setIsDetectingCategory(true);
+      // Use FileReader to convert image to Base64
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const base64data = reader.result;
+        try {
+          const response = await fetch('/api/detect-category', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageBase64: base64data })
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.category) {
+              setCategory(data.category);
+              if (data.subCategory) {
+                // Short delay to ensure subcategories are loaded before setting
+                setTimeout(() => {
+                  setSubCategory(data.subCategory);
+                }, 100);
+              }
+            }
+          }
+        } catch (err) {
+          console.error("AI Category Detect Error:", err);
+        } finally {
+          setIsDetectingCategory(false);
+        }
+      };
+    } catch (e) {
+      console.error("Error preparing image for AI:", e);
+      setIsDetectingCategory(false);
+    }
+  };
+
   const [city, setCity] = useState(localStorage.getItem('savedCity') || '');
   const [district, setDistrict] = useState(localStorage.getItem('savedDistrict') || '');
   const [region, setRegion] = useState(localStorage.getItem('savedRegion') || '');
@@ -1109,6 +1149,11 @@ export const AddListing = () => {
 
     // Reset input so same file can be selected again if needed
     event.target.value = '';
+
+    // Auto-detect category if it's the very first image uploaded and category is empty
+    if (imageFiles.length === 0 && filesToAdd.length > 0 && !category) {
+      autoDetectCategory(filesToAdd[0]);
+    }
   };
 
   return (
@@ -1164,7 +1209,15 @@ export const AddListing = () => {
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               <div>
-                <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.category}</label>
+                <div className="flex items-center gap-3 mb-2">
+                  <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">{t.addListing.category}</label>
+                  {isDetectingCategory && (
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-blue-500 animate-pulse">
+                      <svg className="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      Görselden AI tespiti yapılıyor...
+                    </span>
+                  )}
+                </div>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
