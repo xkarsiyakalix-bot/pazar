@@ -115,15 +115,23 @@ export const AddListing = () => {
         })
       });
       
-      const data = await response.json();
-      if (data.description) {
-        setDescription(data.description);
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const data = await response.json();
+        if (response.ok && data.description) {
+          setDescription(data.description);
+        } else {
+          alert("Hata: " + (data.error || "Açıklama oluşturulamadı."));
+        }
       } else {
-        alert(data.error || "Açıklama oluşturulurken bir hata oluştu.");
+        // This usually happens on localhost if Netlify CLI is not used
+        const text = await response.text();
+        console.error("Received non-JSON response:", text.substring(0, 100));
+        alert("Bağlantı hatası: Sunucu JSON yerine HTML döndürdü. Eğer bilgisayarınızda (localhost) test ediyorsanız, bu özellik sadece canlı sitede (Netlify) veya 'netlify dev' komutu ile çalışır.");
       }
     } catch (error) {
       console.error("AI Error:", error);
-      alert("Açıklama oluşturulurken bir hata oluştu.");
+      alert("Sistemsel bir hata oluştu: " + error.message);
     } finally {
       setIsGeneratingDescription(false);
     }
