@@ -30,6 +30,7 @@ import VerifiedBadge from './components/VerifiedBadge';
 import { getListingUrl, getSellerUrl } from './utils/slug';
 import { SKELETON_CONFIG } from './config/skeletonConfig';
 import { ListingGridSkeleton } from './components/skeletons/ListingCardSkeleton';
+import GalleryInfoModalComponent from './components/GalleryInfoModal';
 
 export const LazyImage = ({ src, alt, className, imgClassName, ...props }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -4074,86 +4075,8 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
 };
 
 // Gallery Info Modal
-export const GalleryInfoModal = ({ isOpen, onClose }) => {
-  const navigate = useNavigate();
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={(e) => { e.stopPropagation(); onClose(); }}>
-      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden shadow-neutral-950/20" onClick={e => e.stopPropagation()}>
-        <div className="relative h-48 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-          <div className="text-center text-white z-10 p-6">
-            <h2 className="text-3xl font-bold mb-2">{t.topAds.modal.title}</h2>
-            <p className="text-blue-100 text-lg">{t.topAds.modal.subtitle}</p>
-          </div>
-          <button onClick={onClose} className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="p-8">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-1">{t.topAds.modal.queriesTitle}</h3>
-              <p className="text-gray-600 dark:text-neutral-400">{t.topAds.modal.queriesDesc}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-1">{t.topAds.modal.rotationTitle}</h3>
-              <p className="text-gray-600 dark:text-neutral-400">{t.topAds.modal.rotationDesc}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 mb-8">
-            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-1">{t.topAds.modal.premiumTitle}</h3>
-              <p className="text-gray-600 dark:text-neutral-400">{t.topAds.modal.premiumDesc}</p>
-            </div>
-          </div>
-
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/40 rounded-lg p-4 mb-8 flex gap-3">
-            <span className="text-2xl">💡</span>
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              <span className="font-bold">{t.topAds.modal.tip}</span> {t.topAds.modal.tipDesc}
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <a href="#" className="text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline">
-              {t.topAds.modal.moreInfo}
-            </a>
-            <button
-              onClick={() => navigate('/profile?tab=listings')}
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-bold hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
-            >
-              {t.topAds.modal.selectListing}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+export const GalleryInfoModal = (props) => {
+  return <GalleryInfoModalComponent {...props} />;
 };
 
 // Category-specific Gallery Component
