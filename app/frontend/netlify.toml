@@ -43,3 +43,13 @@
   for = "*.webp"
   [headers.values]
     Cache-Control = "public, max-age=31536000"
+
+# Edge Functions for Dynamic Open Graph Tags
+[[edge_functions]]
+  path = "/*"
+  function = "og-tags"
+
+# Edge Function for AI Description Generation
+[[edge_functions]]
+  path = "/api/generate-description"
+  function = "generate-description"

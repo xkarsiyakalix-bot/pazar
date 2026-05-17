@@ -142,7 +142,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
         // Use purchasePromotion to record the transaction and update the listing
         await purchasePromotion(listing.id, {
           id: 'verlängerung',
-          price: 3.49,
+          price: 9.99,
           duration: 90
         }, user.id, {
           expiry_date: newExpiryDate.toISOString(),

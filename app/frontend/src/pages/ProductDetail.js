@@ -1142,7 +1142,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         // Use purchasePromotion to record the transaction and update the listing
         await purchasePromotion(listing.id, {
           id: 'verlängerung',
-          price: 3.49, // Adjusted price for longer duration
+          price: 9.99, // Adjusted price for longer duration
           duration: 90
         }, user.id, {
           expiry_date: newExpiryDate.toISOString(),
