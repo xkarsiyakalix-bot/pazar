@@ -2912,7 +2912,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <p className="text-sm text-gray-600 dark:text-neutral-400 mb-4">
                       {listing.address ? `${listing.address}, ` : ''}{listing.district ? `${listing.district}, ` : ''}{listing.city}
                     </p>
-                    <LocationMap city={listing.city} address={listing.address || listing.district} />
+                    <LocationMap city={listing.city} district={listing.district} address={listing.address} />
                   </div>
                 )}
 
