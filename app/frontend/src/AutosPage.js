@@ -2077,7 +2077,7 @@ function AutosPage() {
                                         <button
                                             onClick={async () => {
                                                 if (!user) {
-                                                    alert('Aramayı kaydetmek için lütfen giriş yapın.');
+                                                    alert('Kategoriyi kaydetmek için lütfen giriş yapın.');
                                                     return;
                                                 }
                                                 const searchUrl = window.location.pathname + window.location.search;
@@ -2103,7 +2103,8 @@ function AutosPage() {
                                                                 damagedVehicle,
                                                                 undamagedVehicle,
                                                                 fuelTypes,
-                                                                transmissions,
+                                                                automaticTransmission,
+                                                                manualTransmission,
                                                                 vehicleTypes,
                                                                 locations
                                                             },
@@ -2113,7 +2114,7 @@ function AutosPage() {
                                                     }
                                                 } catch (error) {
                                                     console.error('Error toggling saved search:', error);
-                                                    alert('İşlem sırasında bir hata oluştu.');
+                                                    alert('İşlem sırasında bir hata oluştu: ' + (error.message || error));
                                                 }
                                             }}
                                             className={`
@@ -2125,21 +2126,21 @@ function AutosPage() {
                                                     : 'bg-red-500 text-white hover:bg-red-600'
                                                 }
                                             `}
-                                            title={isSaved ? 'Aramayı Kaydettiniz' : 'Aramayı Kaydet'}
+                                            title={isSaved ? 'Kategoriyi Kaydettiniz' : 'Bu Kategoriyi Kaydet'}
                                         >
                                             {isSaved ? (
                                                 <>
                                                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                                                     </svg>
-                                                    <span className="hidden md:inline">Kaydedildi</span>
+                                                    <span className="hidden md:inline">Kategori Kaydedildi</span>
                                                 </>
                                             ) : (
                                                 <>
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                                     </svg>
-                                                    <span className="hidden md:inline">Aramayı Kaydet</span>
+                                                    <span className="hidden md:inline">Bu Kategoriyi Kaydet</span>
                                                 </>
                                             )}
                                         </button>

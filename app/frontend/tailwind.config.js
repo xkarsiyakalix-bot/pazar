@@ -34,8 +34,7 @@ module.exports = {
           800: '#9f1239',
           900: '#881337',
         },
-        // Neutral Palette
-        // Neutral Palette
+        // Neutral Palette - Deep Dark Mode
         neutral: {
           50: '#fafafa',
           100: '#f5f5f5',
@@ -44,10 +43,10 @@ module.exports = {
           400: '#a3a3a3',
           500: '#737373',
           600: '#525252',
-          700: '#404040',
-          800: '#262626',
-          900: '#1c1f24',
-          950: '#14171a',
+          700: '#2a2d33',
+          800: '#16181d',
+          900: '#0d0f12',
+          950: '#070809',
         },
         gold: {
           400: '#fbbf24',

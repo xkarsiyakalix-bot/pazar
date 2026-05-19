@@ -377,7 +377,7 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
     if (isMobile) return null;
 
     return (
-        <aside className="w-96 flex-shrink-0 bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-6 h-fit border border-gray-100 dark:border-white/5 hidden lg:block transition-colors duration-300">
+        <aside className="w-96 flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg shadow-lg p-6 h-fit border border-gray-100 dark:border-white/5 hidden lg:block transition-colors duration-300">
             <h3 className="font-bold text-gray-900 dark:text-neutral-50 mb-5 text-lg">Kategoriler</h3>
             <div className="space-y-1.5">
                 {categoriesWithCounts.map((category) => (
@@ -392,7 +392,7 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                                     setSelectedCategory(category.name);
                                 }
                             }}
-                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 text-left ${selectedCategory === category.name
+                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 text-left ${selectedCategory === category.name
                                 ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
                                 : 'hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-400 hover:shadow-sm'
                                 }`}

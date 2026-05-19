@@ -62,6 +62,61 @@
     }
 }
 
+/* =====================================================
+   DEEP DARK MODE — Global Overrides
+   ===================================================== */
+.dark {
+    color-scheme: dark;
+}
+
+/* Make white backgrounds pitch dark in dark mode */
+.dark .bg-white {
+    background-color: #16181d !important;
+}
+
+/* Slightly elevated surfaces (cards, dropdowns, modals) */
+.dark .bg-gray-50,
+.dark .bg-neutral-50 {
+    background-color: #0d0f12 !important;
+}
+
+.dark .bg-gray-100,
+.dark .bg-neutral-100 {
+    background-color: #16181d !important;
+}
+
+.dark .bg-gray-200,
+.dark .bg-neutral-200 {
+    background-color: #1e2126 !important;
+}
+
+/* Borders */
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300 {
+    border-color: #2a2d33 !important;
+}
+
+/* Inputs in dark mode */
+.dark input,
+.dark textarea,
+.dark select {
+    background-color: #16181d;
+    border-color: #2a2d33;
+    color: #f5f5f5;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #525252;
+}
+
+/* Dividers */
+.dark hr {
+    border-color: #2a2d33;
+}
+
+
 @layer components {
 
     /* Premium Button Styles */
@@ -77,7 +132,7 @@
 
     /* Card Styles */
     .card-premium {
-        @apply bg-white dark:bg-neutral-900 rounded-2xl shadow-lg hover:shadow-premium overflow-hidden border border-transparent dark:border-white/5;
+        @apply bg-white dark:bg-neutral-800/60 rounded-2xl shadow-lg hover:shadow-premium overflow-hidden border border-transparent dark:border-white/5;
         transition: all 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     }
 
@@ -383,4 +438,182 @@ input[type="checkbox"]:focus {
 
 .animate-slide-up {
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* =====================================================
+   LISTING CARD — Reveal Animation & Enhanced Hover
+   ===================================================== */
+@keyframes cardReveal {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.listing-card {
+    animation: cardReveal 0.45s ease both;
+}
+
+/* Stagger children (applied via nth-child in JS grids) */
+.listing-card:nth-child(1)  { animation-delay: 0.03s; }
+.listing-card:nth-child(2)  { animation-delay: 0.07s; }
+.listing-card:nth-child(3)  { animation-delay: 0.11s; }
+.listing-card:nth-child(4)  { animation-delay: 0.15s; }
+.listing-card:nth-child(5)  { animation-delay: 0.19s; }
+.listing-card:nth-child(6)  { animation-delay: 0.23s; }
+.listing-card:nth-child(7)  { animation-delay: 0.27s; }
+.listing-card:nth-child(8)  { animation-delay: 0.31s; }
+.listing-card:nth-child(9)  { animation-delay: 0.35s; }
+.listing-card:nth-child(10) { animation-delay: 0.38s; }
+.listing-card:nth-child(n+11) { animation-delay: 0.40s; }
+
+/* Dark mode: card hover subtle red glow */
+.dark .listing-card:hover {
+    box-shadow:
+        0 20px 40px -12px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(220,38,38,0.12),
+        0 4px 16px -4px rgba(220,38,38,0.15);
+}
+
+/* Light mode: card hover lift shadow */
+.listing-card:hover {
+    box-shadow:
+        0 20px 40px -12px rgba(0,0,0,0.12),
+        0 8px 16px -4px rgba(0,0,0,0.08);
+}
+
+/* =====================================================
+   SHIMMER — skeleton loading animation
+   ===================================================== */
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(229,231,235,0.8) 25%,
+        rgba(243,244,246,1)   50%,
+        rgba(229,231,235,0.8) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite linear;
+}
+
+.dark .skeleton-shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(22,24,29,0.9)  25%,
+        rgba(42,45,51,1)     50%,
+        rgba(22,24,29,0.9)  75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite linear;
+}
+
+/* =====================================================
+   PRICE — Red accent typography
+   ===================================================== */
+.price-tag {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #dc2626;
+    letter-spacing: -0.01em;
+}
+
+.dark .price-tag {
+    color: #f87171;
+}
+
+/* =====================================================
+   FOOTER — Deep dark
+   ===================================================== */
+.dark footer {
+    background-color: #070809;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* =====================================================
+   PAGE TRANSITION ANIMATION
+   ===================================================== */
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply to all main content areas */
+main,
+.page-content,
+.min-h-screen > .max-w-\\[1400px\\] {
+    animation: pageEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* =====================================================
+   SEARCH INPUT — Focus Glow Effect
+   ===================================================== */
+input[type="text"]:focus,
+input[type="search"]:focus {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(220, 38, 38, 0.15),
+        0 0 12px rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.4) !important;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="search"]:focus {
+    box-shadow:
+        0 0 0 3px rgba(248, 113, 113, 0.12),
+        0 0 16px rgba(248, 113, 113, 0.08);
+    border-color: rgba(248, 113, 113, 0.3) !important;
+}
+
+/* =====================================================
+   HORIZONTAL LISTING CARD — Enhanced Hover Glow
+   ===================================================== */
+.dark .group\/horizontal:hover {
+    box-shadow:
+        0 16px 32px -8px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(220, 38, 38, 0.1),
+        0 2px 12px -4px rgba(220, 38, 38, 0.12);
+}
+
+.group\/horizontal:hover {
+    box-shadow:
+        0 16px 32px -8px rgba(0, 0, 0, 0.1),
+        0 4px 12px -4px rgba(0, 0, 0, 0.06);
+}
+
+/* =====================================================
+   BUTTON — Premium hover micro-animation
+   ===================================================== */
+button:not(:disabled):active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+}
+
+/* =====================================================
+   SCROLL FADE — Sections fade in on scroll
+   ===================================================== */
+.scroll-fade {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-fade.visible {
+    opacity: 1;
+    transform: translateY(0);
 }

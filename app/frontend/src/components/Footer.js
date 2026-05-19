@@ -10,12 +10,12 @@ export const Footer = () => {
                     <div className="hidden md:block">
                         <h3 className="text-white font-semibold mb-4">ExVitrin</h3>
                         <ul className="space-y-2 text-sm">
-                            <li><a href="/categories" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.allCategories}</a></li>
-                            <li><a href="/hakkimizda" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.aboutUs}</a></li>
-                            <li><a href="/mobile-apps" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.mobileApps}</a></li>
-                            <li><a href="/yasal-uyarilar" className="hover:text-white dark:hover:text-neutral-50 transition-colors font-semibold">Yasal Uyarı</a></li>
-                            <li><a href="/cerez-politikasi" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Çerez Politikası</a></li>
-                            <li><a href="/iletisim" className="text-red-400 hover:text-red-300 font-semibold transition-colors mt-2 inline-block">{t.contact.title}</a></li>
+                            <li><a href="/categories" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.allCategories}</a></li>
+                            <li><a href="/hakkimizda" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.aboutUs}</a></li>
+                            <li><a href="/mobile-apps" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.mobileApps}</a></li>
+                            <li><a href="/yasal-uyarilar" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors font-semibold group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>Yasal Uyarı</a></li>
+                            <li><a href="/cerez-politikasi" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>Çerez Politikası</a></li>
+                            <li><a href="/iletisim" className="flex items-center gap-1.5 text-red-400 hover:text-red-300 font-semibold transition-colors mt-2 group"><span className="group-hover:translate-x-0.5 transition-transform">›</span>{t.contact.title}</a></li>
                         </ul>
                     </div>
 
@@ -23,11 +23,11 @@ export const Footer = () => {
                     <div className="hidden md:block">
                         <h3 className="text-white font-semibold mb-4">{t.footer.popularSearches}</h3>
                         <ul className="space-y-2 text-sm">
-                            <li><a href="/emlak" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Emlak</a></li>
-                            <li><a href="/vasita" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Vasıta</a></li>
-                            <li><a href="/vasita/oto-parca-lastik" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Yedek Parça</a></li>
-                            <li><a href="/elektronik" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Elektronik</a></li>
-                            <li><a href="/evcil-hayvanlar" className="hover:text-white dark:hover:text-neutral-50 transition-colors">Evcil Hayvanlar</a></li>
+                            <li><a href="/emlak" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>Emlak</a></li>
+                            <li><a href="/vasita" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>Vasıta</a></li>
+                            <li><a href="/vasita/oto-parca-lastik" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>Yedek Parça</a></li>
+                            <li><a href="/elektronik" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>Elektronik</a></li>
+                            <li><a href="/evcil-hayvanlar" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>Evcil Hayvanlar</a></li>
                         </ul>
                     </div>
 
@@ -35,8 +35,8 @@ export const Footer = () => {
                     <div className="hidden md:block">
                         <h3 className="text-white font-semibold mb-4">{t.footer.forCompanies}</h3>
                         <ul className="space-y-2 text-sm">
-                            <li><a href="/packages" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.proPackages}</a></li>
-                            <li><a href="#" className="hover:text-white dark:hover:text-neutral-50 transition-colors">{t.footer.advertising}</a></li>
+                            <li><a href="/packages" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.proPackages}</a></li>
+                            <li><a href="#" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="text-red-500 group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.advertising}</a></li>
                         </ul>
                     </div>
 

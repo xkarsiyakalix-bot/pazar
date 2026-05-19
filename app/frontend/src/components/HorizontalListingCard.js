@@ -170,15 +170,16 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
   return (
     <>
       <div
-        className={`${isVitrin
-          ? 'bg-purple-50/30 dark:bg-purple-900/10 border-purple-400 border-2 shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005] rounded-xl mx-0.5 sm:mx-0'
-          : 'bg-white dark:bg-neutral-800 border-y border-gray-200 dark:border-white/5 border-x-0 sm:border sm:rounded-lg'
-          } transition-all duration-300 cursor-pointer hover:shadow-lg overflow-hidden group/horizontal flex flex-col`}
+        className={`${
+          isVitrin
+            ? 'bg-purple-50/40 dark:bg-purple-900/10 border-l-4 border-purple-500 shadow-[0_0_16px_rgba(147,51,234,0.15)] rounded-lg mx-0.5 sm:mx-0'
+            : 'bg-white dark:bg-neutral-800/70 border border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 rounded-lg'
+        } transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-0.5 overflow-hidden group/horizontal flex flex-col`}
         onClick={() => navigate(getListingUrl(listing))}
       >
         <div className="flex flex-row">
           {/* Image Section */}
-          <div className="w-32 sm:w-48 md:w-60 h-32 sm:h-40 md:h-48 relative group flex-shrink-0 bg-gray-100 dark:bg-neutral-900 border-r border-gray-100 dark:border-white/5">
+          <div className="w-32 sm:w-48 md:w-60 h-32 sm:h-40 md:h-48 relative group flex-shrink-0 bg-gray-100 dark:bg-neutral-900 border-r border-gray-100 dark:border-white/5 overflow-hidden">
             <img
               src={getOptimizedImageUrl(
                 Array.isArray(listing?.images) && listing.images.length > 0
@@ -187,9 +188,11 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                 300, 200, 'cover'
               )}
               alt={listing?.title || 'İlan Resmi'}
-              className="w-full h-full object-cover transition-transform duration-300"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover/horizontal:scale-[1.06]"
               loading="lazy"
             />
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
             {/* RESERVIERT Badge - always on top */}
             {isReserved && (
               <div className="absolute top-1 left-1 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm z-30">
@@ -225,19 +228,26 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
           {/* Info Section */}
           <div className="flex-1 p-3 sm:p-5 flex flex-col justify-between overflow-hidden">
             <div className="space-y-1">
-              <h4 className="text-sm sm:text-lg font-black text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover/horizontal:text-red-600 transition-colors">
+              <h4 className="text-sm sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover/horizontal:text-red-600 dark:group-hover/horizontal:text-red-400 transition-colors">
                 {listing?.title}
               </h4>
               <p className="text-[11px] sm:text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1">
                 {listing?.description}
               </p>
-              <div className="text-sm sm:text-xl font-black text-neutral-900 dark:text-neutral-50 pt-1">
+              <div className="pt-1">
                 {!hidePrice && (
-                  listing?.price_type === 'giveaway' || listing?.price === 0
-                    ? 'Ücretsiz'
-                    : listing?.price
-                      ? `${listing.price.toLocaleString('tr-TR')} TL`
-                      : 'Görüşülür'
+                  <span className={`text-sm sm:text-xl font-black ${
+                    listing?.price_type === 'giveaway' || listing?.price === 0
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`}>
+                    {listing?.price_type === 'giveaway' || listing?.price === 0
+                      ? 'Ücretsiz'
+                      : listing?.price
+                        ? `${listing.price.toLocaleString('tr-TR')} TL`
+                        : 'Görüşülür'
+                    }
+                  </span>
                 )}
               </div>
             </div>

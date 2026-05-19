@@ -3572,7 +3572,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
     : "w-full h-28 object-cover transition-transform duration-500";
 
   // Determine card styles based on promotion Type
-  let cardClasses = "listing-card border border-gray-200 dark:border-white/10 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative bg-white dark:bg-neutral-900 flex flex-col h-full ";
+  let cardClasses = "listing-card border border-gray-200 dark:border-white/10 rounded-md shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group relative bg-white dark:bg-neutral-900 flex flex-col h-full ";
 
   const pkgType = listing?.package_type?.toLowerCase();
 
@@ -3588,7 +3588,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
 
   return (
     <div className={cardClasses} onClick={() => navigate(getListingUrl(listing))}>
-      <div className="relative overflow-hidden rounded-t-lg bg-gray-100 dark:bg-neutral-800 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+      <div className="relative overflow-hidden rounded-t-md bg-gray-100 dark:bg-neutral-800 h-28" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
         {!imageLoaded && !isMiniJob && (
           <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-neutral-800 flex items-center justify-center">
             <svg className="w-8 h-8 text-gray-300 dark:text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -7227,8 +7227,8 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
     <>
       <div
         className={`${isVitrin
-          ? 'bg-purple-50/30 dark:bg-purple-900/10 border-purple-400 border-2 shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005] rounded-xl mx-0.5 sm:mx-0'
-          : 'bg-white dark:bg-neutral-800 border-y border-gray-200 dark:border-white/5 border-x-0 sm:border sm:rounded-lg'
+          ? 'bg-purple-50/30 dark:bg-purple-900/10 border-purple-400 border-2 shadow-[0_0_15px_rgba(147,51,234,0.2)] scale-[1.005] rounded-lg mx-0.5 sm:mx-0'
+          : 'bg-white dark:bg-neutral-800 border-y border-gray-200 dark:border-white/5 border-x-0 sm:border sm:rounded-md'
           } transition-all duration-300 cursor-pointer hover:shadow-lg overflow-hidden group/horizontal flex flex-col`}
         onClick={() => navigate(getListingUrl(listing))}
       >

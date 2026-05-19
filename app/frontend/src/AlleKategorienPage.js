@@ -8,6 +8,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { supabase } from './lib/supabase';
 import { CategorySEO } from './SEO';
 import { categoryConfigs, slugToCategoryMap, slugToSubCategoryMap } from './config/categoryConfigs';
+import { useAuth } from './contexts/AuthContext';
+import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from './api/savedSearches';
 
 const areSubCategoriesEquivalent = (sub1, sub2) => {
     if (!sub1 || !sub2) return sub1 === sub2;
@@ -26,10 +28,29 @@ const areSubCategoriesEquivalent = (sub1, sub2) => {
     return mappings.some(group => group.includes(n1) && group.includes(n2));
 };
 
+const areCategoriesEquivalent = (cat1, cat2) => {
+    if (!cat1 || !cat2) return cat1 === cat2;
+    const normalize = s => String(s).toLowerCase().replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c').trim();
+    const n1 = normalize(cat1);
+    const n2 = normalize(cat2);
+    if (n1 === n2) return true;
+
+    const mappings = [
+        ['otomobil, bisiklet & tekne', 'vasıta (otomobil, bisiklet & tekne)', 'vasıta', 'vasita', 'auto, rad & boot', 'auto, rad und boot'],
+        ['aile, çocuk & bebek', 'aile-cocuk-bebek', 'aile, çocuk ve bebek', 'familie, kind & baby']
+    ];
+    return mappings.some(group => {
+        const normalizedGroup = group.map(normalize);
+        return normalizedGroup.includes(n1) && normalizedGroup.includes(n2);
+    });
+};
+
+
 export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory, initialSubCategory }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
+    const { user } = useAuth();
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'Tüm Kategoriler');
@@ -41,6 +62,62 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
     const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [inactiveCategories, setInactiveCategories] = useState(new Set());
     const [expandedCategories, setExpandedCategories] = useState([]);
+    const [isSaved, setIsSaved] = useState(false);
+
+    // Check if search/category is saved
+    useEffect(() => {
+        const checkSavedStatus = async () => {
+            if (!user) {
+                setIsSaved(false);
+                return;
+            }
+            if (selectedCategory === 'Tüm Kategoriler') {
+                setIsSaved(false);
+                return;
+            }
+            const searchUrl = location.pathname + location.search;
+            const savedSearch = await checkIfSearchIsSaved(searchUrl);
+            setIsSaved(!!savedSearch);
+        };
+        checkSavedStatus();
+    }, [user, selectedCategory, selectedSubCategory, location.pathname, location.search]);
+
+    const handleToggleSave = async () => {
+        if (!user) {
+            alert('Kategoriyi kaydetmek için lütfen giriş yapın.');
+            return;
+        }
+
+        if (selectedCategory === 'Tüm Kategoriler') {
+            alert('Lütfen kaydetmek için belirli bir kategori seçin.');
+            return;
+        }
+
+        const searchUrl = location.pathname + location.search;
+
+        try {
+            if (isSaved) {
+                await deleteSavedSearchByUrl(searchUrl);
+                setIsSaved(false);
+            } else {
+                await createSavedSearch({
+                    searchName: selectedSubCategory ? `${selectedCategory} - ${selectedSubCategory}` : selectedCategory,
+                    category: selectedCategory,
+                    subcategory: selectedSubCategory || null,
+                    filters: {
+                        priceFrom,
+                        priceTo,
+                        locations: selectedLocations
+                    },
+                    searchUrl: searchUrl
+                });
+                setIsSaved(true);
+            }
+        } catch (error) {
+            console.error('Error toggling saved search:', error);
+            alert('İşlem sırasında bir hata oluştu.');
+        }
+    };
 
     const toggleCategory = (categoryName) => {
         setExpandedCategories(prev =>
@@ -53,7 +130,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
     const categories = [
         { name: 'Tüm Kategoriler', count: 0, subcategories: [], slug: 'all' },
         {
-            name: 'Vasıta (Otomobil, Bisiklet & Tekne)', count: 0,
+            name: 'Otomobil, Bisiklet & Tekne', count: 0,
             slug: 'vasita',
             subcategories: [
                 'Otomobiller', 'Oto Parça & Lastik', 'Tekne & Tekne Malzemeleri',
@@ -294,7 +371,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                     if (cat.name === 'Müzik, Film & Kitap') {
                         return listing.category === 'Müzik, Film & Kitap' || listing.category === 'Müzik, Filme & Bücher';
                     }
-                    return listing.category === cat.name;
+                    return areCategoriesEquivalent(listing.category, cat.name);
                 }).length;
 
                 // Filter inactive subcategories
@@ -305,7 +382,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                     ? filteredSubcategories
                         .map(subName => ({
                             name: subName,
-                            count: listings.filter(l => (l.category === cat.name || (cat.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === subName).length
+                            count: listings.filter(l => (areCategoriesEquivalent(l.category, cat.name) || (cat.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === subName).length
                         }))
                         .sort((a, b) => b.count - a.count)
                         .slice(0, 5)
@@ -326,7 +403,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
         }
 
         // Category filter
-        if (selectedCategory !== 'Tüm Kategoriler' && listing.category !== selectedCategory) {
+        if (selectedCategory !== 'Tüm Kategoriler' && !areCategoriesEquivalent(listing.category, selectedCategory)) {
             return false;
         }
 
@@ -494,13 +571,13 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                                         <div key={category.name} className="mb-1">
                                             <button
                                                 onClick={() => handleCategoryClick(category.name)}
-                                                className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === category.name
+                                                className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${areCategoriesEquivalent(selectedCategory, category.name)
                                                     ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
                                                     : 'hover:bg-gray-50 text-gray-700'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className={`text-sm font-medium ${selectedCategory === category.name
+                                                    <span className={`text-sm font-medium ${areCategoriesEquivalent(selectedCategory, category.name)
                                                         ? 'text-white'
                                                         : 'text-gray-700 dark:text-neutral-300 group-hover:text-red-600 dark:group-hover:text-rose-400'
                                                         }`}>
@@ -509,7 +586,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {category.name !== 'Tüm Kategoriler' && (
-                                                        <span className={`text-xs ${selectedCategory === category.name
+                                                        <span className={`text-xs ${areCategoriesEquivalent(selectedCategory, category.name)
                                                             ? 'text-white/80'
                                                             : 'text-gray-400 dark:text-neutral-500'
                                                             }`}>
@@ -517,7 +594,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                                                         </span>
                                                     )}
                                                     <svg
-                                                        className={`w-4 h-4 ${selectedCategory === category.name
+                                                        className={`w-4 h-4 ${areCategoriesEquivalent(selectedCategory, category.name)
                                                             ? 'text-white rotate-90'
                                                             : 'text-gray-400 dark:text-neutral-500 group-hover:text-red-600 dark:group-hover:text-rose-400'
                                                             } transition-all duration-200`}
@@ -531,13 +608,13 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                                             </button>
 
                                             {/* Subcategories (Top 2 by default, All when selected OR expanded) */}
-                                            {category.subcategories && category.subcategories.length > 0 && category.name !== 'Tüm Kategoriler' && (selectedCategory === 'Tüm Kategoriler' || selectedCategory === category.name || expandedCategories.includes(category.name) || (category.subcategories.includes(selectedSubCategory))) && (
+                                            {category.subcategories && category.subcategories.length > 0 && category.name !== 'Tüm Kategoriler' && (selectedCategory === 'Tüm Kategoriler' || areCategoriesEquivalent(selectedCategory, category.name) || expandedCategories.includes(category.name) || (category.subcategories.includes(selectedSubCategory))) && (
                                                 <div className="ml-4 pl-4 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
-                                                    {(selectedCategory === category.name || expandedCategories.includes(category.name)
+                                                    {(areCategoriesEquivalent(selectedCategory, category.name) || expandedCategories.includes(category.name)
                                                         ? [...(category.subcategories || [])]
                                                             .map(sub => ({
                                                                 name: sub,
-                                                                count: listings.filter(l => (l.category === category.name || (category.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === sub).length
+                                                                count: listings.filter(l => (areCategoriesEquivalent(l.category, category.name) || (category.name === 'Müzik, Film & Kitap' && (l.category === 'Müzik, Filme & Bücher' || l.category === 'Müzik, Film & Kitap'))) && l.sub_category === sub).length
                                                             })).sort((a, b) => b.count - a.count)
                                                         : category.topSubcategories
                                                     ).map(sub => (
@@ -553,7 +630,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                                                             <span className={`text-sm font-medium ${selectedSubCategory === sub.name ? 'text-red-400 dark:text-rose-300' : 'text-gray-400 dark:text-neutral-500'}`}>({sub.count})</span>
                                                         </button>
                                                     ))}
-                                                    {selectedCategory !== category.name && !expandedCategories.includes(category.name) && category.subcategories.length > 5 && (
+                                                    {!areCategoriesEquivalent(selectedCategory, category.name) && !expandedCategories.includes(category.name) && category.subcategories.length > 5 && (
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
@@ -696,6 +773,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                             </div>
                         </div>
 
+
                         <div style={{ maxWidth: '960px' }}>
                             <CategoryGallery
                                 listings={filteredListings.filter(l =>
@@ -708,9 +786,42 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
 
                         {/* Listings */}
                         <div className="w-full">
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-100 mb-4 px-0 sm:px-4 md:px-0">
-                                {filteredListings.length} İlan
-                            </h2>
+                            {/* Listings Header Row */}
+                            <div className="flex items-center justify-between mb-4 px-0 sm:px-4 md:px-0">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-100 mb-0">
+                                    {filteredListings.length} İlan
+                                </h2>
+                                {selectedCategory !== 'Tüm Kategoriler' && (
+                                    <button
+                                        onClick={handleToggleSave}
+                                        className={`
+                                            flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md
+                                            px-4 py-2 rounded-xl text-sm font-semibold border outline-none
+                                            ${isSaved
+                                                ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 border-red-200 dark:border-rose-500/20'
+                                                : 'bg-red-500 text-white hover:bg-red-600 border-transparent'
+                                            }
+                                        `}
+                                        title={isSaved ? 'Kategoriyi Kaydettiniz' : 'Bu Kategoriyi Kaydet'}
+                                    >
+                                        {isSaved ? (
+                                            <>
+                                                <svg className="w-4 h-4 text-red-600 dark:text-rose-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                                                </svg>
+                                                <span>Kategori Kaydedildi</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                                </svg>
+                                                <span>Bu Kategoriyi Kaydet</span>
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
 
                             {loading ? (
                                 <div className="flex justify-center items-center py-12">
