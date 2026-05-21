@@ -501,7 +501,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors">
+        <div className="min-h-screen bg-gray-50 dark:!bg-neutral-950 transition-colors">
             <CategorySEO 
                 category={selectedCategory} 
                 subCategory={selectedSubCategory} 
@@ -511,7 +511,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
 
 
 
-                <div className="flex items-center gap-3 mb-6 bg-white dark:bg-neutral-800/50 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                <div className="flex items-center gap-3 mb-6 bg-white dark:!bg-neutral-950 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
                     {/* Mobile/Tablet Filter Button */}
                     <button
                         onClick={() => setShowMobileFilters(true)}
@@ -547,7 +547,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
 
                         {/* Sidebar Content Column - Half screen width on mobile */}
                         <div className={`
-                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white dark:bg-neutral-800 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
+                            relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit bg-white dark:!bg-neutral-950 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6 
                             overflow-y-auto xl:overflow-visible sticky top-0 xl:top-6 xl:ml-0 border-r dark:border-white/5 xl:border-none
                             ${showMobileFilters ? 'animate-in slide-in-from-left duration-300' : ''}
                         `}>

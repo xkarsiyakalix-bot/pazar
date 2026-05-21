@@ -45,18 +45,18 @@ export const Breadcrumb = ({ items = [] }) => {
                 {items.map((item, index) => (
                     <React.Fragment key={index}>
                         {index > 0 && (
-                            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-gray-400 dark:text-neutral-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                         )}
                         {item.isActive || !item.path ? (
-                            <span className="text-gray-900 font-medium truncate max-w-xs" title={item.label}>
+                            <span className="text-gray-900 dark:text-white font-semibold truncate max-w-xs" title={item.label}>
                                 {item.label}
                             </span>
                         ) : (
                             <button
                                 onClick={() => navigate(item.path)}
-                                className="text-red-500 hover:text-red-600 hover:underline transition-colors truncate max-w-xs"
+                                className="text-red-500 dark:text-rose-400 hover:text-red-600 dark:hover:text-rose-300 font-medium hover:underline transition-colors truncate max-w-xs"
                                 title={item.label}
                             >
                                 {item.label}

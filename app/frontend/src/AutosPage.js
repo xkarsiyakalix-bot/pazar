@@ -1106,7 +1106,7 @@ function AutosPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors duration-300">
+        <div className="min-h-screen bg-gray-50 dark:!bg-neutral-950 transition-colors duration-300">
             <CategorySEO category="Otomobil, Bisiklet & Tekne" subCategory="Otomobiller" itemCount={statsListings.length} />
             <div className="max-w-[1400px] mx-auto px-4 py-8">
 

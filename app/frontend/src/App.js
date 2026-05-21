@@ -5,7 +5,7 @@ import pwaManager from './utils/pwaManager';
 
 
 import './App.css';
-import { t } from './translations';
+// Removed heavy translations import from main bundle
 import SEO from './SEO';
 import { supabase } from './lib/supabase';
 import { favoritesApi } from './api/favorites';
@@ -570,7 +570,7 @@ function App() {
   const addToCart = (item) => {
     setCartItems(prev => {
       if (prev.length > 0 && prev[0].sellerId !== item.sellerId) {
-        if (window.confirm(t.checkout.singleSellerError)) {
+        if (window.confirm("Sepette sadece tek bir satıcının ürünleri olabilir. Devam ederseniz mevcut sepetiniz temizlenecektir. Onaylıyor musunuz?")) {
           return [item];
         }
         return prev;
@@ -636,7 +636,7 @@ function App() {
 
       if (!user) {
         // Show alert and redirect to login
-        if (window.confirm(t.favorites.pleaseLogin)) {
+        if (window.confirm("Favorilere eklemek için lütfen giriş yapın. Giriş sayfasına yönlendirilsin mi?")) {
           window.location.href = '/login';
         }
         return;
@@ -658,7 +658,7 @@ function App() {
       window.dispatchEvent(new Event('favoritesUpdated'));
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      alert(t.favorites.error);
+      alert("Favori işlemi sırasında bir hata oluştu.");
     }
   };
 
@@ -691,7 +691,7 @@ function App() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        alert(t.follows.pleaseLogin);
+        alert("Satıcıyı takip etmek için lütfen önce giriş yapın.");
         return;
       }
 
@@ -709,7 +709,7 @@ function App() {
       }
     } catch (error) {
       console.error('Error toggling follow:', error);
-      alert(t.follows.error);
+      alert("Takip işlemi sırasında bir hata oluştu.");
     } finally {
       setFollowLoading(false);
     }
@@ -723,10 +723,10 @@ function App() {
     <>
       <ScrollToTop />
       <CategorySync setSelectedCategory={setSelectedCategory} />
-      <div className="App min-h-screen bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
+      <div className="App min-h-screen bg-gray-50 dark:!bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
         <PresenceTracker />
         <React.Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950">
+          <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:!bg-neutral-950">
             <div className="text-center">
               <LoadingSpinner size="large" />
             </div>

@@ -307,7 +307,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 pb-12 transition-colors">
+        <div className="min-h-screen bg-gray-50 dark:!bg-neutral-950 pb-12 transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
 

@@ -377,8 +377,8 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
     if (isMobile) return null;
 
     return (
-        <aside className="w-96 flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg shadow-lg p-6 h-fit border border-gray-100 dark:border-white/5 hidden lg:block transition-colors duration-300">
-            <h3 className="font-bold text-gray-900 dark:text-neutral-50 mb-5 text-lg">Kategoriler</h3>
+        <aside className="w-96 flex-shrink-0 bg-white dark:!bg-neutral-950 rounded-lg shadow-lg p-6 h-fit border border-gray-100 dark:border-white/5 hidden lg:block transition-colors duration-300">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-5 text-lg">Kategoriler</h3>
             <div className="space-y-1.5">
                 {categoriesWithCounts.map((category) => (
                     <div key={category.name}>
@@ -394,13 +394,13 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                             }}
                             className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 text-left ${selectedCategory === category.name
                                 ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
-                                : 'hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-400 hover:shadow-sm'
+                                : 'hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white hover:shadow-sm'
                                 }`}
                         >
                             <span className="font-semibold text-sm flex-grow">{category.name}</span>
                             <div className="flex items-center gap-2">
                                 {category.count > 0 && (
-                                    <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === category.name ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400'}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === category.name ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-300'}`}>
                                         {category.count.toLocaleString('tr-TR')}
                                     </span>
                                 )}

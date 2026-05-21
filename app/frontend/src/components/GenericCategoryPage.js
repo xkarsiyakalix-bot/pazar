@@ -397,11 +397,11 @@ const GenericCategoryPage = ({
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors">
+        <div className="min-h-screen bg-gray-50 dark:!bg-neutral-950 transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
                 {/* Breadcrumb Bar */}
-                <div className="flex items-center gap-3 mb-6 bg-white dark:bg-neutral-800/50 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                <div className="flex items-center gap-3 mb-6 bg-white dark:!bg-neutral-950 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
                     <button
                         onClick={() => setShowMobileFilters(true)}
                         className="xl:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-xl shadow-md transition-all active:scale-95 shrink-0"
@@ -432,7 +432,7 @@ const GenericCategoryPage = ({
                         />
                         <div className={`
                             relative w-[85vw] sm:w-[70vw] md:w-[50vw] xl:w-auto h-full xl:h-fit
-                            bg-white dark:bg-neutral-800 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6
+                            bg-white dark:!bg-neutral-950 xl:rounded-2xl shadow-2xl xl:shadow-lg p-6
                             overflow-y-auto sticky top-6 border-r dark:border-white/5 xl:border-none
                         `}>
                             {/* Mobile header */}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap');
+
 
 @tailwind base;
 @tailwind components;
@@ -13,18 +13,18 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-smoothing: grayscale;
         overflow-x: hidden;
-        @apply bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100;
+        @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100;
         transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     html {
         overflow-x: hidden;
-        @apply bg-neutral-50 dark:bg-neutral-900;
+        @apply bg-neutral-50 dark:bg-neutral-950;
         transition: background-color 0.3s ease;
     }
 
     #root {
-        @apply bg-neutral-50 dark:bg-neutral-900;
+        @apply bg-neutral-50 dark:bg-neutral-950;
         transition: background-color 0.3s ease;
     }
 
@@ -71,18 +71,18 @@
 
 /* Make white backgrounds pitch dark in dark mode */
 .dark .bg-white {
-    background-color: #16181d !important;
+    background-color: #0a0a0a !important;
 }
 
 /* Slightly elevated surfaces (cards, dropdowns, modals) */
 .dark .bg-gray-50,
 .dark .bg-neutral-50 {
-    background-color: #0d0f12 !important;
+    background-color: #0a0a0a !important;
 }
 
 .dark .bg-gray-100,
 .dark .bg-neutral-100 {
-    background-color: #16181d !important;
+    background-color: #0a0a0a !important;
 }
 
 .dark .bg-gray-200,
