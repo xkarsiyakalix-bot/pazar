@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 const slides = [
     {
-        image: '/assets/marketplace_banner.png',
+        image: '/assets/marketplace_banner.webp',
         title: 'İkinci el eşyalarınıza\nikinci bir hayat verin',
         subtitle: '',
         link: '/add-listing',
@@ -52,6 +52,8 @@ export const BannerSlider = () => {
                     <img
                         src={slide.image}
                         alt={slide.title.replace('\n', ' ')}
+                        width="1200"
+                        height="300"
                         className="w-full h-full object-cover"
                         loading={index === 0 ? 'eager' : 'lazy'}
                         {...(index === 0 ? { fetchpriority: "high" } : {})}
