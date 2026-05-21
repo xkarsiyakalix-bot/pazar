@@ -24,7 +24,12 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
     const isTransformationEnabled = false;
 
     if (!isTransformationEnabled) {
-        return url;
+        // Use a free, global CDN image proxy (wsrv.nl) to resize and convert to WebP on the fly
+        // This solves the 3.7MB unoptimized image issue without needing Supabase Pro
+        let proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=75`;
+        if (height) proxyUrl += `&h=${height}`;
+        if (resize === 'cover') proxyUrl += `&fit=cover`;
+        return proxyUrl;
     }
 
     // Transformation URL structure: .../render/image/public/[bucket]/[path]
@@ -77,7 +82,7 @@ export const generateResponsiveImage = (url, width, height, alt = '', className 
  * @param {number} quality - Quality (0.0 to 1.0, default 0.8)
  * @returns {Promise<File>} - A Promise resolving to the compressed WebP file
  */
-export const compressImage = (file, maxWidth = 1920, quality = 0.8) => {
+export const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
     return new Promise((resolve, reject) => {
         // Check if file is an image
         if (!file.type.match(/image.*/)) {
