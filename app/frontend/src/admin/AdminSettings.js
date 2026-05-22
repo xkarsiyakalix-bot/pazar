@@ -3,13 +3,22 @@ import { supabase } from '../lib/supabase';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const AdminSettings = () => {
-    const [settings, setSettings] = useState({
-        siteName: 'ExVitrin',
-        siteDescription: "Türkiye'nin en büyük ilan pazaryeri.",
-        contactEmail: 'kerem_aydin@aol.com',
-        contactPhone: '+90 212 123 45 67',
-        maintenanceMode: false,
-        allowRegistration: true
+    const [settings, setSettings] = useState(() => {
+        const saved = localStorage.getItem('site_settings');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) { }
+        }
+        return {
+            siteName: 'ExVitrin',
+            siteDescription: "Türkiye'nin en büyük ilan pazaryeri.",
+            contactEmail: 'kerem_aydin@aol.com',
+            contactPhone: '+90 212 123 45 67',
+            maintenanceMode: false,
+            allowRegistration: true,
+            searchBgColor: ''
+        };
     });
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -35,9 +44,11 @@ const AdminSettings = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            // Logic to save settings would go here
-            // e.g., await supabase.from('site_settings').upsert(settings);
-            alert('Ayarlar başarıyla kaydedildi! (Simüle edildi)');
+            // Save to localStorage
+            localStorage.setItem('site_settings', JSON.stringify(settings));
+            // Dispatch a custom event so other components in the same tab can update
+            window.dispatchEvent(new CustomEvent('site_settings_updated'));
+            alert('Ayarlar başarıyla kaydedildi!');
         } catch (error) {
             console.error('Error saving settings:', error);
             alert('Ayarlar kaydedilirken bir hata oluştu.');
@@ -157,6 +168,35 @@ const AdminSettings = () => {
                                             onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
                                             className="block w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-white/5 rounded-xl text-sm font-medium focus:outline-none focus:border-red-500 dark:focus:border-red-700 focus:ring-4 focus:ring-red-500/10 dark:focus:ring-red-900/20 transition-all text-neutral-900 dark:text-neutral-50"
                                         />
+                                    </div>
+                                </div>
+
+                                {/* Görünüm Ayarları */}
+                                <div>
+                                    <h2 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2 mt-8">
+                                        <span className="w-2 h-6 bg-purple-600 rounded-full"></span>
+                                        Görünüm Ayarları
+                                    </h2>
+                                    <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1 ml-4">Sitenizin renklerini ve tasarımını kişiselleştirin.</p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="block text-xs font-bold text-neutral-500 dark:text-neutral-500 uppercase tracking-wide ml-1">Arama Sütunu Rengi</label>
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                type="color"
+                                                value={settings.searchBgColor || '#e5e5e5'}
+                                                onChange={(e) => setSettings({ ...settings, searchBgColor: e.target.value })}
+                                                className="w-12 h-12 rounded cursor-pointer bg-transparent border-0 p-0"
+                                            />
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setSettings({ ...settings, searchBgColor: '' })}
+                                                className="text-xs text-red-500 hover:text-red-700 underline"
+                                            >
+                                                Varsayılana Dön (Gri)
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="space-y-2">

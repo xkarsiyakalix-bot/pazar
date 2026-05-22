@@ -28,8 +28,29 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
   const [isLocating, setIsLocating] = useState(false);
   const [suggestions, setSuggestions] = useState({ categories: [], listings: [] });
   const [isSearchingSuggestions, setIsSearchingSuggestions] = useState(false);
+  const [searchBgColor, setSearchBgColor] = useState('');
   const searchInputRef = React.useRef(null);
   const recentSearchesDropdownRef = React.useRef(null);
+
+  // Listen for custom settings update
+  useEffect(() => {
+    const loadColor = () => {
+      const saved = localStorage.getItem('site_settings');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setSearchBgColor(parsed.searchBgColor || '');
+        } catch (e) { }
+      }
+    };
+    loadColor();
+    window.addEventListener('site_settings_updated', loadColor);
+    window.addEventListener('storage', loadColor);
+    return () => {
+      window.removeEventListener('site_settings_updated', loadColor);
+      window.removeEventListener('storage', loadColor);
+    };
+  }, []);
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
@@ -276,8 +297,11 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
   }
 
   return (
-    <section className="bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800 py-4 sm:py-8 relative overflow-visible z-40 border-b border-neutral-300 dark:border-white/10 transition-colors duration-300">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 dark:opacity-10"></div>
+    <section 
+      className={`py-4 sm:py-8 relative overflow-visible z-40 border-b border-neutral-300 dark:border-white/10 transition-colors duration-300 ${!searchBgColor ? 'bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800' : ''}`}
+      style={searchBgColor ? { backgroundColor: searchBgColor } : {}}
+    >
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 dark:opacity-10 pointer-events-none"></div>
       <div className="max-w-[1400px] mx-auto px-2 sm:px-4 relative z-20">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
           <form
