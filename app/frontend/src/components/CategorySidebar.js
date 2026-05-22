@@ -392,10 +392,15 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                                     setSelectedCategory(category.name);
                                 }
                             }}
-                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 text-left ${selectedCategory === category.name
-                                ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-md'
-                                : 'hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white hover:shadow-sm'
-                                }`}
+                            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 text-left ${
+                                selectedCategory === category.name
+                                    ? 'text-white shadow-md'
+                                    : 'hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-white hover:shadow-sm'
+                            }`}
+                            style={selectedCategory === category.name
+                                ? { background: 'var(--brand-color)' }
+                                : {}
+                            }
                         >
                             <span className="font-semibold text-sm flex-grow">{category.name}</span>
                             <div className="flex items-center gap-2">
@@ -436,7 +441,7 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                                             setSelectedCategory(sub.name);
                                         }}
                                         className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${selectedCategory === sub.name
-                                            ? 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-bold'
+                                            ? 'font-bold brand-text'
                                             : 'text-gray-600 dark:text-neutral-500 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-neutral-200'
                                             }`}
                                     >
@@ -452,7 +457,7 @@ export const CategorySidebar = ({ selectedCategory, setSelectedCategory }) => {
                                 {category.subcategories?.length > 5 && !expandedCategories.includes(category.name) && (
                                     <button
                                         onClick={() => toggleCategory(category.name)}
-                                        className="w-full text-left px-3 py-1 text-[11px] font-bold text-gray-900 dark:text-neutral-400 hover:text-red-500 hover:underline transition-colors flex items-center gap-1 mt-1"
+                                        className="w-full text-left px-3 py-1 text-[11px] font-bold text-gray-900 dark:text-neutral-400 hover:brand-text hover:underline transition-colors flex items-center gap-1 mt-1"
                                     >
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
