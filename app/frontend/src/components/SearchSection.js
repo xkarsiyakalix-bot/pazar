@@ -298,7 +298,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
 
   return (
     <section 
-      className={`py-4 sm:py-8 relative overflow-visible z-40 border-b border-neutral-300 dark:border-white/10 transition-colors duration-300 ${!searchBgColor ? 'bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800' : ''}`}
+      className={`py-3 sm:py-4 relative overflow-visible z-40 border-b border-neutral-300 dark:border-white/10 transition-colors duration-300 ${!searchBgColor ? 'bg-gradient-to-r from-neutral-200 via-neutral-300 to-neutral-200 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800' : ''}`}
       style={searchBgColor ? { backgroundColor: searchBgColor } : {}}
     >
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 dark:opacity-10 pointer-events-none"></div>
