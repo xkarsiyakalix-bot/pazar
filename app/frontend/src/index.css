@@ -47,6 +47,69 @@
     border-color: var(--brand-color) !important;
 }
 
+/* =====================================================
+   BRAND COLOR — Global Active/Accent Overrides
+   Replaces every hardcoded red accent across the app
+   so the admin-selected color applies everywhere.
+   ===================================================== */
+
+/* Active category buttons (gradient replaced) */
+.bg-gradient-to-r.from-red-500,
+.bg-gradient-to-br.from-red-500,
+.bg-gradient-to-r.from-red-500.to-rose-600,
+.bg-gradient-to-br.from-red-500.to-rose-600 {
+    background: var(--brand-color) !important;
+    background-image: none !important;
+}
+
+/* Active subcategory background highlight */
+.bg-red-50, .dark .bg-red-950\/30,
+.bg-gradient-to-r.from-red-50 {
+    background-color: color-mix(in srgb, var(--brand-color) 12%, transparent) !important;
+    background-image: none !important;
+}
+
+/* Active text (text-red-600, text-red-500, text-rose-400) */
+.text-red-600, .text-red-500 {
+    color: var(--brand-color) !important;
+}
+.dark .dark\:text-rose-400,
+.dark .dark\:text-red-400 {
+    color: var(--brand-color) !important;
+}
+
+/* Solid red buttons (Save / Subscribe etc.) */
+.bg-red-500 {
+    background-color: var(--brand-color) !important;
+}
+.hover\:bg-red-600:hover {
+    background-color: var(--brand-color) !important;
+    filter: brightness(0.88);
+}
+
+/* Selected filter checkbox */
+.bg-red-500.border-red-500 {
+    background-color: var(--brand-color) !important;
+    border-color: var(--brand-color) !important;
+}
+
+/* Focus rings on inputs */
+.focus\:ring-red-300:focus,
+.dark .dark\:focus\:ring-rose-500\/20:focus {
+    --tw-ring-color: var(--brand-color-light);
+}
+
+/* Hover text on sidebar items */
+.hover\:text-red-600:hover,
+.hover\:text-red-500:hover {
+    color: var(--brand-color) !important;
+}
+
+/* "İlan ver" / CTA gradient buttons in empty-state */
+.from-red-500.to-rose-600 {
+    background: var(--brand-color) !important;
+    background-image: none !important;
+}
 
 @layer base {
     body {
