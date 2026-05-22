@@ -4042,11 +4042,82 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
             }
           })()
         ) : galleryItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-200">
-            <p className="text-gray-500 font-medium">Henüz vitrin ilanı bulunmamaktadır.</p>
-            <p className="text-sm text-gray-400 mt-1">İlanınızı öne çıkarmak için "İlanınızı burada yayınlayın"a tıklayın.</p>
+          <div className="bg-white dark:bg-neutral-950 rounded-3xl overflow-hidden border border-gray-200 dark:border-white/5 shadow-lg max-w-4xl mx-auto my-4 transform transition-all">
+            {/* Header with Premium Pattern */}
+            <div className="relative h-32 md:h-40 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 flex items-center justify-center overflow-hidden border-b border-gray-200 dark:border-white/10">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent"></div>
+              <div className="text-center z-10 p-6">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md mb-2 md:mb-3">
+                  ⭐ VİTRİN İLANI
+                </span>
+                <h2 className="text-xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
+                  Ana Sayfada Fark Edilin!
+                </h2>
+                <p className="text-amber-600 dark:text-amber-400/80 text-xs md:text-sm font-semibold mt-1">
+                  İlanınız spot ışıkları altında
+                </p>
+              </div>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-5 md:p-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {/* Feature 1 */}
+                <div className="flex flex-col items-center text-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-xl shadow-sm">
+                    🚀
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 dark:text-white mb-1">15 kata kadar daha fazla başvuru alın!</h3>
+                    <p className="text-[11px] text-gray-600 dark:text-neutral-400 font-medium leading-relaxed">Öne çıkan konum sayesinde çok daha fazla potansiyel alıcı teklifinizi görür.</p>
+                  </div>
+                </div>
+
+                {/* Feature 2 */}
+                <div className="flex flex-col items-center text-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-xl shadow-sm">
+                    📅
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 dark:text-white mb-1">10 Günlük Döngü</h3>
+                    <p className="text-[11px] text-gray-600 dark:text-neutral-400 font-medium leading-relaxed">İlanınız 10 gün boyunca ana sayfadaki vitrin ilanlarıyla dönüşümlü olarak gösterilir.</p>
+                  </div>
+                </div>
+
+                {/* Feature 3 */}
+                <div className="flex flex-col items-center text-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-xl shadow-sm">
+                    💎
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 dark:text-white mb-1">Premium İçin Mükemmel</h3>
+                    <p className="text-[11px] text-gray-600 dark:text-neutral-400 font-medium leading-relaxed">Yüksek fiyatlı veya sıra dışı ürünlerin yanı sıra hizmetler, emlak ve iş ilanları için uygundur.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tip & Action */}
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="flex-1 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-4 flex gap-3">
+                  <span className="text-xl">💡</span>
+                  <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed font-semibold">
+                    <span className="font-black text-amber-600 dark:text-amber-400">İpucu:</span> Etkililiği daha da artırmak için ilanınızın resminin dikkat çekici olmasına özen gösterin.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    const navigate = window.location.href.includes('/profile') 
+                      ? () => window.location.reload() 
+                      : () => window.location.href = '/profile?tab=listings';
+                    navigate();
+                  }}
+                  className="w-full sm:w-auto whitespace-nowrap bg-gradient-to-r from-amber-400 to-amber-500 text-white font-black py-4 px-8 rounded-2xl shadow-md hover:shadow-lg transition-all text-sm transform hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  Şimdi İlan Seç
+                </button>
+              </div>
+            </div>
           </div>
-        ) : (
           <div
             className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4"
           >
