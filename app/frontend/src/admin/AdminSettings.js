@@ -179,23 +179,81 @@ const AdminSettings = () => {
                                     </h2>
                                     <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1 ml-4">Sitenizin renklerini ve tasarımını kişiselleştirin.</p>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="block text-xs font-bold text-neutral-500 dark:text-neutral-500 uppercase tracking-wide ml-1">Arama Sütunu Rengi</label>
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div className="space-y-3">
+                                        <label className="block text-xs font-bold text-neutral-500 dark:text-neutral-500 uppercase tracking-wide ml-1">Marka Rengi (Ara butonu, İlan Ver butonu vb.)</label>
+                                        
+                                        {/* Preset swatches */}
+                                        <div className="flex flex-wrap gap-2">
+                                            {[
+                                                { label: 'Kırmızı (Varsayılan)', value: '#dc2626' },
+                                                { label: 'Turuncu', value: '#ea580c' },
+                                                { label: 'Mor', value: '#7c3aed' },
+                                                { label: 'Mavi', value: '#2563eb' },
+                                                { label: 'Yeşil', value: '#16a34a' },
+                                                { label: 'Pembe', value: '#db2777' },
+                                                { label: 'Sarı', value: '#ca8a04' },
+                                                { label: 'Siyah', value: '#171717' },
+                                            ].map(swatch => (
+                                                <button
+                                                    key={swatch.value}
+                                                    type="button"
+                                                    title={swatch.label}
+                                                    onClick={() => setSettings({ ...settings, searchBgColor: swatch.value })}
+                                                    className="w-8 h-8 rounded-lg border-2 transition-all hover:scale-110"
+                                                    style={{
+                                                        backgroundColor: swatch.value,
+                                                        borderColor: settings.searchBgColor === swatch.value ? '#fff' : 'transparent',
+                                                        boxShadow: settings.searchBgColor === swatch.value ? `0 0 0 2px ${swatch.value}` : 'none'
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+
+                                        {/* Custom color picker */}
                                         <div className="flex items-center gap-3">
                                             <input
                                                 type="color"
-                                                value={settings.searchBgColor || '#e5e5e5'}
+                                                value={settings.searchBgColor || '#dc2626'}
                                                 onChange={(e) => setSettings({ ...settings, searchBgColor: e.target.value })}
                                                 className="w-12 h-12 rounded cursor-pointer bg-transparent border-0 p-0"
+                                                title="Özel renk seç"
                                             />
-                                            <button 
-                                                type="button" 
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400">Özel renk seç</span>
+                                            <button
+                                                type="button"
                                                 onClick={() => setSettings({ ...settings, searchBgColor: '' })}
-                                                className="text-xs text-red-500 hover:text-red-700 underline"
+                                                className="ml-auto text-xs text-red-500 hover:text-red-700 underline"
                                             >
-                                                Varsayılana Dön (Gri)
+                                                Sıfırla
                                             </button>
+                                        </div>
+
+                                        {/* Live preview */}
+                                        <div className="mt-2 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-white/5">
+                                            <p className="text-xs text-neutral-400 mb-3 uppercase tracking-wide font-bold">Canlı Önizleme</p>
+                                            <div className="flex gap-3 flex-wrap">
+                                                <button
+                                                    type="button"
+                                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-md"
+                                                    style={{ backgroundColor: settings.searchBgColor || '#dc2626' }}
+                                                >
+                                                    Ara
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="px-5 py-2 rounded-xl text-sm font-semibold text-white shadow-md"
+                                                    style={{ backgroundColor: settings.searchBgColor || '#dc2626' }}
+                                                >
+                                                    İlan Ver
+                                                </button>
+                                                <span
+                                                    className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-white"
+                                                    style={{ backgroundColor: settings.searchBgColor || '#dc2626' }}
+                                                >
+                                                    5 yeni mesaj
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

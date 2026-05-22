@@ -4,6 +4,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =====================================================
+   BRAND COLOR SYSTEM
+   --brand-color is set dynamically via JS (App.js)
+   from Admin Settings. Falls back to the default red.
+   ===================================================== */
+:root {
+    --brand-color: #dc2626;
+    --brand-color-hover: #b91c1c;
+    --brand-color-light: rgba(220, 38, 38, 0.1);
+}
+
+/* Primary action button that uses the brand color */
+.brand-btn {
+    background-color: var(--brand-color) !important;
+    color: #fff !important;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease !important;
+}
+.brand-btn:hover {
+    filter: brightness(0.88);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+}
+.brand-btn:active {
+    transform: scale(0.97);
+}
+
+/* Text / icon elements that should use the brand color */
+.brand-text {
+    color: var(--brand-color) !important;
+}
+
+/* Border accent */
+.brand-border {
+    border-color: var(--brand-color) !important;
+}
+
+/* Focus ring for inputs */
+.brand-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--brand-color-light) !important;
+    border-color: var(--brand-color) !important;
+}
+
+
 @layer base {
     body {
         margin: 0;

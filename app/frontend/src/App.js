@@ -505,6 +505,35 @@ function App() {
   const [filterLocation, setFilterLocation] = useState('Tüm Şehirler');
   const [sortBy, setSortBy] = useState('relevance');
 
+  // ── Brand color (Admin Settings → Arama Sütunu Rengi) ──────────────────
+  // Reads from localStorage and applies as --brand-color CSS variable so
+  // every component that uses var(--brand-color) picks it up automatically.
+  useEffect(() => {
+    const applyBrandColor = () => {
+      try {
+        const saved = localStorage.getItem('site_settings');
+        if (saved) {
+          const { searchBgColor } = JSON.parse(saved);
+          if (searchBgColor) {
+            document.documentElement.style.setProperty('--brand-color', searchBgColor);
+            document.documentElement.style.setProperty('--brand-color-dark', searchBgColor);
+          } else {
+            document.documentElement.style.removeProperty('--brand-color');
+            document.documentElement.style.removeProperty('--brand-color-dark');
+          }
+        }
+      } catch (e) { /* ignore */ }
+    };
+
+    applyBrandColor();
+    window.addEventListener('site_settings_updated', applyBrandColor);
+    window.addEventListener('storage', applyBrandColor);
+    return () => {
+      window.removeEventListener('site_settings_updated', applyBrandColor);
+      window.removeEventListener('storage', applyBrandColor);
+    };
+  }, []);
+
   // Initialize PWA
   useEffect(() => {
     const initPWA = async () => {

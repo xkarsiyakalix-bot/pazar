@@ -607,10 +607,9 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 if (location && location !== 'Türkiye') params.append('location', location);
                 if (selectedDistance) params.append('distance', selectedDistance);
 
-                console.log('Submitting form with data:', Object.fromEntries(params));
                 navigate(`/search?${params.toString()}`);
               }}
-              className="px-4 sm:px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-medium focus:outline-none flex items-center justify-center"
+              className="brand-btn px-4 sm:px-6 py-2 rounded-lg shadow-md font-medium focus:outline-none flex items-center justify-center"
             >
               <span className="hidden sm:inline">Ara</span>
               <svg className="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
@@ -623,7 +622,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
           <div className="hidden lg:flex items-stretch gap-3">
             <button
               onClick={() => navigate('/add-listing')}
-              className="flex flex-col items-center justify-center text-neutral-700 dark:text-neutral-100 transition-all duration-300 font-semibold px-4 py-2 rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-800 transform hover:-translate-y-0.5 group"
+              className="brand-btn flex flex-col items-center justify-center transition-all duration-300 font-semibold px-4 py-2 rounded-xl transform group"
             >
               <svg className="w-8 h-8 mb-0.5 transform group-hover:scale-110 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <circle cx="12" cy="12" r="10" />
@@ -644,7 +643,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 </svg>
                 <span className="text-sm">{t.nav.myAccount}</span>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+                  <span className="brand-btn absolute -top-1 -right-1 text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
                     {unreadCount}
                   </span>
                 )}
