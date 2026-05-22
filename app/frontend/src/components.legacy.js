@@ -4118,6 +4118,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
               </div>
             </div>
           </div>
+        ) : (
           <div
             className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4"
           >
