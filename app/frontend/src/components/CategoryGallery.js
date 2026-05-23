@@ -84,7 +84,8 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
   };
 
   return (
-    <section className="mb-4 sm:mb-6 overflow-hidden">
+    <>
+      <section className="mb-4 sm:mb-6 overflow-hidden">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-neutral-100">{t.topAds.title}</h2>
         <div className="flex items-center gap-2 sm:gap-4">
@@ -210,7 +211,8 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
         )}
       </div>
     </section>
-    <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
+      <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
+    </>
   );
 };
 

@@ -111,7 +111,8 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
     };
 
     return (
-        <section className="mt-6">
+        <>
+            <section className="mt-6">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50">Vitrin</h2>
                 <div className="flex items-center gap-2 sm:gap-4">
@@ -252,7 +253,8 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                 </div>
             </div>
         </section>
-        <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
+            <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
+        </>
     );
 };
 
