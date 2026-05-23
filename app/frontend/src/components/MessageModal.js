@@ -27,6 +27,16 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
     loadUserProfile();
   }, [user, isOpen]);
 
+  // Prevent body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
@@ -51,83 +61,107 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
   };
 
   return (
-    <div className="fixed inset-0 z-[200] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div className="flex items-start sm:items-center justify-center min-h-screen pt-10 sm:pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-black dark:bg-opacity-80 transition-opacity" aria-hidden="true" onClick={onClose}></div>
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div className="inline-block align-middle bg-white dark:bg-neutral-900 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-[95%] sm:max-w-xl sm:w-full relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-neutral-300 focus:outline-none z-10"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          <div className="bg-white dark:bg-neutral-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="sm:flex sm:items-start text-center">
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 className="text-xl leading-8 font-bold text-gray-900 dark:text-neutral-100 pr-8" id="modal-title">
-                  {t.sellerProfile.message} - {sellerName}
-                </h3>
-                {listingTitle && (
-                  <div className="mt-2">
-                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                      📅 {listingTitle}
-                    </p>
-                  </div>
-                )}
-                <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-                  <div>
-                    <label htmlFor="modal-name" className="block text-sm font-medium text-gray-700 dark:text-neutral-300">{t.addListing.name}</label>
-                    <input
-                      type="text"
-                      id="modal-name"
-                      required
-                      className="mt-1 block w-full border border-gray-300 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="modal-phone" className="block text-sm font-medium text-gray-700 dark:text-neutral-300">{t.addListing.phoneNumber}</label>
-                    <input
-                      type="tel"
-                      id="modal-phone"
-                      className="mt-1 block w-full border border-gray-300 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="modal-message" className="block text-sm font-medium text-gray-700 dark:text-neutral-300">{t.sellerProfile.message}</label>
-                    <textarea
-                      id="modal-message"
-                      required
-                      rows={6}
-                      className="mt-1 block w-full border border-gray-300 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-xl shadow-sm py-3 px-4 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-all"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                    />
-                  </div>
-                  <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <button
-                      type="submit"
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-base font-medium text-white hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      {t.productDetail.message}
-                    </button>
-                    <button
-                      type="button"
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-white/10 shadow-sm px-4 py-2 bg-white dark:bg-neutral-800 text-base font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:w-auto sm:text-sm transition-colors"
-                      onClick={onClose}
-                    >
-                      {t.common.cancel}
-                    </button>
-                  </div>
-                </form>
-              </div>
+    <div className="fixed inset-0 z-[300]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        aria-hidden="true"
+        onClick={onClose}
+      />
+
+      {/* Mobile: Bottom Sheet | Desktop: Centered Modal */}
+      <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
+        <div className="pointer-events-auto w-full sm:max-w-xl bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col"
+          style={{ maxHeight: '90vh' }}>
+
+          {/* Drag handle (mobile only) */}
+          <div className="flex justify-center pt-3 pb-1 sm:hidden flex-shrink-0">
+            <div className="w-10 h-1 bg-neutral-300 dark:bg-neutral-600 rounded-full" />
+          </div>
+
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100 dark:border-white/10 flex-shrink-0">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100" id="modal-title">
+                {t.sellerProfile.message}
+              </h3>
+              {sellerName && (
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">{sellerName}</p>
+              )}
+              {listingTitle && (
+                <p className="text-xs font-medium text-red-500 mt-0.5 truncate">📋 {listingTitle}</p>
+              )}
             </div>
+            <button
+              onClick={onClose}
+              className="ml-3 p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 transition-colors flex-shrink-0"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Scrollable Form */}
+          <div className="overflow-y-auto flex-1 px-5 py-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="modal-name" className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                  {t.addListing.name}
+                </label>
+                <input
+                  type="text"
+                  id="modal-name"
+                  required
+                  className="w-full border border-neutral-200 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 text-sm transition-all"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="modal-phone" className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                  {t.addListing.phoneNumber}
+                </label>
+                <input
+                  type="tel"
+                  id="modal-phone"
+                  className="w-full border border-neutral-200 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 text-sm transition-all"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="modal-message" className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                  {t.sellerProfile.message}
+                </label>
+                <textarea
+                  id="modal-message"
+                  required
+                  rows={5}
+                  className="w-full border border-neutral-200 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 text-sm transition-all resize-none"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2 pb-4">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-300 font-bold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  {t.common.cancel}
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-bold text-sm hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/20"
+                >
+                  {loading ? '...' : t.productDetail.message}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -135,4 +169,3 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
   );
 };
 export default MessageModal;
-
