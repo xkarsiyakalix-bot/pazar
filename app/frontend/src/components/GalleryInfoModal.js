@@ -8,9 +8,14 @@ export const GalleryInfoModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div 
-        className="relative bg-white dark:bg-neutral-950 rounded-3xl overflow-hidden border border-gray-200 dark:border-white/5 shadow-2xl max-w-lg w-full transform transition-all animate-scale-in"
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.55)' }}
+      onClick={onClose}
+    >
+      <div
+        className="relative bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl max-w-lg w-full"
+        style={{ maxHeight: '90vh', overflowY: 'auto' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Glow Effects */}

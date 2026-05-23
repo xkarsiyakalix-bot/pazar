@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { t } from '../translations';
 import { useAuth } from '../contexts/AuthContext';
 import ListingCard from './ListingCard';
+import { GalleryInfoModal } from './GalleryInfoModal';
 
 export const CategoryGallery = ({ category, subCategory, listings, toggleFavorite = () => { }, isFavorite = () => false, hidePrice = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -11,6 +12,7 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
   const { user } = useAuth();
   const navigate = useNavigate();
   const isMobile = window.innerWidth < 768;
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Update itemsPerView based on screen size
   useEffect(() => {
@@ -87,12 +89,7 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-neutral-100">{t.topAds.title}</h2>
         <div className="flex items-center gap-2 sm:gap-4">
           <button
-            onClick={() => {
-              const nav = window.location.href.includes('/profile') 
-                ? () => window.location.reload() 
-                : () => navigate('/profile?tab=listings');
-              nav();
-            }}
+            onClick={() => setShowInfoModal(true)}
             className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
           >
             {t.topAds.placeAd}
@@ -213,6 +210,7 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
         )}
       </div>
     </section>
+    <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
   );
 };
 

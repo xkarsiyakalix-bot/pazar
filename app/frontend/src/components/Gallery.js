@@ -13,6 +13,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
     const { user } = useAuth();
     const isMobile = useIsMobile();
     const navigate = useNavigate();
+    const [showInfoModal, setShowInfoModal] = useState(false);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
     // Responsive items per page
@@ -115,12 +116,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                 <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50">Vitrin</h2>
                 <div className="flex items-center gap-2 sm:gap-4">
                     <button
-                        onClick={() => {
-                            const nav = window.location.href.includes('/profile') 
-                                ? () => window.location.reload() 
-                                : () => navigate('/profile?tab=listings');
-                            nav();
-                        }}
+                        onClick={() => setShowInfoModal(true)}
                         className="text-xs sm:text-sm font-semibold text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 hover:underline transition-colors focus:outline-none"
                         aria-label="Add listing to top ads"
                     >
@@ -256,6 +252,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                 </div>
             </div>
         </section>
+        <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
     );
 };
 

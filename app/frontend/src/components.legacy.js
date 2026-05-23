@@ -4007,12 +4007,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
         <h2 className="text-2xl font-bold text-gray-900">Vitrin</h2>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => {
-              const nav = window.location.href.includes('/profile') 
-                ? () => window.location.reload() 
-                : () => navigate('/profile?tab=listings');
-              nav();
-            }}
+            onClick={() => setShowInfoModal(true)}
             className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
           >
             Buraya ilanınızı ekleyin
@@ -4144,6 +4139,10 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
           </div>
         )}
       </div>
+      <GalleryInfoModal
+        isOpen={showInfoModal}
+        onClose={() => setShowInfoModal(false)}
+      />
     </section>
   );
 };
