@@ -2,33 +2,29 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CATEGORIES = [
-  { name: 'Otomobil', icon: '🚗', color: '#EFF6FF', path: '/autos' },
-  { name: 'Emlak', icon: '🏠', color: '#F0FDF4', path: '/immobilien' },
-  { name: 'Ev & Bahçe', icon: '🛋️', color: '#FFF7ED', path: '/haus-garten' },
-  { name: 'Elektronik', icon: '📱', color: '#F5F3FF', path: '/elektronik' },
-  { name: 'Moda', icon: '👗', color: '#FFF1F2', path: '/mode-beauty' },
-  { name: 'Evcil Hayvan', icon: '🐾', color: '#ECFDF5', path: '/haustiere' },
-  { name: 'Çocuk & Bebek', icon: '👶', color: '#FEF9C3', path: '/familie-kind-baby' },
-  { name: 'İş İlanları', icon: '💼', color: '#EFF6FF', path: '/jobs' },
-  { name: 'Hobi', icon: '🎮', color: '#FDF4FF', path: '/freizeit-hobby' },
-  { name: 'Müzik & Kitap', icon: '📚', color: '#F0FDF4', path: '/musik-film-buecher' },
-  { name: 'Biletler', icon: '🎟️', color: '#FFF7ED', path: '/tickets' },
-  { name: 'Hizmetler', icon: '🔧', color: '#F1F5F9', path: '/dienstleistungen' },
-  { name: 'Eğitim', icon: '🎓', color: '#ECFEFF', path: '/unterricht-kurse' },
-  { name: 'Ücretsiz', icon: '🤝', color: '#FFFBEB', path: '/verschenken-tauschen' },
-  { name: 'Komşuluk', icon: '🏘️', color: '#F0FDF4', path: '/nachbarschaftshilfe' },
-  { name: 'Tüm Kategoriler', icon: '☰', color: '#F8FAFC', path: '/alle-kategorien' },
+  { name: 'Otomobil', icon: '🚗', color: '#EFF6FF', path: '/Otomobil-Bisiklet-Tekne' },
+  { name: 'Emlak', icon: '🏠', color: '#F0FDF4', path: '/Emlak' },
+  { name: 'Ev & Bahçe', icon: '🛋️', color: '#FFF7ED', path: '/Ev-Bahce' },
+  { name: 'Elektronik', icon: '📱', color: '#F5F3FF', path: '/Elektronik' },
+  { name: 'Moda', icon: '👗', color: '#FFF1F2', path: '/Moda-Guzellik' },
+  { name: 'Evcil Hayvan', icon: '🐾', color: '#ECFDF5', path: '/Evcil-Hayvanlar' },
+  { name: 'Çocuk & Bebek', icon: '👶', color: '#FEF9C3', path: '/Aile-Cocuk-Bebek' },
+  { name: 'İş İlanları', icon: '💼', color: '#EFF6FF', path: '/Is-Ilanlari' },
+  { name: 'Hobi', icon: '🎮', color: '#FDF4FF', path: '/Eglence-Hobi-Mahalle' },
+  { name: 'Müzik & Kitap', icon: '📚', color: '#F0FDF4', path: '/Muzik-Film-Kitap' },
+  { name: 'Biletler', icon: '🎟️', color: '#FFF7ED', path: '/Biletler' },
+  { name: 'Hizmetler', icon: '🔧', color: '#F1F5F9', path: '/Hizmetler' },
+  { name: 'Eğitim', icon: '🎓', color: '#ECFEFF', path: '/Egitim-Kurslar' },
+  { name: 'Ücretsiz', icon: '🤝', color: '#FFFBEB', path: '/Ucretsiz-Takas' },
+  { name: 'Komşuluk', icon: '🏘️', color: '#F0FDF4', path: '/Komsu-Yardimi' },
+  { name: 'Tüm Kategoriler', icon: '☰', color: '#F8FAFC', path: '/Butun-Kategoriler' },
 ];
 
 const MobileCategoryGrid = ({ setSelectedCategory }) => {
   const navigate = useNavigate();
 
   const handleCategoryClick = (cat) => {
-    if (cat.path === '/alle-kategorien') {
-      navigate('/alle-kategorien');
-    } else {
-      navigate(cat.path);
-    }
+    navigate(cat.path);
   };
 
   return (
