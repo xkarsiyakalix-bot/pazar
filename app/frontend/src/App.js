@@ -47,6 +47,7 @@ const ReservationButton = React.lazy(() => import('./ReservationButton'));
 const StorePage = React.lazy(() => import('./components/Store/StorePage'));
 const SmartRoute = React.lazy(() => import('./SmartRoute'));
 const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
+const MobileCategoryGrid = React.lazy(() => import('./components/MobileCategoryGrid'));
 
 // Lazy load page components
 const Register = React.lazy(() => import('./Register'));
@@ -805,6 +806,11 @@ function App() {
                     {/* Banner - Responsive height */}
                     {/* Banner Slider */}
                     <BannerSlider />
+
+                    {/* Mobile Category Icon Grid - only on mobile */}
+                    <React.Suspense fallback={null}>
+                      <MobileCategoryGrid setSelectedCategory={setSelectedCategory} />
+                    </React.Suspense>
 
                     {/* Gallery Section */}
                     <Gallery toggleFavorite={toggleFavorite} isFavorite={isFavorite} />
