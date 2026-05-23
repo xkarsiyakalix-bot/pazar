@@ -8,9 +8,9 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
   const [currentIndex, setCurrentIndex] = useState(0);
   const [galleryItems, setGalleryItems] = useState([]);
   const [itemsPerView, setItemsPerView] = useState(5);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const isMobile = window.innerWidth < 768;
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const isMobile = window.innerWidth < 768;
 
   // Update itemsPerView based on screen size
   useEffect(() => {
@@ -87,7 +87,12 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-neutral-100">{t.topAds.title}</h2>
         <div className="flex items-center gap-2 sm:gap-4">
           <button
-            onClick={() => setShowInfoModal(true)}
+            onClick={() => {
+              const nav = window.location.href.includes('/profile') 
+                ? () => window.location.reload() 
+                : () => navigate('/profile?tab=listings');
+              nav();
+            }}
             className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
           >
             {t.topAds.placeAd}

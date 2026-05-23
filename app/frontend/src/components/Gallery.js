@@ -10,7 +10,6 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
     const [galleryItems, setGalleryItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
-    const [showInfoModal, setShowInfoModal] = useState(false);
     const { user } = useAuth();
     const isMobile = useIsMobile();
     const navigate = useNavigate();
@@ -114,10 +113,16 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
         <section className="mt-6">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50">Vitrin</h2>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <button
-                        onClick={() => setShowInfoModal(true)}
-                        className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
+                        onClick={() => {
+                            const nav = window.location.href.includes('/profile') 
+                                ? () => window.location.reload() 
+                                : () => navigate('/profile?tab=listings');
+                            nav();
+                        }}
+                        className="text-xs sm:text-sm font-semibold text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 hover:underline transition-colors focus:outline-none"
+                        aria-label="Add listing to top ads"
                     >
                         {t.topAds.placeAd}
                     </button>
@@ -250,7 +255,6 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                     </div>
                 </div>
             </div>
-            <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
         </section>
     );
 };

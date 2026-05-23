@@ -3882,6 +3882,7 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
 
 // Gallery Component
 export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filterLocation = 'Tüm Şehirler', sortBy = 'relevance' }) => {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [galleryItems, setGalleryItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -4006,7 +4007,12 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
         <h2 className="text-2xl font-bold text-gray-900">Vitrin</h2>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setShowInfoModal(true)}
+            onClick={() => {
+              const nav = window.location.href.includes('/profile') 
+                ? () => window.location.reload() 
+                : () => navigate('/profile?tab=listings');
+              nav();
+            }}
             className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
           >
             Buraya ilanınızı ekleyin
@@ -4138,10 +4144,6 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
           </div>
         )}
       </div>
-      <GalleryInfoModal
-        isOpen={showInfoModal}
-        onClose={() => setShowInfoModal(false)}
-      />
     </section>
   );
 };
