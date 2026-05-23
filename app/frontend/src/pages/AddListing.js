@@ -33,6 +33,25 @@ export const AddListing = () => {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [payingExtra, setPayingExtra] = useState(false);
 
+  // Brand color from admin settings
+  const getBrandColor = () => {
+    try {
+      const saved = localStorage.getItem('site_settings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.searchBgColor || '#dc2626';
+      }
+    } catch (e) {}
+    return '#dc2626';
+  };
+  const [brandColor, setBrandColor] = useState(getBrandColor);
+  useEffect(() => {
+    const handleSettingsUpdate = () => setBrandColor(getBrandColor());
+    window.addEventListener('site_settings_updated', handleSettingsUpdate);
+    return () => window.removeEventListener('site_settings_updated', handleSettingsUpdate);
+  }, []);
+
+
   // Check listing limit on mount
   useEffect(() => {
     const checkLimit = async () => {
@@ -2150,7 +2169,8 @@ export const AddListing = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-10 py-4 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-2xl font-bold shadow-xl shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3"
+                className="px-10 py-4 text-white rounded-2xl font-bold shadow-xl hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3"
+                style={{ backgroundColor: brandColor, boxShadow: `0 10px 25px -5px ${brandColor}40` }}
               >
                 {loading ? (
                   <>

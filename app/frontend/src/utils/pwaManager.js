@@ -159,22 +159,16 @@ class PWAManager {
      */
     async saveSubscription(subscription, userId) {
         try {
+            // TODO: Projede Supabase kullanılıyor. İleride Push Notification göndermek isterseniz,
+            // bu veriyi Supabase üzerinde 'push_subscriptions' adında bir tabloya kaydetmeliyiz.
+            // Şimdilik 404 hatası vermemesi için yerel API çağrısını devre dışı bıraktık.
+            /*
             const response = await fetch('/api/push-subscription', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId,
-                    subscription: subscription.toJSON()
-                })
+                ...
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to save subscription');
-            }
-
-            console.log('✅ Subscription saved to backend');
+            */
+            console.log('✅ Subscription generated (Backend save is mocked/disabled for now)');
         } catch (error) {
             console.error('❌ Failed to save subscription:', error);
         }
@@ -185,15 +179,8 @@ class PWAManager {
      */
     async deleteSubscription(userId) {
         try {
-            const response = await fetch(`/api/push-subscription/${userId}`, {
-                method: 'DELETE'
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete subscription');
-            }
-
-            console.log('✅ Subscription deleted from backend');
+            // TODO: Supabase entegrasyonu yapıldığında buradan silinecek.
+            console.log('✅ Subscription deleted (Backend delete is mocked/disabled for now)');
         } catch (error) {
             console.error('❌ Failed to delete subscription:', error);
         }

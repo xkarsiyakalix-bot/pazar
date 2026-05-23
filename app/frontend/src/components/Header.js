@@ -106,7 +106,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
     const handleLogout = async () => {
         try {
             await signOut();
-            navigate('/');
+            window.location.href = '/';
         } catch (error) {
             console.error('Logout error:', error);
         }
@@ -333,13 +333,41 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                     </div>
                                 )}
 
-                                <Link
-                                    to={getSellerUrl(userProfile)}
-                                    className="text-neutral-700 dark:text-neutral-300 font-semibold hidden sm:inline-block hover:text-blue-600 transition-colors"
-                                >
-                                    <span className="text-neutral-500 dark:text-neutral-400">Merhaba,</span>{' '}
-                                    <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">{userProfile?.full_name || user.email?.split('@')[0]}</span>
-                                </Link>
+                                <div className="relative group hidden sm:block">
+                                    <button
+                                        onClick={() => navigate(getSellerUrl(userProfile))}
+                                        className="text-neutral-700 dark:text-neutral-300 font-semibold inline-flex items-center gap-1 hover:text-blue-600 transition-colors py-2"
+                                    >
+                                        <span className="text-neutral-500 dark:text-neutral-400">Merhaba,</span>{' '}
+                                        <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">{userProfile?.full_name || user.email?.split('@')[0]}</span>
+                                        <svg className="w-4 h-4 text-neutral-400 transform group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+                                    
+                                    <div className="absolute right-0 top-full w-48 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-100 dark:border-white/10 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] translate-y-2 group-hover:translate-y-0">
+                                        <button
+                                            onClick={() => navigate(getSellerUrl(userProfile))}
+                                            className="w-full text-left px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-3 transition-colors"
+                                        >
+                                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                            Profilim
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/settings')}
+                                            className="w-full text-left px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-3 transition-colors"
+                                        >
+                                            <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                            Ayarlar
+                                        </button>
+                                        <div className="my-1 border-t border-neutral-50 dark:border-white/5"></div>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                                            {t.nav.logout}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         ) : (
                             <div className="flex items-center gap-2 sm:gap-4">
