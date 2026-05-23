@@ -24,13 +24,32 @@ const AdminSettings = () => {
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('general');
 
-    // In a real app, you would fetch these from a 'site_settings' table
+    // Fetch from Supabase
     useEffect(() => {
         const fetchSettings = async () => {
             setLoading(true);
             try {
-                // Simulating fetch or fetching from profiles/metadata if stored there
-                // For now, we use local state as a placeholder
+                const { data, error } = await supabase
+                    .from('site_settings')
+                    .select('*')
+                    .eq('id', 1)
+                    .single();
+
+                if (data && !error) {
+                    const merged = {
+                        siteName: data.site_name || 'ExVitrin',
+                        siteDescription: data.site_description || "Türkiye'nin en büyük ilan pazaryeri.",
+                        contactEmail: data.contact_email || 'kerem_aydin@aol.com',
+                        contactPhone: data.contact_phone || '+90 212 123 45 67',
+                        maintenanceMode: data.maintenance_mode || false,
+                        allowRegistration: data.allow_registration !== false,
+                        searchBgColor: data.search_bg_color || ''
+                    };
+                    setSettings(merged);
+                    // Also sync localStorage for same-browser fast reads
+                    localStorage.setItem('site_settings', JSON.stringify(merged));
+                    window.dispatchEvent(new CustomEvent('site_settings_updated'));
+                }
             } catch (error) {
                 console.error('Error fetching settings:', error);
             } finally {
@@ -44,18 +63,35 @@ const AdminSettings = () => {
         e.preventDefault();
         setSaving(true);
         try {
-            // Save to localStorage
+            // Save to Supabase
+            const { error } = await supabase
+                .from('site_settings')
+                .upsert({
+                    id: 1,
+                    site_name: settings.siteName,
+                    site_description: settings.siteDescription,
+                    contact_email: settings.contactEmail,
+                    contact_phone: settings.contactPhone,
+                    maintenance_mode: settings.maintenanceMode,
+                    allow_registration: settings.allowRegistration,
+                    search_bg_color: settings.searchBgColor,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) throw error;
+
+            // Also save to localStorage for same-browser instant update
             localStorage.setItem('site_settings', JSON.stringify(settings));
-            // Dispatch a custom event so other components in the same tab can update
             window.dispatchEvent(new CustomEvent('site_settings_updated'));
-            alert('Ayarlar başarıyla kaydedildi!');
+            alert('Ayarlar başarıyla kaydedildi! Tüm kullanıcılar yeni rengi görecek.');
         } catch (error) {
             console.error('Error saving settings:', error);
-            alert('Ayarlar kaydedilirken bir hata oluştu.');
+            alert('Ayarlar kaydedilirken bir hata oluştu: ' + error.message);
         } finally {
             setSaving(false);
         }
     };
+
 
     if (loading) return <div className="p-8 text-center text-gray-500 text-sm">Ayarlar yükleniyor...</div>;
 

@@ -507,9 +507,51 @@ function App() {
   const [sortBy, setSortBy] = useState('relevance');
 
   // ── Brand color (Admin Settings → Arama Sütunu Rengi) ──────────────────
-  // Reads from localStorage and applies as --brand-color CSS variable so
-  // every component that uses var(--brand-color) picks it up automatically.
+  // Reads from Supabase on mount, applies as --brand-color CSS variable, and saves to localStorage
   useEffect(() => {
+    const fetchAndApplySettings = async () => {
+      try {
+        const { supabase } = await import('./lib/supabase');
+        const { data, error } = await supabase
+            .from('site_settings')
+            .select('*')
+            .eq('id', 1)
+            .single();
+
+        if (data && !error) {
+            const merged = {
+                siteName: data.site_name || 'ExVitrin',
+                siteDescription: data.site_description || "Türkiye'nin en büyük ilan pazaryeri.",
+                contactEmail: data.contact_email || 'kerem_aydin@aol.com',
+                contactPhone: data.contact_phone || '+90 212 123 45 67',
+                maintenanceMode: data.maintenance_mode || false,
+                allowRegistration: data.allow_registration !== false,
+                searchBgColor: data.search_bg_color || ''
+            };
+            
+            // Save to localStorage for components like AddListing to pick up instantly
+            localStorage.setItem('site_settings', JSON.stringify(merged));
+            
+            // Apply CSS Variables
+            if (merged.searchBgColor) {
+              document.documentElement.style.setProperty('--brand-color', merged.searchBgColor);
+              document.documentElement.style.setProperty('--brand-color-dark', merged.searchBgColor);
+            } else {
+              document.documentElement.style.removeProperty('--brand-color');
+              document.documentElement.style.removeProperty('--brand-color-dark');
+            }
+            
+            // Dispatch event for components that listen to settings change
+            window.dispatchEvent(new CustomEvent('site_settings_updated'));
+        }
+      } catch (err) {
+        console.error('Error fetching site settings on app load:', err);
+      }
+    };
+
+    fetchAndApplySettings();
+
+    // Listen for changes (e.g. if updated from Admin panel in the same browser)
     const applyBrandColor = () => {
       try {
         const saved = localStorage.getItem('site_settings');
@@ -526,7 +568,6 @@ function App() {
       } catch (e) { /* ignore */ }
     };
 
-    applyBrandColor();
     window.addEventListener('site_settings_updated', applyBrandColor);
     window.addEventListener('storage', applyBrandColor);
     return () => {
