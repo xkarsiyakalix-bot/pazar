@@ -33,6 +33,7 @@ const GenericCategoryPage = ({
     const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [subCategoryCounts, setSubCategoryCounts] = useState({});
+    const [allCategoryListings, setAllCategoryListings] = useState([]);
 
     // Equivalent check for Turkish, German, English category/subcategory names
     const isEquivalent = (a, b) => {
@@ -106,6 +107,32 @@ const GenericCategoryPage = ({
         };
         fetchSubcategoryCounts();
     }, [category]);
+
+    // Fetch ALL listings in this category (without user filters) to compute filter option counts
+    useEffect(() => {
+        const fetchAllForCounts = async () => {
+            if (!category) return;
+            try {
+                let query = supabase
+                    .from('listings')
+                    .select('*')
+                    .eq('status', 'active')
+                    .eq('category', category);
+                if (subCategory) query = query.eq('sub_category', subCategory);
+                const { data, error } = await query;
+                if (error) throw error;
+                setAllCategoryListings(data || []);
+            } catch (err) {
+                console.error('Error fetching all category listings for counts:', err);
+            }
+        };
+        fetchAllForCounts();
+    }, [category, subCategory]);
+
+    // Helper: count listings that match a given field+value
+    const getOptionCount = (field, value) => {
+        return allCategoryListings.filter(l => l[field] === value).length;
+    };
 
     // Check if search/category is saved (canonicalizing the URL path for absolute consistency)
     useEffect(() => {
@@ -294,7 +321,7 @@ const GenericCategoryPage = ({
                                     </div>
                                     <span className="flex-1">{optLabel}</span>
                                     <span className={`text-xs ${isSelected ? 'text-red-400' : 'text-gray-400'}`}>
-                                        (0)
+                                        ({getOptionCount(config.field, optValue)})
                                     </span>
                                 </button>
                             );

@@ -70,6 +70,18 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm start`.
     -->
+    <script>
+        try {
+            const saved = localStorage.getItem('site_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                if (settings && settings.searchBgColor) {
+                    document.documentElement.style.setProperty('--brand-color', settings.searchBgColor);
+                    document.documentElement.style.setProperty('--brand-color-dark', settings.searchBgColor);
+                }
+            }
+        } catch(e) {}
+    </script>
     <title>ExVitrin - Ücretsiz İlanlar | Kiralık, Satılık, Alım & Satım</title>
 </head>
 
