@@ -98,15 +98,28 @@ export const getConversations = async () => {
         if (msg.receiver_id !== user.id) userIds.add(msg.receiver_id);
     });
 
-    // Fetch profiles for all users
-    const { data: profiles } = await supabase
+    // Fetch profiles - try full columns first, fallback to basic if some columns missing
+    let profilesData = null;
+    const { data: profilesFull, error: profilesError } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, store_logo, is_pro, is_commercial, subscription_tier, subscription_expiry, store_slug, user_number')
         .in('id', Array.from(userIds));
 
+    if (profilesError) {
+        console.warn('Full profiles query failed, falling back to basic columns:', profilesError.message);
+        // Fallback: only select columns that always exist
+        const { data: profilesBasic } = await supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url')
+            .in('id', Array.from(userIds));
+        profilesData = profilesBasic;
+    } else {
+        profilesData = profilesFull;
+    }
+
     // Create a map of profiles
     const profileMap = new Map();
-    profiles?.forEach(profile => {
+    profilesData?.forEach(profile => {
         profileMap.set(profile.id, profile);
     });
 
@@ -135,9 +148,8 @@ export const getConversations = async () => {
     activeMessages.forEach(message => {
         // Determine the other user (conversation partner)
         const otherUserId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
-        const otherUser = profileMap.get(otherUserId);
-
-        if (!otherUser) return; // Skip if profile not found
+        // Use profile if available, otherwise create a placeholder
+        const otherUser = profileMap.get(otherUserId) || { id: otherUserId, full_name: 'Kullanıcı', avatar_url: null };
 
         // Add profile info to message
         message.sender = profileMap.get(message.sender_id);
@@ -220,11 +232,24 @@ export const getConversation = async (userId) => {
         return [];
     }
 
-    // Fetch profiles for both users
-    const { data: profiles } = await supabase
+    // Fetch profiles - try full columns first, fallback to basic if some columns missing
+    let profilesData2 = null;
+    const { data: profilesFull2, error: profilesError2 } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, store_logo, is_pro, is_commercial, subscription_tier, subscription_expiry, store_slug, user_number')
         .in('id', [user.id, userId]);
+
+    if (profilesError2) {
+        console.warn('Full profiles query failed in getConversation, falling back to basic:', profilesError2.message);
+        const { data: profilesBasic2 } = await supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url')
+            .in('id', [user.id, userId]);
+        profilesData2 = profilesBasic2;
+    } else {
+        profilesData2 = profilesFull2;
+    }
+    const profiles = profilesData2;
 
     // Create profile map
     const profileMap = new Map();
