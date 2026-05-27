@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LoadingSpinner from './components/LoadingSpinner';
 import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
+import CookieConsent from './components/CookieConsent';
 
 
 import './App.css';
@@ -17,7 +18,6 @@ import {
   Header,
   Footer,
   PresenceTracker,
-  CookieConsent,
   PWAInstallBanner,
   SearchSection,
   ListingGrid,
@@ -181,6 +181,7 @@ const MyListingsPage = React.lazy(() => import('./MyListingsPage'));
 const SettingsPage = React.lazy(() => import('./SettingsPage'));
 const PaymentPage = React.lazy(() => import('./PaymentPage'));
 const FavoritesPage = React.lazy(() => import('./FavoritesPage'));
+const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage'));
 const ProfileOverviewPage = React.lazy(() => import('./ProfileOverviewPage'));
 const FollowingPage = React.lazy(() => import('./FollowingPage'));
 const FollowersPage = React.lazy(() => import('./FollowersPage'));
@@ -922,6 +923,7 @@ function App() {
             <Route path="/s/:sellerId" element={<StorePage />} />
             <Route path="/add-listing" element={<AddListing />} />
             <Route path="/hakkimizda" element={<UberUnsPage />} />
+            <Route path="/gizlilik-politikasi" element={<PrivacyPolicyPage />} />
             <Route path="/karriere" element={<KarrierePage />} />
             <Route path="/presse" element={<PressePage />} />
             <Route path="/exvitrin-magazin" element={<MagazinPage />} />

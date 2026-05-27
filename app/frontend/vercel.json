@@ -15,7 +15,7 @@
   ],
   "rewrites": [
     {
-      "source": "/listing/:id",
+      "source": "/product/:id",
       "has": [
         {
           "type": "header",

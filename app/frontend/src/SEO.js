@@ -176,7 +176,7 @@ export const ProductSEO = ({ listing }) => {
       type="article"
       schema={productSchema}
       breadcrumbs={breadcrumbs}
-      url={`/listing/${listing.id}`}
+      url={`/product/${listing.id}`}
     />
   );
 };

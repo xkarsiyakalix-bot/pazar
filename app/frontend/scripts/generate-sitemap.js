@@ -64,7 +64,7 @@ async function generateSitemap() {
         const lastMod = listing.updated_at ? new Date(listing.updated_at).toISOString() : new Date().toISOString();
         urls.push(`
   <url>
-    <loc>${SITE_URL}/listing/${listing.id}</loc>
+    <loc>${SITE_URL}/product/${listing.id}</loc>
     <lastmod>${lastMod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
