@@ -10,6 +10,7 @@ import { categories as allCategories } from '../data/categories';
 import { getCategoryPath } from './SearchSection';
 import { useAuth } from '../contexts/AuthContext';
 import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from '../api/savedSearches';
+import { CategorySEO } from '../SEO';
 
 const GenericCategoryPage = ({
     category,
@@ -425,6 +426,7 @@ const GenericCategoryPage = ({
 
     return (
         <div className="min-h-screen bg-gray-50 dark:!bg-neutral-950 transition-colors">
+            <CategorySEO category={category} subCategory={subCategory} listingCount={total} />
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
                 {/* Breadcrumb Bar */}

@@ -17,7 +17,11 @@ export const SEO = ({
   const siteName = 'ExVitrin';
   const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - Ücretsiz İlanlar`;
   const siteUrl = 'https://exvitrin.com';
-  const canonicalUrl = url ? `${siteUrl}${url}` : siteUrl;
+  
+  // Use window.location.pathname as a reliable fallback for canonical URL
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+  const finalUrl = url || currentPath;
+  const canonicalUrl = `${siteUrl}${finalUrl}`;
 
   // Global Organization Schema
   const organizationSchema = {
@@ -134,6 +138,7 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
       description={description}
       keywords={keywords}
       breadcrumbs={breadcrumbs}
+      url={`/${category?.replace(/\s+/g, '-').toLowerCase()}${subCategory ? '/' + subCategory?.replace(/\s+/g, '-').toLowerCase() : ''}`}
     />
   );
 };
@@ -145,8 +150,8 @@ export const ProductSEO = ({ listing }) => {
     '@context': 'https://schema.org',
     '@type': 'Product',
     'name': listing.title,
-    'description': listing.description,
-    'image': listing.images?.[0],
+    'description': listing.description?.substring(0, 300) || '',
+    'image': listing.images?.[0] || 'https://exvitrin.com/logo_exvitrin_2026.png',
     'offers': {
       '@type': 'Offer',
       'price': listing.price,
@@ -161,14 +166,17 @@ export const ProductSEO = ({ listing }) => {
     { name: listing.title, url: `/listing/${listing.id}` }
   ];
 
+  const descriptionCleaned = (listing.description || '').replace(/(<([^>]+)>)/gi, "").substring(0, 160);
+
   return (
     <SEO 
       title={listing.title}
-      description={listing.description?.substring(0, 160)}
+      description={descriptionCleaned}
       image={listing.images?.[0]}
       type="article"
       schema={productSchema}
       breadcrumbs={breadcrumbs}
+      url={`/listing/${listing.id}`}
     />
   );
 };
