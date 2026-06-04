@@ -1080,7 +1080,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
       if (error.message.includes('angemeldet')) {
         alert(error.message);
       } else {
-        alert('İlan silinirken hata oluştu');
+        alert('İlan bildirilirken hata oluştu');
       }
     }
   };

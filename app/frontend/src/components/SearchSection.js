@@ -319,7 +319,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                 navigate(`/search?${params.toString()}`);
               }
             }}
-            className="flex-1 flex items-center gap-1 sm:gap-2 bg-white rounded-xl sm:rounded-2xl p-2 sm:p-3 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+            className="flex-1 flex items-center gap-1 sm:gap-2 bg-white rounded-full pl-4 py-1 pr-1.5 sm:pl-5 sm:py-1 sm:pr-2 shadow-xl hover:shadow-2xl transition-shadow duration-300"
           >
             {/* Search Icon - Submit Button */}
             <button
@@ -609,10 +609,10 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
 
                 navigate(`/search?${params.toString()}`);
               }}
-              className="brand-btn px-4 sm:px-6 py-2 rounded-lg shadow-md font-medium focus:outline-none flex items-center justify-center"
+              className="brand-btn ml-2 sm:ml-4 px-8 sm:px-12 py-3 sm:py-3.5 rounded-r-full rounded-l-none shadow-md font-bold text-base sm:text-lg focus:outline-none flex items-center justify-center transition-all hover:scale-105"
             >
               <span className="hidden sm:inline">Ara</span>
-              <svg className="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+              <svg className="w-6 h-6 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>

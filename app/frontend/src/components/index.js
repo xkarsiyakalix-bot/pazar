@@ -17,7 +17,7 @@ export { ListingCountdown } from './ListingCountdown';
 export { LoadingSpinner } from './LoadingSpinner';
 export { Breadcrumb } from './Breadcrumb';
 export { BannerSlider } from './BannerSlider';
-export { CookieConsent } from './CookieConsent';
+export { default as CookieConsent } from './CookieConsent';
 export { PWAInstallBanner } from './PWAInstallBanner';
 export { MessageModal } from './MessageModal';
 export { RatingDisplay } from './RatingDisplay';

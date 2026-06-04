@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { createPortal } from 'react-dom';
 import { supabase } from '../lib/supabase';
-import { generateListingNumber } from '../components';
-import emailNotifications from '../emailNotifications';
+import { generateListingNumber } from '../utils/format';
 import InvoiceModal from '../components/InvoiceModal';
 import { clearCache } from '../utils/cache';
 
@@ -81,7 +79,43 @@ const AdminPromotions = () => {
                     .order('created_at', { ascending: false });
 
                 if (simpleError) throw simpleError;
-                setPromotions(simpleData || []);
+                
+                const rawPromotions = simpleData || [];
+                
+                // Manually fetch related data since the join failed (likely missing FK constraints)
+                const listingIds = [...new Set(rawPromotions.map(p => p.listing_id).filter(Boolean))];
+                const userIds = [...new Set(rawPromotions.map(p => p.user_id).filter(Boolean))];
+                
+                let listingsMap = {};
+                let profilesMap = {};
+                
+                if (listingIds.length > 0) {
+                    const { data: listingsData } = await supabase
+                        .from('listings')
+                        .select('id, title, listing_number, package_type, is_gallery, is_top, is_highlighted, is_multi_bump, promotion_expiry, created_at')
+                        .in('id', listingIds);
+                    if (listingsData) {
+                        listingsData.forEach(l => listingsMap[l.id] = l);
+                    }
+                }
+                
+                if (userIds.length > 0) {
+                    const { data: profilesData } = await supabase
+                        .from('profiles')
+                        .select('id, full_name, user_number, email')
+                        .in('id', userIds);
+                    if (profilesData) {
+                        profilesData.forEach(p => profilesMap[p.id] = p);
+                    }
+                }
+                
+                const enrichedData = rawPromotions.map(promo => ({
+                    ...promo,
+                    listings: promo.listing_id ? listingsMap[promo.listing_id] : null,
+                    profiles: promo.user_id ? profilesMap[promo.user_id] : null
+                }));
+                
+                setPromotions(enrichedData);
             } else {
                 setPromotions(data || []);
             }
@@ -250,21 +284,18 @@ const AdminPromotions = () => {
     };
 
     const filteredPromotions = promotions.filter(promo => {
-        const matchesSearch =
-            promo.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            promo.profiles?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            promo.listings?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            promo.package_type?.toLowerCase().includes(searchTerm.toLowerCase());
-
-        if (!matchesSearch) return false;
-
-        if (filter === 'expired') {
-            return isExpired(promo);
+        if (searchTerm.trim()) {
+            const term = searchTerm.toLowerCase();
+            const matchesSearch =
+                promo.profiles?.full_name?.toLowerCase().includes(term) ||
+                promo.profiles?.email?.toLowerCase().includes(term) ||
+                promo.listings?.title?.toLowerCase().includes(term) ||
+                promo.package_type?.toLowerCase().includes(term);
+            if (!matchesSearch) return false;
         }
-        if (filter === 'active') {
-            // Only show actually active ones (not expired)
-            return !isExpired(promo) && (promo.status === 'active' || promo.status === 'paid');
-        }
+
+        if (filter === 'expired') return isExpired(promo);
+        if (filter === 'active') return !isExpired(promo) && (promo.status === 'active' || promo.status === 'paid');
 
         return true;
     });

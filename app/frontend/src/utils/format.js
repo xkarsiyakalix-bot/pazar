@@ -23,7 +23,7 @@ export const formatLastSeen = (lastSeenDate) => {
 };
 
 export const generateListingNumber = (listing) => {
-  if (!listing) return "";
+  if (!listing || !listing.id) return "";
   
   // Demo specific overrides to match legacy behavior
   if (listing.id === '98fd3675-0163-4c93-9a81-318bedc7c31a') return "1154";

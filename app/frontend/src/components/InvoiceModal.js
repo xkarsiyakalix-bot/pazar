@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { generateListingNumber } from '../components';
+import { generateListingNumber } from '../utils/format';
 
 const InvoiceModal = ({ promotion, onClose }) => {
     if (!promotion) return null;
