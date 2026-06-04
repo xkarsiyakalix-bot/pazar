@@ -44,20 +44,19 @@ const AdminStats = () => {
             const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
             const [
-                { count: listingsCount },
-                { count: activeCount },
-                { count: usersCount },
-                { data: dailyProfiles },
-                { data: monthlyProfiles },
-                { data: yearlyProfiles },
-                { data: dailyPromos },
-                { data: monthlyPromos },
-                { data: yearlyPromos },
-                { data: dailyVisits },
-                { data: monthlyVisits },
-                { data: yearlyVisits },
-                { data: trendPromos },
-                { data: trendListings }
+                listingsResult,
+                usersResult,
+                dailyProfilesResult,
+                monthlyProfilesResult,
+                yearlyProfilesResult,
+                dailyPromosResult,
+                monthlyPromosResult,
+                yearlyPromosResult,
+                dailyVisitsResult,
+                monthlyVisitsResult,
+                yearlyVisitsResult,
+                trendPromosResult,
+                trendListingsResult
             ] = await Promise.all([
                 supabase.from('listings')
                     .select('*', { count: 'exact', head: true })
@@ -76,6 +75,20 @@ const AdminStats = () => {
                 supabase.from('promotions').select('price, created_at, status').gte('created_at', sevenDaysAgo),
                 supabase.from('listings').select('created_at').gte('created_at', sevenDaysAgo)
             ]);
+
+            const activeListingsCount = listingsResult.count || 0;
+            const usersCount = usersResult.count || 0;
+            const dailyProfiles = dailyProfilesResult.data;
+            const monthlyProfiles = monthlyProfilesResult.data;
+            const yearlyProfiles = yearlyProfilesResult.data;
+            const dailyPromos = dailyPromosResult.data;
+            const monthlyPromos = monthlyPromosResult.data;
+            const yearlyPromos = yearlyPromosResult.data;
+            const dailyVisits = dailyVisitsResult.data;
+            const monthlyVisits = monthlyVisitsResult.data;
+            const yearlyVisits = yearlyVisitsResult.data;
+            const trendPromos = trendPromosResult.data;
+            const trendListings = trendListingsResult.data;
 
             // Calculate trends for charts
             const formatTrendData = (data, dateKey, valueKey = null) => {
@@ -128,9 +141,9 @@ const AdminStats = () => {
             };
 
             setStats({
-                totalListings: listingsCount || 0,
-                activeListings: activeCount || 0,
-                totalUsers: usersCount || 0,
+                totalListings: activeListingsCount,
+                activeListings: activeListingsCount,
+                totalUsers: usersCount,
                 onlineUsers: realtimeOnlineCount,
                 daily: calculatePeriodStats(dailyProfiles, dailyPromos, dailyVisits),
                 monthly: calculatePeriodStats(monthlyProfiles, monthlyPromos, monthlyVisits),
