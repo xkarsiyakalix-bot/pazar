@@ -33,7 +33,9 @@ const UserInvoicesPage = () => {
             // Only show loading if we don't have cache
             if (promotions.length === 0) setLoading(true);
 
-            const { data, error } = await supabase
+            let updatedPromotions = [];
+
+            const { data: fullData, error: fullError } = await supabase
                 .from('promotions')
                 .select(`
                     *,
@@ -43,8 +45,45 @@ const UserInvoicesPage = () => {
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            const updatedPromotions = data || [];
+            if (fullError) {
+                console.error('Full query failed, using manual join fallback:', fullError);
+
+                const { data: simpleData, error: simpleError } = await supabase
+                    .from('promotions')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+
+                if (simpleError) throw simpleError;
+
+                const rawPromotions = simpleData || [];
+                const listingIds = [...new Set(rawPromotions.map(p => p.listing_id).filter(Boolean))];
+
+                let listingsMap = {};
+
+                if (listingIds.length > 0) {
+                    const { data: listingsData } = await supabase
+                        .from('listings')
+                        .select('id, title, listing_number')
+                        .in('id', listingIds);
+                    if (listingsData) listingsData.forEach(l => listingsMap[l.id] = l);
+                }
+
+                // Get current user's profile
+                const { data: profileData } = await supabase
+                    .from('profiles')
+                    .select('id, full_name, email, user_number')
+                    .eq('id', user.id)
+                    .single();
+
+                updatedPromotions = rawPromotions.map(promo => ({
+                    ...promo,
+                    listings: promo.listing_id ? listingsMap[promo.listing_id] : null,
+                    profiles: profileData || null
+                }));
+            } else {
+                updatedPromotions = fullData || [];
+            }
 
             setPromotions(updatedPromotions);
             // Update Cache
