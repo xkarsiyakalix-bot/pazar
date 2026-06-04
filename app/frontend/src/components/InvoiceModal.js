@@ -1,6 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { generateListingNumber } from '../utils/format';
+import { getPackageName } from '../utils/packageNames';
 
 const InvoiceModal = ({ promotion, onClose }) => {
     if (!promotion) return null;
@@ -100,13 +101,7 @@ const InvoiceModal = ({ promotion, onClose }) => {
                                         <div>
                                             <p className="font-black text-gray-900 dark:text-neutral-100 uppercase text-[11px] sm:text-xs tracking-tight transition-colors">
                                                 Görünürlük Paketi: {
-                                                    promotion.package_type === 'highlight' ? 'Öne Çıkarılan' :
-                                                        ['galerie', 'gallery', 'galeri', 'vitrin'].includes(promotion.package_type?.toLowerCase()) ? 'Vitrin' :
-                                                            promotion.package_type === 'top' ? 'Premium' :
-                                                                promotion.package_type === 'budget' ? 'Budget' :
-                                                                    promotion.package_type === 'premium' ? 'Premium' :
-                                                                        promotion.package_type === 'plus' ? 'Plus' :
-                                                                            promotion.package_type
+                                                    getPackageName(promotion.package_type)
                                                 }
                                             </p>
                                             <p className="text-[10px] text-gray-500 dark:text-neutral-400 mt-0.5 font-medium italic transition-colors">İlan: {promotion.listings?.title}</p>

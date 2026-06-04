@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { generateListingNumber } from '../components';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { getVisitStats } from '../api/analytics';
+import { getPackageName } from '../utils/packageNames';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
@@ -340,13 +341,7 @@ const AdminDashboard = () => {
                                             ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 ring-1 ring-red-100 dark:ring-red-900/30'
                                             : 'bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-400 ring-1 ring-neutral-200 dark:ring-white/5'
                                             }`}>
-                                            {promo.package_type === 'highlight' ? 'Öne Çıkarılan' :
-                                                ['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase()) ? 'Vitrin' :
-                                                    promo.package_type === 'top' ? 'Top' :
-                                                        promo.package_type === 'budget' ? 'Budget' :
-                                                            promo.package_type === 'premium' ? 'Premium' :
-                                                                promo.package_type === 'plus' ? 'Plus' :
-                                                                    promo.package_type}
+                                            {getPackageName(promo.package_type)}
                                         </span>
                                         {promo.status === 'cancelled' && (
                                             <span className="text-[10px] font-black text-red-500 uppercase tracking-tighter">İPTAL</span>

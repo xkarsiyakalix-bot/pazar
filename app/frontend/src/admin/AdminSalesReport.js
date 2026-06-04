@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { getPackageName } from '../utils/packageNames';
 
 const AdminSalesReport = () => {
     const [stats, setStats] = useState({
@@ -174,7 +175,7 @@ const AdminSalesReport = () => {
 
             const formattedPackageStats = Object.entries(packageGroups)
                 .map(([name, value]) => ({
-                    name: name === 'galerie' ? 'Vitrin' : name === 'z_premium' ? 'Premium' : name === 'highlight' ? 'Öne Çıkarılan' : name,
+                    name: getPackageName(name),
                     value
                 }))
                 .sort((a, b) => b.value - a.value);

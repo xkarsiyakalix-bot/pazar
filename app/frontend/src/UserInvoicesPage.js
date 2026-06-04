@@ -4,6 +4,7 @@ import { useAuth } from './contexts/AuthContext';
 import ProfileLayout from './ProfileLayout';
 import InvoiceModal from './components/InvoiceModal';
 import LoadingSpinner from './components/LoadingSpinner';
+import { getPackageName } from './utils/packageNames';
 
 const UserInvoicesPage = () => {
     const { user } = useAuth();
@@ -159,16 +160,7 @@ const UserInvoicesPage = () => {
                                             <div className="flex items-center gap-1.5 md:gap-3">
                                                 <div className="w-0.5 md:w-1 h-5 md:h-8 bg-red-600 rounded-full flex-shrink-0"></div>
                                                 <span className="font-bold text-gray-800 dark:text-neutral-200 text-[10px] sm:text-xs md:text-sm uppercase tracking-tight">
-                                                    {promo.package_type === 'highlight' ? 'Öne Çıkarılan' :
-                                                        ['galerie', 'gallery', 'galeri', 'vitrin'].includes(promo.package_type?.toLowerCase()) ? 'Vitrin' :
-                                                            promo.package_type === 'top' ? 'Top' :
-                                                                promo.package_type === 'budget' ? 'Budget' :
-                                                                    promo.package_type === 'premium' ? 'Premium' :
-                                                                        promo.package_type === 'plus' ? 'Plus' :
-                                                                            promo.package_type === 'subscription_unlimited' ? 'Sınırsız' :
-                                                                                promo.package_type === 'subscription_pack1' ? 'Kurumsal 1' :
-                                                                                    promo.package_type === 'subscription_pack2' ? 'Kurumsal 2' :
-                                                                                        promo.package_type}
+                                                    {getPackageName(promo.package_type)}
                                                 </span>
                                             </div>
                                         </td>
