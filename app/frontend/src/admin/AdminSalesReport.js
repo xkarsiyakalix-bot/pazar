@@ -46,7 +46,8 @@ const AdminSalesReport = () => {
                 setLoading(true);
             }
 
-            const { data: promotions, error } = await supabase
+            let promotions = [];
+            const { data: fullData, error: fullError } = await supabase
                 .from('promotions')
                 .select(`
                     *,
@@ -55,7 +56,46 @@ const AdminSalesReport = () => {
                 `)
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
+            if (fullError) {
+                console.error('Full query failed, using manual join fallback:', fullError);
+                const { data: simpleData, error: simpleError } = await supabase
+                    .from('promotions')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (simpleError) throw simpleError;
+                
+                const rawPromotions = simpleData || [];
+                const listingIds = [...new Set(rawPromotions.map(p => p.listing_id).filter(Boolean))];
+                const userIds = [...new Set(rawPromotions.map(p => p.user_id).filter(Boolean))];
+                
+                let listingsMap = {};
+                let profilesMap = {};
+                
+                if (listingIds.length > 0) {
+                    const { data: listingsData } = await supabase
+                        .from('listings')
+                        .select('id, title, listing_number')
+                        .in('id', listingIds);
+                    if (listingsData) listingsData.forEach(l => listingsMap[l.id] = l);
+                }
+                
+                if (userIds.length > 0) {
+                    const { data: profilesData } = await supabase
+                        .from('profiles')
+                        .select('id, full_name, user_number')
+                        .in('id', userIds);
+                    if (profilesData) profilesData.forEach(p => profilesMap[p.id] = p);
+                }
+                
+                promotions = rawPromotions.map(promo => ({
+                    ...promo,
+                    listings: promo.listing_id ? listingsMap[promo.listing_id] : null,
+                    profiles: promo.user_id ? profilesMap[promo.user_id] : null
+                }));
+            } else {
+                promotions = fullData || [];
+            }
 
             const now = new Date();
             const todayStr = now.toISOString().split('T')[0];
