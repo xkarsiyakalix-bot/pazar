@@ -3,6 +3,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
 import CookieConsent from './components/CookieConsent';
+import DemoWarningModal from './components/DemoWarningModal';
 
 
 import './App.css';
@@ -1131,6 +1132,7 @@ function App() {
           {isMobile && <MobileBottomNavigation />}
 
           <CookieConsent />
+          <DemoWarningModal />
           {showInstallBanner && !isPWAInstalled && (
             <PWAInstallBanner onClose={() => setShowInstallBanner(false)} />
           )}
