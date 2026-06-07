@@ -433,6 +433,17 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const slug = propSlug || params.slug || params['*'];
   const navigate = useNavigate();
   const [printHideContact, setPrintHideContact] = useState(false);
+  const thumbnailScrollRef = useRef(null);
+
+  const scrollThumbnails = (direction) => {
+    if (thumbnailScrollRef.current) {
+      const scrollAmount = 200; // Scroll by roughly 2.5 thumbnails
+      thumbnailScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // Extract potential ID from slug if it exists (pattern: title-slug_ID or title-slug-ID)
   // If no ID-like structure is found at the end, 'id' will be null or the whole slug
@@ -1511,24 +1522,51 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
                   {/* Gallery Thumbnails */}
                   {listing.images && listing.images.length > 1 && (
-                    <div className="mt-3 flex gap-2 overflow-x-auto pb-2 scrollbar-none scroll-smooth">
-                      {listing.images.map((img, index) => (
+                    <div className="relative mt-3 group">
+                      {/* Left Arrow */}
+                      {listing.images.length > 5 && (
                         <button
-                          key={index}
-                          onClick={() => handleThumbnailClick(index)}
-                          className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === index ? 'border-red-500' : 'border-transparent hover:border-gray-200'}`}
+                          onClick={(e) => { e.stopPropagation(); scrollThumbnails('left'); }}
+                          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-neutral-800/90 text-gray-700 dark:text-gray-300 rounded-full shadow-md border border-gray-200 dark:border-white/10 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all -ml-3"
+                          aria-label="Previous thumbnails"
                         >
-                          <img
-                            src={getOptimizedImageUrl(img, 160, 160, 'cover')}
-                            alt={`${listing.title} thumbnail ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                          {activeImage === index && (
-                            <div className="absolute inset-0 bg-red-500/10" />
-                          )}
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                         </button>
-                      ))}
+                      )}
+
+                      <div 
+                        ref={thumbnailScrollRef}
+                        className="flex gap-2 overflow-x-auto pb-2 scrollbar-none scroll-smooth px-1"
+                      >
+                        {listing.images.map((img, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleThumbnailClick(index)}
+                            className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === index ? 'border-red-500' : 'border-transparent hover:border-gray-200'}`}
+                          >
+                            <img
+                              src={getOptimizedImageUrl(img, 160, 160, 'cover')}
+                              alt={`${listing.title} thumbnail ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                            {activeImage === index && (
+                              <div className="absolute inset-0 bg-red-500/10" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Right Arrow */}
+                      {listing.images.length > 5 && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); scrollThumbnails('right'); }}
+                          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-neutral-800/90 text-gray-700 dark:text-gray-300 rounded-full shadow-md border border-gray-200 dark:border-white/10 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all -mr-3"
+                          aria-label="Next thumbnails"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
