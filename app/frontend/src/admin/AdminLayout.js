@@ -51,6 +51,7 @@ const AdminLayout = () => {
         { name: 'İlanlar', href: '/admin/listings', icon: '📝' },
         { name: 'Kategoriler', href: '/admin/categories', icon: '📂' },
         { name: 'Kullanıcılar', href: '/admin/users', icon: '👥' },
+        { name: 'Online Kullanıcılar', href: '/admin/online-users', icon: '🟢', live: true },
         ...(isSuperAdmin ? [{ name: 'Yöneticiler', href: '/admin/admins', icon: '🛡️' }] : []),
         { name: 'Kurumsal Satıcılar', href: '/admin/commercial', icon: '🏪' },
         ...(isSuperAdmin ? [{ name: 'İstatistikler', href: '/admin/sales-reports', icon: '📊' }] : []),
@@ -98,6 +99,12 @@ const AdminLayout = () => {
                                     {item.icon}
                                 </span>
                                 <span className="font-medium text-sm tracking-wide">{item.name}</span>
+                                {item.live && !isActive && (
+                                    <span className="ml-auto flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                )}
                                 {isActive && (
                                     <div className="ml-auto w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
                                 )}

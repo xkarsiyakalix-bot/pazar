@@ -235,6 +235,7 @@ const AdminSettings = React.lazy(() => import('./admin/AdminSettings'));
 const AdminCategories = React.lazy(() => import('./admin/AdminCategories'));
 const AdminRoute = React.lazy(() => import('./admin/AdminRoute'));
 const AdminStats = React.lazy(() => import('./admin/AdminStats'));
+const AdminOnlineUsers = React.lazy(() => import('./admin/AdminOnlineUsers'));
 import { useIsMobile } from './hooks/useIsMobile';
 import { useAuth } from './contexts/AuthContext';
 const MobileBottomNavigation = React.lazy(() => import('./components/MobileBottomNavigation'));
@@ -1121,6 +1122,7 @@ function App() {
                 <Route path="stats" element={<AdminStats />} />
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="categories" element={<AdminCategories />} />
+                <Route path="online-users" element={<AdminOnlineUsers />} />
               </Route>
             </Route>
 
