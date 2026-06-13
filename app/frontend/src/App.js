@@ -512,6 +512,19 @@ function App() {
   // ── Brand color (Admin Settings → Arama Sütunu Rengi) ──────────────────
   // Reads from Supabase on mount, applies as --brand-color CSS variable, and saves to localStorage
   useEffect(() => {
+    // ── Apply cached color IMMEDIATELY (no Supabase delay) ─────────────────
+    // This eliminates the brief flash of the default color for returning visitors.
+    try {
+      const saved = localStorage.getItem('site_settings');
+      if (saved) {
+        const { searchBgColor } = JSON.parse(saved);
+        if (searchBgColor) {
+          document.documentElement.style.setProperty('--brand-color', searchBgColor);
+          document.documentElement.style.setProperty('--brand-color-dark', searchBgColor);
+        }
+      }
+    } catch (e) { /* ignore */ }
+
     const fetchAndApplySettings = async () => {
       try {
         const { supabase } = await import('./lib/supabase');

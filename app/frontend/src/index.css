@@ -10,9 +10,9 @@
    from Admin Settings. Falls back to the default red.
    ===================================================== */
 :root {
-    --brand-color: #dc2626;
-    --brand-color-hover: #b91c1c;
-    --brand-color-light: rgba(220, 38, 38, 0.1);
+    --brand-color: #3b82f6;
+    --brand-color-hover: #2563eb;
+    --brand-color-light: rgba(59, 130, 246, 0.1);
 }
 
 /* Primary action button that uses the brand color */
@@ -379,8 +379,8 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:checked {
-    background-color: #dc2626;
-    border-color: #dc2626;
+    background-color: var(--brand-color);
+    border-color: var(--brand-color);
     background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
     background-size: 100% 100%;
     background-position: center;
@@ -629,12 +629,12 @@ input[type="checkbox"]:focus {
 .price-tag {
     font-size: 1rem;
     font-weight: 900;
-    color: #dc2626;
+    color: var(--brand-color);
     letter-spacing: -0.01em;
 }
 
 .dark .price-tag {
-    color: #f87171;
+    color: var(--brand-color);
 }
 
 /* =====================================================
@@ -673,18 +673,18 @@ input[type="text"]:focus,
 input[type="search"]:focus {
     outline: none;
     box-shadow:
-        0 0 0 3px rgba(220, 38, 38, 0.15),
-        0 0 12px rgba(220, 38, 38, 0.08);
-    border-color: rgba(220, 38, 38, 0.4) !important;
+        0 0 0 3px rgba(59, 130, 246, 0.15),
+        0 0 12px rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.4) !important;
     transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .dark input[type="text"]:focus,
 .dark input[type="search"]:focus {
     box-shadow:
-        0 0 0 3px rgba(248, 113, 113, 0.12),
-        0 0 16px rgba(248, 113, 113, 0.08);
-    border-color: rgba(248, 113, 113, 0.3) !important;
+        0 0 0 3px rgba(59, 130, 246, 0.12),
+        0 0 16px rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.3) !important;
 }
 
 /* =====================================================
