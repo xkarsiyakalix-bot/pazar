@@ -14,7 +14,7 @@ export const fetchUserProfile = async (userId) => {
 
     if (error) {
         console.error('Error fetching user profile:', error);
-        throw error;
+        return null; // Don't throw – let the caller handle null gracefully
     }
 
     return data;

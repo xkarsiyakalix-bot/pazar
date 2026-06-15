@@ -78,7 +78,11 @@ const MobileBottomNavigation = () => {
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-white/10 shadow-lg md:hidden z-[9999] px-2 pb-safe transition-colors">
             <div className="flex justify-between items-center max-w-md mx-auto h-16">
                 {navItems.map((item) => {
-                    const isActive = location.pathname === item.path;
+                    let isActive = location.pathname === item.path;
+                    // For the profile tab, also highlight for profile-related sub-pages
+                    if (item.id === 'profile' && user) {
+                        isActive = ['/profile', '/settings', '/my-listings', '/favorites', '/following', '/followers', '/my-invoices', '/messages'].some(p => location.pathname === p);
+                    }
                     return (
                         <button
                             key={item.id}

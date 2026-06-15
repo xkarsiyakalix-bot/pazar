@@ -849,7 +849,7 @@ function App() {
             <Route path="/" element={
               <>
                 <SEO />
-                <main className="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 sm:py-6 flex gap-4 sm:gap-6">
+                <main className="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-20 sm:pb-6 flex gap-4 sm:gap-6">
                   {/* Sidebar - Hidden on mobile */}
                   <div className="hidden lg:block">
                     <CategorySidebar
