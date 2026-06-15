@@ -339,7 +339,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                         className="text-neutral-700 dark:text-neutral-300 font-semibold inline-flex items-center gap-1 hover:text-blue-600 transition-colors py-2"
                                     >
                                         <span className="text-neutral-500 dark:text-neutral-400">Merhaba,</span>{' '}
-                                        <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">{userProfile?.full_name || user.email?.split('@')[0]}</span>
+                                        <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">{userProfile?.full_name || (user.email ? user.email.split('@')[0] : 'Kullanıcı')}</span>
                                         <svg className="w-4 h-4 text-neutral-400 transform group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                                     </button>
                                     
