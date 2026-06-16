@@ -3404,7 +3404,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           )}
           {/* Mobile Sticky Contact Buttons */}
           {isMobile && !isOwnListing && (
-            <div className="fixed bottom-12 left-0 right-0 z-[100] bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-t border-gray-200 dark:border-white/10 p-4 flex gap-3 pb-safe no-print">
+            <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-t border-gray-200 dark:border-white/10 p-4 flex gap-3 pb-safe no-print">
               <button
                 id="mobile-contact-message"
                 onClick={() => setShowMessageModal(true)}
