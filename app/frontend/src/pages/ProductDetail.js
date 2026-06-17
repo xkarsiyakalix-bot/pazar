@@ -3219,16 +3219,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
                 )}
 
-                {/* Warenkorb Section Removed as per request for Autos & Wohnwagen */}
-                <MessageModal
-                  isOpen={showMessageModal}
-                  onClose={() => setShowMessageModal(false)}
-                  onSubmit={handleModalSubmit}
-                  sellerName={seller.name}
-                  listingTitle={listing.title}
-                />
-
-                {/* Teilen & Drucken - Hidden on mobile */}
+                {/* Warenkorb Section Removed as per request for Autos & Wohnwagen */}                {/* Teilen & Drucken - Hidden on mobile */}
                 <div className="mt-4 space-y-3 pt-4 border-t border-gray-100 dark:border-white/5 no-print hidden sm:block">
                   <div className="pt-2">
                     <p className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-3 px-1">{t.productDetail.share}</p>
@@ -3442,6 +3433,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           )}
         </div>
       </div>
+
+      <MessageModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        onSubmit={handleModalSubmit}
+        sellerName={seller?.name || seller?.full_name}
+        listingTitle={listing?.title}
+      />
     </>
   );
 };
