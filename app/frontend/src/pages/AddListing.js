@@ -896,8 +896,10 @@ export const AddListing = () => {
           if (data.tauschangebot) setSelectedTauschangebot(data.tauschangebot);
 
           // Load images if available
-          if (data.images && data.images.length > 0) {
-            setImageFiles(data.images);
+          if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+            // Filter out nulls or invalid objects just in case
+            const validImages = data.images.filter(img => img !== null && img !== undefined && typeof img === 'string');
+            setImageFiles(validImages);
           }
         }
       } catch (error) {
@@ -1906,9 +1908,16 @@ export const AddListing = () => {
                   <ul className="space-y-2">
                     {imageFiles.map((file, index) => {
                       // Create preview URL for the image
-                      const previewUrl = typeof file === 'string'
-                        ? file // Already a URL
-                        : URL.createObjectURL(file); // Create temporary URL for File object
+                      let previewUrl = '';
+                      if (typeof file === 'string') {
+                        previewUrl = file;
+                      } else if (file instanceof Blob || file instanceof File) {
+                        try {
+                          previewUrl = URL.createObjectURL(file);
+                        } catch (err) {
+                          console.error("Failed to create object URL for file:", err);
+                        }
+                      }
 
                       return (
                         <li
