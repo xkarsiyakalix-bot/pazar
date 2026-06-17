@@ -69,15 +69,10 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
         onClick={onClose}
       />
 
-      {/* Mobile: Bottom Sheet | Desktop: Centered Modal */}
-      <div className="fixed inset-0 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
-        <div className="pointer-events-auto w-full sm:max-w-xl bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col"
-          style={{ maxHeight: '90vh' }}>
-
-          {/* Drag handle (mobile only) */}
-          <div className="flex justify-center pt-3 pb-1 sm:hidden flex-shrink-0">
-            <div className="w-10 h-1 bg-neutral-300 dark:bg-neutral-600 rounded-full" />
-          </div>
+      {/* Mobile: Top-aligned Modal | Desktop: Centered Modal */}
+      <div className="fixed inset-0 flex items-start pt-16 sm:pt-0 sm:items-center justify-center p-4 pointer-events-none">
+        <div className="pointer-events-auto w-full sm:max-w-xl bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl flex flex-col"
+          style={{ maxHeight: '80dvh' }}>
 
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100 dark:border-white/10 flex-shrink-0">
