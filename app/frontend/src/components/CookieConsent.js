@@ -24,7 +24,7 @@ const CookieConsent = () => {
     if (!isVisible) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6 pb-safe pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 z-[150] p-4 pb-24 md:p-6 md:pb-6 pointer-events-none">
             <div className="max-w-4xl mx-auto pointer-events-auto">
                 <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-5 shadow-2xl flex flex-col md:flex-row items-center gap-4 md:gap-6 animate-slide-up-fade">
                     
