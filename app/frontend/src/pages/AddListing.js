@@ -668,6 +668,9 @@ export const AddListing = () => {
         const { fetchUserProfile } = await import('../api/profile');
         const profile = await fetchUserProfile(user.id);
 
+        // fetchUserProfile returns null on error – bail out gracefully
+        if (!profile) return;
+
         // Auto-fill form fields with user's profile data
         if (profile.full_name) {
           setContactName(profile.full_name);
