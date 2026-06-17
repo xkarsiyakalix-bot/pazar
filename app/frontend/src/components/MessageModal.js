@@ -102,9 +102,10 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
             </button>
           </div>
 
-          {/* Scrollable Form */}
-          <div className="overflow-y-auto flex-1 px-5 py-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4">
               <div>
                 <label htmlFor="modal-name" className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                   {t.addListing.name}
@@ -137,32 +138,32 @@ export const MessageModal = ({ isOpen, onClose, onSubmit, sellerName, listingTit
                 <textarea
                   id="modal-message"
                   required
-                  rows={5}
+                  rows={4}
                   className="w-full border border-neutral-200 dark:border-white/10 dark:bg-neutral-800 dark:text-white rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 text-sm transition-all resize-none"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
               </div>
+            </div>
 
-              {/* Buttons */}
-              <div className="flex gap-3 pt-2 pb-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-300 font-bold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  {t.common.cancel}
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-bold text-sm hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/20"
-                >
-                  {loading ? '...' : t.productDetail.message}
-                </button>
-              </div>
-            </form>
-          </div>
+            {/* Fixed Buttons at Bottom */}
+            <div className="flex gap-3 px-5 py-4 border-t border-neutral-100 dark:border-white/10 bg-white dark:bg-neutral-900 flex-shrink-0 pb-safe sm:pb-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-300 font-bold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+              >
+                {t.common.cancel}
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-bold text-sm hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/20"
+              >
+                {loading ? '...' : t.productDetail.message}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
