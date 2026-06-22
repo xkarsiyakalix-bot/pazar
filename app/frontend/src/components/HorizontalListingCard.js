@@ -127,16 +127,16 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
         // If currently expired, set to now + 90 days
         // If active, add 90 days to current expiry_date
         const now = new Date();
-        const currentExpiry = listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 90 * 24 * 60 * 60 * 1000);
+        const currentExpiry = listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 365 * 24 * 60 * 60 * 1000);
 
         let newExpiryDate;
 
         if (currentExpiry < now) {
           // Already expired, start fresh 90 days from now
-          newExpiryDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+          newExpiryDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
         } else {
           // Still active, extend current expiry by 90 days
-          newExpiryDate = new Date(currentExpiry.getTime() + 90 * 24 * 60 * 60 * 1000);
+          newExpiryDate = new Date(currentExpiry.getTime() + 365 * 24 * 60 * 60 * 1000);
         }
 
         // Use purchasePromotion to record the transaction and update the listing

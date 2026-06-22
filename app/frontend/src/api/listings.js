@@ -463,7 +463,7 @@ export const createListing = async (listingData) => {
     // For now, we prefer saving what the frontend sends (which is plural 'Kediler' etc.)
 
     const now = new Date();
-    const expiryDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days from now
+    const expiryDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
 
     // Generate unique slug
     // We append a random short string or timestamp to ensure uniqueness if needed,

@@ -65,7 +65,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
             )}
             <div className="text-center">
               <ListingCountdown
-                expiryDate={listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 90 * 24 * 60 * 60 * 1000)}
+                expiryDate={listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 365 * 24 * 60 * 60 * 1000)}
                 onExpire={() => { }}
               />
               <div className="text-[10px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.adExpiry}</div>
@@ -634,7 +634,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         if (data && (data.expiry_date || data.created_at)) {
           const expiryDate = data.expiry_date
             ? new Date(data.expiry_date)
-            : new Date(new Date(data.created_at).getTime() + 90 * 24 * 60 * 60 * 1000);
+            : new Date(new Date(data.created_at).getTime() + 365 * 24 * 60 * 60 * 1000);
 
           const isExpired = new Date() > expiryDate;
           const isOwner = user && user.id === data.user_id;
@@ -1139,16 +1139,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         // If currently expired, set to now + 90 days
         // If active, add 90 days to current expiry_date
         const now = new Date();
-        const currentExpiry = listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 90 * 24 * 60 * 60 * 1000);
+        const currentExpiry = listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 365 * 24 * 60 * 60 * 1000);
 
         let newExpiryDate;
 
         if (currentExpiry < now) {
           // Already expired, start fresh 90 days from now
-          newExpiryDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+          newExpiryDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
         } else {
           // Still active, extend current expiry by 90 days
-          newExpiryDate = new Date(currentExpiry.getTime() + 90 * 24 * 60 * 60 * 1000);
+          newExpiryDate = new Date(currentExpiry.getTime() + 365 * 24 * 60 * 60 * 1000);
         }
 
         // Use purchasePromotion to record the transaction and update the listing
