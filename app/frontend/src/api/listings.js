@@ -465,16 +465,28 @@ export const createListing = async (listingData) => {
     const now = new Date();
     const expiryDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
 
-    // Generate unique slug
-    // We append a random short string or timestamp to ensure uniqueness if needed,
-    // but for now let's try just the title. 
-    // In a real prod app, you'd check for collisions in a loop.
-    let slug = createSlug(listingData.title || "ilan");
-    const timestamp = Date.now().toString().slice(-4);
+    // Generate unique clean slug by checking for collisions in the database
+    let baseSlug = createSlug(listingData.title || "ilan");
+    let slug = baseSlug;
+    let suffix = 0;
+
+    // Check if this slug already exists, if so append -1, -2, etc.
+    while (true) {
+        const { data: existing } = await supabase
+            .from('listings')
+            .select('id')
+            .eq('slug', slug)
+            .maybeSingle();
+
+        if (!existing) break; // Slug is unique, we can use it
+
+        suffix++;
+        slug = `${baseSlug}-${suffix}`;
+    }
 
     const finalListingData = {
         ...listingData,
-        slug: `${slug}-${timestamp}`, // Appending 4 digits to help uniqueness without a loop
+        slug: slug,
         expiry_date: listingData.expiry_date || expiryDate.toISOString()
     };
 

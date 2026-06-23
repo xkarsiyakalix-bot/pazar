@@ -59,29 +59,63 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                     return;
                 }
 
-                // 2. Check if it's a Listing Slug
-                // Extract UUID if present at the end of the slug
-                const idMatch = slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
-                const extractedId = idMatch ? idMatch[0] : null;
+                // 2. Check if it's a Listing Slug (clean slug lookup)
+                const { data: listingBySlug } = await supabase
+                    .from('listings')
+                    .select('id, slug')
+                    .eq('slug', slug)
+                    .maybeSingle();
 
-                let listingQuery = supabase.from('listings').select('id');
-                
-                if (extractedId) {
-                    listingQuery = listingQuery.eq('id', extractedId);
-                } else {
-                    listingQuery = listingQuery.eq('slug', slug);
-                }
-
-                const { data: listingData } = await listingQuery.single();
-
-                if (listingData) {
-                    setListingId(listingData.id);
+                if (listingBySlug) {
+                    setListingId(listingBySlug.id);
                     setIsListing(true);
                     setIsStore(false);
-                } else {
-                    setIsStore(false);
-                    setIsListing(false);
+                    return;
                 }
+
+                // 3. Backward compatibility: Check if old URL with UUID at the end
+                const idMatch = slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+                if (idMatch) {
+                    const extractedId = idMatch[0];
+                    const { data: listingById } = await supabase
+                        .from('listings')
+                        .select('id, slug')
+                        .eq('id', extractedId)
+                        .maybeSingle();
+
+                    if (listingById) {
+                        // Redirect old UUID URL to new clean slug URL
+                        if (listingById.slug && listingById.slug !== slug) {
+                            navigate(`/${listingById.slug}`, { replace: true });
+                            return;
+                        }
+                        setListingId(listingById.id);
+                        setIsListing(true);
+                        setIsStore(false);
+                        return;
+                    }
+                }
+
+                // 4. Also check old slugs with timestamp suffix (e.g. "title-0375")
+                // Try matching by removing trailing numbers after last hyphen
+                const oldSlugMatch = slug.match(/^(.+)-\d{4}$/);
+                if (oldSlugMatch) {
+                    const { data: listingByOldSlug } = await supabase
+                        .from('listings')
+                        .select('id, slug')
+                        .eq('slug', slug)
+                        .maybeSingle();
+
+                    if (listingByOldSlug) {
+                        setListingId(listingByOldSlug.id);
+                        setIsListing(true);
+                        setIsStore(false);
+                        return;
+                    }
+                }
+
+                setIsStore(false);
+                setIsListing(false);
             } catch (err) {
                 console.error('Error checking slug:', err);
                 setIsStore(false);

@@ -23,18 +23,8 @@ export const createSlug = (title) => {
 export const getListingUrl = (listing) => {
     if (!listing) return "/";
     
-    let baseSlug = listing.slug || createSlug(listing.title || "ilan");
-    
-    // Ensure the URL always ends with the listing.id for 100% reliable routing
-    if (listing.id) {
-        if (baseSlug.endsWith(listing.id)) {
-            return `/${baseSlug}`;
-        }
-        baseSlug = baseSlug.replace(/-+$/, '');
-        return `/${baseSlug}-${listing.id}`;
-    }
-    
-    return `/${baseSlug}`;
+    const slug = listing.slug || createSlug(listing.title || "ilan");
+    return `/${slug}`;
 };
 
 /**
