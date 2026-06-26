@@ -204,7 +204,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
             )}
 
             {/* Package Badges */}
-            {!isExpired && (
+            {isPromoActive && (
               <div className="absolute top-1 right-1 flex flex-col gap-1 items-end z-20">
                 {/* Vitrin / Gallery Badge */}
                 {isVitrin && (

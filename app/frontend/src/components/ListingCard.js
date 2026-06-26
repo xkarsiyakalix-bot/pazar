@@ -39,11 +39,11 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
 
   if (isActiveVitrin) {
     cardClasses += "border-purple-400/50 ring-2 ring-purple-200/30 dark:ring-purple-700/20 hover:border-purple-500/70 ";
-  } else if (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType)) {
+  } else if (isPromoActive && (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType))) {
     cardClasses += "border-red-400/50 ring-2 ring-red-200/20 dark:ring-red-700/20 hover:border-red-500/70 ";
-  } else if (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing.is_multi_bump) {
+  } else if (isPromoActive && (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing.is_multi_bump)) {
     cardClasses += "border-orange-400/50 ring-2 ring-orange-100/30 dark:ring-orange-700/20 hover:border-orange-500/70 ";
-  } else if (listing.is_highlighted || pkgType === 'highlight' || pkgType === 'budget') {
+  } else if (isPromoActive && (listing.is_highlighted || pkgType === 'highlight' || pkgType === 'budget')) {
     cardClasses += "border-yellow-400/50 hover:border-yellow-500/70 ";
   } else {
     cardClasses += "border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 ";
@@ -85,7 +85,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         )}
 
         {/* Package type badge */}
-        {listing?.package_type &&
+        {isPromoActive && listing?.package_type &&
           listing.package_type.toLowerCase() !== 'basic' &&
           listing.package_type.toLowerCase() !== 'top' &&
           listing.package_type.toLowerCase() !== 'galerie' &&
@@ -125,7 +125,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         )}
 
         {/* Highlighted badge */}
-        {listing.is_highlighted && !listing.is_top && !listing.is_gallery && !listing.package_type && (
+        {isPromoActive && listing.is_highlighted && !listing.is_top && !listing.is_gallery && !listing.package_type && (
           <div className={`absolute ${isReserved ? 'top-10' : 'top-2'} left-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-2 py-1 rounded-lg text-[9px] font-bold shadow-lg z-10`}>
             ✨ Öne Çıkarılan
           </div>

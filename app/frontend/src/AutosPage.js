@@ -2217,7 +2217,7 @@ function AutosPage() {
                                                             </div>
                                                         )}
                                                         {/* Package Badge */}
-                                                        {listing?.package_type &&
+                                                        {_isPromoActive && listing?.package_type &&
                                                             listing.package_type.toLowerCase() !== 'basic' &&
                                                             listing.package_type.toLowerCase() !== 'top' && // Suppress redundant TOP package badge
                                                             listing.package_type.toLowerCase() !== 'galerie' &&
