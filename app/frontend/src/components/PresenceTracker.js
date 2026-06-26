@@ -8,12 +8,19 @@ let cachedGeoInfo = null;
 const fetchGeoInfo = async () => {
     if (cachedGeoInfo) return cachedGeoInfo;
     try {
-        const res = await fetch('https://get.geojs.io/v1/ip/geo.json');
-        if (!res.ok) throw new Error('geo fetch failed');
-        const data = await res.json();
+        // First get IPv4 address explicitly (prevents long IPv6 addresses from appearing)
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        if (!ipRes.ok) throw new Error('ip fetch failed');
+        const ipData = await ipRes.json();
+        const userIp = ipData.ip;
+
+        // Then get geo data for this specific IPv4 address
+        const geoRes = await fetch(`https://get.geojs.io/v1/ip/geo/${userIp}.json`);
+        if (!geoRes.ok) throw new Error('geo fetch failed');
+        const data = await geoRes.json();
         
         cachedGeoInfo = {
-            ip: data.ip || 'Bilinmiyor',
+            ip: userIp || 'Bilinmiyor',
             country: data.country || null,
             countryCode: data.country_code || null,
             city: data.city || null,
