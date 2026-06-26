@@ -2186,10 +2186,14 @@ function AutosPage() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-2 md:block md:space-y-6">
-                                        {sortedListings.map((listing) => (
+                                        {sortedListings.map((listing) => {
+                                            const _promoExpiry = listing.promotion_expiry ? new Date(listing.promotion_expiry) : null;
+                                            const _isPromoActive = !_promoExpiry || _promoExpiry > new Date();
+                                            const _isActiveVitrin = _isPromoActive && (listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase()));
+                                            return (
                                             <div
                                                 key={listing.id}
-                                                className={`${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'bg-purple-50 dark:bg-purple-900/20' : 'bg-white dark:bg-neutral-800'} border ${(listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())) ? 'border-purple-200 dark:border-purple-500/30' : 'border-gray-200 dark:border-white/5'} rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer`}
+                                                className={`${_isActiveVitrin ? 'bg-purple-50 dark:bg-purple-900/20' : 'bg-white dark:bg-neutral-800'} border ${_isActiveVitrin ? 'border-purple-200 dark:border-purple-500/30' : 'border-gray-200 dark:border-white/5'} rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer`}
                                                 onClick={() => navigate(getListingUrl(listing))}
                                             >
                                                 <div className="flex flex-col md:flex-row">
@@ -2206,8 +2210,8 @@ function AutosPage() {
                                                             </div>
                                                         )}
                                                         {/* TOP Badge removed */}
-                                                        {/* Vitrin Badge - Inclusive check */}
-                                                        {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) && (
+                                                        {/* Vitrin Badge - with expiry check */}
+                                                        {_isActiveVitrin && (
                                                             <div className={`absolute ${listing?.reserved_by ? 'top-12' : 'top-3'} left-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-1.5 rounded-md text-[10px] font-bold shadow-md border border-white/20 z-10 flex items-center gap-1`}>
                                                                 <span>⭐ VİTRİN</span>
                                                             </div>
@@ -2345,7 +2349,8 @@ function AutosPage() {
                                                     </div>
                                                 </div>
                                             </div>
-                                        ))}
+                                        );
+                                        })}
                                     </div>
                                 )}
                                 {/* Load More Button */}
