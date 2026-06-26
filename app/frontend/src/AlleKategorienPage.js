@@ -469,9 +469,11 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
         // Priority: z_premium > multi-bump > other is_top > highlighted > basic
         const getPriority = (l) => {
             const type = l.package_type?.toLowerCase();
+            const promoExpiry = l.promotion_expiry ? new Date(l.promotion_expiry) : null;
+            const isPromoActive = !promoExpiry || promoExpiry > new Date();
             if (type === 'z_premium' || type === 'premium') return 100;
             if (type === 'multi-bump' || type === 'z_multi_bump') return 80;
-            if (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type)) return 60;
+            if (isPromoActive && (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type))) return 60;
             if (l.is_top) return 50;
             if (l.is_highlighted || type === 'highlight' || type === 'budget') return 10;
             return 0;
@@ -776,9 +778,11 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
 
                         <div style={{ maxWidth: '960px' }}>
                             <CategoryGallery
-                                listings={filteredListings.filter(l =>
-                                    l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase())
-                                )}
+                                listings={filteredListings.filter(l => {
+                                    const promoExpiry = l.promotion_expiry ? new Date(l.promotion_expiry) : null;
+                                    const isPromoActive = !promoExpiry || promoExpiry > new Date();
+                                    return isPromoActive && (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase()));
+                                })}
                                 toggleFavorite={toggleFavorite}
                                 isFavorite={isFavorite}
                             />

@@ -164,7 +164,10 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
   };
 
   const isReserved = listing?.reserved_by;
-  const isVitrin = listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase());
+  const now = new Date();
+  const promoExpiry = listing?.promotion_expiry ? new Date(listing.promotion_expiry) : null;
+  const isPromoActive = !promoExpiry || promoExpiry > now;
+  const isVitrin = isPromoActive && (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase()));
   const isExpired = listing?.created_at && (new Date() > new Date(new Date(listing.created_at).getTime() + 30 * 24 * 60 * 60 * 1000));
 
   return (
@@ -204,7 +207,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
             {!isExpired && (
               <div className="absolute top-1 right-1 flex flex-col gap-1 items-end z-20">
                 {/* Vitrin / Gallery Badge */}
-                {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.toLowerCase())) && (
+                {isVitrin && (
                   <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black shadow-md border border-white/20 uppercase tracking-wider">
                     ⭐ VİTRİN
                   </div>

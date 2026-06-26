@@ -500,9 +500,11 @@ const GenericCategoryPage = ({
                         <CategoryGallery
                             category={category}
                             subCategory={subCategory}
-                            listings={listings.filter(l =>
-                                l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase())
-                            )}
+                            listings={listings.filter(l => {
+                                const promoExpiry = l.promotion_expiry ? new Date(l.promotion_expiry) : null;
+                                const isPromoActive = !promoExpiry || promoExpiry > new Date();
+                                return isPromoActive && (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase()));
+                            })}
                             toggleFavorite={toggleFavorite || (() => {})}
                             isFavorite={isFavorite || (() => false)}
                         />

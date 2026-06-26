@@ -32,8 +32,12 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   let cardClasses = "listing-card rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group relative bg-white dark:bg-neutral-800/60 dark:backdrop-blur-sm flex flex-col h-full overflow-hidden border ";
 
   const pkgType = listing?.package_type?.toLowerCase();
+  const now = new Date();
+  const promoExpiry = listing?.promotion_expiry ? new Date(listing.promotion_expiry) : null;
+  const isPromoActive = !promoExpiry || promoExpiry > now;
+  const isActiveVitrin = isPromoActive && (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType));
 
-  if (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType)) {
+  if (isActiveVitrin) {
     cardClasses += "border-purple-400/50 ring-2 ring-purple-200/30 dark:ring-purple-700/20 hover:border-purple-500/70 ";
   } else if (pkgType === 'premium' || pkgType === 'z_premium' || (listing.is_top && !pkgType)) {
     cardClasses += "border-red-400/50 ring-2 ring-red-200/20 dark:ring-red-700/20 hover:border-red-500/70 ";
@@ -110,7 +114,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
           )}
 
         {/* Gallery / Vitrin badge */}
-        {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.trim().toLowerCase())) && (
+        {isActiveVitrin && (
           <div className={`absolute ${
             isReserved
               ? (listing.package_type && !['basic','top','galerie','gallery','galeri','vitrin','verlängerung','extension'].includes(listing.package_type.toLowerCase()) ? 'top-16' : 'top-10')
