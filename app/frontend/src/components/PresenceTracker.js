@@ -8,20 +8,18 @@ let cachedGeoInfo = null;
 const fetchGeoInfo = async () => {
     if (cachedGeoInfo) return cachedGeoInfo;
     try {
-        const res = await fetch('https://ip-api.com/json/?fields=status,country,countryCode,city,query');
+        const res = await fetch('https://get.geojs.io/v1/ip/geo.json');
         if (!res.ok) throw new Error('geo fetch failed');
         const data = await res.json();
-        if (data.status === 'success') {
-            cachedGeoInfo = {
-                ip: data.query || 'Bilinmiyor',
-                country: data.country || null,
-                countryCode: data.countryCode || null,
-                city: data.city || null,
-            };
-        } else {
-            cachedGeoInfo = { ip: 'Bilinmiyor', country: null, countryCode: null, city: null };
-        }
-    } catch {
+        
+        cachedGeoInfo = {
+            ip: data.ip || 'Bilinmiyor',
+            country: data.country || null,
+            countryCode: data.country_code || null,
+            city: data.city || null,
+        };
+    } catch (e) {
+        console.error("Geo fetch error:", e);
         cachedGeoInfo = { ip: 'Bilinmiyor', country: null, countryCode: null, city: null };
     }
     return cachedGeoInfo;
