@@ -1,0 +1,42 @@
+# ExVitrin
+
+ExVitrin, Türkiye'nin ücretsiz ilan platformudur. Kullanıcılar araba, emlak, elektronik, moda, evcil hayvan ve daha birçok kategoride ilan yayınlayabilir, arama yapabilir ve satın alma ya da kiralama gerçekleştirebilir.
+
+## Temel Sayfalar
+
+- [Ana Sayfa](https://exvitrin.com/)
+- [Tüm Kategoriler](https://exvitrin.com/Butun-Kategoriler)
+- [İlan Ver](https://exvitrin.com/add-listing)
+- [Üyelik / Giriş Yap](https://exvitrin.com/login)
+- [Kayıt Ol](https://exvitrin.com/register)
+- [Paketler ve Fırsatlar](https://exvitrin.com/packages)
+
+## Ana Kategoriler
+
+- [Otomobil, Bisiklet & Tekne](https://exvitrin.com/Otomobil-Bisiklet-Tekne)
+- [Emlak](https://exvitrin.com/Emlak)
+- [Elektronik](https://exvitrin.com/Elektronik)
+- [Ev & Bahçe](https://exvitrin.com/Ev-Bahce)
+- [Moda & Güzellik](https://exvitrin.com/Moda-Guzellik)
+- [Evcil Hayvanlar](https://exvitrin.com/Evcil-Hayvanlar)
+- [Aile, Çocuk & Bebek](https://exvitrin.com/Aile-Cocuk-Bebek)
+- [İş İlanları](https://exvitrin.com/Is-Ilanlari)
+- [Eğlence, Hobi & Mahalle](https://exvitrin.com/Eglence-Hobi-Mahalle)
+- [Müzik, Film & Kitap](https://exvitrin.com/Muzik-Film-Kitap)
+- [Biletler](https://exvitrin.com/Biletler)
+- [Hizmetler](https://exvitrin.com/Hizmetler)
+- [Ücretsiz & Takas](https://exvitrin.com/Ucretsiz-Takas)
+- [Eğitim & Kurslar](https://exvitrin.com/Egitim-Kurslar)
+
+## Yasal Sayfalar
+
+- [Gizlilik Politikası](https://exvitrin.com/privacy-policy)
+- [Çerez Politikası](https://exvitrin.com/cookies-policy)
+
+## Hakkında
+
+ExVitrin, Türkiye genelinde her türlü ikinci el ve sıfır ürün için kullanıcıların ilan yayınlayabileceği ve alışveriş yapabileceği güvenilir bir çevrimiçi pazar yeridir.
+
+- Platform dili: Türkçe
+- Hedef kitle: Türkiye
+- İçerik türü: İkinci el ve yeni ürün ilanları, hizmet ilanları, iş ilanları

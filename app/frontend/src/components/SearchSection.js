@@ -600,6 +600,8 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
 
             {/* Search Button / Icon */}
             <button
+              type="button"
+              aria-label="ExVitrin'de Ara"
               onClick={() => {
                 const params = new URLSearchParams();
                 if (searchTerm) params.append('q', searchTerm);
@@ -612,7 +614,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
               className="brand-btn ml-2 sm:ml-4 px-8 sm:px-12 py-3 sm:py-3.5 rounded-r-full rounded-l-none shadow-md font-bold text-base sm:text-lg focus:outline-none flex items-center justify-center transition-all hover:scale-105"
             >
               <span className="hidden sm:inline">Ara</span>
-              <svg className="w-6 h-6 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+              <svg className="w-6 h-6 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
