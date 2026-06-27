@@ -43,7 +43,7 @@ export const Footer = () => {
                     {/* Allgemein + Logo + Social Media */}
                     <div className="flex flex-col items-center md:items-start gap-6">
                         <div className="flex items-center gap-3">
-                            <img src="/logo_exvitrin_2026.png" alt="ExVitrin" className="h-12 w-auto" />
+                            <img src="/logo_exvitrin_2026_small.png" alt="ExVitrin" className="h-12 w-auto" />
                             <span className="text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent tracking-tight">
                                 exvitrin
                             </span>

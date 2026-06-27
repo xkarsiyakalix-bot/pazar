@@ -88,12 +88,16 @@ export const BannerSlider = () => {
                     <button
                         key={index}
                         onClick={() => goToSlide(index)}
-                        className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                            ? 'bg-white w-4 sm:w-6'
-                            : 'bg-white/50 hover:bg-white/80'
-                            }`}
+                        className="p-3 focus:outline-none flex items-center justify-center min-w-[44px] min-h-[44px]"
                         aria-label={`Go to slide ${index + 1}`}
-                    />
+                    >
+                        <div
+                            className={`h-2 sm:h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                                ? 'bg-white w-4 sm:w-6'
+                                : 'bg-white/50 hover:bg-white/80 w-2 sm:w-3'
+                                }`}
+                        />
+                    </button>
                 ))}
             </div>
 

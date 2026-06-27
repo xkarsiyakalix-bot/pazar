@@ -86,6 +86,7 @@ const MobileBottomNavigation = () => {
                     return (
                         <button
                             key={item.id}
+                            aria-label={item.label}
                             onClick={() => handleNavClick(item.path)}
                             className="flex flex-col items-center justify-center flex-1 min-w-0"
                         >

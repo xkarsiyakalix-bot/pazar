@@ -158,7 +158,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                         className="cursor-pointer flex-shrink-0 px-2 sm:px-4 py-2 rounded-xl flex items-center gap-2 group"
                     >
                         <img
-                            src="/logo_exvitrin_2026.png"
+                            src="/logo_exvitrin_2026_small.png"
                             alt="ExVitrin Logo"
                             width="120"
                             height="48"

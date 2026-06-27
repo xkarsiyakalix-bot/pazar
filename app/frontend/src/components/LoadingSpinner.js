@@ -13,7 +13,7 @@ export const LoadingSpinner = ({ size = 'medium', className = '' }) => {
         <div className={`flex items-center justify-center ${className}`}>
             <div className={`relative ${sz}`}>
                 <img
-                    src="/logo_exvitrin_new.png"
+                    src="/logo_exvitrin_new_small.png"
                     alt="Yükleniyor..."
                     className="w-full h-full object-contain animate-pulse"
                     style={{

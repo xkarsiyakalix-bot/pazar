@@ -1159,10 +1159,13 @@ function App() {
           <Footer />
           {isMobile && <MobileBottomNavigation />}
 
+          {/* CookieConsent and DemoWarningModal rendered immediately - prevents LCP issues */}
+          <CookieConsent />
+          <DemoWarningModal />
+
+          {/* Only truly invisible non-critical components are deferred */}
           {deferNonCritical && (
             <>
-              <CookieConsent />
-              <DemoWarningModal />
               {showInstallBanner && !isPWAInstalled && (
                 <PWAInstallBanner onClose={() => setShowInstallBanner(false)} />
               )}

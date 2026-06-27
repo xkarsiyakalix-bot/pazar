@@ -46,7 +46,7 @@ const InvoiceModal = ({ promotion, onClose }) => {
                     <div className="flex justify-between items-start print:border-b print:border-gray-200 print:pb-4 pr-10">
                         <div>
                             <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                                <img src="/logo_exvitrin_2026.png" alt="ExVitrin" className="h-8 sm:h-10 w-auto" />
+                                <img src="/logo_exvitrin_2026_small.png" alt="ExVitrin" className="h-8 sm:h-10 w-auto" />
                                 <h2 className="text-xl sm:text-2xl font-black italic tracking-tighter text-gray-900 dark:text-neutral-50 transition-colors">ExVitrin</h2>
                             </div>
 
