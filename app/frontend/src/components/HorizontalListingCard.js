@@ -191,6 +191,8 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                 300, 200, 'cover'
               )}
               alt={listing?.title || 'İlan Resmi'}
+              width="300"
+              height="200"
               className="w-full h-full object-cover transition-transform duration-500 group-hover/horizontal:scale-[1.06]"
               loading="lazy"
             />

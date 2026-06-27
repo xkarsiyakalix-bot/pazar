@@ -490,6 +490,17 @@ function CategorySync({ setSelectedCategory }) {
 }
 
 function App() {
+  const [deferNonCritical, setDeferNonCritical] = useState(false);
+  
+  useEffect(() => {
+    // Delay non-critical components (PWA banner, PresenceTracker, etc.) 
+    // by 2.5 seconds so they don't block Main Thread during LCP/FCP.
+    const timer = setTimeout(() => {
+      setDeferNonCritical(true);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -811,7 +822,7 @@ function App() {
       <ScrollToTop />
       <CategorySync setSelectedCategory={setSelectedCategory} />
       <div className="App min-h-screen bg-gray-50 dark:!bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
-        <PresenceTracker />
+        {deferNonCritical && <PresenceTracker />}
         <React.Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:!bg-neutral-950">
             <div className="text-center">
@@ -850,13 +861,15 @@ function App() {
               <>
                 <SEO />
                 <main className="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-20 sm:pb-6 flex gap-4 sm:gap-6">
-                  {/* Sidebar - Hidden on mobile */}
-                  <div className="hidden lg:block">
-                    <CategorySidebar
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                    />
-                  </div>
+                  {/* Sidebar - Not rendered on mobile at all to save DOM size */}
+                  {!isMobile && (
+                    <div className="hidden lg:block">
+                      <CategorySidebar
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                      />
+                    </div>
+                  )}
 
                   {/* Main Content Area - Responsive width */}
                   <div className="w-full lg:w-[960px] flex-shrink-0">
@@ -1146,12 +1159,16 @@ function App() {
           <Footer />
           {isMobile && <MobileBottomNavigation />}
 
-          <CookieConsent />
-          <DemoWarningModal />
-          {showInstallBanner && !isPWAInstalled && (
-            <PWAInstallBanner onClose={() => setShowInstallBanner(false)} />
+          {deferNonCritical && (
+            <>
+              <CookieConsent />
+              <DemoWarningModal />
+              {showInstallBanner && !isPWAInstalled && (
+                <PWAInstallBanner onClose={() => setShowInstallBanner(false)} />
+              )}
+              <ScrollToTopButton />
+            </>
           )}
-          <ScrollToTopButton />
         </React.Suspense>
       </div>
     </>
