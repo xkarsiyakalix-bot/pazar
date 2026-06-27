@@ -339,10 +339,15 @@ function MessagesPage() {
 
     return (
         <ProfileLayout>
-            <div className={`flex flex-col md:flex-row bg-white dark:bg-neutral-900 md:border md:border-neutral-200 dark:border-white/10 md:rounded-3xl shadow-sm overflow-hidden h-[calc(100dvh-130px)] md:h-[calc(100vh-160px)] ${isMobile ? '-mx-2 sm:-mx-4 -mt-4 mb-0 border-none rounded-none pb-safe' : 'mt-2'}`}>
+            <div className={`
+                fixed z-30 flex flex-col md:flex-row bg-white dark:bg-neutral-900 overflow-hidden shadow-2xl md:shadow-[0_0_40px_-15px_rgba(0,0,0,0.1)]
+                ${isMobile 
+                    ? 'top-[64px] bottom-[64px] left-0 right-0 border-none rounded-none' 
+                    : 'top-[96px] bottom-[32px] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[1200px] border border-neutral-200 dark:border-white/10 rounded-3xl'}
+            `}>
                 
                 {/* SIDEBAR */}
-                <div className={`w-full md:w-[380px] flex flex-col bg-neutral-50/50 dark:bg-neutral-900/50 border-r border-neutral-100 dark:border-white/5 ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
+                <div className={`w-full md:w-[380px] flex flex-col min-h-0 bg-neutral-50/50 dark:bg-neutral-900/50 border-r border-neutral-100 dark:border-white/5 ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
                     {/* Sidebar Header */}
                     <div className="p-5 border-b border-neutral-200/60 dark:border-white/10 bg-white dark:bg-neutral-900">
                         <h2 className="text-xl font-extrabold text-neutral-900 dark:text-white tracking-tight">
@@ -460,7 +465,7 @@ function MessagesPage() {
                 </div>
 
                 {/* CHAT AREA */}
-                <div className={`flex-1 flex flex-col bg-white dark:bg-neutral-900 relative ${isMobile && !selectedConversation ? 'hidden' : 'flex'}`}>
+                <div className={`flex-1 flex flex-col min-h-0 bg-white dark:bg-neutral-900 relative ${isMobile && !selectedConversation ? 'hidden' : 'flex'}`}>
                     {selectedConversation ? (
                         <>
                             {/* Chat Header */}
