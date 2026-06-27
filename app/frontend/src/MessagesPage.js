@@ -362,7 +362,7 @@ function MessagesPage() {
                 z-30 flex flex-col md:flex-row bg-white dark:bg-neutral-900 overflow-hidden shadow-2xl md:shadow-sm
                 ${isMobile 
                     ? 'fixed top-[64px] bottom-[64px] left-0 right-0 border-none rounded-none' 
-                    : 'relative w-full h-[600px] max-h-[calc(100vh-240px)] min-h-[400px] border border-neutral-200 dark:border-white/10 rounded-3xl mt-0'}
+                    : 'relative w-full h-[75vh] max-h-[calc(100vh-200px)] min-h-[500px] border border-neutral-200 dark:border-white/10 rounded-3xl mt-0'}
             `}>
                 
                 {/* SIDEBAR */}
