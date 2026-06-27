@@ -63,14 +63,16 @@ function MessagesPage() {
     const messagesEndRef = useRef(null);
     const isMobile = useIsMobile();
 
-    // Prevent body scrolling while on MessagesPage
+    // Prevent body scrolling while on MessagesPage (ONLY ON MOBILE)
     useEffect(() => {
+        if (!isMobile) return;
+        
         const originalStyle = window.getComputedStyle(document.body).overflow;
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = originalStyle;
         };
-    }, []);
+    }, [isMobile]);
 
     // Load user profile
     useEffect(() => {
@@ -349,10 +351,10 @@ function MessagesPage() {
     return (
         <ProfileLayout>
             <div className={`
-                fixed z-30 flex flex-col md:flex-row bg-white dark:bg-neutral-900 overflow-hidden shadow-2xl md:shadow-[0_0_40px_-15px_rgba(0,0,0,0.1)]
+                z-30 flex flex-col md:flex-row bg-white dark:bg-neutral-900 overflow-hidden shadow-2xl md:shadow-sm
                 ${isMobile 
-                    ? 'top-[64px] bottom-[64px] left-0 right-0 border-none rounded-none' 
-                    : 'top-[96px] bottom-[32px] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[1200px] border border-neutral-200 dark:border-white/10 rounded-3xl'}
+                    ? 'fixed top-[64px] bottom-[64px] left-0 right-0 border-none rounded-none' 
+                    : 'relative w-full h-[calc(100vh-160px)] min-h-[500px] border border-neutral-200 dark:border-white/10 rounded-3xl mt-4 mb-8'}
             `}>
                 
                 {/* SIDEBAR */}
