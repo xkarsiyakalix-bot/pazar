@@ -92,7 +92,15 @@ function MessagesPage() {
 
     // Scroll to bottom
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (messagesEndRef.current) {
+            const container = messagesEndRef.current.closest('.custom-scrollbar');
+            if (container) {
+                // Sadece mesaj kutusunun içini kaydır, tüm sayfayı kaydırma
+                container.scrollTop = container.scrollHeight;
+            } else {
+                messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
     };
 
     useEffect(() => {
@@ -354,7 +362,7 @@ function MessagesPage() {
                 z-30 flex flex-col md:flex-row bg-white dark:bg-neutral-900 overflow-hidden shadow-2xl md:shadow-sm
                 ${isMobile 
                     ? 'fixed top-[64px] bottom-[64px] left-0 right-0 border-none rounded-none' 
-                    : 'relative w-full h-[calc(100vh-160px)] min-h-[500px] border border-neutral-200 dark:border-white/10 rounded-3xl mt-4 mb-8'}
+                    : 'relative w-full h-[calc(100vh-160px)] min-h-[500px] border border-neutral-200 dark:border-white/10 rounded-3xl mt-0 mb-8'}
             `}>
                 
                 {/* SIDEBAR */}
