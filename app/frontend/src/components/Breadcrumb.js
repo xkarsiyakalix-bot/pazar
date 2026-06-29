@@ -27,7 +27,7 @@ export const Breadcrumb = ({ items = [] }) => {
             "@type": "ListItem",
             "position": index + 1,
             "name": item.label,
-            "item": item.path ? `https://exvitrin.com${item.path}` : undefined
+            "item": item.path ? `https://www.exvitrin.com${item.path}` : undefined
         }))
     };
 

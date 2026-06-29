@@ -22,7 +22,7 @@ const categoryConfigs = {
     'komsu-yardimi': { name: 'Komşu Yardımı', subcategories: ['komsu-yardimi'] }
 };
 
-const BASE_URL = 'https://exvitrin.com';
+const BASE_URL = 'https://www.exvitrin.com';
 const STATIC_PAGES = [
     '',
     '/login',

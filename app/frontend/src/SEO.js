@@ -16,7 +16,7 @@ export const SEO = ({
 }) => {
   const siteName = 'ExVitrin';
   const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - Ücretsiz İlanlar`;
-  const siteUrl = 'https://exvitrin.com';
+  const siteUrl = 'https://www.exvitrin.com';
   
   // Use window.location.pathname as a reliable fallback for canonical URL
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
@@ -151,7 +151,7 @@ export const ProductSEO = ({ listing }) => {
     '@type': 'Product',
     'name': listing.title,
     'description': listing.description?.substring(0, 300) || '',
-    'image': listing.images?.[0] || 'https://exvitrin.com/logo_exvitrin_2026.png',
+    'image': listing.images?.[0] || 'https://www.exvitrin.com/logo_exvitrin_2026.png',
     'offers': {
       '@type': 'Offer',
       'price': listing.price,
