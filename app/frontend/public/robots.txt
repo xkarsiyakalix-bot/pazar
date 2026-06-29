@@ -23,7 +23,7 @@ Allow: /iletisim
 Allow: /mobile-apps
 
 # Sitemap location
-Sitemap: https://exvitrin.com/sitemap.xml
+Sitemap: https://www.exvitrin.com/sitemap.xml
 
 # Crawl delay (optional - helps prevent server overload)
 Crawl-delay: 1
