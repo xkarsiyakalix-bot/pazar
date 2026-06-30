@@ -238,7 +238,7 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
                         ? 'bg-red-100 text-red-800'
                         : 'bg-gray-100 text-gray-500'
                         }`}>
-                        {count}
+                        ({count})
                       </span>
                     </button>
                   </li>
@@ -543,7 +543,7 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                   >
                     <span className="text-sm font-bold truncate pr-2">{catName}</span>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${selectedCategory === catName ? 'bg-red-200 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'}`}>
-                      {count}
+                      ({count})
                     </span>
                   </button>
                 ))}

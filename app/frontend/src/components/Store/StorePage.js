@@ -866,7 +866,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         >
                                             <span className="text-sm truncate mr-2">{category}</span>
                                             <span className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === category ? 'bg-red-200 dark:bg-red-900/40 text-red-700 dark:text-red-300' : 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-neutral-400'}`}>
-                                                {count}
+                                                ({count})
                                             </span>
                                         </button>
                                     ))}
