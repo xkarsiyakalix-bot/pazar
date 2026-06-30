@@ -15,19 +15,19 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
 
     const handleReserve = async () => {
         if (!user) {
-            alert('Bitte melden Sie sich an, um eine Reservierung vorzunehmen.');
+            alert('Lütfen rezervasyon yapmak için giriş yapın.');
             return;
         }
 
         if (!agreedToTerms) {
-            alert('Bitte akzeptieren Sie die Bedingungen.');
+            alert('Lütfen şartları kabul edin.');
             return;
         }
 
         setLoading(true);
         try {
             const reservation = await createReservation(listing.id, user.id, 24);
-            alert('Reservierung erfolgreich! Der Artikel ist für 24 Stunden für Sie reserviert.');
+            alert('Rezervasyon başarılı! İlan 24 saatliğine sizin için rezerve edildi.');
             setShowModal(false);
             if (onReservationCreated) {
                 onReservationCreated(reservation);
@@ -35,7 +35,7 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
             // Reload page to show updated status
             window.location.reload();
         } catch (error) {
-            alert(error.message || 'Fehler beim Erstellen der Reservierung. Bitte versuchen Sie es erneut.');
+            alert(error.message || 'Rezervasyon oluşturulurken hata oluştu. Lütfen tekrar deneyin.');
         } finally {
             setLoading(false);
         }
@@ -55,8 +55,8 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 <div>
-                    <p className="font-semibold text-yellow-900">Reserviert</p>
-                    <p className="text-sm text-yellow-700">Noch {timeRemaining} verfügbar</p>
+                    <p className="font-semibold text-yellow-900">Rezerve Edildi</p>
+                    <p className="text-sm text-yellow-700">{timeRemaining} kaldı</p>
                 </div>
             </div>
         );
@@ -71,7 +71,7 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                Reservieren (24h)
+                Rezerve Et (24s)
             </button>
 
             {/* Reservation Modal */}
@@ -95,7 +95,7 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
                                     </div>
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                            Artikel reservieren
+                                            İlanı Rezerve Et
                                         </h3>
                                         <div className="mt-4 space-y-4">
                                             <div className="bg-gray-50 rounded-lg p-4">
@@ -109,8 +109,8 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h0.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
                                                     <div className="text-sm text-blue-900">
-                                                        <p className="font-semibold">Reservierungsdauer: 24 Stunden</p>
-                                                        <p className="mt-1">Der Artikel wird für Sie reserviert und ist in dieser Zeit für andere Nutzer nicht verfügbar.</p>
+                                                        <p className="font-semibold">Rezervasyon Süresi: 24 Saat</p>
+                                                        <p className="mt-1">Bu ilan sizin için rezerve edilecek ve bu süre zarfında diğer kullanıcılara kapalı olacaktır.</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -124,7 +124,7 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
                                                     className="mt-1 h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
                                                 />
                                                 <label htmlFor="terms" className="text-sm text-gray-700">
-                                                    Ich verpflichte mich, den Artikel innerhalb von 24 Stunden zu kaufen oder die Reservierung zu stornieren.
+                                                    İlanı 24 saat içinde satın almayı veya rezervasyonu iptal etmeyi taahhüt ediyorum.
                                                 </label>
                                             </div>
                                         </div>
@@ -138,14 +138,14 @@ export const ReservationButton = ({ listing, onReservationCreated }) => {
                                     onClick={handleReserve}
                                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {loading ? 'Wird reserviert...' : 'Jetzt reservieren'}
+                                    {loading ? 'Rezerve ediliyor...' : 'Şimdi rezerve et'}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
                                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                                 >
-                                    Abbrechen
+                                    İptal
                                 </button>
                             </div>
                         </div>

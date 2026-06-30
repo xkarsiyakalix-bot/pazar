@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
             if (data?.status === 'banned') {
                 await supabase.auth.signOut();
                 setUser(null);
-                alert('Ihr Konto wurde gesperrt. Bitte kontaktieren Sie den Support.');
+                alert('Hesabınız askıya alındı. Lütfen destek ile iletişime geçin.');
             }
         } catch (err) {
             console.error('Unexpected error checking ban status:', err);
