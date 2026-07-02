@@ -39,7 +39,7 @@ serve(async (req) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'ExVitrin <notifications@resend.dev>',
+                from: 'ExVitrin <info@exvitrin.com>',
                 to: [profile.email],
                 subject: `Fiyat Düştü! ${record.title}`,
                 html: `
