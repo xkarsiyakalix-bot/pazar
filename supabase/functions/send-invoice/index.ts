@@ -48,7 +48,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'ExVitrin <info@exvitrin.com>',
+        from: 'ExVitrin <onboarding@resend.dev>',
         to: [email],
         subject: `Faturanız Hazır - ExVitrin (${invoiceNumber})`,
         html: `
