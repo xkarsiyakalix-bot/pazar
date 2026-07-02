@@ -53,7 +53,7 @@ const HeimtextilienPage = ({ toggleFavorite, isFavorite }) => {
         federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: [], dynamic: true,),
+            options: [], dynamic: true,
             field: 'federal_state'
         }
     };

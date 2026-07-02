@@ -39,7 +39,7 @@ const PferdePage = ({ toggleFavorite, isFavorite }) => {
         federal_state: {
             label: 'Şehir',
             type: 'multiselect',
-            options: [], dynamic: true,),
+            options: [], dynamic: true,
             field: 'federal_state'
         }
     };
