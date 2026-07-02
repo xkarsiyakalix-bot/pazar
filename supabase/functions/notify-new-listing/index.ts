@@ -85,7 +85,7 @@ serve(async (req) => {
 
     <!-- Call to Action -->
     <div style="text-align: center; margin: 30px 0;">
-      <a href="https://www.exvitrin.com/product/${record.id}" style="background-color: #dc2626; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block;">İlanı Görüntüle</a>
+      <a href="https://www.exvitrin.com/${record.slug || record.id}" style="background-color: #dc2626; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block;">İlanı Görüntüle</a>
     </div>
 
     <p style="margin: 0 0 10px 0; font-size: 15px; color: #6b7280; text-align: center;">
