@@ -174,61 +174,102 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                             ))
                         ) : galleryItems.length === 0 ? (
                             <div className="w-full">
-                                <div className="bg-white dark:bg-neutral-950 rounded-3xl overflow-hidden border border-gray-200 dark:border-white/5 shadow-lg max-w-4xl mx-auto my-4 transform transition-all">
-                                    {/* Header with Premium Pattern */}
-                                    <div className="relative h-28 md:h-36 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 flex items-center justify-center overflow-hidden border-b border-gray-200 dark:border-white/10">
-                                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent"></div>
-                                        <div className="text-center z-10 p-6">
-                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md mb-2">
-                                                ⭐ VİTRİN İLANI
-                                            </span>
-                                            <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
-                                                Kategoride Fark Edilin!
-                                            </h2>
+                                {isMobile ? (
+                                    /* Compact mobile banner to prevent pushing listing grid down */
+                                    <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:from-amber-500/5 dark:to-orange-500/5 border border-amber-200/60 dark:border-amber-500/20 rounded-2xl p-4 flex items-center justify-between gap-3 my-2 shadow-sm">
+                                        <div className="flex items-center gap-2.5">
+                                            <span className="text-2xl">🚀</span>
+                                            <div>
+                                                <h3 className="text-xs font-black text-gray-900 dark:text-neutral-100">Ana Sayfada Öne Çıkın!</h3>
+                                                <p className="text-[10px] text-gray-500 dark:text-neutral-400">İlanınızı vitrine taşıyarak satışınızı hızlandırın.</p>
+                                            </div>
                                         </div>
+                                        <button
+                                            onClick={() => window.location.href = '/profile?tab=listings'}
+                                            className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black text-[11px] px-3 py-2 rounded-xl shadow-md transition-all active:scale-95 whitespace-nowrap"
+                                        >
+                                            İlan Seç
+                                        </button>
                                     </div>
-
-                                    {/* Content Body */}
-                                    <div className="p-4 md:p-6">
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
-                                            <div className="flex flex-col items-center text-center gap-2 p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-lg shadow-sm">🚀</div>
-                                                <div>
-                                                    <h3 className="text-xs font-black text-gray-900 dark:text-white mb-1">Daha Fazla Başvuru</h3>
-                                                    <p className="text-[10px] text-gray-600 dark:text-neutral-400 font-medium">Öne çıkan konumla daha fazla alıcıya ulaşın.</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex flex-col items-center text-center gap-2 p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-lg shadow-sm">📅</div>
-                                                <div>
-                                                    <h3 className="text-xs font-black text-gray-900 dark:text-white mb-1">10 Günlük Döngü</h3>
-                                                    <p className="text-[10px] text-gray-600 dark:text-neutral-400 font-medium">İlanınız kategori sayfasında en üstte döner.</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex flex-col items-center text-center gap-2 p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-lg shadow-sm">💎</div>
-                                                <div>
-                                                    <h3 className="text-xs font-black text-gray-900 dark:text-white mb-1">Premium Etkisi</h3>
-                                                    <p className="text-[10px] text-gray-600 dark:text-neutral-400 font-medium">Dikkat çeken ilanlarla satışınızı hızlandırın.</p>
-                                                </div>
+                                ) : (
+                                    /* Beautiful, premium, glowing warm card on desktop */
+                                    <div className="bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 dark:from-neutral-900/80 dark:via-neutral-950/80 dark:to-neutral-900/80 border border-amber-200/50 dark:border-white/5 rounded-3xl overflow-hidden shadow-xl max-w-4xl mx-auto my-4 transition-all">
+                                        {/* Header with Premium Pattern */}
+                                        <div className="relative h-28 md:h-36 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent dark:from-amber-950/20 dark:via-neutral-950 dark:to-neutral-900 flex items-center justify-center overflow-hidden border-b border-gray-100 dark:border-white/5">
+                                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/15 via-transparent to-transparent"></div>
+                                            <div className="text-center z-10 p-6">
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md mb-2">
+                                                    ⭐ VİTRİN İLANI
+                                                </span>
+                                                <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
+                                                    Ana Sayfada Fark Edilin!
+                                                </h2>
+                                                <p className="text-amber-600 dark:text-amber-400 text-xs md:text-sm font-semibold mt-1">
+                                                    İlanınız spot ışıkları altında
+                                                </p>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col sm:flex-row items-center gap-3">
-                                            <button
-                                                onClick={() => {
-                                                    const navigate = window.location.href.includes('/profile') 
-                                                    ? () => window.location.reload() 
-                                                    : () => window.location.href = '/profile?tab=listings';
-                                                    navigate();
-                                                }}
-                                                className="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-white font-black py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-sm transform hover:-translate-y-0.5"
-                                            >
-                                                Şimdi İlan Seç
-                                            </button>
+                                        {/* Content Body */}
+                                        <div className="p-5 md:p-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                                                {/* Feature 1 */}
+                                                <div className="flex flex-col items-center text-center gap-2 p-4 rounded-2xl bg-white dark:bg-white/5 border border-amber-100/50 dark:border-white/5 shadow-sm">
+                                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-lg shadow-sm">
+                                                        🚀
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xs font-black text-gray-900 dark:text-white mb-1">15 Kat Daha Fazla Erişim</h3>
+                                                        <p className="text-[10px] text-gray-600 dark:text-neutral-400 font-medium">Öne çıkan konumla çok daha fazla potansiyel alıcıya ulaşın.</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Feature 2 */}
+                                                <div className="flex flex-col items-center text-center gap-2 p-4 rounded-2xl bg-white dark:bg-white/5 border border-amber-100/50 dark:border-white/5 shadow-sm">
+                                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-lg shadow-sm">
+                                                        📅
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xs font-black text-gray-900 dark:text-white mb-1">10 Günlük Döngü</h3>
+                                                        <p className="text-[10px] text-gray-600 dark:text-neutral-400 font-medium">İlanınız 10 gün boyunca vitrin ilanlarıyla dönüşümlü gösterilir.</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Feature 3 */}
+                                                <div className="flex flex-col items-center text-center gap-2 p-4 rounded-2xl bg-white dark:bg-white/5 border border-amber-100/50 dark:border-white/5 shadow-sm">
+                                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex items-center justify-center flex-shrink-0 font-bold text-lg shadow-sm">
+                                                        💎
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-xs font-black text-gray-900 dark:text-white mb-1">Premium Etkisi</h3>
+                                                        <p className="text-[10px] text-gray-600 dark:text-neutral-400 font-medium">Yüksek değerli ürünler ve hizmetler için mükemmel seçim.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Tip & Action */}
+                                            <div className="flex flex-col sm:flex-row items-center gap-4">
+                                                <div className="flex-1 bg-amber-50/50 dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/20 rounded-2xl p-4 flex gap-3">
+                                                    <span className="text-lg">💡</span>
+                                                    <p className="text-[11px] text-amber-800 dark:text-amber-200 leading-relaxed font-semibold">
+                                                        <span className="font-black text-amber-600 dark:text-amber-400">İpucu:</span> Dikkat çekici bir kapak resmi vitrin ilanınızın tıklanma oranını önemli ölçüde artırır.
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        const navigate = window.location.href.includes('/profile') 
+                                                            ? () => window.location.reload() 
+                                                            : () => window.location.href = '/profile?tab=listings';
+                                                        navigate();
+                                                    }}
+                                                    className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black py-3.5 px-8 rounded-2xl shadow-md hover:shadow-lg transition-all text-sm transform hover:-translate-y-0.5 active:translate-y-0"
+                                                >
+                                                    Şimdi İlan Seç
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         ) : (
                             galleryItems.map((item) => (
