@@ -35,6 +35,7 @@ const GenericCategoryPage = ({
     const [isSaved, setIsSaved] = useState(false);
     const [subCategoryCounts, setSubCategoryCounts] = useState({});
     const [allCategoryListings, setAllCategoryListings] = useState([]);
+    const [dynamicCityOptions, setDynamicCityOptions] = useState([]);
 
     // Equivalent check for Turkish, German, English category/subcategory names
     const isEquivalent = (a, b) => {
@@ -123,6 +124,19 @@ const GenericCategoryPage = ({
                 const { data, error } = await query;
                 if (error) throw error;
                 setAllCategoryListings(data || []);
+
+                // Build dynamic city options sorted by listing count
+                const cityCounts = {};
+                (data || []).forEach(listing => {
+                    const cityVal = listing.city || listing.federal_state;
+                    if (cityVal) {
+                        cityCounts[cityVal] = (cityCounts[cityVal] || 0) + 1;
+                    }
+                });
+                const sortedCities = Object.entries(cityCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([city, count]) => ({ value: city, label: `${city} (${count})` }));
+                setDynamicCityOptions(sortedCities);
             } catch (err) {
                 console.error('Error fetching all category listings for counts:', err);
             }
@@ -218,8 +232,14 @@ const GenericCategoryPage = ({
 
                 // Apply filterConfig fields
                 Object.entries(filterConfig).forEach(([key, config]) => {
-                    if (config.field && filters[key] && config.type !== 'range') {
-                        query = query.eq(config.field, filters[key]);
+                    const filterValue = filters[key] || filters[config.field];
+                    if (config.field && filterValue && config.type !== 'range') {
+                        if (config.field === 'federal_state' || config.field === 'city') {
+                            // City stored in both city and federal_state columns
+                            query = query.or(`city.eq.${filterValue},federal_state.eq.${filterValue}`);
+                        } else {
+                            query = query.eq(config.field, filterValue);
+                        }
                     }
                 });
 
@@ -289,7 +309,7 @@ const GenericCategoryPage = ({
         }
 
         if (config.type === 'multiselect') {
-            const options = config.options || [];
+            const options = config.dynamic ? dynamicCityOptions : (config.options || []);
             const currentValue = filters[key] || '';
             return (
                 <div key={key} className="mb-5 pb-5 border-b border-gray-100 dark:border-white/5">

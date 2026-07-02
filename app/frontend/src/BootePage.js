@@ -1,6 +1,6 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
-import { getTurkishCities } from './translations';
+
 
 const BootePage = ({ toggleFavorite, isFavorite }) => {
     const subCategories = [
@@ -39,7 +39,7 @@ const BootePage = ({ toggleFavorite, isFavorite }) => {
             type: 'range',
             field: 'price'
         },
-        offerType: {
+        offer_type: {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
@@ -48,12 +48,12 @@ const BootePage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'offer_type'
         },
-
-        federalState: {
+        federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: getTurkishCities(),
-            field: 'federal_state'
+            options: [], // Dynamically populated from DB in GenericCategoryPage
+            field: 'federal_state',
+            dynamic: true
         }
     };
 
