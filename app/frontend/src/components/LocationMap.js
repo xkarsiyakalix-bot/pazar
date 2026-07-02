@@ -127,6 +127,7 @@ const LocationMap = ({ city, district, address }) => {
   return (
     <div className="w-full h-48 md:h-64 rounded-lg overflow-hidden border border-gray-200 dark:border-white/5 shadow-sm relative z-0">
       <MapContainer 
+        key={`${position[0]}-${position[1]}`}
         center={position} 
         zoom={isExactMatch ? 15 : isDistrictMatch ? 13 : 11} 
         scrollWheelZoom={false} 
