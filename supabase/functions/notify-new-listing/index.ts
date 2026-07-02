@@ -29,6 +29,24 @@ serve(async (req) => {
         const userEmail = user.email
         const userName = record.contact_name || user.user_metadata?.full_name || 'Kullanıcı'
 
+        let imageUrl = '';
+        if (record.images && Array.isArray(record.images) && record.images.length > 0) {
+            imageUrl = record.images[0];
+        } else if (record.images && typeof record.images === 'string') {
+            try {
+                const parsed = JSON.parse(record.images);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    imageUrl = parsed[0];
+                }
+            } catch (e) {
+                if (record.images.startsWith('http')) {
+                    imageUrl = record.images;
+                }
+            }
+        }
+
+        const currentYear = new Date().getFullYear();
+
         console.log(`Sending new listing confirmation email to: ${userEmail}`)
 
         // Send email using Resend
@@ -43,15 +61,49 @@ serve(async (req) => {
                 to: [userEmail],
                 subject: `İlanınız Yayında: ${record.title}`,
                 html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-            <h2 style="color: #ef4444;">Tebrikler ${userName}!</h2>
-            <p><strong>"${record.title}"</strong> başlıklı ilanınız başarıyla ExVitrin'de yayına alınmıştır.</p>
-            <p>İlanınızı görüntülemek, düzenlemek veya istatistiklerini takip etmek için hesabınıza giriş yapabilirsiniz.</p>
-            <br/>
-            <p>Bol kazançlar dileriz,</p>
-            <p><strong>ExVitrin Ekibi</strong></p>
-          </div>
-        `,
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #eaeaea;">
+  
+  <!-- Header -->
+  <div style="background-color: #dc2626; padding: 30px 20px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 0.5px;">ExVitrin</h1>
+    <p style="color: #fee2e2; margin: 10px 0 0 0; font-size: 15px;">İlanınız Başarıyla Yayında!</p>
+  </div>
+
+  <!-- Body -->
+  <div style="padding: 40px 30px; color: #374151;">
+    <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 20px;">Tebrikler ${userName},</h2>
+    <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #4b5563;">
+      Harika bir haberimiz var! <strong>"${record.title}"</strong> başlıklı ilanınız onaylandı ve ExVitrin'de yayına alındı. Artık binlerce alıcı ilanınızı görebilir.
+    </p>
+
+    <!-- Listing Card -->
+    <div style="background-color: #f9fafb; border: 1px solid #f3f4f6; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 30px;">
+      ${imageUrl ? `<img src="${imageUrl}" alt="İlan Resmi" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; max-height: 250px; object-fit: cover;" />` : ''}
+      <h3 style="margin: 0 0 10px 0; color: #1f2937; font-size: 18px;">${record.title}</h3>
+      ${record.price ? `<p style="margin: 0; font-weight: 700; color: #dc2626; font-size: 20px;">${record.price} TL</p>` : ''}
+    </div>
+
+    <!-- Call to Action -->
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="https://www.exvitrin.com/product/${record.id}" style="background-color: #dc2626; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block;">İlanı Görüntüle</a>
+    </div>
+
+    <p style="margin: 0 0 10px 0; font-size: 15px; color: #6b7280; text-align: center;">
+      İlanınızı düzenlemek veya istatistiklerini takip etmek için hesabınıza giriş yapabilirsiniz.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #f3f4f6;">
+    <p style="margin: 0; font-size: 13px; color: #9ca3af;">
+      &copy; ${currentYear} ExVitrin. Tüm hakları saklıdır.
+    </p>
+    <p style="margin: 5px 0 0 0; font-size: 12px; color: #9ca3af;">
+      Bu e-posta size ExVitrin üzerinden otomatik olarak gönderilmiştir.
+    </p>
+  </div>
+</div>
+                `,
             }),
         })
 
