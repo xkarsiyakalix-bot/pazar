@@ -8,7 +8,7 @@ const NachbarschaftshilfePage = ({ toggleFavorite, isFavorite }) => {
     ];
 
     const filterConfig = {
-        offerType: {
+        offer_type: {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
@@ -26,10 +26,10 @@ const NachbarschaftshilfePage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'seller_type'
         },
-        federalState: {
+        federal_state: {
             label: 'Şehir',
             type: 'multiselect',
-            options: getTurkishCities(),
+            options: [], dynamic: true,
             field: 'federal_state'
         }
     };

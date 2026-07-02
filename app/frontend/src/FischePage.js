@@ -25,7 +25,7 @@ const FischePage = ({ toggleFavorite, isFavorite }) => {
             type: 'range',
             field: 'price'
         },
-        offerType: {
+        offer_type: {
             label: 'Teklif Türü',
             type: 'multiselect',
             options: [
@@ -43,10 +43,10 @@ const FischePage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'seller_type'
         },
-        federalState: {
+        federal_state: {
             label: 'Şehir',
             type: 'multiselect',
-            options: getTurkishCities().map(city => ({ value: city, label: city })),
+            options: [], dynamic: true.map(city => ({ value: city, label: city })),
             field: 'federal_state'
         }
     };

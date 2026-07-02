@@ -1,4 +1,4 @@
-import { t, getTurkishCities } from '../translations';
+import { t } from '../translations';
 
 export const getCommonFilters = () => ({
     price: {
@@ -6,12 +6,12 @@ export const getCommonFilters = () => ({
         type: 'range',
         field: 'price'
     },
-    offerType: {
+    offer_type: {
         label: t.filters?.offerType || 'İlan Tipi',
         type: 'multiselect',
         options: [
-            { value: 'Angebote', label: t.addListing?.offering || 'Satılık' },
-            { value: 'Gesuche', label: t.addListing?.searching || 'Aranıyor' }
+            { value: 'Satılık', label: 'Satılık' },
+            { value: 'Aranıyor', label: 'Aranıyor' }
         ],
         field: 'offer_type'
     },
@@ -24,11 +24,12 @@ export const getCommonFilters = () => ({
         ],
         field: 'seller_type'
     },
-    federalState: {
+    federal_state: {
         label: t.filters?.location || 'Konum',
         type: 'multiselect',
-        options: getTurkishCities().map(city => ({ label: city, value: city })),
-        field: 'federal_state'
+        options: [], // Dynamically populated from DB, sorted by listing count
+        field: 'federal_state',
+        dynamic: true
     }
 });
 

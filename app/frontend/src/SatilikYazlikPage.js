@@ -4,7 +4,7 @@ import { getTurkishCities } from './translations';
 
 const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
-        offerType: {
+        offer_type: {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
@@ -104,10 +104,10 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'commission'
         },
-        federalState: {
+        federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: getTurkishCities().map(city => ({ label: city, value: city })),
+            options: [], dynamic: true.map(city => ({ label: city, value: city })),
             field: 'federal_state'
         }
     };

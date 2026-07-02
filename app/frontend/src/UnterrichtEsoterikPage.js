@@ -9,7 +9,7 @@ const UnterrichtEsoterikPage = ({ toggleFavorite, isFavorite }) => {
             type: 'range',
             field: 'price'
         },
-        offerType: {
+        offer_type: {
             label: 'Angebotstyp',
             type: 'radio',
             options: [
@@ -27,10 +27,10 @@ const UnterrichtEsoterikPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'seller_type'
         },
-        federalState: {
+        federal_state: {
             label: 'Ort',
             type: 'radio',
-            options: getTurkishCities(),
+            options: [], dynamic: true,
             field: 'federal_state'
         }
     };

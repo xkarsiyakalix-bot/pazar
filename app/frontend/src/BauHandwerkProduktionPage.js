@@ -48,7 +48,7 @@ const BauHandwerkProduktionPage = ({ toggleFavorite, isFavorite }) => {
             type: 'range',
             field: 'hourly_wage'
         },
-        offerType: {
+        offer_type: {
             label: 'İlan Türü',
             type: 'multiselect',
             options: [
@@ -66,10 +66,10 @@ const BauHandwerkProduktionPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'seller_type'
         },
-        federalState: {
+        federal_state: {
             label: 'Şehir',
             type: 'multiselect',
-            options: getTurkishCities(),
+            options: [], dynamic: true,
             field: 'federal_state'
         }
     };

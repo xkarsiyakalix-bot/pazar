@@ -32,7 +32,7 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'versand_art'
         },
-        offerType: {
+        offer_type: {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
@@ -50,10 +50,10 @@ const WeiteresAutoRadBootPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'seller_type'
         },
-        federalState: {
+        federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: getTurkishCities(),
+            options: [], dynamic: true,
             field: 'federal_state'
         }
     };

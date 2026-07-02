@@ -114,7 +114,7 @@ const HaeuserZumKaufPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'general_features'
         },
-        offerType: {
+        offer_type: {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
@@ -132,10 +132,10 @@ const HaeuserZumKaufPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'seller_type'
         },
-        federalState: {
+        federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: getTurkishCities().map(city => ({ value: city, label: city })),
+            options: [], dynamic: true.map(city => ({ value: city, label: city })),
             field: 'federal_state'
         }
     };

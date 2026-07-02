@@ -81,7 +81,7 @@ const HerrenschuhePage = ({ toggleFavorite, isFavorite }) => {
             type: 'range',
             field: 'price'
         },
-        offerType: {
+        offer_type: {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
@@ -113,10 +113,10 @@ const HerrenschuhePage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'condition'
         },
-        federalState: {
+        federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: getTurkishCities().map(city => ({ value: city, label: city })),
+            options: [], dynamic: true.map(city => ({ value: city, label: city })),
             field: 'federal_state'
         }
     };

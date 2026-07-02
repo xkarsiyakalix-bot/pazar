@@ -23,7 +23,7 @@ const ReparaturenPage = ({ toggleFavorite, isFavorite }) => {
             type: 'range',
             field: 'price'
         },
-        offerType: {
+        offer_type: {
             label: 'İlan Tipi',
             type: 'multiselect',
             field: 'offer_type',
@@ -33,11 +33,11 @@ const ReparaturenPage = ({ toggleFavorite, isFavorite }) => {
             ]
         },
 
-        federalState: {
+        federal_state: {
             label: 'Konum',
             type: 'multiselect',
             field: 'federal_state',
-            options: getTurkishCities(),
+            options: [], dynamic: true,
         }
     };
 

@@ -31,7 +31,7 @@ const SchlafzimmerPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'versand_art'
         },
-        offerType: {
+        offer_type: {
             label: 'İlan Tipi',
             type: 'multiselect',
             options: [
@@ -61,10 +61,10 @@ const SchlafzimmerPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'condition'
         },
-        federalState: {
+        federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: getTurkishCities().map(city => ({ value: city, label: city })),
+            options: [], dynamic: true.map(city => ({ value: city, label: city })),
             field: 'federal_state'
         }
     };
