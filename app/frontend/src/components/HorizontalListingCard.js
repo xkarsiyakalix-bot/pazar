@@ -234,6 +234,11 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
           <div className="flex-1 p-3 sm:p-5 flex flex-col justify-between overflow-hidden">
             <div className="space-y-1">
               <h4 className="text-sm sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover/horizontal:text-red-600 dark:group-hover/horizontal:text-red-400 transition-colors">
+                {(listing?.offer_type === 'Aranıyor' || listing?.offer_type === 'Gesuche') && (
+                  <span className="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold mr-1.5 uppercase tracking-wider align-middle border border-blue-200 dark:border-blue-800/50">
+                    Aranıyor
+                  </span>
+                )}
                 {listing?.title}
               </h4>
               <p className="text-[11px] sm:text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1">

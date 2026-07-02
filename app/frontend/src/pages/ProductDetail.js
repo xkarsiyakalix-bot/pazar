@@ -1659,6 +1659,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     {/* Başlık */}
                     <div>
                       <h1 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-neutral-50 leading-tight">
+                        {(listing?.offer_type === 'Aranıyor' || listing?.offer_type === 'Gesuche') && (
+                          <span className="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 px-2 py-0.5 rounded text-xs sm:text-sm font-bold mr-2 uppercase tracking-wider align-middle border border-blue-200 dark:border-blue-800/50 shadow-sm">
+                            Aranıyor
+                          </span>
+                        )}
                         {listing.title}
                       </h1>
 

@@ -174,6 +174,11 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
       <div className="p-3 flex flex-col justify-between flex-grow min-h-[116px]">
         <div>
           <h3 className="text-[13px] font-semibold text-gray-900 dark:text-neutral-100 mb-1.5 line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-snug">
+            {(listing?.offer_type === 'Aranıyor' || listing?.offer_type === 'Gesuche') && (
+              <span className="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase tracking-wider align-middle border border-blue-200 dark:border-blue-800/50">
+                Aranıyor
+              </span>
+            )}
             {listing.title}
           </h3>
           {(() => {
