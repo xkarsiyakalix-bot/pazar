@@ -25,7 +25,7 @@ serve(async (req) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'ExVitrin <onboarding@resend.dev>',
+                from: 'ExVitrin <info@exvitrin.com>',
                 to: ['kerem_aydin@aol.com'],
                 subject: `Yeni İletişim Mesajı: ${record.subject}`,
                 html: `
