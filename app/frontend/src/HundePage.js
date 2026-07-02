@@ -84,7 +84,7 @@ const HundePage = ({ toggleFavorite, isFavorite }) => {
         federal_state: {
             label: 'Şehir',
             type: 'multiselect',
-            options: [], dynamic: true.map(city => ({ value: city, label: city })),
+            options: [], dynamic: true,),
             field: 'federal_state'
         }
     };

@@ -47,7 +47,7 @@ const WeitereImmobilienPage = ({ toggleFavorite, isFavorite }) => {
         federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: [], dynamic: true.map(city => ({ value: city, label: city })),
+            options: [], dynamic: true,),
             field: 'federal_state'
         }
     };

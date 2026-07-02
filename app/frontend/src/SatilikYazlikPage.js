@@ -107,7 +107,7 @@ const SatilikYazlikPage = ({ toggleFavorite, isFavorite }) => {
         federal_state: {
             label: 'Konum',
             type: 'multiselect',
-            options: [], dynamic: true.map(city => ({ label: city, value: city })),
+            options: [], dynamic: true,),
             field: 'federal_state'
         }
     };
