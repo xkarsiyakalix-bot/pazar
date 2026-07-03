@@ -20,7 +20,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot).*"
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|W3C_Validator|redditbot|Embedly).*"
         }
       ],
       "destination": "/api/og?id=:id&type=listing"
@@ -31,7 +31,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot).*"
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|W3C_Validator|redditbot|Embedly).*"
         }
       ],
       "destination": "/api/og?id=:id&type=seller"
