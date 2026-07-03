@@ -303,6 +303,7 @@ const AdminUsers = () => {
                                 <th className="px-6 py-4">Abonelik & Tür</th>
                                 <th className="px-6 py-4 text-center">Hesap Durumu</th>
                                 <th className="px-6 py-4">Kayıt Tarihi</th>
+                                <th className="px-6 py-4">Son Görülme</th>
                                 <th className="px-6 py-4 text-right">Hızlı İşlemler</th>
                             </tr>
                         </thead>
@@ -432,6 +433,22 @@ const AdminUsers = () => {
                                             </span>
                                         </div>
                                     </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col">
+                                            {user.last_seen ? (
+                                                <>
+                                                    <span className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
+                                                        {new Date(user.last_seen).toLocaleDateString('tr-TR')}
+                                                    </span>
+                                                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                                                        {new Date(user.last_seen).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <span className="text-sm font-medium text-neutral-400 dark:text-neutral-500">-</span>
+                                            )}
+                                        </div>
+                                    </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1 transition-opacity duration-200">
                                             <button
@@ -534,7 +551,7 @@ const AdminUsers = () => {
                             ))}
                             {paginatedUsers.length === 0 && (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-16 text-center text-neutral-400 dark:text-neutral-500 transition-colors duration-300">
+                                    <td colSpan="7" className="px-6 py-16 text-center text-neutral-400 dark:text-neutral-500 transition-colors duration-300">
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-16 h-16 bg-neutral-50 dark:bg-neutral-800 rounded-full flex items-center justify-center">
                                                 <svg className="w-8 h-8 text-neutral-300 dark:text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
