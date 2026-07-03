@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { t } from '../translations';
@@ -96,7 +96,7 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
     }
   };
 
-  if (!seller) return <div className="p-8">{t.sellerProfile.sellerNotFound}</div>;
+  if (!seller) return <Navigate to="/" replace />;
 
   // Calculate categories and counts
   const categories = sellerListings.reduce((acc, listing) => {
@@ -367,7 +367,7 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
     : sellerListings.filter(l => l.category === selectedCategory);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black"><LoadingSpinner /></div>;
-  if (!seller) return <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black"><div className="text-neutral-400 font-bold">{t.sellerProfile.sellerNotFound}</div></div>;
+  if (!seller) return <Navigate to="/" replace />;
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] dark:bg-black transition-colors duration-300">
