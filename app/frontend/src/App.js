@@ -241,7 +241,7 @@ import { useAuth } from './contexts/AuthContext';
 const MobileBottomNavigation = React.lazy(() => import('./components/MobileBottomNavigation'));
 const ScrollToTopButton = React.lazy(() => import('./components/ScrollToTopButton'));
 
-import { Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigationType, Navigate } from 'react-router-dom';
 
 // ScrollToTop component to scroll to top on route change
 function ScrollToTop() {
@@ -1097,6 +1097,8 @@ function App() {
 
             {/* === MAIN CATEGORIES === */}
             <Route path="/Butun-Kategoriler" element={<AlleKategorienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/kategoriler" element={<Navigate to="/Butun-Kategoriler" replace />} />
+            <Route path="/seller" element={<Navigate to="/" replace />} />
             <Route path="/Otomobil-Bisiklet-Tekne" element={<AutoRadBootPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Emlak" element={<ImmobilienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Ev-Bahce" element={<HausGartenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
