@@ -8,6 +8,7 @@ function Register() {
     const { signUp } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
+        username: '',
         email: '',
         password: '',
         confirmPassword: ''
@@ -29,7 +30,7 @@ function Register() {
         setSuccess('');
 
         // Validation
-        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        if (!formData.name || !formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
             setError('Lütfen tüm alanları doldurun');
             return;
         }
@@ -48,7 +49,8 @@ function Register() {
 
         try {
             await signUp(formData.email, formData.password, {
-                full_name: formData.name
+                full_name: formData.name,
+                username: formData.username
             });
             setSuccess('Kayıt başarılı! Lütfen onay için e-posta adresinizi kontrol edin.');
             // Redirect to login after 2 seconds
@@ -93,6 +95,21 @@ function Register() {
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
                                 placeholder="Örn. Ahmet Yılmaz"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                                Takma İsim (Kullanıcı Adı)
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
+                                placeholder="Örn. ahmet123"
                             />
                         </div>
 

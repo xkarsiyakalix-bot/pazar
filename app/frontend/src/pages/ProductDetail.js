@@ -284,7 +284,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
                   <div className="space-y-2.5">
                     <div>
                       <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail?.seller || 'Satıcı'}</div>
-                      <div className="text-sm font-black truncate">{listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common?.privateSeller}</div>
+                      <div className="text-sm font-black truncate">{listing.contact_name || sellerProfile?.username || sellerProfile?.full_name || listing.sellerName || t.common?.privateSeller}</div>
                     </div>
 
                     {!hideContact && (
@@ -726,7 +726,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           const { fetchUserProfile } = await import('../api/profile');
           const profile = await fetchUserProfile(user.id);
           if (profile) {
-            setContactName(profile.full_name || '');
+            setContactName(profile.username || profile.full_name || '');
             setContactPhone(profile.phone || '');
           }
         } catch (error) {
@@ -953,7 +953,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   // Use seller profile from Supabase or fallback to listing data if joined, otherwise default
   const seller = sellerProfile || {
     id: listing?.user_id,
-    full_name: listing?.profiles?.full_name || t.productDetail.unknownSeller,
+    full_name: listing?.profiles?.username || listing?.profiles?.full_name || t.productDetail.unknownSeller,
     avatar_url: listing?.profiles?.avatar_url || null,
     store_logo: listing?.profiles?.store_logo || null,
     created_at: listing?.profiles?.created_at || new Date().toISOString(),
@@ -3084,8 +3084,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <Link to={sellerPath} state={{ sellerProfile }}>
                         <img
                           key={seller.store_logo || seller.avatar_url || 'default-avatar'}
-                          src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.full_name || 'User') + '&background=ef4444&color=fff&size=200'}
-                          alt={seller.full_name}
+                          src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.username || seller.full_name || 'User') + '&background=ef4444&color=fff&size=200'}
+                          alt={seller.username || seller.full_name}
                           className="w-24 h-24 rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity border-4 border-gray-100 dark:border-neutral-800 shadow-sm"
                         />
                       </Link>
@@ -3126,7 +3126,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       state={{ sellerProfile }}
                       className="font-bold text-lg sm:text-xl text-gray-900 dark:text-neutral-50 cursor-pointer hover:text-red-500 transition-colors mb-2 flex items-center gap-1.5 truncate"
                     >
-                      <span className="truncate">{listing.contact_name || seller.full_name || t.productDetail.unknownSeller}</span>
+                      <span className="truncate">{listing.contact_name || seller.username || seller.full_name || t.productDetail.unknownSeller}</span>
                       <VerifiedBadge isVerified={seller.is_verified} size="sm" />
                     </Link>
 
@@ -3212,7 +3212,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {sellerListingsCount > 0 && (
                   <div className="mb-4 p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5">
                     <span className="text-gray-900 dark:text-neutral-50 block mb-1">
-                      {t.productDetail.moreListingsFrom.replace('{name}', seller.full_name || seller.name || t.productDetail.unknownSeller)}
+                      {t.productDetail.moreListingsFrom.replace('{name}', seller.username || seller.full_name || seller.name || t.productDetail.unknownSeller)}
                     </span>
                     <Link
                       to={sellerPath}
@@ -3443,7 +3443,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
         onSubmit={handleModalSubmit}
-        sellerName={seller?.name || seller?.full_name}
+        sellerName={seller?.username || seller?.name || seller?.full_name}
         listingTitle={listing?.title}
       />
     </>

@@ -100,7 +100,7 @@ const SettingsPage = () => {
 
     // Form States
     const defaultFormData = {
-        full_name: '', phone: '', bio: '', street: '', postal_code: '',
+        username: '', full_name: '', phone: '', bio: '', street: '', postal_code: '',
         city: '', district: '', website: '', legal_info: '', seller_type: '',
         store_slug: '', facebook_url: '', instagram_url: '', twitter_url: '', tiktok_url: ''
     };
@@ -267,6 +267,7 @@ const SettingsPage = () => {
                 setProfile(data);
                 setUserStats(stats);
                 setFormData({
+                    username: data.username || '',
                     full_name: data.full_name || '',
                     phone: data.phone || '',
                     bio: data.bio || '',
@@ -658,7 +659,9 @@ const SettingsPage = () => {
                                         <input type="file" ref={fileInputRef} onChange={handleAvatarUpload} className="hidden" accept="image/*" />
                                     </div>
                                     <div className="flex-1 text-center md:text-left pb-2">
-                                        <h3 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-neutral-100">{profile?.full_name || 'İsimsiz Kullanıcı'}</h3>
+                                        <h3 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+                                            {profile?.username || profile?.full_name || 'İsimsiz Kullanıcı'}
+                                        </h3>
                                         <p className="text-sm md:text-base text-neutral-500 dark:text-neutral-400 font-medium">@{profile?.user_number || 'user'}</p>
                                     </div>
                                 </div>
@@ -677,6 +680,13 @@ const SettingsPage = () => {
                                             required
                                             placeholder="Adınız ve Soyadınız"
                                             icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
+                                        />
+                                        <InputField
+                                            label="Takma İsim (Kullanıcı Adı)"
+                                            value={formData.username}
+                                            onChange={e => setFormData({ ...formData, username: e.target.value })}
+                                            placeholder="Profilinizde görünecek takma adınız"
+                                            icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
                                         />
                                         <InputField
                                             label="Telefon"

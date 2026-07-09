@@ -34,7 +34,7 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
         if (profile) {
           setSeller({
             id: sellerId,
-            name: profile.full_name || (listings.length > 0 ? listings[0].sellerName : t.cart?.seller || 'Satıcı'),
+            name: profile.username || profile.full_name || (listings.length > 0 ? listings[0].sellerName : t.cart?.seller || 'Satıcı'),
             rating: 4.5,
             totalSales: listings.length,
             memberSince: profile.created_at,
