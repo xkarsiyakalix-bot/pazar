@@ -284,7 +284,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
                   <div className="space-y-2.5">
                     <div>
                       <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail?.seller || 'Satıcı'}</div>
-                      <div className="text-sm font-black truncate">{listing.contact_name || sellerProfile?.username || sellerProfile?.full_name || listing.sellerName || t.common?.privateSeller}</div>
+                      <div className="text-sm font-black truncate">{sellerProfile?.username || listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common?.privateSeller}</div>
                     </div>
 
                     {!hideContact && (
@@ -3126,7 +3126,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       state={{ sellerProfile }}
                       className="font-bold text-lg sm:text-xl text-gray-900 dark:text-neutral-50 cursor-pointer hover:text-red-500 transition-colors mb-2 flex items-center gap-1.5 truncate"
                     >
-                      <span className="truncate">{listing.contact_name || seller.username || seller.full_name || t.productDetail.unknownSeller}</span>
+                      <span className="truncate">{seller.username || listing.contact_name || seller.full_name || t.productDetail.unknownSeller}</span>
                       <VerifiedBadge isVerified={seller.is_verified} size="sm" />
                     </Link>
 
