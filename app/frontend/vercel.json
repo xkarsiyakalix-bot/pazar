@@ -20,7 +20,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|W3C_Validator|redditbot|Embedly).*"
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
         }
       ],
       "destination": "/api/og?id=:id&type=listing"
@@ -31,10 +31,351 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|W3C_Validator|redditbot|Embedly).*"
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
         }
       ],
       "destination": "/api/og?id=:id&type=seller"
+    },
+    {
+      "source": "/Emlak/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Emlak/:sub"
+    },
+    {
+      "source": "/Emlak",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Emlak"
+    },
+    {
+      "source": "/Elektronik/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Elektronik/:sub"
+    },
+    {
+      "source": "/Elektronik",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Elektronik"
+    },
+    {
+      "source": "/Ev-Bahce/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Ev-Bahce/:sub"
+    },
+    {
+      "source": "/Ev-Bahce",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Ev-Bahce"
+    },
+    {
+      "source": "/Moda-Guzellik/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Moda-Guzellik/:sub"
+    },
+    {
+      "source": "/Moda-Guzellik",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Moda-Guzellik"
+    },
+    {
+      "source": "/Evcil-Hayvanlar/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Evcil-Hayvanlar/:sub"
+    },
+    {
+      "source": "/Evcil-Hayvanlar",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Evcil-Hayvanlar"
+    },
+    {
+      "source": "/Aile-Cocuk-Bebek/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Aile-Cocuk-Bebek/:sub"
+    },
+    {
+      "source": "/Aile-Cocuk-Bebek",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Aile-Cocuk-Bebek"
+    },
+    {
+      "source": "/Is-Ilanlari/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Is-Ilanlari/:sub"
+    },
+    {
+      "source": "/Is-Ilanlari",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Is-Ilanlari"
+    },
+    {
+      "source": "/Eglence-Hobi-Mahalle/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Eglence-Hobi-Mahalle/:sub"
+    },
+    {
+      "source": "/Eglence-Hobi-Mahalle",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Eglence-Hobi-Mahalle"
+    },
+    {
+      "source": "/Muzik-Film-Kitap/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Muzik-Film-Kitap/:sub"
+    },
+    {
+      "source": "/Muzik-Film-Kitap",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Muzik-Film-Kitap"
+    },
+    {
+      "source": "/Biletler/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Biletler/:sub"
+    },
+    {
+      "source": "/Biletler",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Biletler"
+    },
+    {
+      "source": "/Hizmetler/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Hizmetler/:sub"
+    },
+    {
+      "source": "/Hizmetler",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Hizmetler"
+    },
+    {
+      "source": "/Ucretsiz-Takas/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Ucretsiz-Takas/:sub"
+    },
+    {
+      "source": "/Ucretsiz-Takas",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Ucretsiz-Takas"
+    },
+    {
+      "source": "/Egitim-Kurslar/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Egitim-Kurslar/:sub"
+    },
+    {
+      "source": "/Egitim-Kurslar",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Egitim-Kurslar"
+    },
+    {
+      "source": "/Otomobil-Bisiklet-Tekne/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Otomobil-Bisiklet-Tekne/:sub"
+    },
+    {
+      "source": "/Otomobil-Bisiklet-Tekne",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Otomobil-Bisiklet-Tekne"
+    },
+    {
+      "source": "/Komsu-Yardimi/:sub",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Komsu-Yardimi/:sub"
+    },
+    {
+      "source": "/Komsu-Yardimi",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Komsu-Yardimi"
+    },
+    {
+      "source": "/Butun-Kategoriler",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?type=category&path=/Butun-Kategoriler"
     },
     {
       "source": "/(.*)",
