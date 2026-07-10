@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { CATEGORY_META } from './config/categoryMeta';
 
 /**
  * Enhanced SEO component with Structured Data support
@@ -110,15 +111,19 @@ export const SEO = ({
 };
 
 export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
-  const title = subCategory 
-    ? `${subCategory} İlanları - ${category}` 
-    : `${category} İlanları - Satılık & Kiralık`;
-    
-  const description = listingCount > 0
-    ? `ExVitrin'de ${category} ${subCategory ? `/ ${subCategory}` : ''} kategorisinde ${listingCount} güncel ilan sizi bekliyor. En iyi fiyatlarla güvenle alışveriş yapın.`
-    : `En güncel ${category} ${subCategory ? `(${subCategory})` : ''} ilanları ExVitrin'de. Ücretsiz ilan verin, hızlıca satın veya kiralayın.`;
+  // Use custom SEO data if available
+  const metaKey = subCategory ? subCategory : category;
+  const customMeta = CATEGORY_META?.[metaKey];
 
-  const keywords = `${category}, ${subCategory || ''}, ilanlar, satılık, kiralık, ikinci el, exvitrin`.replace(/, ,/g, ',');
+  const title = customMeta?.title || (subCategory 
+    ? `${subCategory} İlanları - ${category}` 
+    : `${category} İlanları - Satılık & Kiralık`);
+    
+  let description = customMeta?.description || (listingCount > 0
+    ? `ExVitrin'de ${category} ${subCategory ? `/ ${subCategory}` : ''} kategorisinde ${listingCount} güncel ilan sizi bekliyor. En iyi fiyatlarla güvenle alışveriş yapın.`
+    : `En güncel ${category} ${subCategory ? `(${subCategory})` : ''} ilanları ExVitrin'de. Ücretsiz ilan verin, hızlıca satın veya kiralayın.`);
+
+  const keywords = customMeta?.keywords || `${category}, ${subCategory || ''}, ilanlar, satılık, kiralık, ikinci el, exvitrin`.replace(/, ,/g, ',');
 
   const breadcrumbs = [
     { name: 'Ana Sayfa', url: '/' },
