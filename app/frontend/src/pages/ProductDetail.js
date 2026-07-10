@@ -230,15 +230,15 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   const renderDetailRow = (label, value) => {
     if (value === undefined || value === null || value === '') return null;
     return (
-      <div className="flex justify-between items-center py-1 border-b border-gray-100 last:border-0">
+      <div className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-white/5 last:border-0">
         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{label}</span>
-        <span className="text-sm font-black text-gray-900 text-right ml-2">{value}</span>
+        <span className="text-sm font-black text-gray-900 dark:text-neutral-50 text-right ml-2">{value}</span>
       </div>
     );
   };
 
   return (
-    <div className="hidden print:block print-flyer bg-white text-gray-900 font-sans relative overflow-visible box-border border-0 p-0 max-w-[21cm] mx-auto">
+    <div className="hidden print:block print-flyer bg-white text-gray-900 dark:text-neutral-50 font-sans relative overflow-visible box-border border-0 p-0 max-w-[21cm] mx-auto">
       <div className="flex-grow">
         {/* Header with Title and Price - Compact */}
         <div className="flex justify-between items-start border-b-4 border-red-600 pb-4 mb-6 pt-1">
@@ -268,13 +268,13 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
           <div className="col-span-12">
             <div className="grid grid-cols-12 gap-8 mb-6">
               <div className="col-span-7">
-                <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm max-h-[400px]">
+                <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-sm max-h-[400px]">
                   <img src={displayImage} alt={listing.title} className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="col-span-5 flex flex-col gap-4">
                 {/* Kontakt Section */}
-                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
                   <h3 className="text-sm font-black uppercase tracking-tight mb-3 flex items-center gap-2">
                     <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -299,7 +299,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
                     <div>
                       <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common?.location || 'Konum'}</div>
                       <div className="text-[11px] font-bold leading-tight">
-                        {listing.show_location && listing.address && <div className="text-gray-900 line-clamp-1">{listing.address}</div>}
+                        {listing.show_location && listing.address && <div className="text-gray-900 dark:text-neutral-50 line-clamp-1">{listing.address}</div>}
                         <div className="text-gray-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
                       </div>
                     </div>
@@ -320,20 +320,20 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
             </div>
 
             <div className="mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-2">
+              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/5 pb-1 mb-2">
                 {t.productDetail?.description || 'Açıklama'}
               </h2>
 
 
 
-              <div className="text-[13px] text-gray-700 whitespace-pre-wrap leading-relaxed">
+              <div className="text-[13px] text-gray-700 dark:text-neutral-300 whitespace-pre-wrap leading-relaxed">
                 {listing.description}
               </div>
             </div>
 
             {/* Technical Details Grid */}
             <div className="mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-3">
+              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/5 pb-1 mb-3">
                 {t.productDetail?.details || 'Detaylar'}
               </h2>
               <div className="grid grid-cols-2 gap-x-12 gap-y-1">
@@ -376,7 +376,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
             {/* Amenities & Features */}
             {(listing.car_amenities?.length > 0 || listing.amenities?.length > 0 || listing.general_features?.length > 0) && (
               <div className="mb-6">
-                <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 pb-1 mb-3">
+                <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/5 pb-1 mb-3">
                   {(t.productDetail?.amenities || 'Donanımlar')} & {(t.productDetail?.features || 'Özellikler')}
                 </h2>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -393,7 +393,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
             )}
 
             {/* Internal Branding */}
-            <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
+            <div className="border-t border-gray-100 dark:border-white/5 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
               <div className="flex items-center gap-1">
                 <span className="text-red-600 text-[10px] font-black">ExVitrin</span>
                 <span>{t.common?.onlineMarketplace || 'Online Pazaryeri'}</span>
@@ -416,7 +416,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
 
           {[...Array(10)].map((_, i) => (
             <div key={`tab-${i}`} className="flex-1 flex flex-col items-center justify-center py-2 z-10 overflow-hidden">
-              <div className="[writing-mode:vertical-rl] rotate-180 text-base font-black text-gray-900 whitespace-nowrap tracking-tight">
+              <div className="[writing-mode:vertical-rl] rotate-180 text-base font-black text-gray-900 dark:text-neutral-50 whitespace-nowrap tracking-tight">
                 {listing.contact_phone || sellerProfile?.phone}
               </div>
             </div>
@@ -1513,7 +1513,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                       {/* Öne Çıkan Badge */}
                       {listing?.is_highlighted && !listing?.is_top && !listing?.is_gallery && (
-                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
+                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 dark:text-neutral-50 text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
                           <span>✨ Öne Çıkan</span>
 
                         </div>
@@ -1989,20 +1989,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Fahrräder & Zubehör Details */}
                 {(listing.bike_type || listing.art_type) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.art_type && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.art_type}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.art_type}</span>
                         </div>
                       )}
                       {listing.bike_type && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.bike_type}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.bike_type}</span>
                         </div>
                       )}
                     </div>
@@ -2012,50 +2012,50 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Baby & Kinderkleidung / Kinderschuhe Details */}
                 {(listing.baby_kinderkleidung_art || listing.baby_kinderkleidung_size || listing.baby_kinderkleidung_color || listing.baby_kinderkleidung_gender || listing.baby_kinderschuhe_art || listing.baby_kinderschuhe_size || listing.baby_kinderschuhe_color) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.baby_kinderkleidung_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_art}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_size && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.size}</span>
-                          <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_size}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_size}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
-                          <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_color}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_color}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_gender && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.gender}</span>
-                          <span className="font-semibold text-gray-900">{listing.baby_kinderkleidung_gender}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_gender}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.baby_kinderschuhe_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderschuhe_art}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_size && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.size}</span>
-                          <span className="font-semibold text-gray-900">{listing.baby_kinderschuhe_size}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderschuhe_size}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
-                          <span className="font-semibold text-gray-900">{listing.baby_kinderschuhe_color}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderschuhe_color}</span>
                         </div>
                       )}
                     </div>
@@ -2065,20 +2065,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kinderwagen & Buggys Details */}
                 {(listing.kinderwagen_buggys_color || listing.kinderwagen_buggys_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.kinderwagen_buggys_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.kinderwagen_buggys_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kinderwagen_buggys_art}</span>
                         </div>
                       )}
                       {listing.kinderwagen_buggys_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
-                          <span className="font-semibold text-gray-900">{listing.kinderwagen_buggys_color}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kinderwagen_buggys_color}</span>
                         </div>
                       )}
                     </div>
@@ -2090,7 +2090,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   listing.herrenbekleidung_color || listing.herrenbekleidung_art || listing.herrenbekleidung_size || listing.herrenbekleidung_marke ||
                   listing.herrenschuhe_color || listing.herrenschuhe_art || listing.herrenschuhe_size || listing.herrenschuhe_marke) && (
                     <div className="mb-8">
-                      <h2 className="text-lg font-bold text-gray-900 mb-4">
+                      <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                         {t.productDetail.details}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2098,25 +2098,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.damenschuhe_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.damenschuhe_art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_art}</span>
                           </div>
                         )}
                         {listing.damenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            <span className="font-semibold text-gray-900">{listing.damenschuhe_marke}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_marke}</span>
                           </div>
                         )}
                         {listing.damenschuhe_size && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
-                            <span className="font-semibold text-gray-900">{listing.damenschuhe_size}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_size}</span>
                           </div>
                         )}
                         {listing.damenschuhe_color && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
-                            <span className="font-semibold text-gray-900">{listing.damenschuhe_color}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_color}</span>
                           </div>
                         )}
 
@@ -2124,25 +2124,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenbekleidung_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenbekleidung_art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_art}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenbekleidung_marke}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_marke}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_size && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenbekleidung_size}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_size}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_color && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenbekleidung_color}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_color}</span>
                           </div>
                         )}
 
@@ -2150,25 +2150,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenschuhe_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenschuhe_art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_art}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenschuhe_marke}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_marke}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_size && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenschuhe_size}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_size}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_color && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
-                            <span className="font-semibold text-gray-900">{listing.herrenschuhe_color}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_color}</span>
                           </div>
                         )}
                       </div>
@@ -2178,13 +2178,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Babyschalen & Kindersitze Details */}
                 {listing.babyschalen_kindersitze_color && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.addListing.color}</span>
-                        <span className="font-semibold text-gray-900">{listing.babyschalen_kindersitze_color}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.babyschalen_kindersitze_color}</span>
                       </div>
                     </div>
                   </div>
@@ -2193,13 +2193,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kinderzimmermöbel Details */}
                 {listing.kinderzimmermobel_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.kinderzimmermobel_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kinderzimmermobel_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2208,13 +2208,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Spielzeug Details */}
                 {listing.spielzeug_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.spielzeug_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.spielzeug_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2222,13 +2222,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.fische_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.fische_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.fische_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2237,13 +2237,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.haustier_zubehoer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.haustier_zubehoer_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.haustier_zubehoer_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2252,32 +2252,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Hunde Details */}
                 {(listing.hunde_art || listing.hunde_alter || listing.hunde_geimpft || listing.hunde_erlaubnis) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.hunde_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.hunde_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_art}</span>
                         </div>
                       )}
                       {listing.hunde_alter && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.age}</span>
-                          <span className="font-semibold text-gray-900">{listing.hunde_alter}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_alter}</span>
                         </div>
                       )}
                       {listing.hunde_geimpft && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.vaccinatedAndChipped}</span>
-                          <span className="font-semibold text-gray-900">{listing.hunde_geimpft}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_geimpft}</span>
                         </div>
                       )}
                       {listing.hunde_erlaubnis && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.officialPermission}</span>
-                          <span className="font-semibold text-gray-900">{listing.hunde_erlaubnis}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_erlaubnis}</span>
                         </div>
                       )}
                     </div>
@@ -2287,32 +2287,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Katzen Details */}
                 {(listing.katzen_art || listing.katzen_alter || listing.katzen_geimpft || listing.katzen_erlaubnis) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.katzen_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.katzen_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_art}</span>
                         </div>
                       )}
                       {listing.katzen_alter && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.age}</span>
-                          <span className="font-semibold text-gray-900">{listing.katzen_alter}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_alter}</span>
                         </div>
                       )}
                       {listing.katzen_geimpft && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.vaccinatedAndChipped}</span>
-                          <span className="font-semibold text-gray-900">{listing.katzen_geimpft}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_geimpft}</span>
                         </div>
                       )}
                       {listing.katzen_erlaubnis && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.officialPermission}</span>
-                          <span className="font-semibold text-gray-900">{listing.katzen_erlaubnis}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_erlaubnis}</span>
                         </div>
                       )}
                     </div>
@@ -2322,14 +2322,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kleintiere Details */}
                 {(listing.kleintiere_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.kleintiere_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.kleintiere_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kleintiere_art}</span>
                         </div>
                       )}
                     </div>
@@ -2339,14 +2339,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Nutztiere Details */}
                 {(listing.nutztiere_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.nutztiere_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.nutztiere_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.nutztiere_art}</span>
                         </div>
                       )}
                     </div>
@@ -2407,13 +2407,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Taschen & Accessoires Details */}
                 {listing.taschen_accessoires_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.taschen_accessoires_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.taschen_accessoires_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2422,13 +2422,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Uhren & Schmuck Details */}
                 {listing.uhren_schmuck_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.uhren_schmuck_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.uhren_schmuck_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2437,13 +2437,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Beauty & Gesundheit Details */}
                 {listing.beauty_gesundheit_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.beauty_gesundheit_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.beauty_gesundheit_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2546,13 +2546,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.altenpflege_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.altenpflege_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.altenpflege_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2561,13 +2561,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Sprachkurse Details */}
                 {listing.sprachkurse_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.sprachkurse_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.sprachkurse_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2576,13 +2576,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kunst & Gestaltung Details */}
                 {listing.kunst_gestaltung_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.kunst_gestaltung_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kunst_gestaltung_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2591,13 +2591,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Weiteres Haus & Garten Details */}
                 {listing.weiteres_haus_garten_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.weiteres_haus_garten_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.weiteres_haus_garten_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2606,13 +2606,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Küche & Esszimmer Details */}
                 {listing.kueche_esszimmer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.kueche_esszimmer_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kueche_esszimmer_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2621,13 +2621,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Heimwerken (Ev Tadilatı) Details */}
                 {listing.heimwerken_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.heimwerken_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.heimwerken_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2636,13 +2636,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Gartenzubehör & Pflanzen Details */}
                 {listing.gartenzubehoer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.gartenzubehoer_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.gartenzubehoer_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2651,13 +2651,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Modellbau Details */}
                 {listing.modellbau_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.modellbau_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.modellbau_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2666,13 +2666,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Handarbeit & Basteln Details */}
                 {listing.handarbeit_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.handarbeit_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.handarbeit_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2681,32 +2681,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Damenbekleidung / Kadın Giyimi Details */}
                 {(listing.damenbekleidung_art || listing.damenbekleidung_marke || listing.damenbekleidung_size || listing.damenbekleidung_color) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
                       {listing.damenbekleidung_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900">{listing.damenbekleidung_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_art}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_marke && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Marka</span>
-                          <span className="font-semibold text-gray-900">{listing.damenbekleidung_marke}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_marke}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_size && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Beden</span>
-                          <span className="font-semibold text-gray-900">{listing.damenbekleidung_size}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_size}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Renk</span>
-                          <span className="font-semibold text-gray-900">{listing.damenbekleidung_color}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_color}</span>
                         </div>
                       )}
                     </div>
@@ -2921,13 +2921,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Reise & Eventservices Details */}
                 {listing.reise_eventservices_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b-2 border-gray-300 mb-8">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900">{listing.reise_eventservices_art}</span>
+                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.reise_eventservices_art}</span>
                       </div>
                     </div>
                   </div>
