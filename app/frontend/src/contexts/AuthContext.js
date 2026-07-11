@@ -80,6 +80,14 @@ export const AuthProvider = ({ children }) => {
 
                     if (currentUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
                         checkBanStatus(currentUser.id);
+                        // Update last_seen directly on login/session restore
+                        supabase
+                            .from('profiles')
+                            .update({ last_seen: new Date().toISOString() })
+                            .eq('id', currentUser.id)
+                            .then(({ error }) => {
+                                if (error) console.warn('last_seen update error:', error.message);
+                            });
                     }
                 }
             }
