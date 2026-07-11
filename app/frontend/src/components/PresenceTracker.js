@@ -81,12 +81,21 @@ export const PresenceTracker = () => {
             return;
         }
         const fetchProfile = async () => {
+            const now = new Date().toISOString();
+            
+            // Fetch profile data
             const { data } = await supabase
                 .from('profiles')
                 .select('full_name, email')
                 .eq('id', user.id)
                 .single();
             profileRef.current = data;
+
+            // Update last_seen in the database
+            await supabase
+                .from('profiles')
+                .update({ last_seen: now })
+                .eq('id', user.id);
         };
         fetchProfile();
     }, [user]);
