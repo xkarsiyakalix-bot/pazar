@@ -31,20 +31,10 @@ export { AnimalProtectionPage, RealEstateLegalPage, VehicleLegalPage } from './L
 export { getCategoryPath, getListingUrl } from '../utils/slug';
 export { formatLastSeen, generateListingNumber } from '../utils/format';
 
-// Legacy components (Items still in components.legacy.js)
+// Direct page/component exports (NOT from components.legacy.js)
 export { ProductDetail } from '../pages/ProductDetail';
 export { SellerPage } from '../pages/SellerPage';
 export { VisibilityPackagesModal } from './VisibilityPackagesModal';
-export {
-  LazyImage,
-  mockListings,
-  mockListings2,
-  Checkout,
-  Messages,
-  MyListings,
-  Settings,
-  Favorites,
-  normalizeSubcategoryName,
-  ReportModal,
-  AddListing
-} from '../components.legacy';
+export { LazyImage } from './LazyImage';
+export { ReportModal } from './ReportModal';
+export { normalizeSubcategoryName } from '../utils/slug';

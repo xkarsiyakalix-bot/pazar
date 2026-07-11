@@ -243,3 +243,14 @@ export const getCategoryPath = (categoryName, subcategoryName = null) => {
     const subSlug = subMappings[subcategoryName] || slugify(subcategoryName);
     return `/${catSlug}/${subSlug}`;
 };
+
+
+// Normalize subcategory name for display
+export const normalizeSubcategoryName = (subcategoryName) => {
+  if (!subcategoryName) return '';
+  const normalizationMap = {
+    'Spor Etkinlikleri': 'Spor',
+    'Çocuk Etkinlikleri': 'Çocuk',
+  };
+  return normalizationMap[subcategoryName] || subcategoryName;
+};
