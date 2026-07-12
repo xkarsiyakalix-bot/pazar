@@ -135,8 +135,7 @@ export const getFollowing = async () => {
                 is_pro,
                 is_commercial,
                 subscription_tier,
-                seller_type,
-                is_verified
+                seller_type
             )
         `)
         .eq('follower_id', user.id);
@@ -219,8 +218,7 @@ export const getFollowers = async () => {
                 is_pro,
                 is_commercial,
                 subscription_tier,
-                seller_type,
-                is_verified
+                seller_type
             )
         `)
         .eq('following_id', user.id);
