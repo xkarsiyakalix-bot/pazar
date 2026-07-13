@@ -821,7 +821,7 @@ function App() {
     <>
       <ScrollToTop />
       <CategorySync setSelectedCategory={setSelectedCategory} />
-      <div className="App min-h-screen bg-gray-50 dark:!bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
+      <div className="App overflow-x-hidden max-w-[100vw] w-full min-h-screen bg-gray-50 dark:!bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
         {deferNonCritical && <PresenceTracker />}
         <React.Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:!bg-neutral-950">
