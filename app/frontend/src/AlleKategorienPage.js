@@ -513,7 +513,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
 
 
 
-                <div className="flex items-center gap-3 mb-6 bg-white dark:!bg-neutral-950 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                <div className="flex items-center gap-3 mb-6 xl:bg-white xl:dark:!bg-neutral-950 xl:p-3 xl:rounded-2xl xl:border xl:border-gray-100 xl:dark:border-white/5 xl:shadow-sm">
                     {/* Mobile/Tablet Filter Button */}
                     <button
                         onClick={() => setShowMobileFilters(true)}
@@ -530,7 +530,7 @@ export const AlleKategorienPage = ({ toggleFavorite, isFavorite, initialCategory
                         )}
                     </button>
 
-                    <div className="flex-1 overflow-hidden">
+                    <div className="hidden xl:block flex-1 overflow-hidden">
                         <Breadcrumb items={breadcrumbItems} />
                     </div>
                 </div>

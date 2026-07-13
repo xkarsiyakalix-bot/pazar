@@ -450,7 +450,7 @@ const GenericCategoryPage = ({
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
                 {/* Breadcrumb Bar */}
-                <div className="flex items-center gap-3 mb-6 bg-white dark:!bg-neutral-950 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                <div className="flex items-center gap-3 mb-6 xl:bg-white xl:dark:!bg-neutral-950 xl:p-3 xl:rounded-2xl xl:border xl:border-gray-100 xl:dark:border-white/5 xl:shadow-sm">
                     <button
                         onClick={() => setShowMobileFilters(true)}
                         className="xl:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-xl shadow-md transition-all active:scale-95 shrink-0"
@@ -463,7 +463,7 @@ const GenericCategoryPage = ({
                             <span className="w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">{activeFilterCount}</span>
                         )}
                     </button>
-                    <div className="flex-1 overflow-hidden">
+                    <div className="hidden xl:block flex-1 overflow-hidden">
                         <Breadcrumb items={breadcrumbItems} />
                     </div>
                 </div>
