@@ -83,8 +83,6 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
     setCurrentIndex(prev => Math.max(prev - 1, 0));
   };
 
-  if (galleryItems.length === 0) return null;
-
   return (
     <>
       <section className="mb-4 sm:mb-6 overflow-hidden">
@@ -124,36 +122,38 @@ export const CategoryGallery = ({ category, subCategory, listings, toggleFavorit
         </div>
       </div>
 
-      <div className="relative overflow-hidden">
-        <div
-            className="flex gap-2 sm:gap-3 overflow-x-auto md:overflow-hidden snap-x snap-mandatory scrollbar-hide md:transition-transform md:duration-500 md:ease-in-out py-1.5 px-0.5"
-            style={{
-              transform: !isMobile ? `translateX(-${currentIndex * (100 / itemsPerView)}%)` : 'none',
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch'
-            }}
-          >
-            {galleryItems.map((item) => (
-              <div
-                key={item.id}
-                className="gallery-item flex-shrink-0 snap-start"
-                style={{
-                  width: window.innerWidth < 768
-                    ? 'calc(45% - 8px)'
-                    : `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView === 2 ? 8 : 12) / itemsPerView}px)`
-                }}
-              >
-                <ListingCard
-                  listing={item}
-                  toggleFavorite={toggleFavorite}
-                  isFavorite={isFavorite}
-                  isOwnListing={user && item.user_id === user.id}
-                  hidePrice={hidePrice}
-                />
-              </div>
-            ))}
-          </div>
-      </div>
+      {galleryItems.length > 0 && (
+        <div className="relative overflow-hidden">
+          <div
+              className="flex gap-2 sm:gap-3 overflow-x-auto md:overflow-hidden snap-x snap-mandatory scrollbar-hide md:transition-transform md:duration-500 md:ease-in-out py-1.5 px-0.5"
+              style={{
+                transform: !isMobile ? `translateX(-${currentIndex * (100 / itemsPerView)}%)` : 'none',
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              {galleryItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="gallery-item flex-shrink-0 snap-start"
+                  style={{
+                    width: window.innerWidth < 768
+                      ? 'calc(45% - 8px)'
+                      : `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * (itemsPerView === 2 ? 8 : 12) / itemsPerView}px)`
+                  }}
+                >
+                  <ListingCard
+                    listing={item}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                    isOwnListing={user && item.user_id === user.id}
+                    hidePrice={hidePrice}
+                  />
+                </div>
+              ))}
+            </div>
+        </div>
+      )}
     </section>
       <GalleryInfoModal isOpen={showInfoModal} onClose={() => setShowInfoModal(false)} />
     </>
