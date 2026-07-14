@@ -86,6 +86,20 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm start`.
     -->
+    <!-- Auto-reload on ChunkLoadError (stale chunks after a new deploy) -->
+    <script>
+        window.addEventListener('error', function(e) {
+            var src = (e.target && e.target.src) || '';
+            var isChunk = /\.chunk\.js$/.test(src) || /ChunkLoadError/.test(String(e.message));
+            if (isChunk) {
+                var key = 'chunk_err_reload';
+                if (!sessionStorage.getItem(key)) {
+                    sessionStorage.setItem(key, '1');
+                    window.location.reload(true);
+                }
+            }
+        }, true);
+    </script>
     <script>
         try {
             const saved = localStorage.getItem('site_settings');

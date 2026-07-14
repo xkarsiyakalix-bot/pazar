@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LoadingSpinner from './components/LoadingSpinner';
+import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
 import CookieConsent from './components/CookieConsent';
@@ -823,6 +824,7 @@ function App() {
       <CategorySync setSelectedCategory={setSelectedCategory} />
       <div className="App overflow-x-hidden max-w-[100vw] w-full min-h-screen bg-gray-50 dark:!bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
         {deferNonCritical && <PresenceTracker />}
+        <ChunkErrorBoundary>
         <React.Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:!bg-neutral-950">
             <div className="text-center">
@@ -1175,6 +1177,7 @@ function App() {
             </>
           )}
         </React.Suspense>
+        </ChunkErrorBoundary>
       </div>
     </>
   );
