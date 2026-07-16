@@ -118,7 +118,8 @@ const AdminUsers = () => {
     // Filter and Search
     const filteredUsers = users.filter(user => {
         const matchesSearch = (user.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-            (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+            (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+            (user.username?.toLowerCase() || '').includes(searchTerm.toLowerCase());
 
         // Apply active filter
         let matchesFilter = true;
@@ -299,6 +300,7 @@ const AdminUsers = () => {
                         <thead className="bg-neutral-50/50 dark:bg-neutral-950/50 border-b border-neutral-100 dark:border-white/5 text-neutral-500 dark:text-neutral-400 font-bold text-[11px] uppercase tracking-wider">
                             <tr>
                                 <th className="px-6 py-4">Kullanıcı Profili</th>
+                                <th className="px-6 py-4">Takma İsim</th>
                                 <th className="px-6 py-4">Sistem ID'leri</th>
                                 <th className="px-6 py-4">Abonelik & Tür</th>
                                 <th className="px-6 py-4 text-center">Hesap Durumu</th>
@@ -333,6 +335,15 @@ const AdminUsers = () => {
                                                 <div className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{user.email}</div>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {user.username ? (
+                                            <span className="inline-flex items-center gap-1 text-xs font-mono font-semibold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-900/30 px-2 py-0.5 rounded-lg">
+                                                @{user.username}
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs text-neutral-300 dark:text-neutral-600">—</span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-0.5">
@@ -551,7 +562,7 @@ const AdminUsers = () => {
                             ))}
                             {paginatedUsers.length === 0 && (
                                 <tr>
-                                    <td colSpan="7" className="px-6 py-16 text-center text-neutral-400 dark:text-neutral-500 transition-colors duration-300">
+                                    <td colSpan="8" className="px-6 py-16 text-center text-neutral-400 dark:text-neutral-500 transition-colors duration-300">
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-16 h-16 bg-neutral-50 dark:bg-neutral-800 rounded-full flex items-center justify-center">
                                                 <svg className="w-8 h-8 text-neutral-300 dark:text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
