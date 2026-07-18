@@ -555,5 +555,56 @@ export const CATEGORY_META = {
   'Herrenbekleidung': {
     title: 'Erkek Giyim İlanları - İkinci El & Sıfır | ExVitrin',
     description: 'ExVitrin\'de erkek giyim ilanları! İkinci el ve sıfır takım, gömlek, pantolon, ceket ve daha fazlası.'
+  },
+  // Eksik alt kategoriler – Google tarafından crawledildi ancak index edilmedi
+  'Ev-Hizmetleri': {
+    title: 'Ev Hizmetleri İlanları - Temizlik, Tadilat, Tamir | ExVitrin',
+    description: 'ExVitrin\'de ev hizmetleri ilanları! Ev temizliği, tadilat, boya, tesisat, elektrik ve çilingir gibi tüm ev hizmetleri bir arada.',
+    keywords: 'ev hizmetleri, temizlik hizmeti, tadilat, ev tamiri, tesisat, elektrikçi, exvitrin'
+  },
+  'Temizlik-Hizmetleri': {
+    title: 'Temizlik Hizmeti İlanları - Ev & Ofis Temizliği | ExVitrin',
+    description: 'ExVitrin\'de profesyonel temizlik hizmeti ilanları! Ev temizliği, ofis temizliği, cam silme ve genel temizlik hizmetleri.',
+    keywords: 'temizlik hizmetleri, ev temizliği, ofis temizliği, profesyonel temizlik, exvitrin'
+  },
+  'Tadilat-Tamir': {
+    title: 'Tadilat & Tamir Hizmeti İlanları | ExVitrin',
+    description: 'ExVitrin\'de tadilat ve tamir hizmeti ilanları! Boya badana, bölme duvar, zemin kaplama ve tüm ev tadilat hizmetleri.',
+    keywords: 'tadilat hizmeti, tamir hizmeti, boya badana, zemin kaplama, ev tadilat, exvitrin'
+  },
+  'Tesisat': {
+    title: 'Tesisat Hizmeti İlanları - Su, Doğalgaz | ExVitrin',
+    description: 'ExVitrin\'de tesisat hizmeti ilanları! Su tesisatı, doğalgaz tesisatı, kalorifer ve ısıtma sistemi hizmetleri.',
+    keywords: 'tesisat hizmeti, su tesisatı, doğalgaz tesisatı, ısıtma, exvitrin'
+  },
+  'Elektrik': {
+    title: 'Elektrik Hizmeti İlanları - Elektrikçi | ExVitrin',
+    description: 'ExVitrin\'de elektrik hizmeti ilanları! Elektrik tesisatı, priz montajı, aydınlatma ve elektrik arıza hizmetleri.',
+    keywords: 'elektrikçi, elektrik hizmeti, elektrik tesisatı, aydınlatma montajı, exvitrin'
+  },
+  'Guzellik-Saglik': {
+    title: 'Güzellik & Sağlık Hizmet İlanları | ExVitrin',
+    description: 'ExVitrin\'de güzellik ve sağlık hizmet ilanları! Kuaför, berber, masaj, manikür, pedikür ve cilt bakımı hizmetleri.',
+    keywords: 'güzellik hizmetleri, kuaför, berber, masaj, cilt bakımı, exvitrin'
+  },
+  'Guzellik-Saglik-Ilanlari': {
+    title: 'Güzellik & Sağlık Ürün İlanları - Moda & Güzellik | ExVitrin',
+    description: 'ExVitrin\'de güzellik ve sağlık ürün ilanları! Makyaj, parfüm, cilt bakımı, saç bakımı ve kişisel bakım ürünleri.',
+    keywords: 'güzellik ürünleri, sağlık ürünleri, makyaj, parfüm, cilt bakımı, exvitrin'
+  },
+  'Diger-Hizmetler-Ev': {
+    title: 'Diğer Ev Hizmetleri İlanları | ExVitrin',
+    description: 'ExVitrin\'de diğer ev hizmet ilanları! Çilingir, haşere ilaçlama, bahçe bakımı ve çeşitli ev hizmetleri.',
+    keywords: 'çilingir, haşere ilaçlama, bahçe bakımı, ev hizmetleri, exvitrin'
+  },
+  'Mesleki-Egitim': {
+    title: 'Mesleki Eğitim & Staj İlanları | ExVitrin',
+    description: 'ExVitrin\'de mesleki eğitim ve staj ilanları! Usta çırak eğitimi, mesleki kurs ve staj fırsatları tüm sektörlerden.',
+    keywords: 'mesleki eğitim, staj ilanları, meslek kursu, çıraklık, exvitrin'
+  },
+  'Insaat-El-Sanatlari-Uretim': {
+    title: 'İnşaat, El Sanatları & Üretim İş İlanları | ExVitrin',
+    description: 'ExVitrin\'de inşaat, el sanatları ve üretim sektöründe iş ilanları! Usta, işçi, teknisyen ve üretim personeli arıyoruz.',
+    keywords: 'inşaat iş ilanları, usta aranıyor, üretim iş ilanları, teknisyen, exvitrin'
   }
 };

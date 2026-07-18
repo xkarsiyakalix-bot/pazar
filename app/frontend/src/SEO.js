@@ -113,7 +113,10 @@ export const SEO = ({
 export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
   // Use custom SEO data if available
   const metaKey = subCategory ? subCategory : category;
-  const customMeta = CATEGORY_META?.[metaKey];
+  // Case-insensitive lookup: try exact key, then title-cased, then lowercased
+  const customMeta = CATEGORY_META?.[metaKey]
+    || CATEGORY_META?.[metaKey?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')]
+    || Object.entries(CATEGORY_META || {}).find(([k]) => k.toLowerCase() === (metaKey || '').toLowerCase())?.[1];
 
   const title = customMeta?.title || (subCategory 
     ? `${subCategory} İlanları - ${category}` 
