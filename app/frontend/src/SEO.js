@@ -162,7 +162,7 @@ export const ProductSEO = ({ listing }) => {
     'image': listing.images?.[0] || 'https://www.exvitrin.com/logo_exvitrin_2026.png',
     'offers': {
       '@type': 'Offer',
-      'price': listing.price,
+      'price': listing.price ? Number(listing.price).toFixed(2) : "0.00",
       'priceCurrency': 'TRY',
       'availability': 'https://schema.org/InStock'
     }
