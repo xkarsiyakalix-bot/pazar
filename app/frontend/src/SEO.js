@@ -160,11 +160,49 @@ export const ProductSEO = ({ listing }) => {
     'name': listing.title,
     'description': listing.description?.substring(0, 300) || '',
     'image': listing.images?.[0] || 'https://www.exvitrin.com/logo_exvitrin_2026.png',
+    'sku': listing.id?.toString() || 'unknown',
+    'brand': {
+      '@type': 'Brand',
+      'name': listing.category || 'İkinci El'
+    },
     'offers': {
       '@type': 'Offer',
       'price': listing.price ? Number(listing.price).toFixed(2) : "0.00",
       'priceCurrency': 'TRY',
-      'availability': 'https://schema.org/InStock'
+      'availability': 'https://schema.org/InStock',
+      'itemCondition': 'https://schema.org/UsedCondition',
+      'hasMerchantReturnPolicy': {
+        '@type': 'MerchantReturnPolicy',
+        'returnPolicyCategory': 'https://schema.org/MerchantReturnNotPermitted',
+        'applicableCountry': 'TR'
+      },
+      'shippingDetails': {
+        '@type': 'OfferShippingDetails',
+        'shippingRate': {
+          '@type': 'MonetaryAmount',
+          'value': '0.00',
+          'currency': 'TRY'
+        },
+        'shippingDestination': {
+          '@type': 'DefinedRegion',
+          'addressCountry': 'TR'
+        },
+        'deliveryTime': {
+          '@type': 'ShippingDeliveryTime',
+          'handlingTime': {
+            '@type': 'QuantitativeValue',
+            'minValue': 0,
+            'maxValue': 3,
+            'unitCode': 'd'
+          },
+          'transitTime': {
+            '@type': 'QuantitativeValue',
+            'minValue': 1,
+            'maxValue': 5,
+            'unitCode': 'd'
+          }
+        }
+      }
     }
   };
 
