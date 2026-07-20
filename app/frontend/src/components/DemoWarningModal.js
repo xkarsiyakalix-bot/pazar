@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 const DemoWarningModal = () => {
+    // İptal edildi: Kullanıcılar bu uyarıyı artık görmeyecek
+    return null;
+
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
