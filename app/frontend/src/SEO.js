@@ -56,14 +56,14 @@ export const SEO = ({
     breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
-      'itemListElement': breadcrumbs.map((crumb, index) => ({
-        '@type': 'ListItem',
-        'position': index + 1,
-        'item': {
-          '@id': crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`,
-          'name': crumb.name
-        }
-      }))
+      'itemListElement': breadcrumbs
+        .filter(crumb => crumb && crumb.name && crumb.url)
+        .map((crumb, index) => ({
+          '@type': 'ListItem',
+          'position': index + 1,
+          'name': crumb.name,
+          'item': crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`
+        }))
     };
   }
 
