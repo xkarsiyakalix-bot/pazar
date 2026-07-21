@@ -58,12 +58,17 @@ export const SEO = ({
       '@type': 'BreadcrumbList',
       'itemListElement': breadcrumbs
         .filter(crumb => crumb && crumb.name && crumb.url)
-        .map((crumb, index) => ({
-          '@type': 'ListItem',
-          'position': index + 1,
-          'name': crumb.name,
-          'item': crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`
-        }))
+        .map((crumb, index) => {
+          const absoluteUrl = crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`;
+          return {
+            '@type': 'ListItem',
+            'position': index + 1,
+            'item': {
+              '@id': encodeURI(absoluteUrl),
+              'name': crumb.name
+            }
+          };
+        })
     };
   }
 
