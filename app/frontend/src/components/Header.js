@@ -300,7 +300,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                         {isSettingsOpen && (
                                             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-100 dark:border-white/10 py-2 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
                                                 <button
-                                                    onClick={() => { navigate(userProfile ? getSellerUrl(userProfile) : '/profile'); setIsSettingsOpen(false); }}
+                                                    onClick={() => { navigate(userProfile ? getSellerUrl(userProfile) : '/profile', { state: { seller: userProfile } }); setIsSettingsOpen(false); }}
                                                     className="w-full text-left px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-3 transition-colors"
                                                 >
                                                     <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
@@ -335,7 +335,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
 
                                 <div className="relative group hidden sm:block">
                                     <button
-                                        onClick={() => navigate(userProfile ? getSellerUrl(userProfile) : '/profile')}
+                                        onClick={() => navigate(userProfile ? getSellerUrl(userProfile) : '/profile', { state: { seller: userProfile } })}
                                         className="text-neutral-700 dark:text-neutral-300 font-semibold inline-flex items-center gap-1 hover:text-blue-600 transition-colors py-2"
                                     >
                                         <span className="text-neutral-500 dark:text-neutral-400">Merhaba,</span>{' '}
@@ -345,7 +345,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                     
                                     <div className="absolute right-0 top-full w-48 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-100 dark:border-white/10 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] translate-y-2 group-hover:translate-y-0">
                                         <button
-                                            onClick={() => navigate(userProfile ? getSellerUrl(userProfile) : '/profile')}
+                                            onClick={() => navigate(userProfile ? getSellerUrl(userProfile) : '/profile', { state: { seller: userProfile } })}
                                             className="w-full text-left px-4 py-2.5 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-3 transition-colors"
                                         >
                                             <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>

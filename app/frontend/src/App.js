@@ -6,6 +6,7 @@ import pwaManager from './utils/pwaManager';
 import CookieConsent from './components/CookieConsent';
 import DemoWarningModal from './components/DemoWarningModal';
 import ProductDetail from './pages/ProductDetail';
+import SellerPage from './pages/SellerPage';
 
 
 import './App.css';
@@ -36,7 +37,6 @@ const AddListing = React.lazy(() => import('./pages/AddListing'));
 const SellerProfile = React.lazy(() => import('./components/SellerProfile'));
 const AllCategories = React.lazy(() => import('./components/AllCategories'));
 const Checkout = React.lazy(() => import('./pages/Checkout'));
-const SellerPage = React.lazy(() => import('./pages/SellerPage'));
 const SpecialSellers = React.lazy(() => import('./components/SpecialSellers'));
 const AnimalProtectionPage = React.lazy(() => import('./components/LegalPages').then(m => ({ default: m.AnimalProtectionPage })));
 const RealEstateLegalPage = React.lazy(() => import('./components/LegalPages').then(m => ({ default: m.RealEstateLegalPage })));

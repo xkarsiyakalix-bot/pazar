@@ -283,9 +283,9 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
   const location = useLocation();
   const { user } = useAuth();
 
-  const [seller, setSeller] = useState(location.state?.sellerProfile || null);
+  const [seller, setSeller] = useState(location.state?.sellerProfile || location.state?.seller || null);
   const [sellerListings, setSellerListings] = useState([]);
-  const [loading, setLoading] = useState(!location.state?.sellerProfile);
+  const [loading, setLoading] = useState(!(location.state?.sellerProfile || location.state?.seller));
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(t.sellerProfile.all);
   const [activeTab, setActiveTab] = useState('listings');

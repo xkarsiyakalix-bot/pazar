@@ -3063,7 +3063,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     </div>
                     {sellerListingsCount > sellerOtherListings.length && (
                       <Link
-                        to={sellerPath}
+                        to={sellerPath} state={{ seller }}
                         state={{ sellerProfile }}
                         className="mt-4 text-red-500 hover:text-red-600 font-medium text-sm block"
                       >
@@ -3125,7 +3125,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                   <div className="flex-1 min-w-0 pt-1">
                     <Link
-                      to={sellerPath}
+                      to={sellerPath} state={{ seller }}
                       state={{ sellerProfile }}
                       className="font-bold text-lg sm:text-xl text-gray-900 dark:text-neutral-50 cursor-pointer hover:text-red-500 transition-colors mb-2 flex items-center gap-1.5 truncate"
                     >
@@ -3218,7 +3218,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {t.productDetail.moreListingsFrom.replace('{name}', seller.username || seller.full_name || seller.name || t.productDetail.unknownSeller)}
                     </span>
                     <Link
-                      to={sellerPath}
+                      to={sellerPath} state={{ seller }}
                       state={{ sellerProfile }}
                       className="text-sm text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 font-medium block"
                     >
@@ -3360,7 +3360,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   Bu Satıcının Diğer İlanları
                 </h2>
                 <Link
-                  to={sellerPath}
+                  to={sellerPath} state={{ seller }}
                   state={{ sellerProfile }}
                   className="text-sm md:text-base text-red-600 hover:text-red-700 font-semibold transition-colors flex items-center gap-1"
                 >

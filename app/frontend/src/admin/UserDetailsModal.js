@@ -105,7 +105,7 @@ const UserDetailsModal = ({ user: initialUser, onClose }) => {
                             <div className="relative group/profile">
                                 {/* Main Profile Image (Store Logo or Avatar) */}
                                 <div
-                                    onClick={() => navigate(getSellerUrl(user))}
+                                    onClick={() => navigate(getSellerUrl(user), { state: { seller: user } })}
                                     className="w-32 h-32 rounded-full bg-neutral-50 dark:bg-neutral-800 mb-4 overflow-hidden border-4 border-white dark:border-neutral-800 shadow-xl cursor-pointer hover:ring-4 hover:ring-blue-100 dark:hover:ring-blue-900/30 transition-all relative"
                                     title={(user.is_pro || user.is_commercial || user.store_slug) ? "Mağazayı Gör" : "Profili Gör"}
                                 >
@@ -135,7 +135,7 @@ const UserDetailsModal = ({ user: initialUser, onClose }) => {
                                 )}
                                 <p className="text-neutral-500 dark:text-neutral-400 mb-2">{user.email}</p>
                                 <button
-                                    onClick={() => navigate(getSellerUrl(user))}
+                                    onClick={() => navigate(getSellerUrl(user), { state: { seller: user } })}
                                     className="mt-2 px-4 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors flex items-center gap-2 border border-blue-100 dark:border-blue-900/30"
                                 >
                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

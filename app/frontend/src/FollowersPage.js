@@ -81,7 +81,7 @@ const FollowersPage = () => {
                     {followers.map(follower => (
                         <div
                             key={follower.id}
-                            onClick={() => navigate(getSellerUrl(follower))}
+                            onClick={() => navigate(getSellerUrl(follower), { state: { seller: follower } })}
                             className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden border border-transparent dark:border-white/5"
                         >
                             <div className="p-6">

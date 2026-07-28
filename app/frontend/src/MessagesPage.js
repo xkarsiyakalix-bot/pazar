@@ -497,7 +497,7 @@ function MessagesPage() {
                                     )}
                                     <div
                                         className="relative cursor-pointer"
-                                        onClick={() => navigate(getSellerUrl(selectedConversation.user))}
+                                        onClick={() => navigate(getSellerUrl(selectedConversation.user), { state: { seller: selectedConversation.user } })}
                                     >
                                         <img
                                             src={selectedConversation.user.store_logo || selectedConversation.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedConversation.user.full_name || 'U')}&background=ef4444&color=fff`}
@@ -508,7 +508,7 @@ function MessagesPage() {
                                     </div>
                                     <div
                                         className="cursor-pointer"
-                                        onClick={() => navigate(getSellerUrl(selectedConversation.user))}
+                                        onClick={() => navigate(getSellerUrl(selectedConversation.user), { state: { seller: selectedConversation.user } })}
                                     >
                                         <h3 className="font-bold text-[15px] text-neutral-900 dark:text-white hover:text-blue-600 transition-colors leading-tight">
                                             {selectedConversation.user.full_name}

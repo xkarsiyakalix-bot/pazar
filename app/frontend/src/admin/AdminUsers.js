@@ -315,7 +315,7 @@ const AdminUsers = () => {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div
-                                                onClick={() => navigate(getSellerUrl(user))}
+                                                onClick={() => navigate(getSellerUrl(user), { state: { seller: user } })}
                                                 className="w-10 h-10 rounded-full bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900 border border-neutral-200 dark:border-white/10 p-0.5 flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
                                                 title="Profile Git"
                                             >
@@ -327,7 +327,7 @@ const AdminUsers = () => {
                                             </div>
                                             <div className="min-w-0">
                                                 <div
-                                                    onClick={() => navigate(getSellerUrl(user))}
+                                                    onClick={() => navigate(getSellerUrl(user), { state: { seller: user } })}
                                                     className="font-bold text-neutral-900 dark:text-neutral-100 text-sm truncate cursor-pointer hover:text-blue-600 transition-colors"
                                                 >
                                                     {user.full_name || 'İsimsiz Kullanıcı'}
