@@ -50,7 +50,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   }
 
   return (
-    <div className={cardClasses} onClick={() => navigate(getListingUrl(listing))}>
+    <div className={cardClasses} onClick={() => navigate(getListingUrl(listing), { state: { listing } })}>
       {/* ── Image Area ── */}
       <div className="relative overflow-hidden bg-gray-100 dark:bg-neutral-900 h-44" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
         {/* Skeleton shimmer */}

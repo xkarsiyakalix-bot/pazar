@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { t } from '../translations';
@@ -433,6 +433,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const routeId = propId || params.id;
   const slug = propSlug || params.slug || params['*'];
   const navigate = useNavigate();
+  const location = useLocation();
   const [printHideContact, setPrintHideContact] = useState(false);
   const thumbnailScrollRef = useRef(null);
 
@@ -466,11 +467,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   };
 
   const cachedData = getCachedData();
+  const locationStateListing = location.state?.listing;
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
-  // State for listing data - Init from Cache
-  const [listing, setListing] = useState(cachedData?.listing || null);
-  const [loading, setLoading] = useState(!cachedData?.listing);
+  // State for listing data - Init from Cache or Router State
+  const [listing, setListing] = useState(cachedData?.listing || locationStateListing || null);
+  const [loading, setLoading] = useState(!cachedData?.listing && !locationStateListing);
   const [error, setError] = useState(null);
 
   // State for seller profile - Init from Cache  

@@ -178,7 +178,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
             ? 'bg-purple-50/40 dark:bg-purple-900/10 border-l-4 border-purple-500 shadow-[0_0_16px_rgba(147,51,234,0.15)] rounded-lg mx-0.5 sm:mx-0'
             : 'bg-white dark:bg-neutral-800/70 border border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 rounded-lg'
         } transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-0.5 overflow-hidden group/horizontal flex flex-col`}
-        onClick={() => navigate(getListingUrl(listing))}
+        onClick={() => navigate(getListingUrl(listing), { state: { listing } })}
       >
         <div className="flex flex-row">
           {/* Image Section */}

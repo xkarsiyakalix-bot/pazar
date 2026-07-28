@@ -425,7 +425,7 @@ export const SearchSection = ({ searchTerm, setSearchTerm, selectedCategory, set
                           key={listing.id}
                           onClick={() => {
                             setShowRecentSearches(false);
-                            navigate(getListingUrl(listing));
+                            navigate(getListingUrl(listing), { state: { listing } });
                           }}
                           className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
                         >

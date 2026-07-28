@@ -211,7 +211,7 @@ const MobileSearchOverlay = ({ isOpen, onClose, initialSearchTerm = '' }) => {
                                     <button
                                         key={listing.id}
                                         onClick={() => {
-                                            navigate(getListingUrl(listing));
+                                            navigate(getListingUrl(listing), { state: { listing } });
                                             onClose();
                                         }}
                                         className="w-full flex items-center gap-3 p-2 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-white/5"

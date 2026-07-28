@@ -5,6 +5,7 @@ import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
 import CookieConsent from './components/CookieConsent';
 import DemoWarningModal from './components/DemoWarningModal';
+import ProductDetail from './pages/ProductDetail';
 
 
 import './App.css';
@@ -31,7 +32,6 @@ import {
 // Non-critical components - lazy load
 const CategoryGallery = React.lazy(() => import('./components/CategoryGallery'));
 const WelcomeModal = React.lazy(() => import('./components/WelcomeModal'));
-const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
 const AddListing = React.lazy(() => import('./pages/AddListing'));
 const SellerProfile = React.lazy(() => import('./components/SellerProfile'));
 const AllCategories = React.lazy(() => import('./components/AllCategories'));
