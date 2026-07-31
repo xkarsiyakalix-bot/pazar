@@ -256,11 +256,13 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
             <div className="text-5xl font-black tabular-nums leading-none">
               {listing.category !== 'Jobs' && listing.category !== 'İş İlanları' && (
                 listing.price_type === 'giveaway' || listing.price === 0
-                  ? 'Ücretsiz'
-                  : `${listing.price || '---'} TL`
+                  ? t.productDetail.giveaway
+                  : listing.price 
+                    ? `${listing.price} TL` 
+                    : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür')
               )}
             </div>
-            {listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">{t.addListing?.options?.negotiable || 'Pazarlıklı'}</div>}
+            {listing.price && listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">Pazarlıklı</div>}
           </div>
         </div>
 
@@ -1636,10 +1638,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           {listing.price_type === 'giveaway' || listing.price === 0
                             ? t.productDetail.giveaway
                             : typeof listing.price === 'number'
-                              ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' ' + t.productDetail.negotiable : ''}`
+                              ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
                               : listing.price?.toString().includes(' TL')
                                 ? listing.price
-                                : listing.price ? `${listing.price} TL${listing.price_type === 'negotiable' ? ' ' + t.productDetail.negotiable : ''}` : t.productDetail.negotiable}
+                                : listing.price 
+                                  ? `${listing.price} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}` 
+                                  : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
                         </div>
                         {listing.stock && (
                           <div className="text-sm text-gray-500 dark:text-neutral-400">

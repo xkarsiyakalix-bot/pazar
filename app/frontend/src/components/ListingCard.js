@@ -216,8 +216,8 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                   {listing.price_type === 'giveaway' || listing.price === 0
                     ? 'Ücretsiz'
                     : listing.price
-                      ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' ' + t.addListing.options.negotiable : ''}`
-                      : t.addListing.options.negotiable}
+                      ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
+                      : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
                 </span>
               </div>
             )}

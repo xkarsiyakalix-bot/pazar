@@ -253,10 +253,9 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                   }`}>
                     {listing?.price_type === 'giveaway' || listing?.price === 0
                       ? 'Ücretsiz'
-                      : listing?.price
-                        ? `${listing.price.toLocaleString('tr-TR')} TL`
-                        : 'Görüşülür'
-                    }
+                      : listing.price
+                      ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
+                      : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
                   </span>
                 )}
               </div>

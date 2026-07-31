@@ -7366,7 +7366,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                     ? 'Ücretsiz'
                     : listing?.price
                       ? `${listing.price.toLocaleString('tr-TR')} TL`
-                      : 'Görüşülür'
+                      : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'
                 )}
               </div>
             </div>
