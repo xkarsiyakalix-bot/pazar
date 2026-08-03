@@ -1,16 +1,34 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, currentIndex, onNavigate }) => {
+  const containerRef = useRef(null);
+  const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(false);
+
   if (!isOpen) return null;
 
   const hasMultipleImages = images && images.length > 1;
   const currentImageIndex = currentIndex !== undefined ? currentIndex : 0;
   const currentImage = images && images[currentImageIndex] ? images[currentImageIndex] : imageSrc;
+  const displayImages = images && images.length > 0 ? images : [imageSrc];
+
+  // Effect to handle programmatic scrolling when currentImageIndex changes via buttons
+  useEffect(() => {
+    if (containerRef.current) {
+      setIsProgrammaticScroll(true);
+      const width = containerRef.current.clientWidth;
+      containerRef.current.scrollTo({
+        left: currentImageIndex * width,
+        behavior: 'smooth'
+      });
+      // Reset programmatic flag after smooth scroll completes
+      setTimeout(() => setIsProgrammaticScroll(false), 300);
+    }
+  }, [currentImageIndex]);
 
   const handlePrevious = (e) => {
     e.stopPropagation();
     if (onNavigate && hasMultipleImages) {
-      const newIndex = currentImageIndex > 0 ? currentImageIndex - 1 : images.length - 1;
+      const newIndex = currentImageIndex > 0 ? currentImageIndex - 1 : displayImages.length - 1;
       onNavigate(newIndex);
     }
   };
@@ -18,7 +36,7 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
   const handleNext = (e) => {
     e.stopPropagation();
     if (onNavigate && hasMultipleImages) {
-      const newIndex = currentImageIndex < images.length - 1 ? currentImageIndex + 1 : 0;
+      const newIndex = currentImageIndex < displayImages.length - 1 ? currentImageIndex + 1 : 0;
       onNavigate(newIndex);
     }
   };
@@ -52,28 +70,25 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
 
       {/* Image - Swipeable Container */}
       <div
+        ref={containerRef}
         className="relative w-full h-[85vh] flex overflow-x-auto snap-x snap-mandatory scrollbar-none"
         onClick={(e) => e.stopPropagation()}
         onScroll={(e) => {
+          if (isProgrammaticScroll) return;
           const scrollLeft = e.target.scrollLeft;
           const width = e.target.clientWidth;
           const newIndex = Math.round(scrollLeft / width);
-          if (newIndex !== currentImageIndex && onNavigate) {
+          if (newIndex !== currentImageIndex && onNavigate && newIndex >= 0 && newIndex < displayImages.length) {
             onNavigate(newIndex);
           }
         }}
-        ref={(el) => {
-          if (el && el.scrollLeft !== currentImageIndex * el.clientWidth) {
-            el.scrollLeft = currentImageIndex * el.clientWidth;
-          }
-        }}
       >
-        {(images && images.length > 0 ? images : [imageSrc]).map((img, idx) => (
+        {displayImages.map((img, idx) => (
           <div key={idx} className="w-full h-full flex-shrink-0 flex items-center justify-center snap-center">
             <img
               src={img}
               alt={`${altText} ${idx + 1}`}
-              className="max-w-full max-h-full object-contain cursor-default"
+              className="max-w-full max-h-full object-contain cursor-default select-none"
             />
           </div>
         ))}
@@ -82,7 +97,7 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
       {/* Image Counter */}
       {hasMultipleImages && (
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-full z-10">
-          {currentImageIndex + 1} / {images.length}
+          {currentImageIndex + 1} / {displayImages.length}
         </div>
       )}
 
