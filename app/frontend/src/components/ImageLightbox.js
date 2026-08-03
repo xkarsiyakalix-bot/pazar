@@ -4,8 +4,6 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
   const containerRef = useRef(null);
   const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(false);
 
-  if (!isOpen) return null;
-
   let parsedImages = [];
   if (Array.isArray(images)) {
     parsedImages = images;
@@ -45,6 +43,8 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
       setTimeout(() => setIsProgrammaticScroll(false), 300);
     }
   }, [currentImageIndex]);
+
+  if (!isOpen) return null;
 
   const handlePrevious = (e) => {
     e.stopPropagation();
