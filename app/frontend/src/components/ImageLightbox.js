@@ -11,7 +11,12 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
     parsedImages = images;
   } else if (typeof images === 'string') {
     try {
-      parsedImages = JSON.parse(images);
+      const parsed = JSON.parse(images);
+      if (Array.isArray(parsed)) {
+        parsedImages = parsed;
+      } else {
+        parsedImages = [images];
+      }
     } catch (e) {
       parsedImages = [images];
     }
@@ -27,10 +32,15 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
     if (containerRef.current) {
       setIsProgrammaticScroll(true);
       const width = containerRef.current.clientWidth;
-      containerRef.current.scrollTo({
-        left: currentImageIndex * width,
-        behavior: 'smooth'
-      });
+      try {
+        containerRef.current.scrollTo({
+          left: currentImageIndex * width,
+          behavior: 'smooth'
+        });
+      } catch (e) {
+        // Fallback for older browsers (like old Safari) that don't support options object
+        containerRef.current.scrollLeft = currentImageIndex * width;
+      }
       // Reset programmatic flag after smooth scroll completes
       setTimeout(() => setIsProgrammaticScroll(false), 300);
     }
