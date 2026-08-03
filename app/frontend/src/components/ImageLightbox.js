@@ -25,11 +25,15 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
   const currentImage = parsedImages[currentImageIndex] || imageSrc;
   const displayImages = parsedImages.length > 0 ? parsedImages : [imageSrc];
 
-  // Effect to handle programmatic scrolling when currentImageIndex changes via buttons
   useEffect(() => {
     if (containerRef.current) {
-      setIsProgrammaticScroll(true);
       const width = containerRef.current.clientWidth;
+      const currentScrollIndex = Math.round(containerRef.current.scrollLeft / width);
+      
+      // If the scroll position is already at the target index (e.g. user swiped), do not interrupt the native scroll
+      if (currentScrollIndex === currentImageIndex) return;
+
+      setIsProgrammaticScroll(true);
       try {
         containerRef.current.scrollTo({
           left: currentImageIndex * width,
