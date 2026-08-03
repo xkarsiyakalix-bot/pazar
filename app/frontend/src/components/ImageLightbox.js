@@ -21,59 +21,67 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
   }
 
   const hasMultipleImages = parsedImages.length > 1;
-  const currentImageIndex = currentIndex !== undefined ? currentIndex : 0;
-  const currentImage = parsedImages[currentImageIndex] || imageSrc;
+  const initialIndex = currentIndex !== undefined ? currentIndex : 0;
+  
+  // Use local state so swiping doesn't trigger a heavy re-render of the parent page
+  const [localIndex, setLocalIndex] = useState(initialIndex);
   const displayImages = parsedImages.length > 0 ? parsedImages : [imageSrc];
+
+  // Sync local state if parent changes it (unlikely while open)
+  useEffect(() => {
+    setLocalIndex(initialIndex);
+  }, [initialIndex]);
 
   useEffect(() => {
     if (containerRef.current) {
       const width = containerRef.current.clientWidth;
       const currentScrollIndex = Math.round(containerRef.current.scrollLeft / width);
       
-      // If the scroll position is already at the target index (e.g. user swiped), do not interrupt the native scroll
-      if (currentScrollIndex === currentImageIndex) return;
+      if (currentScrollIndex === localIndex) return;
 
       setIsProgrammaticScroll(true);
       try {
         containerRef.current.scrollTo({
-          left: currentImageIndex * width,
+          left: localIndex * width,
           behavior: 'smooth'
         });
       } catch (e) {
-        // Fallback for older browsers (like old Safari) that don't support options object
-        containerRef.current.scrollLeft = currentImageIndex * width;
+        containerRef.current.scrollLeft = localIndex * width;
       }
-      // Reset programmatic flag after smooth scroll completes
       setTimeout(() => setIsProgrammaticScroll(false), 300);
     }
-  }, [currentImageIndex]);
+  }, [localIndex]);
 
   if (!isOpen) return null;
 
+  const handleClose = (e) => {
+    e.stopPropagation();
+    if (onNavigate) onNavigate(localIndex);
+    onClose();
+  };
+
   const handlePrevious = (e) => {
     e.stopPropagation();
-    if (onNavigate && hasMultipleImages) {
-      const newIndex = currentImageIndex > 0 ? currentImageIndex - 1 : displayImages.length - 1;
-      onNavigate(newIndex);
+    if (hasMultipleImages) {
+      setLocalIndex(prev => prev > 0 ? prev - 1 : displayImages.length - 1);
     }
   };
 
   const handleNext = (e) => {
     e.stopPropagation();
-    if (onNavigate && hasMultipleImages) {
-      const newIndex = currentImageIndex < displayImages.length - 1 ? currentImageIndex + 1 : 0;
-      onNavigate(newIndex);
+    if (hasMultipleImages) {
+      setLocalIndex(prev => prev < displayImages.length - 1 ? prev + 1 : 0);
     }
   };
 
   return (
     <div
       className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center p-4"
-      onClick={onClose}
+      onClick={handleClose}
     >
       {/* Close Button */}
       <button
-        onClick={onClose}
+        onClick={handleClose}
         className="absolute top-4 right-4 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-2 hover:bg-black/70 transition-all"
       >
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,8 +111,8 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
           const scrollLeft = e.target.scrollLeft;
           const width = e.target.clientWidth;
           const newIndex = Math.round(scrollLeft / width);
-          if (newIndex !== currentImageIndex && onNavigate && newIndex >= 0 && newIndex < displayImages.length) {
-            onNavigate(newIndex);
+          if (newIndex !== localIndex && newIndex >= 0 && newIndex < displayImages.length) {
+            setLocalIndex(newIndex);
           }
         }}
       >
@@ -123,7 +131,7 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
       {/* Image Counter */}
       {hasMultipleImages && (
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-full z-10">
-          {currentImageIndex + 1} / {displayImages.length}
+          {localIndex + 1} / {displayImages.length}
         </div>
       )}
 
