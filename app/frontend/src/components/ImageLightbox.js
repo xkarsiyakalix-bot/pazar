@@ -6,10 +6,21 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
 
   if (!isOpen) return null;
 
-  const hasMultipleImages = images && images.length > 1;
+  let parsedImages = [];
+  if (Array.isArray(images)) {
+    parsedImages = images;
+  } else if (typeof images === 'string') {
+    try {
+      parsedImages = JSON.parse(images);
+    } catch (e) {
+      parsedImages = [images];
+    }
+  }
+
+  const hasMultipleImages = parsedImages.length > 1;
   const currentImageIndex = currentIndex !== undefined ? currentIndex : 0;
-  const currentImage = images && images[currentImageIndex] ? images[currentImageIndex] : imageSrc;
-  const displayImages = images && images.length > 0 ? images : [imageSrc];
+  const currentImage = parsedImages[currentImageIndex] || imageSrc;
+  const displayImages = parsedImages.length > 0 ? parsedImages : [imageSrc];
 
   // Effect to handle programmatic scrolling when currentImageIndex changes via buttons
   useEffect(() => {
