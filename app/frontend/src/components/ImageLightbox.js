@@ -85,9 +85,9 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
       {hasMultipleImages && (
         <button
           onClick={handlePrevious}
-          className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-3 hover:bg-black/70 transition-all hover:scale-110"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-2 sm:p-3 hover:bg-black/70 transition-all hover:scale-110"
         >
-          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -113,7 +113,8 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
             <img
               src={img}
               alt={`${altText} ${idx + 1}`}
-              className="max-w-full max-h-full object-contain cursor-default select-none"
+              draggable="false"
+              className="max-w-full max-h-full object-contain cursor-default select-none pointer-events-none"
             />
           </div>
         ))}
@@ -130,9 +131,9 @@ export const ImageLightbox = ({ isOpen, onClose, imageSrc, altText, images, curr
       {hasMultipleImages && (
         <button
           onClick={handleNext}
-          className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-3 hover:bg-black/70 transition-all hover:scale-110"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 focus:outline-none z-10 bg-black/50 rounded-full p-2 sm:p-3 hover:bg-black/70 transition-all hover:scale-110"
         >
-          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
           </svg>
         </button>
