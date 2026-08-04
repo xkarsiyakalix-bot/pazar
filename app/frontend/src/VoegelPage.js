@@ -11,6 +11,7 @@ const VoegelPage = ({ toggleFavorite, isFavorite }) => {
                 { value: 'Muhabbet Kuşları', label: 'Muhabbet Kuşları' },
                 { value: 'Papağanlar', label: 'Papağanlar' },
                 { value: 'Kanaryalar', label: 'Kanaryalar' },
+                { value: 'Güvercin', label: 'Güvercin' },
                 { value: 'Egzotik Kuşlar', label: 'Egzotik Kuşlar' },
                 { value: 'Diğer Kuşlar', label: 'Diğer Kuşlar' }
             ],

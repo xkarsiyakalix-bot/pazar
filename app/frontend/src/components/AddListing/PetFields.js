@@ -230,7 +230,7 @@ export const PetFields = ({
                         className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
-                        {['Muhabbet Kuşları', 'Papağanlar', 'Kanaryalar', 'Egzotik Kuşlar', 'Diğer Kuşlar'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        {['Muhabbet Kuşları', 'Papağanlar', 'Kanaryalar', 'Güvercin', 'Egzotik Kuşlar', 'Diğer Kuşlar'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
                 </div>
             )}
