@@ -2194,7 +2194,7 @@ export const AddListing = () => {
                   </>
                 ) : (
                   <>
-                    {isEditMode ? t.addListing.updateLink : "İlanı Oluştur"}
+                    {isEditMode ? "İlanı Güncelle" : "İlanı Oluştur"}
                   </>
                 )}
               </button>
