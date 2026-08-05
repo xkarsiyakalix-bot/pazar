@@ -33,8 +33,6 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
             try {
                 setLoading(true);
                 const { fetchListings } = await import('../api/listings');
-                const { clearCache } = await import('../utils/cache');
-                clearCache();
 
                 const data = await fetchListings({
                     select: 'id,title,price,price_type,images,category,sub_category,city,is_top,is_gallery,package_type,promotion_expiry,user_id,created_at,slug'

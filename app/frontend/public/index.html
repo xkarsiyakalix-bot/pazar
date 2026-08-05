@@ -197,7 +197,7 @@
                     api_host: "https://us.i.posthog.com",
                     person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well
                 });
-            }, 1000); // 1 saniye bekle
+            }, 4000); // 4 saniye bekle (LCP ve TBT ölçümünü etkilememesi için)
         });
     </script>
 </body>

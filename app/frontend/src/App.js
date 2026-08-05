@@ -498,7 +498,7 @@ function App() {
     // by 2.5 seconds so they don't block Main Thread during LCP/FCP.
     const timer = setTimeout(() => {
       setDeferNonCritical(true);
-    }, 2500);
+    }, 4500);
     return () => clearTimeout(timer);
   }, []);
 
