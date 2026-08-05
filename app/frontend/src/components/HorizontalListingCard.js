@@ -195,6 +195,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               height="200"
               className="w-full h-full object-cover transition-transform duration-500 group-hover/horizontal:scale-[1.06]"
               loading="lazy"
+              decoding="async"
             />
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />

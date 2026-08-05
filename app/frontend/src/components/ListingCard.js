@@ -67,6 +67,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
           width="400"
           height="280"
           loading="lazy"
+          decoding="async"
           onLoad={() => setImageLoaded(true)}
           className={`absolute inset-0 w-full h-full ${imageClasses} ${!isMiniJob ? (imageLoaded ? 'opacity-100' : 'opacity-0') : 'opacity-100'} transition-opacity duration-300`}
         />
