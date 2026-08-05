@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
-import StorePage from './components/Store/StorePage';
-import NotFoundPage from './NotFoundPage';
 import LoadingSpinner from './components/LoadingSpinner';
-import { ProductDetail } from './components';
 import { slugToCategoryMap, slugToSubCategoryMap } from './config/categoryConfigs';
-import DynamicCategoryPage from './pages/DynamicCategoryPage';
+
+const StorePage = React.lazy(() => import('./components/Store/StorePage'));
+const NotFoundPage = React.lazy(() => import('./NotFoundPage'));
+const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
+const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
 
 const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
     const location = useLocation();
@@ -137,36 +138,35 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
         );
     }
 
-    if (isStore) {
-        return <StorePage sellerId={slug} />;
-    }
-
-    if (isCategory) {
-        return (
-            <DynamicCategoryPage
-                category={slug}
-                subCategory={subSlug}
-                toggleFavorite={toggleFavorite}
-                isFavorite={isFavorite}
-            />
-        );
-    }
-
-    if (isListing) {
-        return (
-            <ProductDetail
-                id={listingId}
-                slug={slug}
-                addToCart={addToCart}
-                toggleFavorite={toggleFavorite}
-                isFavorite={isFavorite}
-                toggleFollowSeller={toggleFollowSeller}
-                isSellerFollowed={isSellerFollowed}
-            />
-        );
-    }
-
-    return <NotFoundPage />;
+    return (
+        <React.Suspense fallback={
+            <div className="min-h-[50vh] flex items-center justify-center">
+                <LoadingSpinner size="large" />
+            </div>
+        }>
+            {isStore && <StorePage sellerId={slug} />}
+            {isCategory && (
+                <DynamicCategoryPage
+                    category={slug}
+                    subCategory={subSlug}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                />
+            )}
+            {isListing && (
+                <ProductDetail
+                    id={listingId}
+                    slug={slug}
+                    addToCart={addToCart}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                    toggleFollowSeller={toggleFollowSeller}
+                    isSellerFollowed={isSellerFollowed}
+                />
+            )}
+            {!isStore && !isCategory && !isListing && <NotFoundPage />}
+        </React.Suspense>
+    );
 };
 
 export default SmartRoute;

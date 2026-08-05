@@ -31,9 +31,6 @@ export { AnimalProtectionPage, RealEstateLegalPage, VehicleLegalPage } from './L
 export { getCategoryPath, getListingUrl } from '../utils/slug';
 export { formatLastSeen, generateListingNumber } from '../utils/format';
 
-// Direct page/component exports (NOT from components.legacy.js)
-export { ProductDetail } from '../pages/ProductDetail';
-export { SellerPage } from '../pages/SellerPage';
 export { VisibilityPackagesModal } from './VisibilityPackagesModal';
 export { LazyImage } from './LazyImage';
 export { ReportModal } from './ReportModal';
