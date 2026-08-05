@@ -5,8 +5,8 @@ import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
 import CookieConsent from './components/CookieConsent';
 import DemoWarningModal from './components/DemoWarningModal';
-import ProductDetail from './pages/ProductDetail';
-import SellerPage from './pages/SellerPage';
+const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
+const SellerPage = React.lazy(() => import('./pages/SellerPage'));
 
 
 import './App.css';
@@ -188,9 +188,9 @@ const ProfileOverviewPage = React.lazy(() => import('./ProfileOverviewPage'));
 const FollowingPage = React.lazy(() => import('./FollowingPage'));
 const FollowersPage = React.lazy(() => import('./FollowersPage'));
 const UserInvoicesPage = React.lazy(() => import('./UserInvoicesPage'));
-import AdminSalesReport from './admin/AdminSalesReport';
-import AdminAdmins from './admin/AdminAdmins';
-import UserDetailsModal from './admin/UserDetailsModal';
+const AdminSalesReport = React.lazy(() => import('./admin/AdminSalesReport'));
+const AdminAdmins = React.lazy(() => import('./admin/AdminAdmins'));
+const UserDetailsModal = React.lazy(() => import('./admin/UserDetailsModal'));
 const JobsPage = React.lazy(() => import('./JobsPage'));
 const SmartRecommendations = React.lazy(() => import('./SmartRecommendations').then(module => ({ default: module.SmartRecommendations })));
 const Unternehmensseiten = React.lazy(() => import('./Unternehmensseiten'));
@@ -225,18 +225,18 @@ const FilterSidebar = React.lazy(() => import('./FilterSidebar'));
 const NotificationSettingsPage = React.lazy(() => import('./NotificationSettingsPage'));
 const NotFoundPage = React.lazy(() => import('./NotFoundPage'));
 
-import AdminLayout from './admin/AdminLayout';
-import AdminDashboard from './admin/AdminDashboard';
-import AdminListings from './admin/AdminListings';
-import AdminUsers from './admin/AdminUsers';
-import AdminReports from './admin/AdminReports';
-import AdminPromotions from './admin/AdminPromotions';
-import AdminCommercialSellers from './admin/AdminCommercialSellers';
-import AdminSettings from './admin/AdminSettings';
-import AdminCategories from './admin/AdminCategories';
-import AdminRoute from './admin/AdminRoute';
-import AdminStats from './admin/AdminStats';
-import AdminOnlineUsers from './admin/AdminOnlineUsers';
+const AdminLayout = React.lazy(() => import('./admin/AdminLayout'));
+const AdminDashboard = React.lazy(() => import('./admin/AdminDashboard'));
+const AdminListings = React.lazy(() => import('./admin/AdminListings'));
+const AdminUsers = React.lazy(() => import('./admin/AdminUsers'));
+const AdminReports = React.lazy(() => import('./admin/AdminReports'));
+const AdminPromotions = React.lazy(() => import('./admin/AdminPromotions'));
+const AdminCommercialSellers = React.lazy(() => import('./admin/AdminCommercialSellers'));
+const AdminSettings = React.lazy(() => import('./admin/AdminSettings'));
+const AdminCategories = React.lazy(() => import('./admin/AdminCategories'));
+const AdminRoute = React.lazy(() => import('./admin/AdminRoute'));
+const AdminStats = React.lazy(() => import('./admin/AdminStats'));
+const AdminOnlineUsers = React.lazy(() => import('./admin/AdminOnlineUsers'));
 import { useIsMobile } from './hooks/useIsMobile';
 import { useAuth } from './contexts/AuthContext';
 const MobileBottomNavigation = React.lazy(() => import('./components/MobileBottomNavigation'));
@@ -825,13 +825,6 @@ function App() {
       <div className="App overflow-x-hidden max-w-[100vw] w-full min-h-screen bg-gray-50 dark:!bg-neutral-950 text-gray-900 dark:text-neutral-100 transition-colors duration-300">
         {deferNonCritical && <PresenceTracker />}
         <ChunkErrorBoundary>
-        <React.Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:!bg-neutral-950">
-            <div className="text-center">
-              <LoadingSpinner size="large" />
-            </div>
-          </div>
-        }>
           {/* Welcome Modal */}
           {showWelcomeModal && (
             <WelcomeModal onClose={() => setShowWelcomeModal(false)} />
@@ -858,7 +851,12 @@ function App() {
             favorites={favorites}
           />
 
-          <Routes>
+          <React.Suspense fallback={
+            <div className="min-h-[60vh] flex items-center justify-center">
+              <LoadingSpinner size="large" />
+            </div>
+          }>
+            <Routes>
             <Route path="/" element={
               <>
                 <SEO />
@@ -1160,6 +1158,7 @@ function App() {
             {/* Smart Catch-all Route: Checks for listing slug or store slug first, then 404 */}
             <Route path="*" element={<SmartRoute {...smartRouteProps} />} />
           </Routes>
+          </React.Suspense>
           <Footer />
           {isMobile && <MobileBottomNavigation />}
 
@@ -1176,7 +1175,6 @@ function App() {
               <ScrollToTopButton />
             </>
           )}
-        </React.Suspense>
         </ChunkErrorBoundary>
       </div>
     </>
