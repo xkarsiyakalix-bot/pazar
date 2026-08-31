@@ -424,10 +424,41 @@ export const AddListing = () => {
   const [selectedAngebotsart, setSelectedAngebotsart] = useState('');
   const [selectedTauschangebot, setSelectedTauschangebot] = useState('');
 
-  // Common Vehicle States (Motorrad, Auto, etc.)
   const [brand, setBrand] = useState('');
   const [selectedSportCampingArt, setSelectedSportCampingArt] = useState('');
   const [mileage, setMileage] = useState('');
+
+  // Draft Auto-Save State
+  const [draftBanner, setDraftBanner] = useState(null);
+
+  // Auto-save draft whenever user fills fields (when not in edit mode)
+  useEffect(() => {
+    if (isEditMode) return;
+    if (!title && !description && !price && !category) return;
+
+    const timeout = setTimeout(() => {
+      try {
+        const draft = { title, description, price, category, subCategory, city, district, address, priceType, updated: new Date().toISOString() };
+        localStorage.setItem('exvitrin_draft_listing', JSON.stringify(draft));
+      } catch (e) { }
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [title, description, price, category, subCategory, city, district, address, priceType, isEditMode]);
+
+  // Check for existing draft on initial mount
+  useEffect(() => {
+    if (isEditMode) return;
+    try {
+      const savedDraft = localStorage.getItem('exvitrin_draft_listing');
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed && (parsed.title || parsed.description)) {
+          setDraftBanner(parsed);
+        }
+      }
+    } catch (e) { }
+  }, [isEditMode]);
   const [firstRegistration, setFirstRegistration] = useState('');
   const [displacement, setDisplacement] = useState('');
   const [transmission, setTransmission] = useState('');
@@ -1160,6 +1191,9 @@ export const AddListing = () => {
             console.error('IndexNow trigger error:', e);
           }
         }
+        try {
+          localStorage.removeItem('exvitrin_draft_listing');
+        } catch(e) {}
         alert(t.addListing.success);
       }
 
@@ -1202,7 +1236,52 @@ export const AddListing = () => {
             {isEditMode ? t.addListing.editTitle : t.addListing.title}
           </h1>
 
-          {/* Listing Limit Status Card */}
+          {/* Draft Notification Banner */}
+          {draftBanner && (
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-2xl mb-6 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 animate-fadeIn">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0 text-xl">
+                  📝
+                </div>
+                <div>
+                  <p className="font-bold text-sm">Yarım kalan bir ilan taslağınız var</p>
+                  <p className="text-xs text-blue-100 font-mono">
+                    {draftBanner.title || 'Başlıksız İlan'} {draftBanner.updated ? `(${new Date(draftBanner.updated).toLocaleDateString('tr-TR')})` : ''}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (draftBanner.title) setTitle(draftBanner.title);
+                    if (draftBanner.description) setDescription(draftBanner.description);
+                    if (draftBanner.price) setPrice(draftBanner.price);
+                    if (draftBanner.category) setCategory(draftBanner.category);
+                    if (draftBanner.subCategory) setSubCategory(draftBanner.subCategory);
+                    if (draftBanner.city) setCity(draftBanner.city);
+                    if (draftBanner.district) setDistrict(draftBanner.district);
+                    if (draftBanner.address) setAddress(draftBanner.address);
+                    if (draftBanner.priceType) setPriceType(draftBanner.priceType);
+                    setDraftBanner(null);
+                  }}
+                  className="px-4 py-2 bg-white text-blue-600 hover:bg-blue-50 font-bold text-xs rounded-xl shadow transition-all active:scale-95 cursor-pointer"
+                >
+                  Taslağı Yükle
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem('exvitrin_draft_listing');
+                    setDraftBanner(null);
+                  }}
+                  className="px-3 py-2 bg-white/20 hover:bg-white/30 text-white font-bold text-xs rounded-xl transition-all cursor-pointer"
+                >
+                  Temizle
+                </button>
+              </div>
+            </div>
+          )}
 
           <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             <div>
