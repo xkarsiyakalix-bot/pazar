@@ -1142,10 +1142,24 @@ export const AddListing = () => {
         const { supabase } = await import('../lib/supabase');
         const { error } = await supabase.from('listings').update(listingData).eq('id', editId);
         if (error) throw error;
+        try {
+          const { notifyIndexNow } = await import('../utils/indexnow');
+          notifyIndexNow(`/product/${editId}`);
+        } catch (e) {
+          console.error('IndexNow trigger error:', e);
+        }
         alert(t.addListing.updateSuccess);
       } else {
         const { createListing } = await import('../api/listings');
-        await createListing(listingData);
+        const created = await createListing(listingData);
+        if (created && created.id) {
+          try {
+            const { notifyIndexNow } = await import('../utils/indexnow');
+            notifyIndexNow(`/product/${created.id}`);
+          } catch (e) {
+            console.error('IndexNow trigger error:', e);
+          }
+        }
         alert(t.addListing.success);
       }
 

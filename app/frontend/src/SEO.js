@@ -213,21 +213,26 @@ export const ProductSEO = ({ listing }) => {
 
   const breadcrumbs = [
     { name: 'Ana Sayfa', url: '/' },
-    { name: listing.category, url: `/${listing.category?.replace(/\s+/g, '-').toLowerCase()}` },
-    { name: listing.title, url: `/listing/${listing.id}` }
+    { name: listing.category || 'Kategori', url: listing.category ? `/${listing.category.replace(/\s+/g, '-').toLowerCase()}` : '/' },
+    { name: listing.title, url: `/product/${listing.id}` }
   ];
 
+  const priceText = listing.price ? `${Number(listing.price).toLocaleString('tr-TR')} TL` : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : (listing.price_type === 'giveaway' ? 'Ücretsiz' : 'Görüşülür'));
+  const titleWithPrice = `${listing.title} - ${priceText}`;
+  const firstImage = listing.images?.[0] || listing.image;
+  const absoluteImage = firstImage ? (firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`) : `${siteUrl}/logo_exvitrin_2026.png`;
   const descriptionCleaned = (listing.description || '').replace(/(<([^>]+)>)/gi, "").substring(0, 160);
 
   return (
     <SEO 
-      title={listing.title}
+      title={titleWithPrice}
       description={descriptionCleaned}
-      image={listing.images?.[0]}
-      type="article"
+      image={absoluteImage}
+      type="product"
       schema={productSchema}
       breadcrumbs={breadcrumbs}
       url={`/product/${listing.id}`}
+      price={listing.price}
     />
   );
 };
