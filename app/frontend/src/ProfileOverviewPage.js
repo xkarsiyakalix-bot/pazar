@@ -38,6 +38,7 @@ const ProfileOverviewPage = () => {
     const [followersCount, setFollowersCount] = useState(cachedData?.followersCount || 0);
     const [followingCount, setFollowingCount] = useState(cachedData?.followingCount || 0);
 
+    const [loading, setLoading] = useState(!cachedData);
     const [showPhoneModal, setShowPhoneModal] = useState(false);
 
     // Save to cache whenever data updates
