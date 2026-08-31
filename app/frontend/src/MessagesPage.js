@@ -37,8 +37,39 @@ function MessagesPage() {
     });
     const [userProfile, setUserProfile] = useState(null);
     const [canRateUser, setCanRateUser] = useState(false);
-    const [hasRated, setHasRated] = useState(false);
     const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+    const [blockedUsers, setBlockedUsers] = useState(() => {
+        try {
+            const saved = localStorage.getItem('blocked_users');
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            return [];
+        }
+    });
+
+    const isUserBlocked = (userId) => {
+        return blockedUsers.includes(userId);
+    };
+
+    const handleToggleBlockUser = (userId) => {
+        if (!userId) return;
+        const currentlyBlocked = isUserBlocked(userId);
+        let updated;
+        if (currentlyBlocked) {
+            updated = blockedUsers.filter(id => id !== userId);
+            alert('Kullanıcı engeli kaldırıldı.');
+        } else {
+            if (!window.confirm('Bu kullanıcıyı engellemek istediğinizden emin misiniz? Engellenen kullanıcılardan mesaj almayacaksınız.')) return;
+            updated = [...blockedUsers, userId];
+            alert('Kullanıcı engellendi.');
+        }
+        setBlockedUsers(updated);
+        try {
+            localStorage.setItem('blocked_users', JSON.stringify(updated));
+        } catch (e) {
+            console.error('Error saving blocked users:', e);
+        }
+    };
 
     const [swipedConvId, setSwipedConvId] = useState(null);
     const touchStartX = useRef(0);
@@ -517,7 +548,7 @@ function MessagesPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2">
+                                <div className="flex items-center gap-2">
                                     {canRateUser && !hasRated && (
                                         <button
                                             onClick={() => setIsRatingModalOpen(true)}
@@ -527,6 +558,20 @@ function MessagesPage() {
                                             <span className="hidden sm:inline">Puanla</span>
                                         </button>
                                     )}
+
+                                    <button
+                                        onClick={() => handleToggleBlockUser(selectedConversation.user.id)}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition-colors ${
+                                            isUserBlocked(selectedConversation.user.id)
+                                                ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100'
+                                                : 'bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 hover:bg-red-50 hover:text-red-600'
+                                        }`}
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        </svg>
+                                        <span className="hidden sm:inline">{isUserBlocked(selectedConversation.user.id) ? 'Engeli Kaldır' : 'Engelle'}</span>
+                                    </button>
                                 </div>
                             </div>
 

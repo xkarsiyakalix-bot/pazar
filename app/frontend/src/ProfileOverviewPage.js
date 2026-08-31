@@ -13,6 +13,7 @@ import { getFollowersCount, getFollowingCount } from './api/follows';
 import ProfileLayout from './ProfileLayout';
 import { useIsMobile } from './hooks/useIsMobile';
 import { getSellerUrl } from './utils/slug';
+import { PhoneVerificationModal } from './components/PhoneVerificationModal';
 
 const ProfileOverviewPage = () => {
     const isMobile = useIsMobile();
@@ -37,7 +38,7 @@ const ProfileOverviewPage = () => {
     const [followersCount, setFollowersCount] = useState(cachedData?.followersCount || 0);
     const [followingCount, setFollowingCount] = useState(cachedData?.followingCount || 0);
 
-    const [loading, setLoading] = useState(!cachedData);
+    const [showPhoneModal, setShowPhoneModal] = useState(false);
 
     // Save to cache whenever data updates
     useEffect(() => {
@@ -155,6 +156,17 @@ const ProfileOverviewPage = () => {
                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                                         {followingCount} Takip Edilen
                                     </button>
+                                    {!profile?.is_verified && (
+                                        <button
+                                            onClick={() => setShowPhoneModal(true)}
+                                            className="flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all cursor-pointer border border-blue-200 dark:border-blue-800"
+                                        >
+                                            <svg className="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.47L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" />
+                                            </svg>
+                                            Hesabını Doğrula (Mavi Tik Al)
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -294,6 +306,13 @@ const ProfileOverviewPage = () => {
                     </div>
                 )}
             </div>
+            <PhoneVerificationModal
+                isOpen={showPhoneModal}
+                onClose={() => setShowPhoneModal(false)}
+                onVerified={(phone) => {
+                    setProfile(prev => prev ? { ...prev, is_verified: true, phone } : prev);
+                }}
+            />
         </ProfileLayout>
     );
 };
