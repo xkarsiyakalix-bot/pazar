@@ -932,6 +932,33 @@ function App() {
                 isSellerFollowed={isSellerFollowed}
               />
             } />
+            <Route path="/product/*" element={
+              <ProductDetail
+                addToCart={addToCart}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                toggleFollowSeller={toggleFollowSeller}
+                isSellerFollowed={isSellerFollowed}
+              />
+            } />
+            <Route path="/ilan/:id" element={
+              <ProductDetail
+                addToCart={addToCart}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                toggleFollowSeller={toggleFollowSeller}
+                isSellerFollowed={isSellerFollowed}
+              />
+            } />
+            <Route path="/ilan/*" element={
+              <ProductDetail
+                addToCart={addToCart}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                toggleFollowSeller={toggleFollowSeller}
+                isSellerFollowed={isSellerFollowed}
+              />
+            } />
             <Route path="/seller/:sellerId" element={
               <SellerPage
                 toggleFavorite={toggleFavorite}

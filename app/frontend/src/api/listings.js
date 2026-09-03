@@ -392,6 +392,11 @@ export const fetchListings = async (filters = {}, options = { count: true }) => 
  */
 export const fetchListingById = async (id) => {
     if (!id) return null;
+
+    // Safety check: Ensure id is a valid UUID format before querying Supabase Postgres eq('id', id)
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (!isUuid) return null;
+
     const { data, error } = await supabase
         .from('listings')
         .select('*')

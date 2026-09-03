@@ -449,10 +449,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     }
   };
 
-  // Extract potential ID from slug if it exists (pattern: title-slug_ID or title-slug-ID)
-  // If no ID-like structure is found at the end, 'id' will be null or the whole slug
-  const idFromSlug = slug ? (slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) || [])[0] : null;
-  const id = idFromSlug || routeId;
+  // Extract potential UUID from routeId, slug or wildcard params
+  const rawParam = propId || params.id || propSlug || params.slug || params['*'] || '';
+  const uuidMatch = rawParam.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+  const id = uuidMatch ? uuidMatch[0] : (propId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propId) ? propId : null);
+  const slug = propSlug || params.slug || params['*'] || (params.id && !uuidMatch ? params.id : null);
 
   // Cache Keys
   const CACHE_KEY = `listing_detail_${id || slug}`;
@@ -573,12 +574,27 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
         let data = null;
         if (id) {
-          data = await fetchListingById(id);
+          try {
+            data = await fetchListingById(id);
+          } catch (e) {
+            console.warn('Failed ID lookup:', e);
+          }
         }
 
         // If not found by ID, try fetching by slug
         if (!data && slug) {
-          data = await fetchListingBySlug(slug);
+          try {
+            data = await fetchListingBySlug(slug);
+          } catch (e) {
+            console.warn('Failed slug lookup:', e);
+          }
+        }
+
+        // Fallback: try rawParam if different from id & slug
+        if (!data && rawParam && rawParam !== id && rawParam !== slug) {
+          try {
+            data = await fetchListingBySlug(rawParam);
+          } catch (e) {}
         }
         console.log('Fetched listing:', data);
 
