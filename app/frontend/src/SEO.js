@@ -16,7 +16,7 @@ export const SEO = ({
   breadcrumbs = []
 }) => {
   const siteName = 'ExVitrin';
-  const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - Türkiye'nin İkinci El Yeni İlan Platformu`;
+  const fullTitle = title ? `${title} | ${siteName}` : `${siteName} | İkinci El, Araba, Emlak ve Ücretsiz İlanlar`;
   const siteUrl = 'https://www.exvitrin.com';
   
   // Use window.location.pathname as a reliable fallback for canonical URL

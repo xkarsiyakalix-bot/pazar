@@ -595,7 +595,7 @@ module.exports = async (req, res) => {
   const LOGO_URL = `${SITE_URL}/logo_exvitrin_2026_small.png`;
 
   // Defaults (homepage-style)
-  let title = "ExVitrin - Türkiye'nin İkinci El Yeni İlan Platformu";
+  let title = 'ExVitrin | İkinci El, Araba, Emlak ve Ücretsiz İlanlar';
   let description = "Türkiye'nin en büyük ilan pazaryeri. Araba, emlak, elektronik, moda ve daha fazlasını alın ve satın.";
   let image = LOGO_URL;
   let imageWidth = '1200';
