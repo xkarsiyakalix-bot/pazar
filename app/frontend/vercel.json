@@ -26,6 +26,17 @@
       "destination": "/api/og?id=:id&type=listing"
     },
     {
+      "source": "/ilan/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?slug=:slug&type=listing"
+    },
+    {
       "source": "/seller/:id",
       "has": [
         {
@@ -376,6 +387,17 @@
         }
       ],
       "destination": "/api/og?type=category&path=/Butun-Kategoriler"
+    },
+    {
+      "source": "/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?slug=:slug&type=listing"
     },
     {
       "source": "/(.*)",

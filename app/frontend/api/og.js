@@ -586,7 +586,7 @@ function getCategoryMeta(path) {
 }
 
 module.exports = async (req, res) => {
-  const { id, type, path } = req.query;
+  const { id, slug, type, path } = req.query;
 
   const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
   const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
@@ -603,6 +603,30 @@ module.exports = async (req, res) => {
   let ogType = 'website';
   let pageUrl = SITE_URL;
   let keywords = 'ilan, ücretsiz ilan, ikinci el, satılık, kiralık, exvitrin';
+
+  // Helper: fetch listing data by id OR slug from Supabase
+  const fetchListingData = async (supabase, { id, slug }) => {
+    if (id) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      if (isUuid) {
+        const { data, error } = await supabase
+          .from('listings')
+          .select('id, title, description, images, price, category, sub_category, condition, city, slug')
+          .eq('id', id)
+          .single();
+        if (!error && data) return data;
+      }
+    }
+    if (slug) {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('id, title, description, images, price, category, sub_category, condition, city, slug')
+        .eq('slug', slug)
+        .single();
+      if (!error && data) return data;
+    }
+    return null;
+  };
 
   // --- KATEGORİ SAYFASI ---
   if (type === 'category' && path) {
@@ -622,20 +646,16 @@ module.exports = async (req, res) => {
     image = LOGO_URL;
 
   // --- İLAN DETAY SAYFASI ---
-  } else if (type === 'listing' && id) {
+  } else if (type === 'listing' && (id || slug)) {
     if (!supabaseUrl || !supabaseKey) {
       return res.status(500).send('Server configuration error');
     }
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     try {
-      const { data, error } = await supabase
-        .from('listings')
-        .select('title, description, images, price, category, sub_category, condition, city')
-        .eq('id', id)
-        .single();
+      const data = await fetchListingData(supabase, { id, slug });
 
-      if (!error && data) {
+      if (data) {
         let priceText = '';
         if (data.price && data.price > 0) {
           priceText = ' - ' + new Intl.NumberFormat('tr-TR', {
@@ -661,11 +681,13 @@ module.exports = async (req, res) => {
         const metaPrefix = parts.length > 0 ? parts.join(' • ') + ' | ' : '';
         const descBody = cleanDesc || "ExVitrin'de ilanı inceleyin.";
         description = (metaPrefix + descBody).substring(0, 160);
+
+        // Use the listing's first image — never fall back to logo for listing pages
         image = (data.images && data.images.length > 0) ? data.images[0] : LOGO_URL;
         imageWidth = '1200';
         imageHeight = '630';
         ogType = 'product';
-        pageUrl = `${SITE_URL}/product/${id}`;
+        pageUrl = data.slug ? `${SITE_URL}/${data.slug}` : `${SITE_URL}/product/${data.id}`;
       }
     } catch (err) {
       console.error('Error fetching listing data:', err);
