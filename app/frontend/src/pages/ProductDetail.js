@@ -433,7 +433,6 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
 export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed, id: propId, slug: propSlug }) => {
   const params = useParams();
   const routeId = propId || params.id;
-  const slug = propSlug || params.slug || params['*'];
   const navigate = useNavigate();
   const location = useLocation();
   const [printHideContact, setPrintHideContact] = useState(false);

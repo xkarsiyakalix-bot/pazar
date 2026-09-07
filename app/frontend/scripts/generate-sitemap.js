@@ -1,15 +1,16 @@
-require('dotenv').config({ path: '../.env' });
-const { createClient } = require('@supabase/supabase-js');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+const { createClient } = require('@supabase/supabase-js');
 
 // Initialize Supabase client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Error: Supabase URL or Key is missing in environment variables.');
-  process.exit(1);
+  console.warn('Warning: Supabase URL or Key is missing in environment variables. Skipping sitemap generation.');
+  process.exit(0);
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
