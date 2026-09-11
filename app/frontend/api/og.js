@@ -690,20 +690,24 @@ module.exports = async (req, res) => {
           priceText = ' - Ücretsiz';
         }
 
-        title = `${data.title}${priceText} | ExVitrin`;
+        const subInfo = [];
+        if (data.city) subInfo.push(data.city);
+        if (data.condition) {
+          const condTr = data.condition === 'neu' ? 'Sıfır' : (data.condition === 'gebraucht' ? 'İkinci El' : (data.condition === 'defekt' ? 'Arızalı' : data.condition));
+          subInfo.push(condTr);
+        }
+
+        title = `${data.title}${priceText}${subInfo.length > 0 ? ` | ${subInfo.join(' • ')}` : ''} | ExVitrin`;
 
         const cleanDesc = data.description
-          ? data.description.replace(/<[^>]+>/g, '').trim()
+          ? data.description.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
           : '';
 
-        const parts = [];
-        if (data.category) parts.push(data.category);
-        if (data.condition) parts.push(data.condition);
-        if (data.city) parts.push(data.city);
+        const locationPrefix = data.city ? `${data.city}'de ` : '';
+        const pricePrefix = priceText ? `${priceText.replace(' - ', '')} fiyatıyla ` : '';
+        const catPrefix = data.category ? `${data.category} kategorisinde ` : '';
 
-        const metaPrefix = parts.length > 0 ? parts.join(' • ') + ' | ' : '';
-        const descBody = cleanDesc || "ExVitrin'de ilanı inceleyin.";
-        description = (metaPrefix + descBody).substring(0, 160);
+        description = `${data.title} ${locationPrefix}${pricePrefix}ExVitrin'de! ${catPrefix}${cleanDesc}`.substring(0, 160).trim();
 
         // Use the listing's first image — ensure JPEG format for Facebook compatibility
         let rawImage = (data.images && data.images.length > 0) ? data.images[0] : LOGO_URL;

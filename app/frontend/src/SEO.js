@@ -2,6 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { CATEGORY_META } from './config/categoryMeta';
 
+const SITE_URL = 'https://www.exvitrin.com';
+
 /**
  * Enhanced SEO component with Structured Data support
  */
@@ -17,7 +19,7 @@ export const SEO = ({
 }) => {
   const siteName = 'ExVitrin';
   const fullTitle = title ? `${title} | ${siteName}` : `${siteName} | İkinci El, Araba, Emlak ve Ücretsiz İlanlar`;
-  const siteUrl = 'https://www.exvitrin.com';
+  const siteUrl = SITE_URL;
   
   // Use window.location.pathname as a reliable fallback for canonical URL
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
@@ -159,12 +161,49 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
 export const ProductSEO = ({ listing }) => {
   if (!listing) return null;
 
+  const priceText = (listing.price && Number(listing.price) > 0)
+    ? `${Number(listing.price).toLocaleString('tr-TR')} TL`
+    : (listing.price === 0 || listing.price_type === 'giveaway' ? 'Ücretsiz' : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : ''));
+
+  // High-ranking SEO Title: "Nike Air Max 42 - 850 TL | İzmir (İkinci El)"
+  const titleParts = [listing.title];
+  if (priceText) titleParts.push(priceText);
+
+  const subInfo = [];
+  if (listing.city) subInfo.push(listing.city);
+  if (listing.condition) {
+    const condTr = listing.condition === 'neu' ? 'Sıfır' : (listing.condition === 'gebraucht' ? 'İkinci El' : (listing.condition === 'defekt' ? 'Arızalı' : listing.condition));
+    subInfo.push(condTr);
+  }
+  const titleWithPrice = titleParts.join(' - ') + (subInfo.length > 0 ? ` | ${subInfo.join(' • ')}` : '');
+
+  // Rich, unique meta description avoiding thin/duplicate content warnings
+  const cleanBody = (listing.description || '').replace(/(<([^>]+)>)/gi, "").replace(/\s+/g, ' ').trim();
+  const locationPrefix = listing.city ? `${listing.city}'de ` : '';
+  const pricePrefix = priceText ? `${priceText} fiyatıyla ` : '';
+  const categoryPrefix = listing.category ? `${listing.category} kategorisinde ` : '';
+  const descriptionCleaned = `${listing.title} ${locationPrefix}${pricePrefix}ExVitrin'de! ${categoryPrefix}${cleanBody}`.substring(0, 160).trim();
+
+  const firstImage = listing.images?.[0] || listing.image;
+  const absoluteImage = firstImage
+    ? (firstImage.startsWith('http') ? firstImage : `${SITE_URL}${firstImage}`)
+    : `${SITE_URL}/logo_exvitrin_2026.png`;
+
+  const listingUrl = listing.slug ? `/${listing.slug}` : `/product/${listing.id}`;
+
+  const breadcrumbs = [
+    { name: 'Ana Sayfa', url: '/' },
+    ...(listing.city ? [{ name: listing.city, url: `/sehir/${listing.city.replace(/İ/g, 'i').replace(/I/g, 'i').replace(/ı/g, 'i').toLowerCase().replace(/[^a-z0-9]/g, '-')}` }] : []),
+    ...(listing.category ? [{ name: listing.category, url: `/${listing.category.replace(/\s+/g, '-').toLowerCase()}` }] : []),
+    { name: listing.title, url: listingUrl }
+  ];
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     'name': listing.title,
-    'description': listing.description?.substring(0, 300) || '',
-    'image': listing.images?.[0] || 'https://www.exvitrin.com/logo_exvitrin_2026.png',
+    'description': descriptionCleaned,
+    'image': absoluteImage,
     'sku': listing.id?.toString() || 'unknown',
     'brand': {
       '@type': 'Brand',
@@ -175,7 +214,8 @@ export const ProductSEO = ({ listing }) => {
       'price': listing.price ? Number(listing.price).toFixed(2) : "0.00",
       'priceCurrency': 'TRY',
       'availability': 'https://schema.org/InStock',
-      'itemCondition': 'https://schema.org/UsedCondition',
+      'itemCondition': listing.condition === 'neu' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
+      ...(listing.city ? { 'areaServed': listing.city } : {}),
       'hasMerchantReturnPolicy': {
         '@type': 'MerchantReturnPolicy',
         'returnPolicyCategory': 'https://schema.org/MerchantReturnNotPermitted',
@@ -211,18 +251,6 @@ export const ProductSEO = ({ listing }) => {
     }
   };
 
-  const breadcrumbs = [
-    { name: 'Ana Sayfa', url: '/' },
-    { name: listing.category || 'Kategori', url: listing.category ? `/${listing.category.replace(/\s+/g, '-').toLowerCase()}` : '/' },
-    { name: listing.title, url: `/product/${listing.id}` }
-  ];
-
-  const priceText = listing.price ? `${Number(listing.price).toLocaleString('tr-TR')} TL` : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : (listing.price_type === 'giveaway' ? 'Ücretsiz' : 'Görüşülür'));
-  const titleWithPrice = `${listing.title} - ${priceText}`;
-  const firstImage = listing.images?.[0] || listing.image;
-  const absoluteImage = firstImage ? (firstImage.startsWith('http') ? firstImage : `${siteUrl}${firstImage}`) : `${siteUrl}/logo_exvitrin_2026.png`;
-  const descriptionCleaned = (listing.description || '').replace(/(<([^>]+)>)/gi, "").substring(0, 160);
-
   return (
     <SEO 
       title={titleWithPrice}
@@ -231,7 +259,7 @@ export const ProductSEO = ({ listing }) => {
       type="product"
       schema={productSchema}
       breadcrumbs={breadcrumbs}
-      url={`/product/${listing.id}`}
+      url={listingUrl}
       price={listing.price}
     />
   );
