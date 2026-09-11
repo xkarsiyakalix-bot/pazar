@@ -10,6 +10,7 @@ import {
   slugToCategory, 
   categoryToSlug, 
   getCityCategorySEO, 
+  getCityVariants,
   TOP_SEO_CITIES, 
   TOP_SEO_CATEGORIES 
 } from '../utils/cityUtils';
@@ -38,12 +39,17 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
       try {
         let query = supabase
           .from('listings')
-          .select('*, profiles:user_id(username, full_name, avatar_url, is_verified, phone)')
+          .select('*')
           .eq('status', 'active');
 
-        // Filter by city
-        if (city) {
-          query = query.ilike('city', `%${city}%`);
+        // Filter by city with all case & Turkish character variations
+        const activeCity = city || citySlug;
+        if (activeCity) {
+          const variants = getCityVariants(activeCity);
+          if (variants.length > 0) {
+            const orFilter = variants.map(v => `city.ilike.%${v}%`).join(',');
+            query = query.or(orFilter);
+          }
         }
 
         // Filter by category

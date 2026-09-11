@@ -63,6 +63,45 @@ export const slugToCity = (citySlug) => {
   return slugCityMap[clean] || null;
 };
 
+/**
+ * Returns all possible text/case/ASCII variants for a Turkish city
+ * to guarantee robust SQL / ILIKE matching in PostgreSQL
+ */
+export const getCityVariants = (cityName) => {
+  if (!cityName) return [];
+  const raw = String(cityName).trim();
+  const variants = new Set();
+  variants.add(raw);
+  variants.add(raw.toLowerCase());
+  variants.add(raw.toUpperCase());
+
+  // ASCII / Normalized
+  const ascii = raw
+    .replace(/İ/g, 'I')
+    .replace(/ı/g, 'i')
+    .replace(/ğ/g, 'g')
+    .replace(/Ğ/g, 'G')
+    .replace(/ü/g, 'u')
+    .replace(/Ü/g, 'U')
+    .replace(/ş/g, 's')
+    .replace(/Ş/g, 'S')
+    .replace(/ö/g, 'o')
+    .replace(/Ö/g, 'O')
+    .replace(/ç/g, 'c')
+    .replace(/Ç/g, 'C');
+
+  variants.add(ascii);
+  variants.add(ascii.toLowerCase());
+  variants.add(ascii.toUpperCase());
+
+  try {
+    variants.add(raw.toLocaleLowerCase('tr-TR'));
+    variants.add(raw.toLocaleUpperCase('tr-TR'));
+  } catch (e) {}
+
+  return Array.from(variants).filter(Boolean);
+};
+
 export const categoryToSlug = (categoryName) => {
   if (!categoryName) return '';
   const match = TOP_SEO_CATEGORIES.find(
