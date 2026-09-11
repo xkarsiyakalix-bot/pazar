@@ -11,6 +11,7 @@ export const Footer = () => {
                         <h3 className="text-white font-semibold mb-4">ExVitrin</h3>
                         <ul className="space-y-2 text-sm">
                             <li><a href="/categories" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.allCategories}</a></li>
+                            <li><a href="/sehirler" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Şehir İlanları (81 İl)</a></li>
                             <li><a href="/hakkimizda" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.aboutUs}</a></li>
                             <li><a href="/mobile-apps" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.mobileApps}</a></li>
                             <li><a href="/yasal-uyarilar" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors font-semibold group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Yasal Uyarı</a></li>
@@ -25,9 +26,10 @@ export const Footer = () => {
                         <ul className="space-y-2 text-sm">
                             <li><a href="/emlak" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Emlak</a></li>
                             <li><a href="/vasita" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Vasıta</a></li>
-                            <li><a href="/vasita/oto-parca-lastik" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Yedek Parça</a></li>
                             <li><a href="/elektronik" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Elektronik</a></li>
-                            <li><a href="/evcil-hayvanlar" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Evcil Hayvanlar</a></li>
+                            <li><a href="/sehir/istanbul" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>İstanbul İlanları</a></li>
+                            <li><a href="/sehir/ankara" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Ankara İlanları</a></li>
+                            <li><a href="/sehir/izmir" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>İzmir İlanları</a></li>
                         </ul>
                     </div>
 

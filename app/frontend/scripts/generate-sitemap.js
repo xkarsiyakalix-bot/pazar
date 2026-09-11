@@ -22,20 +22,30 @@ async function generateSitemap() {
   try {
     // 1. Fetch all active listings
     console.log('Fetching listings...');
-    const { data: listings, error: listingsError } = await supabase
-      .from('listings')
-      .select('id, updated_at')
-      .eq('status', 'active');
-      
-    if (listingsError) throw listingsError;
+    let listings = [];
+    try {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('id, slug, updated_at')
+        .eq('status', 'active');
+      if (error) console.warn('⚠️ Could not fetch listings for sitemap:', error.message);
+      else listings = data || [];
+    } catch (e) {
+      console.warn('⚠️ Network error fetching listings:', e.message);
+    }
 
     // 2. Fetch all profiles (sellers)
     console.log('Fetching profiles...');
-    const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, updated_at');
-      
-    if (profilesError) throw profilesError;
+    let profiles = [];
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, updated_at');
+      if (error) console.warn('⚠️ Could not fetch profiles for sitemap:', error.message);
+      else profiles = data || [];
+    } catch (e) {
+      console.warn('⚠️ Network error fetching profiles:', e.message);
+    }
 
     // 3. Define static routes
     const staticRoutes = [
@@ -131,13 +141,54 @@ async function generateSitemap() {
   </url>`);
     });
 
+    // City & Category Landing Pages (SEO Priority)
+    const topCities = [
+      'istanbul', 'ankara', 'izmir', 'bursa', 'antalya', 
+      'adana', 'konya', 'gaziantep', 'sanliurfa', 'kocaeli', 
+      'mersin', 'diyarbakir', 'hatay', 'manisa', 'kayseri'
+    ];
+
+    const topCategories = [
+      'emlak', 'otomobil', 'elektronik', 'ev-bahce', 
+      'moda-guzellik', 'is-ilanlari', 'aile-cocuk-bebek', 
+      'evcil-hayvanlar', 'hizmetler', 'ucretsiz-takas'
+    ];
+
+    // Hub page
+    urls.push(`
+  <url>
+    <loc>${SITE_URL}/sehirler</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+
+    // City & City+Category pages
+    topCities.forEach(city => {
+      urls.push(`
+  <url>
+    <loc>${SITE_URL}/sehir/${city}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+
+      topCategories.forEach(cat => {
+        urls.push(`
+  <url>
+    <loc>${SITE_URL}/sehir/${city}/${cat}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+      });
+    });
+
     // Listings
     if (listings) {
       listings.forEach(listing => {
         const lastMod = listing.updated_at ? new Date(listing.updated_at).toISOString() : new Date().toISOString();
+        const listingPath = listing.slug ? `/${listing.slug}` : `/product/${listing.id}`;
         urls.push(`
   <url>
-    <loc>${SITE_URL}/product/${listing.id}</loc>
+    <loc>${SITE_URL}${listingPath}</loc>
     <lastmod>${lastMod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

@@ -49,6 +49,8 @@ const ReservationButton = React.lazy(() => import('./ReservationButton'));
 const StorePage = React.lazy(() => import('./components/Store/StorePage'));
 const SmartRoute = React.lazy(() => import('./SmartRoute'));
 const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
+const CityCategoryLandingPage = React.lazy(() => import('./pages/CityCategoryLandingPage'));
+const AllCitiesPage = React.lazy(() => import('./pages/AllCitiesPage'));
 import MobileCategoryGrid from './components/MobileCategoryGrid';
 
 // Lazy load page components
@@ -985,6 +987,11 @@ function App() {
             <Route path="/unternehmensseite-pro" element={<ProPage />} />
             <Route path="/iletisim" element={<ContactPage />} />
             <Route path="/search" element={<SearchResultsPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            {/* Şehir ve Kategori İniş Sayfaları (SEO Landing Pages) */}
+            <Route path="/sehirler" element={<AllCitiesPage />} />
+            <Route path="/sehir/:citySlug" element={<CityCategoryLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/sehir/:citySlug/:categorySlug" element={<CityCategoryLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/sehir/:citySlug/:categorySlug/:subCategorySlug" element={<CityCategoryLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             {/* Dynamic Routing - Handled by SmartRoute for categories, listings, and stores */}
             {/* === MODA & GÜZELLİK === */}
             <Route path="/Moda-Guzellik/Kadin-Giyimi" element={<DamenbekleidungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />

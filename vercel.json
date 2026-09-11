@@ -4,6 +4,28 @@
   "installCommand": "npm install && cd app/frontend && npm install",
   "rewrites": [
     {
+      "source": "/sehirler",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?path=/sehirler&type=city"
+    },
+    {
+      "source": "/sehir/:path*",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?path=/sehir/:path*&type=city"
+    },
+    {
       "source": "/product/:id",
       "has": [
         {

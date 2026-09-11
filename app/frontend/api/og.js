@@ -628,8 +628,31 @@ module.exports = async (req, res) => {
     return null;
   };
 
+  // --- ŞEHİR / KATEGORİ SAYFASI ---
+  if (type === 'city' || (path && path.startsWith('/sehir'))) {
+    const parts = (path || '').replace(/^\//, '').split('/');
+    if (parts[0] === 'sehirler') {
+      title = 'Türkiye Şehir İlanları - 81 İlin İkinci El ve Emlak Pazarı | ExVitrin';
+      description = "Türkiye'nin 81 ilinden satılık ve kiralık emlak, araba, elektronik ve ücretsiz ilanlar ExVitrin'de!";
+    } else {
+      const citySlug = parts[1] || '';
+      const catSlug = parts[2] || '';
+      const cityName = citySlug ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1) : '';
+      const catName = catSlug ? catSlug.charAt(0).toUpperCase() + catSlug.slice(1) : '';
+
+      if (cityName && catName) {
+        title = `${cityName} ${catName} İlanları - Satılık & Kiralık | ExVitrin`;
+        description = `${cityName} ${catName} ilanları ExVitrin'de! ${cityName} genelinde en uygun fiyatlı satılık ve kiralık ${catName.toLowerCase()} fırsatları.`;
+      } else if (cityName) {
+        title = `${cityName} İkinci El ve Sıfır İlanlar | ExVitrin`;
+        description = `${cityName} ikinci el ve sıfır ilanlar ExVitrin'de! ${cityName} genelinde araba, emlak, elektronik ve ücretsiz ilanlar.`;
+      }
+    }
+    pageUrl = `${SITE_URL}${path || ''}`;
+    image = LOGO_URL;
+
   // --- KATEGORİ SAYFASI ---
-  if (type === 'category' && path) {
+  } else if (type === 'category' && path) {
     const meta = getCategoryMeta(path);
     if (meta) {
       title = meta.title;
