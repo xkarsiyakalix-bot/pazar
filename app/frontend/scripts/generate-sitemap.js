@@ -40,7 +40,7 @@ async function generateSitemap() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, updated_at');
+        .select('id, user_number, store_slug, updated_at');
       if (error) console.warn('⚠️ Could not fetch profiles for sitemap:', error.message);
       else profiles = data || [];
     } catch (e) {
@@ -59,86 +59,88 @@ async function generateSitemap() {
     // 4. Category pages (ana kategoriler)
     const categoryRoutes = [
       // Ana kategoriler
-      { path: '/Emlak', priority: '0.9' },
-      { path: '/Elektronik', priority: '0.9' },
-      { path: '/Ev-Bahce', priority: '0.9' },
-      { path: '/Moda-Guzellik', priority: '0.9' },
-      { path: '/Evcil-Hayvanlar', priority: '0.8' },
-      { path: '/Aile-Cocuk-Bebek', priority: '0.8' },
-      { path: '/Is-Ilanlari', priority: '0.8' },
-      { path: '/Eglence-Hobi-Mahalle', priority: '0.8' },
-      { path: '/Muzik-Film-Kitap', priority: '0.7' },
-      { path: '/Biletler', priority: '0.7' },
-      { path: '/Hizmetler', priority: '0.8' },
-      { path: '/Ucretsiz-Takas', priority: '0.7' },
-      { path: '/Egitim-Kurslar', priority: '0.7' },
-      { path: '/Otomobil-Bisiklet-Tekne', priority: '0.9' },
-      { path: '/Komsu-Yardimi', priority: '0.6' },
-      // Emlak alt kategorileri
-      { path: '/Emlak/Kiralik-Daireler', priority: '0.9' },
-      { path: '/Emlak/Satilik-Daireler', priority: '0.9' },
-      { path: '/Emlak/Satilik-Evler', priority: '0.9' },
-      { path: '/Emlak/Kiralik-Evler', priority: '0.9' },
-      { path: '/Emlak/Ticari-Emlak', priority: '0.8' },
-      { path: '/emlak/ticari-emlak', priority: '0.8' },
-      { path: '/Emlak/Arsa-Bahce', priority: '0.8' },
-      { path: '/Emlak/Yeni-Projeler', priority: '0.8' },
-      { path: '/Emlak/Tatil-Evi-Yurt-Disi-Emlak', priority: '0.7' },
-      { path: '/Emlak/Garaj-Otopark', priority: '0.7' },
-      { path: '/Emlak/Diger-Emlak', priority: '0.6' },
-      // Elektronik alt kategorileri
+      { path: '/emlak', priority: '0.9' },
       { path: '/elektronik', priority: '0.9' },
-      { path: '/Elektronik/Cep-Telefonu-Telefon', priority: '0.9' },
-      { path: '/Elektronik/Bilgisayarlar', priority: '0.8' },
-      { path: '/Elektronik/Dizustu-Bilgisayarlar', priority: '0.8' },
-      { path: '/Elektronik/Tabletler-E-Okuyucular', priority: '0.8' },
-      { path: '/Elektronik/TV-Video', priority: '0.8' },
-      { path: '/Elektronik/Fotograf-Kamera', priority: '0.7' },
-      { path: '/Elektronik/Konsollar', priority: '0.7' },
-      { path: '/Elektronik/Video-Oyunlari', priority: '0.7' },
-      { path: '/Elektronik/Ev-Aletleri', priority: '0.7' },
+      { path: '/ev-bahce', priority: '0.9' },
+      { path: '/moda-guzellik', priority: '0.9' },
+      { path: '/evcil-hayvanlar', priority: '0.8' },
+      { path: '/aile-cocuk-bebek', priority: '0.8' },
+      { path: '/is-ilanlari', priority: '0.8' },
+      { path: '/eglence-hobi-mahalle', priority: '0.8' },
+      { path: '/muzik-film-kitap', priority: '0.7' },
+      { path: '/biletler', priority: '0.7' },
+      { path: '/hizmetler', priority: '0.8' },
+      { path: '/ucretsiz-takas', priority: '0.7' },
+      { path: '/egitim-kurslar', priority: '0.7' },
+      { path: '/otomobil-bisiklet-tekne', priority: '0.9' },
+      { path: '/komsu-yardimi', priority: '0.6' },
+      // Emlak alt kategorileri
+      { path: '/emlak/kiralik-daireler', priority: '0.9' },
+      { path: '/emlak/satilik-daireler', priority: '0.9' },
+      { path: '/emlak/satilik-evler', priority: '0.9' },
+      { path: '/emlak/kiralik-evler', priority: '0.9' },
+      { path: '/emlak/ticari-emlak', priority: '0.8' },
+      { path: '/emlak/arsa-bahce', priority: '0.8' },
+      { path: '/emlak/yeni-projeler', priority: '0.8' },
+      { path: '/emlak/tatil-evi-yurt-disi-emlak', priority: '0.7' },
+      { path: '/emlak/garaj-otopark', priority: '0.7' },
+      { path: '/emlak/diger-emlak', priority: '0.6' },
+      // Elektronik alt kategorileri
+      { path: '/elektronik/cep-telefonu-telefon', priority: '0.9' },
+      { path: '/elektronik/bilgisayarlar', priority: '0.8' },
+      { path: '/elektronik/dizustu-bilgisayarlar', priority: '0.8' },
+      { path: '/elektronik/tabletler-e-okuyucular', priority: '0.8' },
+      { path: '/elektronik/tv-video', priority: '0.8' },
+      { path: '/elektronik/fotograf-kamera', priority: '0.7' },
+      { path: '/elektronik/konsollar', priority: '0.7' },
+      { path: '/elektronik/video-oyunlari', priority: '0.7' },
+      { path: '/elektronik/ev-aletleri', priority: '0.7' },
       // Ev & Bahçe alt kategorileri
-      { path: '/Ev-Bahce/Bahce-Malzemeleri-Bitkiler', priority: '0.7' },
-      { path: '/Ev-Bahce/Ev-Hizmetleri', priority: '0.8' },
-      { path: '/Ev-Bahce/Oturma-Odasi', priority: '0.7' },
-      { path: '/Ev-Bahce/Yatak-Odasi', priority: '0.7' },
-      { path: '/Ev-Bahce/Mutfak-Yemek-Odasi', priority: '0.7' },
-      { path: '/Ev-Bahce/Dekorasyon', priority: '0.7' },
-      { path: '/Ev-Bahce/Ev-Tekstili', priority: '0.7' },
-      { path: '/Ev-Bahce/Ev-Tadilati', priority: '0.7' },
+      { path: '/ev-bahce/bahce-malzemeleri-bitkiler', priority: '0.7' },
+      { path: '/ev-bahce/ev-hizmetleri', priority: '0.8' },
+      { path: '/ev-bahce/oturma-odasi', priority: '0.7' },
+      { path: '/ev-bahce/yatak-odasi', priority: '0.7' },
+      { path: '/ev-bahce/mutfak-yemek-odasi', priority: '0.7' },
+      { path: '/ev-bahce/dekorasyon', priority: '0.7' },
+      { path: '/ev-bahce/ev-tekstili', priority: '0.7' },
+      { path: '/ev-bahce/ev-tadilati', priority: '0.7' },
       // Hizmetler alt kategorileri
-      { path: '/Hizmetler/Temizlik-Hizmetleri', priority: '0.8' },
-      { path: '/Hizmetler/Tadilat-Tamir', priority: '0.8' },
-      { path: '/Hizmetler/Tesisat', priority: '0.7' },
-      { path: '/Hizmetler/Elektrik', priority: '0.7' },
-      { path: '/Hizmetler/Tasimacilik-Nakliye', priority: '0.8' },
+      { path: '/hizmetler/temizlik-hizmetleri', priority: '0.8' },
+      { path: '/hizmetler/tadilat-tamir', priority: '0.8' },
+      { path: '/hizmetler/tesisat', priority: '0.7' },
+      { path: '/hizmetler/elektrik', priority: '0.7' },
+      { path: '/hizmetler/tasimacilik-nakliye', priority: '0.8' },
       // Araç alt kategorileri
-      { path: '/Otomobil-Bisiklet-Tekne/Otomobiller', priority: '0.9' },
-      { path: '/Otomobil-Bisiklet-Tekne/Motosiklet-Scooter', priority: '0.8' },
-      { path: '/Otomobil-Bisiklet-Tekne/Bisiklet-Aksesuarlar', priority: '0.7' },
-      { path: '/Otomobil-Bisiklet-Tekne/Oto-Parca-Lastik', priority: '0.7' },
+      { path: '/otomobil-bisiklet-tekne/otomobiller', priority: '0.9' },
+      { path: '/otomobil-bisiklet-tekne/motosiklet-scooter', priority: '0.8' },
+      { path: '/otomobil-bisiklet-tekne/bisiklet-aksesuarlar', priority: '0.7' },
+      { path: '/otomobil-bisiklet-tekne/oto-parca-lastik', priority: '0.7' },
     ];
 
     const urls = [];
+    const seenUrls = new Set();
+
+    const addUrl = (urlPath, changefreq, priority, lastmod = null) => {
+      const normalizedPath = (urlPath || '').toLowerCase().replace(/\/+$/, '');
+      const fullUrl = `${SITE_URL}${normalizedPath}`;
+      if (seenUrls.has(fullUrl)) return;
+      seenUrls.add(fullUrl);
+      urls.push(`
+  <url>
+    <loc>${fullUrl}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''}
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`);
+    };
 
     // Static Routes
     staticRoutes.forEach(route => {
-      urls.push(`
-  <url>
-    <loc>${SITE_URL}${route}</loc>
-    <changefreq>daily</changefreq>
-    <priority>${route === '' ? '1.0' : '0.8'}</priority>
-  </url>`);
+      addUrl(route, 'daily', route === '' ? '1.0' : '0.8');
     });
 
     // Category Routes
     categoryRoutes.forEach(route => {
-      urls.push(`
-  <url>
-    <loc>${SITE_URL}${route.path}</loc>
-    <changefreq>daily</changefreq>
-    <priority>${route.priority}</priority>
-  </url>`);
+      addUrl(route.path, 'daily', route.priority);
     });
 
     // City & Category Landing Pages (SEO Priority)
@@ -155,29 +157,13 @@ async function generateSitemap() {
     ];
 
     // Hub page
-    urls.push(`
-  <url>
-    <loc>${SITE_URL}/sehirler</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>`);
+    addUrl('/sehirler', 'daily', '0.8');
 
     // City & City+Category pages
     topCities.forEach(city => {
-      urls.push(`
-  <url>
-    <loc>${SITE_URL}/sehir/${city}</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>`);
-
+      addUrl(`/sehir/${city}`, 'daily', '0.8');
       topCategories.forEach(cat => {
-        urls.push(`
-  <url>
-    <loc>${SITE_URL}/sehir/${city}/${cat}</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>`);
+        addUrl(`/sehir/${city}/${cat}`, 'daily', '0.8');
       });
     });
 
@@ -186,13 +172,7 @@ async function generateSitemap() {
       listings.forEach(listing => {
         const lastMod = listing.updated_at ? new Date(listing.updated_at).toISOString() : new Date().toISOString();
         const listingPath = listing.slug ? `/${listing.slug}` : `/product/${listing.id}`;
-        urls.push(`
-  <url>
-    <loc>${SITE_URL}${listingPath}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>`);
+        addUrl(listingPath, 'weekly', '0.9', lastMod);
       });
     }
 
@@ -200,13 +180,10 @@ async function generateSitemap() {
     if (profiles) {
       profiles.forEach(profile => {
         const lastMod = profile.updated_at ? new Date(profile.updated_at).toISOString() : new Date().toISOString();
-        urls.push(`
-  <url>
-    <loc>${SITE_URL}/seller/${profile.id}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`);
+        const sellerPath = profile.store_slug
+          ? `/${profile.store_slug}`
+          : (profile.user_number ? `/seller/${profile.user_number}` : `/seller/${profile.id}`);
+        addUrl(sellerPath, 'weekly', '0.7', lastMod);
       });
     }
 

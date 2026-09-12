@@ -661,11 +661,14 @@ module.exports = async (req, res) => {
     } else {
       // Generic fallback with path name
       const parts = path.replace(/^\//, '').split('/');
-      const catName = parts[parts.length - 1].replace(/-/g, ' ');
       title = `${catName} İlanları - Satılık & Kiralık | ExVitrin`;
       description = `ExVitrin'de en güncel ${catName} ilanları! Uygun fiyatlarla satılık ve kiralık ${catName.toLowerCase()} ilanları.`;
     }
-    pageUrl = `${SITE_URL}${path}`;
+    const cleanCategoryPath = (path || '')
+      .toLowerCase()
+      .replace(/&/g, '')
+      .replace(/-+/g, '-');
+    pageUrl = `${SITE_URL}${cleanCategoryPath}`;
     image = LOGO_URL;
 
   // --- İLAN DETAY SAYFASI ---

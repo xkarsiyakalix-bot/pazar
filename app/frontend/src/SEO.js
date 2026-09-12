@@ -21,10 +21,14 @@ export const SEO = ({
   const fullTitle = title ? `${title} | ${siteName}` : `${siteName} | İkinci El, Araba, Emlak ve Ücretsiz İlanlar`;
   const siteUrl = SITE_URL;
   
-  // Use window.location.pathname as a reliable fallback for canonical URL
-  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-  const finalUrl = url || currentPath;
-  const canonicalUrl = `${siteUrl}${finalUrl}`;
+  // Normalize canonical URL: strip query parameters and hash, remove trailing slashes, enforce clean lowercase
+  const rawPath = url || (typeof window !== 'undefined' ? window.location.pathname : '');
+  const cleanPath = (rawPath || '')
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/\/+$/, '');
+  const normalizedPath = cleanPath ? cleanPath.toLowerCase() : '';
+  const canonicalUrl = normalizedPath ? `${siteUrl}${normalizedPath}` : siteUrl;
 
   // Global Organization Schema
   const organizationSchema = {
@@ -135,15 +139,29 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
 
   const keywords = customMeta?.keywords || `${category}, ${subCategory || ''}, ilanlar, satılık, kiralık, ikinci el, exvitrin`.replace(/, ,/g, ',');
 
+  const cleanCat = (category || '')
+    .replace(/&/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+
+  const cleanSub = (subCategory || '')
+    .replace(/&/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+
   const breadcrumbs = [
     { name: 'Ana Sayfa', url: '/' },
-    { name: category, url: `/${category?.replace(/\s+/g, '-').toLowerCase()}` }
+    { name: category, url: `/${cleanCat}` }
   ];
   
   if (subCategory) {
     breadcrumbs.push({ 
       name: subCategory, 
-      url: `/${category?.replace(/\s+/g, '-').toLowerCase()}/${subCategory?.replace(/\s+/g, '-').toLowerCase()}` 
+      url: `/${cleanCat}/${cleanSub}` 
     });
   }
 
@@ -153,7 +171,7 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
       description={description}
       keywords={keywords}
       breadcrumbs={breadcrumbs}
-      url={`/${category?.replace(/\s+/g, '-').toLowerCase()}${subCategory ? '/' + subCategory?.replace(/\s+/g, '-').toLowerCase() : ''}`}
+      url={`/${cleanCat}${cleanSub ? '/' + cleanSub : ''}`}
     />
   );
 };
