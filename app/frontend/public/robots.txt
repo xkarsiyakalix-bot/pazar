@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# Disallow admin and private pages
+# Disallow admin, private and search query pages
 Disallow: /admin/
 Disallow: /admin
 Disallow: /login
@@ -12,8 +12,11 @@ Disallow: /checkout
 Disallow: /messages
 Disallow: /profile
 Disallow: /add-listing
+Disallow: /search
+Disallow: /search?
 
 # Allow important pages
+Allow: /
 Allow: /product/
 Allow: /seller/
 Allow: /store/
@@ -21,6 +24,8 @@ Allow: /categories
 Allow: /hakkimizda
 Allow: /iletisim
 Allow: /mobile-apps
+Allow: /sehirler
+Allow: /sehir/
 
 # Sitemap location
 Sitemap: https://www.exvitrin.com/sitemap.xml

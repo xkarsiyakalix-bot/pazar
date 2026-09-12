@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { t } from './translations';
 import { saveContactMessage } from './api/contact';
 import { Breadcrumb } from './components/Breadcrumb';
+import { SEO } from './SEO';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -35,6 +36,16 @@ const ContactPage = () => {
 
     return (
         <main className="flex-grow pt-12 pb-20 px-4 bg-gray-50/50 dark:bg-neutral-950 transition-colors duration-300">
+            <SEO 
+                title="İletişim & Destek | ExVitrin Müşteri Hizmetleri"
+                description="ExVitrin iletişim ve destek sayfası. İlan verme, hesap ve güvenlik sorularınız, önerileriniz için bize 7/24 mesaj gönderebilirsiniz."
+                keywords="exvitrin iletişim, müşteri hizmetleri, destek, yardım, ilan desteği"
+                url="/iletisim"
+                breadcrumbs={[
+                    { name: 'Ana Sayfa', url: '/' },
+                    { name: 'İletişim', url: '/iletisim' }
+                ]}
+            />
             <div className="max-w-5xl mx-auto">
 
 

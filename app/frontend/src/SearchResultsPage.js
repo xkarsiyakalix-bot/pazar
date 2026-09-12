@@ -8,6 +8,7 @@ import { useAuth } from './contexts/AuthContext';
 import { getTurkishCities, getCategoryTranslation, t } from './translations';
 import { SKELETON_CONFIG } from './config/skeletonConfig';
 import { ListingGridSkeleton } from './components/skeletons/ListingCardSkeleton';
+import { Helmet } from 'react-helmet-async';
 
 const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     const categories = [
@@ -308,6 +309,10 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:!bg-neutral-950 pb-12 transition-colors">
+            <Helmet>
+                <title>{query ? `"${query}" Arama Sonuçları | ExVitrin` : 'İlan Ara | ExVitrin'}</title>
+                <meta name="robots" content="noindex, follow" />
+            </Helmet>
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
 
