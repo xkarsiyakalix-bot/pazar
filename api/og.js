@@ -696,7 +696,20 @@ module.exports = async (req, res) => {
         const subInfo = [];
         if (data.city) subInfo.push(data.city);
         if (data.condition) {
-          const condTr = data.condition === 'neu' ? 'Sıfır' : (data.condition === 'gebraucht' ? 'İkinci El' : (data.condition === 'defekt' ? 'Arızalı' : data.condition));
+          const condMap = {
+            'neu': 'Yeni',
+            'Neu': 'Yeni',
+            'gebraucht': 'İkinci El',
+            'gut': 'İyi',
+            'sehr_gut': 'Çok İyi',
+            'sehr gut': 'Çok İyi',
+            'in_ordnung': 'İdare Eder',
+            'in ordnung': 'İdare Eder',
+            'neu_mit_etikett': 'Yeni (Etiketli)',
+            'neu mit etikett': 'Yeni (Etiketli)',
+            'defekt': 'Arızalı'
+          };
+          const condTr = condMap[data.condition] || data.condition;
           subInfo.push(condTr);
         }
 

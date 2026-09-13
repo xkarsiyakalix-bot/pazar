@@ -2120,7 +2120,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.damenschuhe_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.damenschuhe_art)}</span>
                           </div>
                         )}
                         {listing.damenschuhe_marke && (
@@ -2146,7 +2146,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenbekleidung_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.herrenbekleidung_art)}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_marke && (
@@ -2172,7 +2172,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenschuhe_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_art}</span>
+                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.herrenschuhe_art)}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_marke && (
@@ -2710,7 +2710,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.damenbekleidung_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.damenbekleidung_art)}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_marke && (

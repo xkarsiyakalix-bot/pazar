@@ -188,7 +188,48 @@ const amenityTranslations = {
   'Night-Paket': 'Gece Paketi',
   'LED High Performance': 'Yüksek Performans LED',
   'Park-Assistent': 'Park Asistanı',
-  'MBUX Multimediasystem': 'MBUX Multimedya'
+  'MBUX Multimediasystem': 'MBUX Multimedya',
+  // Kadın Giyimi (Damenbekleidung) – stored in DB as German values
+  'Hosen': 'Pantolonlar',
+  'Hose': 'Pantolonlar',
+  'Jeans': 'Kot Pantolonlar',
+  'Shirts & Tops': 'Tişört & Bluz',
+  'Pullover': 'Kazak & Süveter',
+  'Jacken & Mäntel': 'Mont & Palto',
+  'Anzüge': 'Takım Elbise',
+  'Bademode': 'Mayo & Bikini',
+  'Hemden & Blusen': 'Gömlek & Bluz',
+  'Hochzeitsmode': 'Gelinlik & Damat',
+  'Kostüme & Verkleidungen': 'Kostüm & Kıyafet',
+  'Röcke & Kleider': 'Etek & Elbise',
+  'Shorts': 'Şort',
+  'Sportbekleidung': 'Spor Giyim',
+  'Umstandsmode': 'Hamile Giyim',
+  'Weitere Damenbekleidung': 'Diğer Kadın Giyimi',
+  // Damenschuhe (Kadın Ayakkabı) – DB values
+  'Pumps': 'Topuklu Ayakkabı',
+  'Pumps & High Heels': 'Topuklu Ayakkabı',
+  'Stiefel': 'Bot',
+  'Stiefel & Stiefeletten': 'Çizme & Bot',
+  'Stiefeletten': 'Bilek Bot',
+  'Sandalen': 'Sandalet',
+  'Sneaker': 'Spor Ayakkabı',
+  'Sneaker & Sportschuhe': 'Spor Ayakkabı',
+  'Ballerinas': 'Babet',
+  'Hausschuhe': 'Ev Terliği',
+  'Sportschuhe': 'Spor Ayakkabı',
+  'Halb- & Schnürschuhe': 'Yürüyüş & Bağcıklı Ayakkabı',
+  'Outdoor & Wanderschuhe': 'Outdoor Ayakkabı',
+  'Weitere Schuhe': 'Diğer Ayakkabılar',
+  'Weitere Damenschuhe': 'Diğer Kadın Ayakkabısı'
 };
 
-export const translateVal = (val) => amenityTranslations[val] || val;
+export const translateVal = (val) => {
+  if (!val) return val;
+  if (amenityTranslations[val]) return amenityTranslations[val];
+  const lower = String(val).trim().toLowerCase();
+  for (const [k, v] of Object.entries(amenityTranslations)) {
+    if (k.toLowerCase() === lower) return v;
+  }
+  return val;
+};

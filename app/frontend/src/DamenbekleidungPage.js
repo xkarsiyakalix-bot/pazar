@@ -1,6 +1,7 @@
 import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
+import { translateVal } from './utils/amenityTranslations';
 
 const DamenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
@@ -148,7 +149,7 @@ const DamenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
                     {listing.damenbekleidung_art && (
                         <span className="text-sm mr-3">
                             <span className="text-black font-semibold">Tür: </span>
-                            <span className="text-gray-600">{listing.damenbekleidung_art}</span>
+                            <span className="text-gray-600">{translateVal(listing.damenbekleidung_art)}</span>
                         </span>
                     )}
                     {listing.damenbekleidung_marke && (
