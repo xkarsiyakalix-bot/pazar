@@ -665,10 +665,29 @@ module.exports = async (req, res) => {
       title = `${catName} İlanları - Satılık & Kiralık | ExVitrin`;
       description = `ExVitrin'de en güncel ${catName} ilanları! Uygun fiyatlarla satılık ve kiralık ${catName.toLowerCase()} ilanları.`;
     }
-    const cleanCategoryPath = (path || '')
+    const trMap = {
+      'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c',
+      'İ': 'i', 'Ğ': 'g', 'Ü': 'u', 'Ş': 's', 'Ö': 'o', 'Ç': 'c'
+    };
+    let cleanCategoryPath = (path || '')
+      .replace(/[ığüşöçİĞÜŞÖÇ]/g, c => trMap[c] || c)
       .toLowerCase()
+      .replace(/,/g, '-')
       .replace(/&/g, '')
-      .replace(/-+/g, '-');
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/\/+/g, '/')
+      .replace(/\/$/, '');
+
+    // Canonical aliases for singular/plural category routes
+    const categoryAliases = {
+      '/emlak/satilik-daire': '/emlak/satilik-daireler',
+      '/emlak/kiralik-daire': '/emlak/kiralik-daireler',
+      '/emlak/satilik-ev': '/emlak/satilik-evler'
+    };
+    if (categoryAliases[cleanCategoryPath]) {
+      cleanCategoryPath = categoryAliases[cleanCategoryPath];
+    }
 
     // 301 Redirect crawlers from uppercase/dirty category paths to canonical lowercase
     if (path && path !== cleanCategoryPath) {
@@ -770,11 +789,18 @@ module.exports = async (req, res) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     try {
-      const { data, error } = await supabase
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      let query = supabase
         .from('profiles')
-        .select('full_name, store_logo, avatar_url, bio, user_number')
-        .eq('id', id)
-        .single();
+        .select('full_name, store_logo, avatar_url, bio, user_number');
+
+      if (isUuid) {
+        query = query.eq('id', id);
+      } else {
+        query = query.eq('user_number', id);
+      }
+
+      const { data, error } = await query.maybeSingle();
 
       if (!error && data) {
         // 301 Redirect crawlers from UUID seller path to clean user_number
@@ -797,9 +823,12 @@ module.exports = async (req, res) => {
         imageHeight = '400';
         ogType = 'profile';
         pageUrl = `${SITE_URL}/seller/${data.user_number || id}`;
+      } else {
+        pageUrl = `${SITE_URL}/seller/${id}`;
       }
     } catch (err) {
       console.error('Error fetching seller data:', err);
+      pageUrl = `${SITE_URL}/seller/${id}`;
     }
   }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { t, getCategoryTranslation } from '../translations';
@@ -1230,6 +1231,10 @@ export const AddListing = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
+      <Helmet>
+        <title>{isEditMode ? t.addListing.editTitle : t.addListing.title} | ExVitrin</title>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       <div className="max-w-3xl mx-auto px-0 sm:px-4 py-0 sm:py-10">
         <div className="bg-white dark:bg-neutral-900 rounded-none sm:rounded-2xl shadow-premium p-4 sm:p-8 border-x-0 sm:border border-neutral-200 dark:border-white/10 min-h-screen sm:min-h-0">
           <h1 className="text-3xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-8 tracking-tight">
