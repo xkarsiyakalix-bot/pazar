@@ -679,6 +679,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
         setListing(data);
         setCurrentStock(data?.stock || 1); // Update currentStock once listing data is fetched
+
+        // Redirect to clean SEO slug if accessed via /product/:id, /listing/:id, or /ilan/:id
+        if (data?.slug && (location.pathname.startsWith('/product/') || location.pathname.startsWith('/listing/') || location.pathname.startsWith('/ilan/'))) {
+          navigate(`/${data.slug}`, { replace: true });
+        }
       } catch (err) {
         console.error('Error loading listing:', err);
         setError(err.message);

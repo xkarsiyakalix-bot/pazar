@@ -977,6 +977,18 @@ function App() {
             <Route path="/store/:sellerId" element={<StorePage />} />
             <Route path="/s/:sellerId" element={<StorePage />} />
             <Route path="/add-listing" element={<AddListing />} />
+            <Route path="/listing/:id" element={
+              <ProductDetail
+                addToCart={addToCart}
+                toggleFavorite={toggleFavorite}
+                isFavorite={isFavorite}
+                toggleFollowSeller={toggleFollowSeller}
+                isSellerFollowed={isSellerFollowed}
+              />
+            } />
+            <Route path="/about" element={<Navigate to="/hakkimizda" replace />} />
+            <Route path="/uber-uns" element={<Navigate to="/hakkimizda" replace />} />
+            <Route path="/contact" element={<Navigate to="/iletisim" replace />} />
             <Route path="/hakkimizda" element={<UberUnsPage />} />
             <Route path="/gizlilik-politikasi" element={<PrivacyPolicyPage />} />
             <Route path="/karriere" element={<KarrierePage />} />

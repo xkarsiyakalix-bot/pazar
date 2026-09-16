@@ -15,7 +15,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const SITE_URL = 'https://exvitrin.com'; // Değiştirebilirsiniz
+const SITE_URL = 'https://www.exvitrin.com';
 
 async function generateSitemap() {
   console.log('Generating sitemap...');
@@ -47,13 +47,19 @@ async function generateSitemap() {
       console.warn('⚠️ Network error fetching profiles:', e.message);
     }
 
-    // 3. Define static routes
+    // 3. Define clean canonical static routes (no duplicates or noindexed paths)
     const staticRoutes = [
       '',
-      '/search',
-      '/kategoriler',
-      '/about',
-      '/contact'
+      '/hakkimizda',
+      '/iletisim',
+      '/sehirler',
+      '/categories',
+      '/gizlilik-politikasi',
+      '/cerez-politikasi',
+      '/yasal-uyarilar',
+      '/emlak-ilanlari-yasal-uyari',
+      '/vasita-ilanlari-yasal-uyari',
+      '/hayvan-haklari-ve-yasal-uyari'
     ];
 
     // 4. Category pages (ana kategoriler)

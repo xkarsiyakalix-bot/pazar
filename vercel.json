@@ -2,6 +2,12 @@
   "buildCommand": "cd app/frontend && CI= npm run build",
   "outputDirectory": "app/frontend/build",
   "installCommand": "npm install && cd app/frontend && npm install",
+  "redirects": [
+    { "source": "/about", "destination": "/hakkimizda", "permanent": true },
+    { "source": "/contact", "destination": "/iletisim", "permanent": true },
+    { "source": "/kategoriler", "destination": "/categories", "permanent": true },
+    { "source": "/uber-uns", "destination": "/hakkimizda", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/sehirler",

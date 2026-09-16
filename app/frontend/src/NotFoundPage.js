@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 /**
  * Custom 404 Not Found Page
@@ -10,6 +11,10 @@ const NotFoundPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center px-4 py-12 relative overflow-hidden">
+            <Helmet>
+                <title>Sayfa Bulunamadı (404) | ExVitrin</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
             {/* Animated background circles */}
             <div className="absolute top-0 left-0 w-96 h-96 bg-red-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
             <div className="absolute top-0 right-0 w-96 h-96 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>

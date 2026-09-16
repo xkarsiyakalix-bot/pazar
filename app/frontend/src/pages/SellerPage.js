@@ -37,6 +37,12 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
         const profile = await fetchUserProfile(sellerId);
 
         if (profile) {
+          // If accessed with UUID but profile has a clean user_number, redirect
+          if (profile.user_number && String(sellerId) !== String(profile.user_number)) {
+            navigate(`/seller/${profile.user_number}`, { replace: true });
+            return;
+          }
+
           setSeller({
             id: sellerId,
             name: profile.username || profile.full_name || (listings.length > 0 ? listings[0].sellerName : t.cart.seller),

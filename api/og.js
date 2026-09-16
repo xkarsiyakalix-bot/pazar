@@ -668,6 +668,16 @@ module.exports = async (req, res) => {
       .toLowerCase()
       .replace(/&/g, '')
       .replace(/-+/g, '-');
+
+    // 301 Redirect crawlers from uppercase/dirty category paths to canonical lowercase
+    if (path && path !== cleanCategoryPath) {
+      res.writeHead(301, {
+        Location: `${SITE_URL}${cleanCategoryPath}`,
+        'Cache-Control': 'public, max-age=86400, s-maxage=86400'
+      });
+      return res.end();
+    }
+
     pageUrl = `${SITE_URL}${cleanCategoryPath}`;
     image = LOGO_URL;
 
@@ -682,6 +692,15 @@ module.exports = async (req, res) => {
       const data = await fetchListingData(supabase, { id, slug });
 
       if (data) {
+        // 301 Redirect crawlers from /product/:id (UUID) to clean SEO slug URL
+        if (id && data.slug) {
+          res.writeHead(301, {
+            Location: `${SITE_URL}/${data.slug}`,
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400'
+          });
+          return res.end();
+        }
+
         let priceText = '';
         if (data.price && data.price > 0) {
           priceText = ' - ' + new Intl.NumberFormat('tr-TR', {
@@ -757,6 +776,15 @@ module.exports = async (req, res) => {
         .single();
 
       if (!error && data) {
+        // 301 Redirect crawlers from UUID seller path to clean user_number
+        if (data.user_number && String(id) !== String(data.user_number)) {
+          res.writeHead(301, {
+            Location: `${SITE_URL}/seller/${data.user_number}`,
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400'
+          });
+          return res.end();
+        }
+
         const name = data.full_name || 'Satıcı';
         title = `${name} | ExVitrin`;
         const cleanBio = data.bio ? data.bio.replace(/<[^>]+>/g, '') : '';
