@@ -29,5 +29,5 @@ root.render(
   </React.StrictMode>,
 );
 
-// Unregister service worker to prevent reload loops in development
-serviceWorkerRegistration.unregister();
+// Register service worker for PWA / Play Store TWA support
+serviceWorkerRegistration.register();
