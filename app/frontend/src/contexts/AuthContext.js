@@ -80,13 +80,41 @@ export const AuthProvider = ({ children }) => {
 
                     if (currentUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
                         checkBanStatus(currentUser.id);
-                        // Update last_seen directly on login/session restore
+                        
+                        // Ensure profile exists (especially for Google/OAuth signups)
                         supabase
                             .from('profiles')
-                            .update({ last_seen: new Date().toISOString() })
+                            .select('id, full_name, avatar_url, email')
                             .eq('id', currentUser.id)
-                            .then(({ error }) => {
-                                if (error) console.warn('last_seen update error:', error.message);
+                            .maybeSingle()
+                            .then(async ({ data: profile, error: fetchErr }) => {
+                                if (!fetchErr && !profile) {
+                                    // Profile does not exist yet (first-time Google login)
+                                    const meta = currentUser.user_metadata || {};
+                                    const fullName = meta.full_name || meta.name || currentUser.email?.split('@')[0] || 'Kullanıcı';
+                                    const avatar = meta.avatar_url || meta.picture || null;
+                                    const usernameCandidate = (meta.name || currentUser.email?.split('@')[0] || 'user')
+                                        .toLowerCase()
+                                        .replace(/[^a-z0-9]/g, '') + Math.floor(100 + Math.random() * 900);
+
+                                    await supabase.from('profiles').insert([{
+                                        id: currentUser.id,
+                                        email: currentUser.email,
+                                        full_name: fullName,
+                                        username: usernameCandidate,
+                                        avatar_url: avatar,
+                                        last_seen: new Date().toISOString()
+                                    }]);
+                                } else {
+                                    // Update last_seen
+                                    supabase
+                                        .from('profiles')
+                                        .update({ last_seen: new Date().toISOString() })
+                                        .eq('id', currentUser.id)
+                                        .then(({ error }) => {
+                                            if (error) console.warn('last_seen update error:', error.message);
+                                        });
+                                }
                             });
                     }
                 }
@@ -155,6 +183,20 @@ export const AuthProvider = ({ children }) => {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
+            });
+            if (error) throw error;
+            return data;
+        },
+        signInWithGoogle: async (redirectTo = window.location.origin) => {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: redirectTo,
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'select_account',
+                    },
+                },
             });
             if (error) throw error;
             return data;
