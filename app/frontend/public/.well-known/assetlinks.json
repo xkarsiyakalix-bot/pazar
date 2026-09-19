@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.exvitrin.app",
+      "sha256_cert_fingerprints": [
+        "85:49:B4:CD:53:C5:A3:2E:1A:FB:12:A6:05:F4:9F:4D:DD:94:88:A6:E6:5B:B1:73:2E:CC:13:04:44:A3:F9:14"
+      ]
+    }
+  }
+]

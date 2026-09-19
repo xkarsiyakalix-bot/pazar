@@ -24,3 +24,11 @@ __pycache__/
 
 # Local Netlify folder
 .netlify
+
+# Android TWA
+android-twa/app/build/
+android-twa/.gradle/
+*.keystore
+android-twa/*.aab
+android-twa/*.apk
+android-twa/*.idsig
