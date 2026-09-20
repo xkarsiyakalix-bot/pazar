@@ -37,14 +37,50 @@ function Register() {
         });
     };
 
+    // Blocked fake/disposable/test email domains
+    const BLOCKED_DOMAINS = [
+        'example.com', 'example.net', 'example.org', 'test.com', 'test.net',
+        'mailinator.com', 'guerrillamail.com', 'guerrillamail.net', 'guerrillamail.org',
+        'tempmail.com', 'temp-mail.org', 'throwam.com', 'throwam.net',
+        'yopmail.com', 'yopmail.fr', 'trashmail.com', 'trashmail.net',
+        'trashmail.me', 'trashmail.at', 'fakeinbox.com', 'maildrop.cc',
+        'sharklasers.com', 'grr.la', 'spam4.me', 'dispostable.com',
+        '10minutemail.com', '10minutemail.net', '10minutemail.org',
+        'tempr.email', 'discard.email', 'filzmail.com', 'mailnesia.com',
+        'spamgourmet.com', 'spamgourmet.net', 'spamgourmet.org',
+        'emkei.cz', 'fakemail.net', 'anonbox.net', 'mohmal.com',
+        'getairmail.com', 'mailexpire.com', 'temporaryinbox.com',
+        'notreal.com', 'invalid.com', 'noemail.com', 'nope.com',
+        'fakeinbox.net', 'spamfree24.org', 'objectmail.com', 'zzrgg.com',
+    ];
+
+    const isBlockedEmail = (email) => {
+        const domain = email.split('@')[1]?.toLowerCase();
+        if (!domain) return true;
+        return BLOCKED_DOMAINS.includes(domain);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
 
-        // Validation
+        // Basic field check
         if (!formData.name || !formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
             setError('Lütfen tüm alanları doldurun');
+            return;
+        }
+
+        // Email format check
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Geçerli bir e-posta adresi girin.');
+            return;
+        }
+
+        // Block fake/disposable/test domains
+        if (isBlockedEmail(formData.email)) {
+            setError('Bu e-posta adresi ile kayıt olunamamaktadır. Lütfen gerçek bir e-posta adresi kullanın.');
             return;
         }
 
