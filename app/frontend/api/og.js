@@ -566,20 +566,81 @@ const CATEGORY_META = {
   }
 };
 
+const STATIC_PAGES_META = {
+  'hakkimizda': {
+    title: 'Hakkımızda | ExVitrin',
+    description: "ExVitrin, Türkiye'nin güvenilir ve modern ikinci el ilan pazaryeridir. Misyonumuz, vizyonumuz ve değerlerimiz hakkında bilgi edinin.",
+    keywords: 'hakkımızda, exvitrin nedir, güvenli alışveriş'
+  },
+  'iletisim': {
+    title: 'İletişim | ExVitrin',
+    description: 'ExVitrin destek ve iletişim sayfası. Sorularınız, önerileriniz ve iş birlikleri için bize ulaşın.',
+    keywords: 'iletişim, destek, müşteri hizmetleri'
+  },
+  'sehirler': {
+    title: 'Türkiye Şehir İlanları - 81 İlin İkinci El ve Emlak Pazarı | ExVitrin',
+    description: "Türkiye'nin 81 ilinden satılık ve kiralık emlak, araba, elektronik ve ücretsiz ilanlar ExVitrin'de!",
+    keywords: 'şehirler, 81 il ilanlar'
+  },
+  'categories': {
+    title: 'Tüm Kategoriler | ExVitrin',
+    description: "ExVitrin'de tüm kategorileri keşfedin! Emlak, vasıta, elektronik, ev eşyası, moda ve daha fazlası.",
+    keywords: 'kategoriler, ilan kategorileri'
+  },
+  'gizlilik-politikasi': {
+    title: 'Gizlilik Politikası | ExVitrin',
+    description: 'ExVitrin gizlilik politikası ve kişisel verilerin korunması hakkında bilgilendirme.',
+    keywords: 'gizlilik politikası, kvkk'
+  },
+  'cerez-politikasi': {
+    title: 'Çerez Politikası | ExVitrin',
+    description: 'ExVitrin çerez kullanım politikası ve tercihlerin yönetimi.',
+    keywords: 'çerez politikası, cookies'
+  },
+  'yasal-uyarilar': {
+    title: 'Yasal Uyarılar | ExVitrin',
+    description: 'ExVitrin yasal uyarılar ve genel kullanım koşulları.',
+    keywords: 'yasal uyarılar, kullanım koşulları'
+  },
+  'emlak-ilanlari-yasal-uyari': {
+    title: 'Emlak İlanları Yasal Uyarı | ExVitrin',
+    description: 'ExVitrin emlak ilanları için mevzuat ve yasal bilgilendirme.',
+    keywords: 'emlak yasal uyarı'
+  },
+  'vasita-ilanlari-yasal-uyari': {
+    title: 'Vasıta İlanları Yasal Uyarı | ExVitrin',
+    description: 'ExVitrin vasıta ilanları için mevzuat ve yasal bilgilendirme.',
+    keywords: 'vasıta yasal uyarı'
+  },
+  'hayvan-haklari-ve-yasal-uyari': {
+    title: 'Hayvan Hakları ve Yasal Uyarı | ExVitrin',
+    description: 'ExVitrin evcil hayvan ilanları yasal bilgilendirme ve hayvan hakları beyanı.',
+    keywords: 'hayvan hakları, yasal uyarı'
+  }
+};
+
 function getCategoryMeta(path) {
-  // path örneği: /Emlak/Kiralik-Daireler ya da /Elektronik
-  const parts = (path || '').replace(/^\//, '').split('/');
-  const mainCat = parts[0] || '';
+  if (!path) return null;
+  const parts = String(path).replace(/^\//, '').split('/').filter(Boolean);
   const subCat = parts[1] || '';
+  const mainCat = parts[0] || '';
+
+  const normalize = (str) => String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
   // Alt kategori varsa önce ona bak
-  if (subCat && CATEGORY_META[subCat]) {
-    return CATEGORY_META[subCat];
+  if (subCat) {
+    const subNorm = normalize(subCat);
+    for (const [k, v] of Object.entries(CATEGORY_META)) {
+      if (normalize(k) === subNorm) return v;
+    }
   }
 
   // Ana kategoriye bak
-  if (mainCat && CATEGORY_META[mainCat]) {
-    return CATEGORY_META[mainCat];
+  if (mainCat) {
+    const mainNorm = normalize(mainCat);
+    for (const [k, v] of Object.entries(CATEGORY_META)) {
+      if (normalize(k) === mainNorm) return v;
+    }
   }
 
   return null;
@@ -701,84 +762,144 @@ module.exports = async (req, res) => {
     pageUrl = `${SITE_URL}${cleanCategoryPath}`;
     image = LOGO_URL;
 
-  // --- İLAN DETAY SAYFASI ---
+  // --- İLAN VEYA DİNAMİK SLUG SAYFASI ---
   } else if (type === 'listing' && (id || slug)) {
-    if (!supabaseUrl || !supabaseKey) {
-      return res.status(500).send('Server configuration error');
-    }
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const slugLower = (slug || '').toLowerCase();
 
-    try {
-      const data = await fetchListingData(supabase, { id, slug });
-
-      if (data) {
-        // 301 Redirect crawlers from /product/:id (UUID) to clean SEO slug URL
-        if (id && data.slug) {
-          res.writeHead(301, {
-            Location: `${SITE_URL}/${data.slug}`,
-            'Cache-Control': 'public, max-age=86400, s-maxage=86400'
-          });
-          return res.end();
+    // 1. Statik Sayfa kontrolü (/hakkimizda, /iletisim, /sehirler vb.)
+    if (slugLower && STATIC_PAGES_META[slugLower]) {
+      const staticMeta = STATIC_PAGES_META[slugLower];
+      title = staticMeta.title;
+      description = staticMeta.description;
+      keywords = staticMeta.keywords || keywords;
+      pageUrl = `${SITE_URL}/${slugLower}`;
+    } else {
+      // 2. Kategori kontrolü (/emlak, /elektronik vb.)
+      const catMeta = slugLower ? getCategoryMeta('/' + slugLower) : null;
+      if (catMeta) {
+        title = catMeta.title;
+        description = catMeta.description;
+        keywords = catMeta.keywords || keywords;
+        pageUrl = `${SITE_URL}/${slugLower}`;
+      } else {
+        // 3. Veritabanında İlan veya Satıcı kontrolü
+        if (!supabaseUrl || !supabaseKey) {
+          return res.status(500).send('Server configuration error');
         }
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-        let priceText = '';
-        if (data.price && data.price > 0) {
-          priceText = ' - ' + new Intl.NumberFormat('tr-TR', {
-            style: 'currency',
-            currency: 'TRY',
-            maximumFractionDigits: 0
-          }).format(data.price);
-        } else if (data.price === 0) {
-          priceText = ' - Ücretsiz';
+        try {
+          const data = await fetchListingData(supabase, { id, slug });
+
+          if (data) {
+            // 301 Redirect crawlers from /product/:id (UUID) to clean SEO slug URL
+            if (id && data.slug) {
+              res.writeHead(301, {
+                Location: `${SITE_URL}/${data.slug}`,
+                'Cache-Control': 'public, max-age=86400, s-maxage=86400'
+              });
+              return res.end();
+            }
+
+            let priceText = '';
+            if (data.price && data.price > 0) {
+              priceText = ' - ' + new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                maximumFractionDigits: 0
+              }).format(data.price);
+            } else if (data.price === 0) {
+              priceText = ' - Ücretsiz';
+            }
+
+            const subInfo = [];
+            if (data.city) subInfo.push(data.city);
+            if (data.condition) {
+              const condMap = {
+                'neu': 'Yeni',
+                'Neu': 'Yeni',
+                'gebraucht': 'İkinci El',
+                'gut': 'İyi',
+                'sehr_gut': 'Çok İyi',
+                'sehr gut': 'Çok İyi',
+                'in_ordnung': 'İdare Eder',
+                'in ordnung': 'İdare Eder',
+                'neu_mit_etikett': 'Yeni (Etiketli)',
+                'neu mit etikett': 'Yeni (Etiketli)',
+                'defekt': 'Arızalı'
+              };
+              const condTr = condMap[data.condition] || data.condition;
+              subInfo.push(condTr);
+            }
+
+            title = `${data.title}${priceText}${subInfo.length > 0 ? ` | ${subInfo.join(' • ')}` : ''} | ExVitrin`;
+
+            const cleanDesc = data.description
+              ? data.description.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+              : '';
+
+            const locationPrefix = data.city ? `${data.city}'de ` : '';
+            const pricePrefix = priceText ? `${priceText.replace(' - ', '')} fiyatıyla ` : '';
+            const catPrefix = data.category ? `${data.category} kategorisinde ` : '';
+
+            description = `${data.title} ${locationPrefix}${pricePrefix}ExVitrin'de! ${catPrefix}${cleanDesc}`.substring(0, 160).trim();
+
+            // Use the listing's first image — ensure JPEG format for Facebook compatibility
+            let rawImage = (data.images && data.images.length > 0) ? data.images[0] : LOGO_URL;
+            if (rawImage && rawImage.startsWith('http') && rawImage !== LOGO_URL) {
+              image = `https://wsrv.nl/?url=${encodeURIComponent(rawImage)}&w=1200&h=630&fit=cover&output=jpg&q=85`;
+            } else {
+              image = rawImage;
+            }
+            imageWidth = '1200';
+            imageHeight = '630';
+            ogType = 'product';
+            pageUrl = data.slug ? `${SITE_URL}/${data.slug}` : `${SITE_URL}/product/${data.id}`;
+          } else {
+            // 4. İlan bulunamadıysa: Satıcı mağazası mı?
+            const { data: storeData } = await supabase
+              .from('profiles')
+              .select('id, full_name, store_slug, user_number, bio, store_logo, avatar_url')
+              .or(`store_slug.eq.${slugLower},user_number.eq.${slug}`)
+              .maybeSingle();
+
+            if (storeData) {
+              const name = storeData.full_name || 'Satıcı';
+              title = `${name} | ExVitrin`;
+              description = storeData.bio
+                ? storeData.bio.replace(/<[^>]+>/g, '').substring(0, 160)
+                : `${name} kullanıcısının ExVitrin'deki güncel ilanlarını inceleyin.`;
+              image = storeData.store_logo || storeData.avatar_url || LOGO_URL;
+              imageWidth = '400';
+              imageHeight = '400';
+              ogType = 'profile';
+              pageUrl = `${SITE_URL}/${storeData.store_slug || 'seller/' + (storeData.user_number || storeData.id)}`;
+            } else {
+              // 5. Sayfa veya ilan gerçekten yok -> 404 dön
+              res.writeHead(404, {
+                'Content-Type': 'text/html; charset=utf-8',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+              });
+              return res.end(`<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sayfa Bulunamadı - 404 | ExVitrin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="${SITE_URL}/${esc(slug || '')}" />
+</head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+  <h2>404 - Sayfa Bulunamadı</h2>
+  <p>Aradığınız sayfa veya ilan yayından kaldırılmış olabilir.</p>
+  <a href="${SITE_URL}" style="color: #dc2626; font-weight: bold;">ExVitrin Ana Sayfasına Dön &rarr;</a>
+</body>
+</html>`);
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching listing or store data:', err);
         }
-
-        const subInfo = [];
-        if (data.city) subInfo.push(data.city);
-        if (data.condition) {
-          const condMap = {
-            'neu': 'Yeni',
-            'Neu': 'Yeni',
-            'gebraucht': 'İkinci El',
-            'gut': 'İyi',
-            'sehr_gut': 'Çok İyi',
-            'sehr gut': 'Çok İyi',
-            'in_ordnung': 'İdare Eder',
-            'in ordnung': 'İdare Eder',
-            'neu_mit_etikett': 'Yeni (Etiketli)',
-            'neu mit etikett': 'Yeni (Etiketli)',
-            'defekt': 'Arızalı'
-          };
-          const condTr = condMap[data.condition] || data.condition;
-          subInfo.push(condTr);
-        }
-
-        title = `${data.title}${priceText}${subInfo.length > 0 ? ` | ${subInfo.join(' • ')}` : ''} | ExVitrin`;
-
-        const cleanDesc = data.description
-          ? data.description.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
-          : '';
-
-        const locationPrefix = data.city ? `${data.city}'de ` : '';
-        const pricePrefix = priceText ? `${priceText.replace(' - ', '')} fiyatıyla ` : '';
-        const catPrefix = data.category ? `${data.category} kategorisinde ` : '';
-
-        description = `${data.title} ${locationPrefix}${pricePrefix}ExVitrin'de! ${catPrefix}${cleanDesc}`.substring(0, 160).trim();
-
-        // Use the listing's first image — ensure JPEG format for Facebook compatibility
-        let rawImage = (data.images && data.images.length > 0) ? data.images[0] : LOGO_URL;
-        if (rawImage && rawImage.startsWith('http') && rawImage !== LOGO_URL) {
-          // Facebook crawler sometimes rejects raw WebP images; wsrv.nl converts to standard high-quality JPEG
-          image = `https://wsrv.nl/?url=${encodeURIComponent(rawImage)}&w=1200&h=630&fit=cover&output=jpg&q=85`;
-        } else {
-          image = rawImage;
-        }
-        imageWidth = '1200';
-        imageHeight = '630';
-        ogType = 'product';
-        pageUrl = data.slug ? `${SITE_URL}/${data.slug}` : `${SITE_URL}/product/${data.id}`;
       }
-    } catch (err) {
-      console.error('Error fetching listing data:', err);
     }
 
   // --- SATICI PROFİL SAYFASI ---
@@ -874,7 +995,7 @@ module.exports = async (req, res) => {
 
   <script>
     // Redirect normal users immediately to the listing, but let crawlers inspect OG tags
-    if (!navigator.userAgent.match(/(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly)/i)) {
+    if (!navigator.userAgent.match(/(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|Google-InspectionTool|Storebot-Google|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly)/i)) {
       window.location.replace("${esc(pageUrl)}");
     }
   </script>
