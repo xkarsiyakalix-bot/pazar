@@ -1509,12 +1509,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.exvitrin.com/seller/1008</loc>
-    <lastmod>2026-09-21T16:09:31.954Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://www.exvitrin.com/seller/1005</loc>
     <lastmod>2026-08-26T01:04:29.588Z</lastmod>
     <changefreq>weekly</changefreq>
@@ -1523,6 +1517,12 @@
   <url>
     <loc>https://www.exvitrin.com/seller/1022</loc>
     <lastmod>2026-09-18T15:33:34.184Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.exvitrin.com/seller/1008</loc>
+    <lastmod>2026-09-21T16:14:31.975Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1540,7 +1540,7 @@
   </url>
   <url>
     <loc>https://www.exvitrin.com/elif</loc>
-    <lastmod>2026-09-21T16:11:04.011Z</lastmod>
+    <lastmod>2026-09-21T16:16:04.005Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1588,7 +1588,7 @@
   </url>
   <url>
     <loc>https://www.exvitrin.com/seller/1024</loc>
-    <lastmod>2026-09-21T16:07:56.619Z</lastmod>
+    <lastmod>2026-09-21T16:12:16.731Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

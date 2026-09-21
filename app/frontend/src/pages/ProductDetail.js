@@ -217,6 +217,20 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
   );
 };
 
+const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors") => {
+  if (!brandText) return null;
+  const cleanBrand = String(brandText).trim();
+  const slug = slugifyBrand(cleanBrand);
+  if (!slug || ['diger', 'digeri', 'andere', 'other'].includes(slug)) {
+    return <span className={className}>{cleanBrand}</span>;
+  }
+  return (
+    <Link to={`/${slug}`} className={className}>
+      {cleanBrand}
+    </Link>
+  );
+};
+
 // Professional Print Flyer (Sales Sign) Component - Optimized for multi-page printing
 const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   if (!listing) return null;
@@ -228,20 +242,6 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   // Current URL for QR code
   const currentUrl = window.location.href;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
-
-  const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors") => {
-    if (!brandText) return null;
-    const cleanBrand = String(brandText).trim();
-    const slug = slugifyBrand(cleanBrand);
-    if (!slug || ['diger', 'digeri', 'andere', 'other'].includes(slug)) {
-      return <span className={className}>{cleanBrand}</span>;
-    }
-    return (
-      <Link to={`/${slug}`} className={className}>
-        {cleanBrand}
-      </Link>
-    );
-  };
 
   const renderDetailRow = (label, value) => {
     if (value === undefined || value === null || value === '') return null;
