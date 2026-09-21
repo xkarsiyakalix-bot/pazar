@@ -2512,7 +2512,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail?.model || 'Model'}</span>
                             <Link 
-                              to={`/Elektronik/Cep-Telefonu-Telefon?model=${encodeURIComponent(listing.modell)}`}
+                              to={`/Elektronik/Cep-Telefonu-Telefon?${(listing.marke || listing.handy_telefon_art) ? `brand=${encodeURIComponent(listing.marke || listing.handy_telefon_art)}&` : ''}model=${encodeURIComponent(listing.modell)}`}
                               className="font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors"
                             >
                               {listing.modell}

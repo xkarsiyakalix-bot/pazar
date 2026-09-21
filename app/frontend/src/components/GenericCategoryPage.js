@@ -293,10 +293,12 @@ const GenericCategoryPage = ({
                         const selectedBrand = filters.brand || filters[key];
                         const selectedModel = filters.model;
                         if (selectedBrand) {
-                            query = query.or(`marke.ilike.%${selectedBrand}%,handy_telefon_art.ilike.%${selectedBrand}%`);
+                            const safeBrand = `%${String(selectedBrand).trim().replace(/\s+/g, '%')}%`;
+                            query = query.or(`marke.ilike.${safeBrand},handy_telefon_art.ilike.${safeBrand}`);
                         }
                         if (selectedModel) {
-                            query = query.or(`modell.ilike.%${selectedModel}%,title.ilike.%${selectedModel}%`);
+                            const safeModel = `%${String(selectedModel).trim().replace(/\s+/g, '%')}%`;
+                            query = query.or(`modell.ilike.${safeModel},title.ilike.${safeModel}`);
                         }
                         return;
                     }
@@ -347,10 +349,12 @@ const GenericCategoryPage = ({
                 });
 
                 if (filters.model && !Object.values(filterConfig).some(c => c.type === 'brand-models')) {
-                    query = query.or(`modell.ilike.%${filters.model}%,title.ilike.%${filters.model}%`);
+                    const safeModel = `%${String(filters.model).trim().replace(/\s+/g, '%')}%`;
+                    query = query.or(`modell.ilike.${safeModel},title.ilike.${safeModel}`);
                 }
                 if (filters.brand && !Object.values(filterConfig).some(c => c.type === 'brand-models')) {
-                    query = query.or(`marke.ilike.%${filters.brand}%,handy_telefon_art.ilike.%${filters.brand}%`);
+                    const safeBrand = `%${String(filters.brand).trim().replace(/\s+/g, '%')}%`;
+                    query = query.or(`marke.ilike.${safeBrand},handy_telefon_art.ilike.${safeBrand}`);
                 }
 
                 if (sortBy === 'newest') query = query.order('created_at', { ascending: false });
@@ -458,8 +462,9 @@ const GenericCategoryPage = ({
 
                     <div className="space-y-1 max-h-96 overflow-y-auto pr-1 custom-scrollbar">
                         {brands.map((brand) => {
-                            const isBrandSelected = currentBrand.toLowerCase() === brand.name.toLowerCase();
-                            const isExpanded = expandedBrandGroups[brand.name] ?? isBrandSelected;
+                            const containsSelectedModel = Boolean(currentModel && brand.subModels?.some(m => m.name.toLowerCase() === currentModel.toLowerCase()));
+                            const isBrandSelected = (currentBrand && currentBrand.toLowerCase() === brand.name.toLowerCase()) || (!currentBrand && containsSelectedModel);
+                            const isExpanded = expandedBrandGroups[brand.name] ?? (isBrandSelected || containsSelectedModel);
                             const brandSlug = brand.slug || slugifyBrand(brand.name);
                             const brandCount = getOptionCount('brand', brand.name);
 

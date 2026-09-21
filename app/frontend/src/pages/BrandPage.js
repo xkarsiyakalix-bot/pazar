@@ -62,15 +62,16 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                 searchTerms.forEach(term => {
                     const cleanTerm = term.trim();
                     if (!cleanTerm) return;
-                    conditions.push(`marke.ilike.%${cleanTerm}%`);
-                    conditions.push(`handy_telefon_art.ilike.%${cleanTerm}%`);
-                    conditions.push(`car_brand.ilike.%${cleanTerm}%`);
-                    conditions.push(`modell.ilike.%${cleanTerm}%`);
-                    conditions.push(`damenbekleidung_marke.ilike.%${cleanTerm}%`);
-                    conditions.push(`damenschuhe_marke.ilike.%${cleanTerm}%`);
-                    conditions.push(`herrenbekleidung_marke.ilike.%${cleanTerm}%`);
-                    conditions.push(`herrenschuhe_marke.ilike.%${cleanTerm}%`);
-                    conditions.push(`title.ilike.%${cleanTerm}%`);
+                    const safeTerm = cleanTerm.replace(/\s+/g, '%');
+                    conditions.push(`marke.ilike.%${safeTerm}%`);
+                    conditions.push(`handy_telefon_art.ilike.%${safeTerm}%`);
+                    conditions.push(`car_brand.ilike.%${safeTerm}%`);
+                    conditions.push(`modell.ilike.%${safeTerm}%`);
+                    conditions.push(`damenbekleidung_marke.ilike.%${safeTerm}%`);
+                    conditions.push(`damenschuhe_marke.ilike.%${safeTerm}%`);
+                    conditions.push(`herrenbekleidung_marke.ilike.%${safeTerm}%`);
+                    conditions.push(`herrenschuhe_marke.ilike.%${safeTerm}%`);
+                    conditions.push(`title.ilike.%${safeTerm}%`);
                 });
 
                 if (conditions.length > 0) {
