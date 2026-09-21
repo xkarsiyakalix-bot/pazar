@@ -1185,12 +1185,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.exvitrin.com/ev-esyasi</loc>
-    <lastmod>2026-09-21T12:46:21.260Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://www.exvitrin.com/ayakkabi</loc>
     <lastmod>2026-09-13T19:03:58.936Z</lastmod>
     <changefreq>weekly</changefreq>
@@ -1205,6 +1199,12 @@
   <url>
     <loc>https://www.exvitrin.com/kadin-ikili-takim-5</loc>
     <lastmod>2026-09-18T05:38:26.735Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.exvitrin.com/ev-esyasi</loc>
+    <lastmod>2026-09-21T16:34:31.221Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -1491,6 +1491,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.exvitrin.com/seller/1008</loc>
+    <lastmod>2026-09-21T17:54:39.954Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.exvitrin.com/seller/1006</loc>
     <lastmod>2026-07-09T16:36:59.927Z</lastmod>
     <changefreq>weekly</changefreq>
@@ -1505,6 +1511,12 @@
   <url>
     <loc>https://www.exvitrin.com/seller/1009</loc>
     <lastmod>2026-07-09T16:36:59.927Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.exvitrin.com/seller/1030</loc>
+    <lastmod>2026-09-21T16:47:23.330Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1527,12 +1539,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.exvitrin.com/seller/1008</loc>
-    <lastmod>2026-09-21T16:19:31.931Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://www.exvitrin.com/seller/1003</loc>
     <lastmod>2026-09-20T13:46:42.875Z</lastmod>
     <changefreq>weekly</changefreq>
@@ -1540,7 +1546,7 @@
   </url>
   <url>
     <loc>https://www.exvitrin.com/elif</loc>
-    <lastmod>2026-09-21T16:20:43.289Z</lastmod>
+    <lastmod>2026-09-21T17:54:12.272Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1588,7 +1594,7 @@
   </url>
   <url>
     <loc>https://www.exvitrin.com/seller/1024</loc>
-    <lastmod>2026-09-21T16:22:16.717Z</lastmod>
+    <lastmod>2026-09-21T17:48:03.467Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
