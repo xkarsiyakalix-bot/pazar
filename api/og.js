@@ -619,6 +619,69 @@ const STATIC_PAGES_META = {
   }
 };
 
+const getBrandMeta = (slug) => {
+  if (!slug) return null;
+  const brandList = [
+    { name: 'BMW', slug: 'bmw' },
+    { name: 'Mercedes-Benz', slug: 'mercedes-benz', aliases: ['mercedes'] },
+    { name: 'Audi', slug: 'audi' },
+    { name: 'Volkswagen', slug: 'volkswagen', aliases: ['vw'] },
+    { name: 'Ford', slug: 'ford' },
+    { name: 'Opel', slug: 'opel' },
+    { name: 'Renault', slug: 'renault' },
+    { name: 'Fiat', slug: 'fiat' },
+    { name: 'Toyota', slug: 'toyota' },
+    { name: 'Honda', slug: 'honda' },
+    { name: 'Hyundai', slug: 'hyundai' },
+    { name: 'Peugeot', slug: 'peugeot' },
+    { name: 'Seat', slug: 'seat' },
+    { name: 'Skoda', slug: 'skoda' },
+    { name: 'Volvo', slug: 'volvo' },
+    { name: 'Nissan', slug: 'nissan' },
+    { name: 'Porsche', slug: 'porsche' },
+    { name: 'Tesla', slug: 'tesla' },
+    { name: 'Nike', slug: 'nike' },
+    { name: 'Adidas', slug: 'adidas' },
+    { name: 'Puma', slug: 'puma' },
+    { name: 'Zara', slug: 'zara' },
+    { name: 'H&M', slug: 'hm', aliases: ['h-m', 'h&m'] },
+    { name: 'Mango', slug: 'mango' },
+    { name: 'LC Waikiki', slug: 'lc-waikiki', aliases: ['lcw'] },
+    { name: 'Koton', slug: 'koton' },
+    { name: 'Mavi', slug: 'mavi' },
+    { name: 'Tommy Hilfiger', slug: 'tommy-hilfiger' },
+    { name: 'Calvin Klein', slug: 'calvin-klein' },
+    { name: 'Lacoste', slug: 'lacoste' },
+    { name: 'Apple', slug: 'apple', aliases: ['iphone', 'ipad', 'macbook'] },
+    { name: 'Samsung', slug: 'samsung' },
+    { name: 'Xiaomi', slug: 'xiaomi' },
+    { name: 'Huawei', slug: 'huawei' },
+    { name: 'Sony', slug: 'sony', aliases: ['playstation'] },
+    { name: 'LG', slug: 'lg' },
+    { name: 'Philips', slug: 'philips' },
+    { name: 'Asus', slug: 'asus' },
+    { name: 'Lenovo', slug: 'lenovo' },
+    { name: 'Dell', slug: 'dell' },
+    { name: 'HP', slug: 'hp' },
+    { name: 'Bosch', slug: 'bosch' },
+    { name: 'Siemens', slug: 'siemens' },
+    { name: 'Arçelik', slug: 'arcelik' },
+    { name: 'Beko', slug: 'beko' },
+    { name: 'Vestel', slug: 'vestel' },
+    { name: 'Dyson', slug: 'dyson' },
+    { name: 'IKEA', slug: 'ikea' }
+  ];
+
+  const found = brandList.find(b => b.slug === slug || (b.aliases && b.aliases.includes(slug)));
+  if (!found) return null;
+
+  return {
+    title: `${found.name} İkinci El ve Sıfır İlanları | ExVitrin`,
+    description: `En güncel ${found.name} ilanları, ikinci el ve sıfır fiyatları ExVitrin'de! Güvenli alışveriş ve uygun fiyatlarla hemen keşfedin.`,
+    keywords: `${found.name}, ${found.name} ilanları, ikinci el ${found.name}, satılık ${found.name}`
+  };
+};
+
 function getCategoryMeta(path) {
   if (!path) return null;
   const parts = String(path).replace(/^\//, '').split('/').filter(Boolean);
@@ -781,6 +844,13 @@ module.exports = async (req, res) => {
         description = catMeta.description;
         keywords = catMeta.keywords || keywords;
         pageUrl = `${SITE_URL}/${slugLower}`;
+      } else if (getBrandMeta(slugLower)) {
+        const brandMeta = getBrandMeta(slugLower);
+        title = brandMeta.title;
+        description = brandMeta.description;
+        keywords = brandMeta.keywords || keywords;
+        pageUrl = `${SITE_URL}/${slugLower}`;
+        image = LOGO_URL;
       } else {
         // 3. Veritabanında İlan veya Satıcı kontrolü
         if (!supabaseUrl || !supabaseKey) {

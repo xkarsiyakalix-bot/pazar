@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export const FashionFields = ({
     category,
@@ -49,6 +49,11 @@ export const FashionFields = ({
     selectedUhrenSchmuckArt,
     setSelectedUhrenSchmuckArt
 }) => {
+    const [customFashionBrand, setCustomFashionBrand] = useState('');
+    const [isCustomFashion, setIsCustomFashion] = useState(false);
+    const [customShoeBrand, setCustomShoeBrand] = useState('');
+    const [isCustomShoe, setIsCustomShoe] = useState(false);
+
     if (category !== 'Moda & Güzellik') return null;
 
     return (
@@ -148,15 +153,25 @@ export const FashionFields = ({
                             <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.brand}</label>
                             <select
                                 value={
+                                    isCustomFashion ? 'Diğer' :
                                     (subCategory === 'Kadın Giyimi') ? damenbekleidungMarke :
                                         (subCategory === 'Kadın Ayakkabıları') ? damenschuheMarke :
                                             herrenbekleidungMarke
                                 }
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    if (subCategory === 'Kadın Giyimi') setDamenbekleidungMarke(val);
-                                    else if (subCategory === 'Kadın Ayakkabıları') setDamenschuheMarke(val);
-                                    else if (subCategory === 'Erkek Giyimi') setHerrenbekleidungMarke(val);
+                                    if (val === 'Diğer') {
+                                        setIsCustomFashion(true);
+                                        const brandVal = customFashionBrand || '';
+                                        if (subCategory === 'Kadın Giyimi') setDamenbekleidungMarke(brandVal);
+                                        else if (subCategory === 'Kadın Ayakkabıları') setDamenschuheMarke(brandVal);
+                                        else if (subCategory === 'Erkek Giyimi') setHerrenbekleidungMarke(brandVal);
+                                    } else {
+                                        setIsCustomFashion(false);
+                                        if (subCategory === 'Kadın Giyimi') setDamenbekleidungMarke(val);
+                                        else if (subCategory === 'Kadın Ayakkabıları') setDamenschuheMarke(val);
+                                        else if (subCategory === 'Erkek Giyimi') setHerrenbekleidungMarke(val);
+                                    }
                                 }}
                                 className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
@@ -165,6 +180,22 @@ export const FashionFields = ({
                                 {subCategory === 'Kadın Ayakkabıları' && ['Diğer', 'Nike', 'Adidas', 'Tamaris', 'Gabor', 'Graceland', 'Puma', 'Converse', 'Rieker', 'Tommy Hilfiger', 'Dr. Martens', 'Paul Green', 'UGG', 'Buffalo', 'Vans', 'Marco Tozzi', 'S.Oliver', 'Esprit', 'Timberland', 'H&M'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                 {subCategory === 'Erkek Giyimi' && ['Diğer', 'Adidas', 'Nike', 'Tommy Hilfiger', 'Jack & Jones', 'H&M', 'Ralph Lauren', 'S.Oliver', 'Tom Tailor', 'Zara', 'Puma', 'Camp David', 'Wellensteyn', 'Levi\'s', 'Hugo Boss', 'Esprit', 'C&A', 'Engelbert Strauss', 'Lacoste', 'G-Star'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                             </select>
+
+                            {isCustomFashion && (
+                                <input
+                                    type="text"
+                                    placeholder="Özel marka adını yazınız (örn. Mango, Koton...)"
+                                    value={customFashionBrand}
+                                    onChange={(e) => {
+                                        const text = e.target.value;
+                                        setCustomFashionBrand(text);
+                                        if (subCategory === 'Kadın Giyimi') setDamenbekleidungMarke(text);
+                                        else if (subCategory === 'Kadın Ayakkabıları') setDamenschuheMarke(text);
+                                        else if (subCategory === 'Erkek Giyimi') setHerrenbekleidungMarke(text);
+                                    }}
+                                    className="mt-2 w-full bg-white dark:bg-neutral-800 border border-amber-300 dark:border-amber-700 rounded-xl px-4 py-2.5 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                                />
+                            )}
                         </div>
 
                         {/* Größe Selector */}
@@ -265,13 +296,22 @@ export const FashionFields = ({
                         <div>
                             <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.brand}</label>
                             <select
-                                value={selectedHerrenschuheMarke}
-                                onChange={(e) => setSelectedHerrenschuheMarke(e.target.value)}
+                                value={isCustomShoe ? 'Diğer' : selectedHerrenschuheMarke}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === 'Diğer') {
+                                        setIsCustomShoe(true);
+                                        setSelectedHerrenschuheMarke(customShoeBrand || '');
+                                    } else {
+                                        setIsCustomShoe(false);
+                                        setSelectedHerrenschuheMarke(val);
+                                    }
+                                }}
                                 className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
                                 <option value="Nike">Nike</option>
-                                <option value="Diğer">{t.addListing.other}</option>
+                                <option value="Diğer">{t.addListing.other || 'Diğer'}</option>
                                 <option value="Adidas">Adidas</option>
                                 <option value="Puma">Puma</option>
                                 <option value="Jordan">Jordan</option>
@@ -291,6 +331,20 @@ export const FashionFields = ({
                                 <option value="Yeezy">Yeezy</option>
                                 <option value="Lacoste">Lacoste</option>
                             </select>
+
+                            {isCustomShoe && (
+                                <input
+                                    type="text"
+                                    placeholder="Özel marka adını yazınız (örn. Skechers, Lumberjack...)"
+                                    value={customShoeBrand}
+                                    onChange={(e) => {
+                                        const text = e.target.value;
+                                        setCustomShoeBrand(text);
+                                        setSelectedHerrenschuheMarke(text);
+                                    }}
+                                    className="mt-2 w-full bg-white dark:bg-neutral-800 border border-amber-300 dark:border-amber-700 rounded-xl px-4 py-2.5 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                                />
+                            )}
                         </div>
 
                         {/* Size */}

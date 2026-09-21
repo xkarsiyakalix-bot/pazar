@@ -8,12 +8,15 @@ const StorePage = React.lazy(() => import('./components/Store/StorePage'));
 const NotFoundPage = React.lazy(() => import('./NotFoundPage'));
 const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
 const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
+const BrandPage = React.lazy(() => import('./pages/BrandPage'));
+import { findBrandBySlug } from './utils/brandUtils';
 
 const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isStore, setIsStore] = useState(null); // null = loading, true = found, false = not found
     const [isListing, setIsListing] = useState(false);
+    const [isBrand, setIsBrand] = useState(false);
     const [listingId, setListingId] = useState(null);
     const [isCategory, setIsCategory] = useState(false);
     const pathParts = location.pathname.split('/').filter(Boolean);
@@ -33,6 +36,7 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
         if (!slug || reservedPaths.includes(slug.toLowerCase())) {
             setIsStore(false);
             setIsListing(false);
+            setIsBrand(false);
             return;
         }
 
@@ -43,6 +47,17 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                 setIsCategory(true);
                 setIsStore(false);
                 setIsListing(false);
+                setIsBrand(false);
+                return;
+            }
+
+            // 0.5. Check if it's a known Brand
+            const brandInfo = findBrandBySlug(slug);
+            if (brandInfo) {
+                setIsBrand(true);
+                setIsStore(false);
+                setIsListing(false);
+                setIsCategory(false);
                 return;
             }
 
@@ -57,6 +72,7 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                 if (storeData && !storeError) {
                     setIsStore(true);
                     setIsListing(false);
+                    setIsBrand(false);
                     return;
                 }
 
@@ -71,6 +87,7 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                     setListingId(listingBySlug.id);
                     setIsListing(true);
                     setIsStore(false);
+                    setIsBrand(false);
                     return;
                 }
 
@@ -93,6 +110,7 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                         setListingId(listingById.id);
                         setIsListing(true);
                         setIsStore(false);
+                        setIsBrand(false);
                         return;
                     }
                 }
@@ -111,22 +129,42 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                         setListingId(listingByOldSlug.id);
                         setIsListing(true);
                         setIsStore(false);
+                        setIsBrand(false);
                         return;
                     }
                 }
 
+                // 5. Check if it matches any custom brand recorded in database
+                const cleanSlug = slug.toLowerCase().trim();
+                const { data: customBrandListing } = await supabase
+                    .from('listings')
+                    .select('id')
+                    .or(`marke.ilike.%${cleanSlug}%,car_brand.ilike.%${cleanSlug}%,damenbekleidung_marke.ilike.%${cleanSlug}%,damenschuhe_marke.ilike.%${cleanSlug}%,herrenbekleidung_marke.ilike.%${cleanSlug}%,herrenschuhe_marke.ilike.%${cleanSlug}%`)
+                    .limit(1)
+                    .maybeSingle();
+
+                if (customBrandListing) {
+                    setIsBrand(true);
+                    setIsStore(false);
+                    setIsListing(false);
+                    return;
+                }
+
                 setIsStore(false);
                 setIsListing(false);
+                setIsBrand(false);
             } catch (err) {
                 console.error('Error checking slug:', err);
                 setIsStore(false);
                 setIsListing(false);
+                setIsBrand(false);
             }
         };
 
         setIsStore(null);
         setIsListing(false);
         setIsCategory(false);
+        setIsBrand(false);
         checkSlug();
     }, [slug]);
 
@@ -164,7 +202,14 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                     isSellerFollowed={isSellerFollowed}
                 />
             )}
-            {!isStore && !isCategory && !isListing && <NotFoundPage />}
+            {isBrand && (
+                <BrandPage
+                    slug={slug}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                />
+            )}
+            {!isStore && !isCategory && !isListing && !isBrand && <NotFoundPage />}
         </React.Suspense>
     );
 };

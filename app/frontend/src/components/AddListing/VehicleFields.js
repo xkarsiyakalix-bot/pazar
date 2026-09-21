@@ -413,32 +413,61 @@ export const VehicleFields = ({
                                 className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                             >
                                 <option value="">{t.productDetail.pleaseChoose}</option>
-                                {carBrands.map((brand) => (
-                                    <option key={brand.name} value={brand.name}>
-                                        {brand.name}
+                                {carBrands.map((b) => (
+                                    <option key={b.name} value={b.name}>
+                                        {b.name}
                                     </option>
                                 ))}
+                                <option value="Diğer">{t.addListing?.other || 'Diğer'}</option>
                             </select>
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.vehicles.model} *</label>
-                            <select
-                                value={selectedCarModel}
-                                onChange={(e) => setSelectedCarModel(e.target.value)}
-                                disabled={!selectedCarBrand}
-                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none disabled:bg-neutral-50 dark:disabled:bg-neutral-900 disabled:cursor-not-allowed"
-                            >
-                                <option value="">
-                                    {selectedCarBrand ? t.productDetail.pleaseChoose : t.addListing.vehicles.selectBrandFirst}
-                                </option>
-                                {selectedCarBrand && carBrands.find(b => b.name === selectedCarBrand)?.subModels?.map((model) => (
-                                    <option key={model.name} value={model.name}>
-                                        {model.name}
+                            {selectedCarBrand === 'Diğer' ? (
+                                <input
+                                    type="text"
+                                    value={selectedCarModel}
+                                    onChange={(e) => setSelectedCarModel(e.target.value)}
+                                    placeholder="Model adını yazınız"
+                                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                                />
+                            ) : (
+                                <select
+                                    value={selectedCarModel}
+                                    onChange={(e) => setSelectedCarModel(e.target.value)}
+                                    disabled={!selectedCarBrand}
+                                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none disabled:bg-neutral-50 dark:disabled:bg-neutral-900 disabled:cursor-not-allowed"
+                                >
+                                    <option value="">
+                                        {selectedCarBrand ? t.productDetail.pleaseChoose : t.addListing.vehicles.selectBrandFirst}
                                     </option>
-                                ))}
-                            </select>
+                                    {selectedCarBrand && carBrands.find(b => b.name === selectedCarBrand)?.subModels?.map((model) => (
+                                        <option key={model.name} value={model.name}>
+                                            {model.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
                         </div>
                     </div>
+
+                    {selectedCarBrand === 'Diğer' && (
+                        <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/30 rounded-xl p-4">
+                            <label className="block text-sm font-semibold text-amber-900 dark:text-amber-200 mb-1">
+                                Marka Adı (Kendi Markanızı Yazın) *
+                            </label>
+                            <p className="text-xs text-amber-700 dark:text-amber-300/80 mb-2">
+                                Listede bulamadığınız markayı buraya yazabilirsiniz. İlanınızda tıklanabilir marka sayfası olarak oluşturulacaktır.
+                            </p>
+                            <input
+                                type="text"
+                                value={brand}
+                                onChange={(e) => setBrand(e.target.value)}
+                                placeholder="Örn: Togg, Chery, MG, Cupra, BYD..."
+                                className="w-full bg-white dark:bg-neutral-800 border border-amber-300 dark:border-amber-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                            />
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-3 gap-4">
                         <div>

@@ -18,6 +18,7 @@ import { ImageLightbox } from '../components/ImageLightbox';
 import { ShareModal } from '../components/ShareModal';
 import { RatingDisplay } from '../components/RatingDisplay';
 import { ListingCard } from '../components/ListingCard';
+import { slugifyBrand } from '../utils/brandUtils';
 import { ReportModal } from '../components/ReportModal';
 import { normalizeSubcategoryName } from '../utils/slug';
 import { generateListingNumber } from '../utils/format';
@@ -227,6 +228,20 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   // Current URL for QR code
   const currentUrl = window.location.href;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentUrl)}`;
+
+  const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors") => {
+    if (!brandText) return null;
+    const cleanBrand = String(brandText).trim();
+    const slug = slugifyBrand(cleanBrand);
+    if (!slug || ['diger', 'digeri', 'andere', 'other'].includes(slug)) {
+      return <span className={className}>{cleanBrand}</span>;
+    }
+    return (
+      <Link to={`/${slug}`} className={className}>
+        {cleanBrand}
+      </Link>
+    );
+  };
 
   const renderDetailRow = (label, value) => {
     if (value === undefined || value === null || value === '') return null;
@@ -1835,7 +1850,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           {(listing.marke || listing.car_brand || listing.carBrand) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.manufacturer}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.marke || listing.car_brand || listing.carBrand}</span>
+                              {renderBrandLink(listing.marke || listing.car_brand || listing.carBrand, "font-bold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors")}
                             </div>
                           )}
                           {(listing.modell || listing.car_model || listing.carModel) && (
@@ -2131,7 +2146,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.damenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_marke}</span>
+                            {renderBrandLink(listing.damenschuhe_marke, "font-semibold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors")}
                           </div>
                         )}
                         {listing.damenschuhe_size && (
@@ -2157,7 +2172,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenbekleidung_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_marke}</span>
+                            {renderBrandLink(listing.herrenbekleidung_marke, "font-semibold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors")}
                           </div>
                         )}
                         {listing.herrenbekleidung_size && (
@@ -2183,7 +2198,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_marke}</span>
+                            {renderBrandLink(listing.herrenschuhe_marke, "font-semibold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors")}
                           </div>
                         )}
                         {listing.herrenschuhe_size && (
@@ -2477,7 +2492,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 )}
 
                 {/* Elektronik Details */}
-                {(listing.audio_hifi_art || listing.handy_telefon_art || listing.foto_art ||
+                {(listing.marke || listing.audio_hifi_art || listing.handy_telefon_art || listing.foto_art ||
                   listing.haushaltsgeraete_art || listing.konsolen_art ||
                   listing.pc_zubehoer_software_art || listing.tablets_reader_art || listing.tv_video_art ||
                   listing.notebooks_art || listing.pcs_art || listing.videospiele_art ||
@@ -2487,6 +2502,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {t.productDetail.details}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                        {listing.marke && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
+                            {renderBrandLink(listing.marke, "font-semibold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors")}
+                          </div>
+                        )}
                         {listing.audio_hifi_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
@@ -2721,7 +2742,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.damenbekleidung_marke && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Marka</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_marke}</span>
+                          {renderBrandLink(listing.damenbekleidung_marke, "font-semibold text-gray-900 dark:text-neutral-50 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors")}
                         </div>
                       )}
                       {listing.damenbekleidung_size && (

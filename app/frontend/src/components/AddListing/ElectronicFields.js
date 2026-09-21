@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export const ElectronicFields = ({
     subCategory,
     t,
+    brand,
+    setBrand,
     // Ses & Hifi
     selectedElektronikAudioHifiArt,
     setSelectedElektronikAudioHifiArt,
@@ -40,8 +42,56 @@ export const ElectronicFields = ({
     selectedDienstleistungenElektronikArt,
     setSelectedDienstleistungenElektronikArt
 }) => {
+    const popularElectronicBrands = [
+        'Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Sony', 'LG', 'Philips',
+        'Bosch', 'Siemens', 'Arçelik', 'Beko', 'Vestel', 'Profilo', 'Dyson',
+        'Tefal', 'Asus', 'Lenovo', 'HP', 'Dell', 'Acer', 'MSI', 'Monster',
+        'Canon', 'Nikon', 'JBL', 'Nintendo', 'Microsoft', 'Diğer'
+    ];
+
+    const [isCustomBrand, setIsCustomBrand] = useState(
+        Boolean(brand && !popularElectronicBrands.filter(b => b !== 'Diğer').includes(brand))
+    );
+
     return (
         <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
+            {/* General Brand Selector for Electronics */}
+            <div>
+                <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">
+                    {t.addListing?.brand || 'Marka'}
+                </label>
+                <select
+                    value={isCustomBrand ? 'Diğer' : (brand || '')}
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === 'Diğer') {
+                            setIsCustomBrand(true);
+                            if (setBrand) setBrand('');
+                        } else {
+                            setIsCustomBrand(false);
+                            if (setBrand) setBrand(val);
+                        }
+                    }}
+                    className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
+                >
+                    <option value="">{t.productDetail?.pleaseChoose || 'Lütfen Seçiniz'}</option>
+                    {popularElectronicBrands.map((b) => (
+                        <option key={b} value={b}>{b}</option>
+                    ))}
+                </select>
+
+                {isCustomBrand && (
+                    <div className="mt-2">
+                        <input
+                            type="text"
+                            placeholder="Özel marka adını yazınız (örn. Roborock, Dreame, Anker...)"
+                            value={brand || ''}
+                            onChange={(e) => setBrand && setBrand(e.target.value)}
+                            className="w-full bg-white dark:bg-neutral-800 border border-amber-300 dark:border-amber-700 rounded-xl px-4 py-2.5 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                        />
+                    </div>
+                )}
+            </div>
             {subCategory === 'Ses & Hifi' && (
                 <div>
                     <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>

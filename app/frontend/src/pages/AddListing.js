@@ -1019,7 +1019,7 @@ export const AddListing = () => {
         images: imageUrls,
         status: 'active',
         versand_art: hideConditionAndShipping ? null : (selectedShipping || null),
-        car_brand: selectedCarBrand || null,
+        car_brand: (selectedCarBrand === 'Diğer' ? brand : selectedCarBrand) || null,
         car_model: selectedCarModel || null,
         bike_type: selectedBikeType || null,
         bike_art: selectedBikeArt || null,
@@ -1143,7 +1143,7 @@ export const AddListing = () => {
         working_time: workingTime || null,
         hourly_wage: hourlyWage ? parseFloat(hourlyWage) : null,
         job_type: jobType || null,
-        marke: selectedCarBrand || brand || null,
+        marke: (selectedCarBrand === 'Diğer' ? brand : selectedCarBrand) || brand || null,
         modell: selectedCarModel || null,
         kilometerstand: mileage ? parseInt(mileage.toString().replace(/\D/g, '')) : null,
         erstzulassung: firstRegistration ? parseInt(firstRegistration) : null,
@@ -1606,6 +1606,8 @@ export const AddListing = () => {
                 setSelectedVideospieleArt={setSelectedVideospieleArt}
                 selectedDienstleistungenElektronikArt={selectedDienstleistungenElektronikArt}
                 setSelectedDienstleistungenElektronikArt={setSelectedDienstleistungenElektronikArt}
+                brand={brand}
+                setBrand={setBrand}
               />
             )}
 
