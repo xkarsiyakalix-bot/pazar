@@ -146,6 +146,45 @@ const GenericCategoryPage = ({
 
     // Helper: count listings that match a given field+value
     const getOptionCount = (field, value) => {
+        if (field === 'offer_type') {
+            const isOffering = value === 'Satılık' || value === 'Satılık/Kiralık' || value === 'Angebote';
+            const isSeeking = value === 'Aranıyor' || value === 'Gesuche';
+            if (isOffering) {
+                return allCategoryListings.filter(l => {
+                    const val = (l.offer_type || '').trim();
+                    return val === 'Angebote' || val === 'Satılık' || val === 'Satılık/Kiralık' || val === '';
+                }).length;
+            }
+            if (isSeeking) {
+                return allCategoryListings.filter(l => {
+                    const val = (l.offer_type || '').trim();
+                    return val === 'Gesuche' || val === 'Aranıyor';
+                }).length;
+            }
+        }
+
+        if (field === 'condition' || field === 'zustand') {
+            const conditionMap = {
+                'neu': ['neu', 'Yeni'],
+                'Yeni': ['neu', 'Yeni'],
+                'neu_mit_etikett': ['neu_mit_etikett', 'Yeni & Etiketli', 'Yeni (Etiketli)'],
+                'Yeni & Etiketli': ['neu_mit_etikett', 'Yeni & Etiketli', 'Yeni (Etiketli)'],
+                'sehr_gut': ['sehr_gut', 'Çok İyi'],
+                'Çok İyi': ['sehr_gut', 'Çok İyi'],
+                'gut': ['gut', 'İyi'],
+                'İyi': ['gut', 'İyi'],
+                'in_ordnung': ['in_ordnung', 'İdare Eder', 'Makul'],
+                'İdare Eder': ['in_ordnung', 'İdare Eder', 'Makul'],
+                'defekt': ['defekt', 'Kusurlu', 'Arızalı'],
+                'Kusurlu': ['defekt', 'Kusurlu', 'Arızalı'],
+                'Arızalı': ['defekt', 'Kusurlu', 'Arızalı'],
+                'used': ['used', 'gebraucht', 'İkinci El'],
+                'İkinci El': ['used', 'gebraucht', 'İkinci El']
+            };
+            const mapped = conditionMap[value] || [value];
+            return allCategoryListings.filter(l => mapped.includes(l.condition || l.zustand)).length;
+        }
+
         return allCategoryListings.filter(l => l[field] === value).length;
     };
 
@@ -237,6 +276,40 @@ const GenericCategoryPage = ({
                         if (config.field === 'federal_state' || config.field === 'city') {
                             // City stored in both city and federal_state columns
                             query = query.or(`city.eq.${filterValue},federal_state.eq.${filterValue}`);
+                        } else if (config.field === 'offer_type') {
+                            const isOffering = filterValue === 'Satılık' || filterValue === 'Satılık/Kiralık' || filterValue === 'Angebote';
+                            const isSeeking = filterValue === 'Aranıyor' || filterValue === 'Gesuche';
+                            if (isOffering) {
+                                query = query.or('offer_type.eq.Angebote,offer_type.eq.Satılık,offer_type.eq.Satılık/Kiralık,offer_type.is.null');
+                            } else if (isSeeking) {
+                                query = query.or('offer_type.eq.Gesuche,offer_type.eq.Aranıyor');
+                            } else {
+                                query = query.eq(config.field, filterValue);
+                            }
+                        } else if (config.field === 'condition' || config.field === 'zustand') {
+                            const conditionMap = {
+                                'neu': ['neu', 'Yeni'],
+                                'Yeni': ['neu', 'Yeni'],
+                                'neu_mit_etikett': ['neu_mit_etikett', 'Yeni & Etiketli', 'Yeni (Etiketli)'],
+                                'Yeni & Etiketli': ['neu_mit_etikett', 'Yeni & Etiketli', 'Yeni (Etiketli)'],
+                                'sehr_gut': ['sehr_gut', 'Çok İyi'],
+                                'Çok İyi': ['sehr_gut', 'Çok İyi'],
+                                'gut': ['gut', 'İyi'],
+                                'İyi': ['gut', 'İyi'],
+                                'in_ordnung': ['in_ordnung', 'İdare Eder', 'Makul'],
+                                'İdare Eder': ['in_ordnung', 'İdare Eder', 'Makul'],
+                                'defekt': ['defekt', 'Kusurlu', 'Arızalı'],
+                                'Kusurlu': ['defekt', 'Kusurlu', 'Arızalı'],
+                                'Arızalı': ['defekt', 'Kusurlu', 'Arızalı'],
+                                'used': ['used', 'gebraucht', 'İkinci El'],
+                                'İkinci El': ['used', 'gebraucht', 'İkinci El']
+                            };
+                            const mapped = conditionMap[filterValue] || [filterValue];
+                            if (mapped.length > 1) {
+                                query = query.in(config.field, mapped);
+                            } else {
+                                query = query.eq(config.field, filterValue);
+                            }
                         } else {
                             query = query.eq(config.field, filterValue);
                         }
