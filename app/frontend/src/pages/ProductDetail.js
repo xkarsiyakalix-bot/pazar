@@ -217,7 +217,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
   );
 };
 
-const renderBrandLink = (brandText, className = "font-bold text-red-600 dark:text-red-400 underline decoration-red-600 underline-offset-2 hover:decoration-2 transition-colors") => {
+const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors") => {
   if (!brandText) return null;
   const cleanBrand = String(brandText).trim();
   const slug = slugifyBrand(cleanBrand);
@@ -1850,7 +1850,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           {(listing.marke || listing.car_brand || listing.carBrand) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.manufacturer}</span>
-                              {renderBrandLink(listing.marke || listing.car_brand || listing.carBrand, "font-bold text-red-600 dark:text-red-400 underline decoration-red-600 underline-offset-2 hover:decoration-2 transition-colors")}
+                              {renderBrandLink(listing.marke || listing.car_brand || listing.carBrand, "font-bold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                             </div>
                           )}
                           {(listing.modell || listing.car_model || listing.carModel) && (
@@ -2146,7 +2146,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.damenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            {renderBrandLink(listing.damenschuhe_marke, "font-semibold text-red-600 dark:text-red-400 underline decoration-red-600 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.damenschuhe_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {listing.damenschuhe_size && (
@@ -2172,7 +2172,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenbekleidung_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            {renderBrandLink(listing.herrenbekleidung_marke, "font-semibold text-red-600 dark:text-red-400 underline decoration-red-600 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.herrenbekleidung_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {listing.herrenbekleidung_size && (
@@ -2198,7 +2198,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            {renderBrandLink(listing.herrenschuhe_marke, "font-semibold text-red-600 dark:text-red-400 underline decoration-red-600 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.herrenschuhe_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {listing.herrenschuhe_size && (
@@ -2505,7 +2505,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
-                            {renderBrandLink(listing.marke, "font-semibold text-red-600 dark:text-red-400 underline decoration-red-600 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {listing.audio_hifi_art && (
@@ -2742,7 +2742,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.damenbekleidung_marke && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Marka</span>
-                          {renderBrandLink(listing.damenbekleidung_marke, "font-semibold text-red-600 dark:text-red-400 underline decoration-red-600 underline-offset-2 hover:decoration-2 transition-colors")}
+                          {renderBrandLink(listing.damenbekleidung_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                         </div>
                       )}
                       {listing.damenbekleidung_size && (
