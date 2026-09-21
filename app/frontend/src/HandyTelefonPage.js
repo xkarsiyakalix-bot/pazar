@@ -5,9 +5,6 @@ import { getCommonFilters, getConditionFilter, getShippingFilter } from './confi
 
 const HandyTelefonPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
-        ...getCommonFilters(),
-        ...getConditionFilter(),
-        ...getShippingFilter(),
         art: {
             label: 'Tür',
             type: 'multiselect',
@@ -19,7 +16,10 @@ const HandyTelefonPage = ({ toggleFavorite, isFavorite }) => {
                 { value: 'Diğer Cep Telefonu & Telefonlar', label: 'Diğer Cep Telefonu & Telefonlar' }
             ],
             field: 'handy_telefon_art'
-        }
+        },
+        ...getCommonFilters(),
+        ...getConditionFilter(),
+        ...getShippingFilter()
     };
 
     const bannerConfig = {
