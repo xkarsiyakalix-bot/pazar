@@ -5,6 +5,7 @@ import { SEO } from '../SEO';
 import { Breadcrumb, HorizontalListingCard, ListingCard } from '../components';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { findBrandBySlug, formatBrandDisplayName } from '../utils/brandUtils';
+import { getPhoneModels } from '../data/phoneBrands';
 
 export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
     const params = useParams();
@@ -17,6 +18,20 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('newest');
     const [viewMode, setViewMode] = useState('horizontal'); // 'horizontal' or 'grid'
+    const [selectedModel, setSelectedModel] = useState('');
+
+    const availableModels = useMemo(() => {
+        return getPhoneModels(brandName) || [];
+    }, [brandName]);
+
+    const displayedListings = useMemo(() => {
+        if (!selectedModel) return listings;
+        const lower = selectedModel.toLowerCase();
+        return listings.filter(l => 
+            (l.modell && l.modell.toLowerCase().includes(lower)) ||
+            (l.title && l.title.toLowerCase().includes(lower))
+        );
+    }, [listings, selectedModel]);
 
     useEffect(() => {
         let isMounted = true;
@@ -48,7 +63,9 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                     const cleanTerm = term.trim();
                     if (!cleanTerm) return;
                     conditions.push(`marke.ilike.%${cleanTerm}%`);
+                    conditions.push(`handy_telefon_art.ilike.%${cleanTerm}%`);
                     conditions.push(`car_brand.ilike.%${cleanTerm}%`);
+                    conditions.push(`modell.ilike.%${cleanTerm}%`);
                     conditions.push(`damenbekleidung_marke.ilike.%${cleanTerm}%`);
                     conditions.push(`damenschuhe_marke.ilike.%${cleanTerm}%`);
                     conditions.push(`herrenbekleidung_marke.ilike.%${cleanTerm}%`);
@@ -142,10 +159,56 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                     </div>
                 </div>
 
+                {/* Model Chips Filter (if available models exist for this brand) */}
+                {availableModels.length > 0 && (
+                    <div className="mb-4">
+                        <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                            <button
+                                onClick={() => setSelectedModel('')}
+                                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                                    !selectedModel
+                                        ? 'bg-red-600 text-white shadow-sm'
+                                        : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-200 dark:border-neutral-700 hover:border-red-500'
+                                }`}
+                            >
+                                Tüm Modeller ({listings.length})
+                            </button>
+                            {availableModels.map(m => {
+                                const isMSelected = selectedModel.toLowerCase() === m.name.toLowerCase();
+                                const mLower = m.name.toLowerCase();
+                                const count = listings.filter(l => 
+                                    (l.modell && l.modell.toLowerCase().includes(mLower)) ||
+                                    (l.title && l.title.toLowerCase().includes(mLower))
+                                ).length;
+
+                                return (
+                                    <button
+                                        key={m.name}
+                                        onClick={() => setSelectedModel(isMSelected ? '' : m.name)}
+                                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                            isMSelected
+                                                ? 'bg-red-600 text-white shadow-sm'
+                                                : 'bg-white dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 border border-gray-200 dark:border-neutral-700 hover:border-red-500'
+                                        }`}
+                                    >
+                                        <span>{m.name}</span>
+                                        {count > 0 && (
+                                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isMSelected ? 'bg-red-700 text-white' : 'bg-gray-100 dark:bg-neutral-700 text-gray-500'}`}>
+                                                {count}
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
                 {/* Filter and View Mode Bar */}
                 <div className="bg-white dark:bg-neutral-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-neutral-700 mb-6 flex flex-wrap items-center justify-between gap-4">
                     <div className="text-sm text-gray-600 dark:text-neutral-400 font-medium">
-                        {loading ? 'Yükleniyor...' : `${listings.length} ilan bulundu`}
+                        {loading ? 'Yükleniyor...' : `${displayedListings.length} ilan bulundu`}
+                        {selectedModel && <span className="ml-2 text-xs text-red-500">({selectedModel} filtrelendi)</span>}
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -172,7 +235,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                                 title="Yatay Liste Görünümü"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
                             <button
@@ -185,7 +248,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                                 title="Grid Görünümü"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                 </svg>
                             </button>
                         </div>
@@ -197,29 +260,38 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                     <div className="py-20 flex justify-center">
                         <LoadingSpinner size="large" />
                     </div>
-                ) : listings.length === 0 ? (
+                ) : displayedListings.length === 0 ? (
                     <div className="bg-white dark:bg-neutral-800 rounded-2xl p-12 text-center border border-gray-100 dark:border-neutral-700">
                         <div className="w-16 h-16 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                            Henüz {brandName} ilanı bulunmuyor
+                            {selectedModel ? `${selectedModel} modeline ait ilan bulunamadı` : `Henüz ${brandName} ilanı bulunmuyor`}
                         </h3>
                         <p className="text-gray-500 dark:text-neutral-400 max-w-md mx-auto mb-6 text-sm">
-                            Bu markaya ait ilk ilanı siz vererek binlerce alıcıya hemen ulaşabilirsiniz.
+                            {selectedModel ? 'Diğer modelleri inceleyebilir veya filtreyi temizleyebilirsiniz.' : 'Bu markaya ait ilk ilanı siz vererek binlerce alıcıya hemen ulaşabilirsiniz.'}
                         </p>
-                        <Link
-                            to="/add-listing"
-                            className="inline-flex items-center justify-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-md transition-all text-sm"
-                        >
-                            Hemen İlan Ver
-                        </Link>
+                        {selectedModel ? (
+                            <button
+                                onClick={() => setSelectedModel('')}
+                                className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl shadow-md transition-all text-sm cursor-pointer"
+                            >
+                                Tüm Modelleri Göster
+                            </button>
+                        ) : (
+                            <Link
+                                to="/add-listing"
+                                className="inline-flex items-center justify-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-md transition-all text-sm"
+                            >
+                                Hemen İlan Ver
+                            </Link>
+                        )}
                     </div>
                 ) : viewMode === 'horizontal' ? (
                     <div className="space-y-4">
-                        {listings.map((item) => (
+                        {displayedListings.map((item) => (
                             <HorizontalListingCard
                                 key={item.id}
                                 listing={item}
@@ -230,7 +302,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {listings.map((item) => (
+                        {displayedListings.map((item) => (
                             <ListingCard
                                 key={item.id}
                                 listing={item}

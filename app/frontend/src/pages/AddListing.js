@@ -224,6 +224,8 @@ export const AddListing = () => {
   // Auto-specific states
   const [selectedCarBrand, setSelectedCarBrand] = useState('');
   const [selectedCarModel, setSelectedCarModel] = useState('');
+  const [selectedPhoneBrand, setSelectedPhoneBrand] = useState('');
+  const [selectedPhoneModel, setSelectedPhoneModel] = useState('');
   const [selectedVehicleType, setSelectedVehicleType] = useState('');
   const [selectedDoorCount, setSelectedDoorCount] = useState('');
   const [selectedExteriorColor, setSelectedExteriorColor] = useState('');
@@ -839,7 +841,15 @@ export const AddListing = () => {
           if (data.weiteres_haus_garten_art) setSelectedWeiteresHausGartenArt(data.weiteres_haus_garten_art);
           if (data.beauty_gesundheit_art) setSelectedBeautyGesundheitArt(data.beauty_gesundheit_art);
           if (data.audio_hifi_art) setSelectedAudioHifiArt(data.audio_hifi_art);
-          if (data.handy_telefon_art) setSelectedHandyTelefonArt(data.handy_telefon_art);
+          if (data.handy_telefon_art) {
+            setSelectedHandyTelefonArt(data.handy_telefon_art);
+            setSelectedPhoneBrand(data.marke || data.handy_telefon_art);
+          } else if (data.category === 'Elektronik' && data.marke) {
+            setSelectedPhoneBrand(data.marke);
+          }
+          if (data.category === 'Elektronik' && data.modell) {
+            setSelectedPhoneModel(data.modell);
+          }
           if (data.foto_art) setSelectedFotoArt(data.foto_art);
           if (data.haushaltsgeraete_art) setSelectedHaushaltsgeraeteArt(data.haushaltsgeraete_art);
           if (data.konsolen_art) setSelectedKonsolenArt(data.konsolen_art);
@@ -1103,7 +1113,7 @@ export const AddListing = () => {
         taschen_accessoires_art: selectedTaschenAccessoiresArt || null,
         uhren_schmuck_art: selectedUhrenSchmuckArt || null,
         beauty_gesundheit_art: selectedBeautyGesundheitArt || null,
-        handy_telefon_art: selectedHandyTelefonArt || null,
+        handy_telefon_art: (selectedPhoneBrand === 'Diğer' ? brand : selectedPhoneBrand) || selectedHandyTelefonArt || null,
         foto_art: selectedFotoArt || null,
         haushaltsgeraete_art: selectedHaushaltsgeraeteArt || null,
         konsolen_art: selectedKonsolenArt || null,
@@ -1143,8 +1153,10 @@ export const AddListing = () => {
         working_time: workingTime || null,
         hourly_wage: hourlyWage ? parseFloat(hourlyWage) : null,
         job_type: jobType || null,
-        marke: (selectedCarBrand === 'Diğer' ? brand : selectedCarBrand) || brand || null,
-        modell: selectedCarModel || null,
+        marke: (selectedCarBrand === 'Diğer' ? brand : selectedCarBrand) || 
+               (selectedPhoneBrand === 'Diğer' ? brand : selectedPhoneBrand) || 
+               brand || null,
+        modell: selectedCarModel || selectedPhoneModel || null,
         kilometerstand: mileage ? parseInt(mileage.toString().replace(/\D/g, '')) : null,
         erstzulassung: firstRegistration ? parseInt(firstRegistration) : null,
         hubraum: displacement ? parseInt(displacement.toString().replace(/\D/g, '')) : null,
@@ -1608,6 +1620,10 @@ export const AddListing = () => {
                 setSelectedDienstleistungenElektronikArt={setSelectedDienstleistungenElektronikArt}
                 brand={brand}
                 setBrand={setBrand}
+                selectedPhoneBrand={selectedPhoneBrand}
+                setSelectedPhoneBrand={setSelectedPhoneBrand}
+                selectedPhoneModel={selectedPhoneModel}
+                setSelectedPhoneModel={setSelectedPhoneModel}
               />
             )}
 

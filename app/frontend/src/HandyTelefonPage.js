@@ -2,17 +2,23 @@ import React from 'react';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
 import { getCommonFilters, getConditionFilter, getShippingFilter } from './config/filterConfigs';
+import { phoneBrands } from './data/phoneBrands';
 
 const HandyTelefonPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
-        art: {
-            label: 'Tür',
+        phone_brand_model: {
+            label: 'Tür / Marka & Model',
+            type: 'brand-models',
+            brands: phoneBrands,
+            brandField: 'handy_telefon_art',
+            modelField: 'modell'
+        },
+        other_types: {
+            label: 'Cihaz Türü',
             type: 'multiselect',
             options: [
-                'Apple', 'Google', 'HTC', 'Huawei', 'LG', 'Motorola',
-                'Nokia', 'Samsung', 'Siemens', 'Sony', 'Xiaomi',
                 { value: 'Faks Cihazları', label: 'Faks Cihazları' },
-                { value: 'Telefonlar', label: 'Telefonlar' },
+                { value: 'Telefonlar', label: 'Sabit Telefonlar' },
                 { value: 'Diğer Cep Telefonu & Telefonlar', label: 'Diğer Cep Telefonu & Telefonlar' }
             ],
             field: 'handy_telefon_art'

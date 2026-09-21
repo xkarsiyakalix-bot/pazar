@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import LoadingSpinner from './LoadingSpinner';
 import ListingCard from './ListingCard';
@@ -11,6 +11,7 @@ import { getCategoryPath } from './SearchSection';
 import { useAuth } from '../contexts/AuthContext';
 import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from '../api/savedSearches';
 import { CategorySEO } from '../SEO';
+import { slugifyBrand } from '../utils/brandUtils';
 
 const GenericCategoryPage = ({
     category,
@@ -36,6 +37,7 @@ const GenericCategoryPage = ({
     const [subCategoryCounts, setSubCategoryCounts] = useState({});
     const [allCategoryListings, setAllCategoryListings] = useState([]);
     const [dynamicCityOptions, setDynamicCityOptions] = useState([]);
+    const [expandedBrandGroups, setExpandedBrandGroups] = useState({});
 
     // Equivalent check for Turkish, German, English category/subcategory names
     const isEquivalent = (a, b) => {
@@ -185,6 +187,22 @@ const GenericCategoryPage = ({
             return allCategoryListings.filter(l => mapped.includes(l.condition || l.zustand)).length;
         }
 
+        if (field === 'brand' || field === 'handy_telefon_art') {
+            const valLower = String(value).toLowerCase();
+            return allCategoryListings.filter(l => 
+                (l.marke && String(l.marke).toLowerCase().includes(valLower)) ||
+                (l.handy_telefon_art && String(l.handy_telefon_art).toLowerCase().includes(valLower))
+            ).length;
+        }
+
+        if (field === 'model' || field === 'modell') {
+            const valLower = String(value).toLowerCase();
+            return allCategoryListings.filter(l => 
+                (l.modell && String(l.modell).toLowerCase().includes(valLower)) ||
+                (l.title && String(l.title).toLowerCase().includes(valLower))
+            ).length;
+        }
+
         return allCategoryListings.filter(l => l[field] === value).length;
     };
 
@@ -271,6 +289,18 @@ const GenericCategoryPage = ({
 
                 // Apply filterConfig fields
                 Object.entries(filterConfig).forEach(([key, config]) => {
+                    if (config.type === 'brand-models') {
+                        const selectedBrand = filters.brand || filters[key];
+                        const selectedModel = filters.model;
+                        if (selectedBrand) {
+                            query = query.or(`marke.ilike.%${selectedBrand}%,handy_telefon_art.ilike.%${selectedBrand}%`);
+                        }
+                        if (selectedModel) {
+                            query = query.or(`modell.ilike.%${selectedModel}%,title.ilike.%${selectedModel}%`);
+                        }
+                        return;
+                    }
+
                     const filterValue = filters[key] || filters[config.field];
                     if (config.field && filterValue && config.type !== 'range') {
                         if (config.field === 'federal_state' || config.field === 'city') {
@@ -315,6 +345,13 @@ const GenericCategoryPage = ({
                         }
                     }
                 });
+
+                if (filters.model && !Object.values(filterConfig).some(c => c.type === 'brand-models')) {
+                    query = query.or(`modell.ilike.%${filters.model}%,title.ilike.%${filters.model}%`);
+                }
+                if (filters.brand && !Object.values(filterConfig).some(c => c.type === 'brand-models')) {
+                    query = query.or(`marke.ilike.%${filters.brand}%,handy_telefon_art.ilike.%${filters.brand}%`);
+                }
 
                 if (sortBy === 'newest') query = query.order('created_at', { ascending: false });
                 else if (sortBy === 'price-asc') query = query.order('price', { ascending: true });
@@ -376,6 +413,187 @@ const GenericCategoryPage = ({
                                 className="w-full border border-gray-200 dark:border-white/10 bg-white dark:bg-neutral-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
                             />
                         </div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (config.type === 'brand-models') {
+            const brands = config.brands || [];
+            const currentBrand = filters.brand || filters[key] || '';
+            const currentModel = filters.model || '';
+
+            const toggleBrandGroup = (brandName, e) => {
+                e.stopPropagation();
+                setExpandedBrandGroups(prev => ({
+                    ...prev,
+                    [brandName]: !prev[brandName]
+                }));
+            };
+
+            return (
+                <div key={key} className="mb-5 pb-5 border-b border-gray-100 dark:border-white/5">
+                    <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
+                            {config.label || 'Marka & Model'}
+                        </h4>
+                        {(currentBrand || currentModel) && (
+                            <button
+                                onClick={() => {
+                                    const newFilters = { ...filters };
+                                    delete newFilters.brand;
+                                    delete newFilters[key];
+                                    delete newFilters.model;
+                                    const params = new URLSearchParams();
+                                    Object.entries(newFilters).forEach(([k, v]) => { if (v) params.append(k, v); });
+                                    const qs = params.toString();
+                                    navigate(`${location.pathname}${qs ? `?${qs}` : ''}`);
+                                }}
+                                className="text-xs text-red-500 hover:underline"
+                            >
+                                Temizle
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="space-y-1 max-h-96 overflow-y-auto pr-1 custom-scrollbar">
+                        {brands.map((brand) => {
+                            const isBrandSelected = currentBrand.toLowerCase() === brand.name.toLowerCase();
+                            const isExpanded = expandedBrandGroups[brand.name] ?? isBrandSelected;
+                            const brandSlug = brand.slug || slugifyBrand(brand.name);
+                            const brandCount = getOptionCount('brand', brand.name);
+
+                            return (
+                                <div key={brand.name} className="brand-group mb-1">
+                                    <div
+                                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-sm transition-all ${
+                                            isBrandSelected
+                                                ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 font-semibold'
+                                                : 'text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
+                                        }`}
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newBrand = isBrandSelected ? '' : brand.name;
+                                                const newFilters = { ...filters };
+                                                if (newBrand) {
+                                                    newFilters.brand = newBrand;
+                                                } else {
+                                                    delete newFilters.brand;
+                                                    delete newFilters[key];
+                                                }
+                                                delete newFilters.model;
+                                                const params = new URLSearchParams();
+                                                Object.entries(newFilters).forEach(([k, v]) => { if (v) params.append(k, v); });
+                                                const qs = params.toString();
+                                                navigate(`${location.pathname}${qs ? `?${qs}` : ''}`);
+                                            }}
+                                            className="flex items-center gap-2.5 flex-1 text-left min-w-0 cursor-pointer"
+                                        >
+                                            <div className={`w-4 h-4 rounded border transition-all flex items-center justify-center flex-shrink-0 ${
+                                                isBrandSelected
+                                                    ? 'bg-red-500 border-red-500 shadow-sm shadow-red-200'
+                                                    : 'border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-800'
+                                            }`}>
+                                                {isBrandSelected && (
+                                                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                            <span className="truncate">{brand.name}</span>
+                                            <span className={`text-xs ${isBrandSelected ? 'text-red-400' : 'text-gray-400'}`}>
+                                                ({brandCount})
+                                            </span>
+                                        </button>
+
+                                        <div className="flex items-center gap-1">
+                                            {brandSlug && (
+                                                <Link
+                                                    to={`/${brandSlug}`}
+                                                    title={`${brand.name} Vitrini`}
+                                                    className="p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-400 hover:text-red-600 transition-colors"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                    </svg>
+                                                </Link>
+                                            )}
+
+                                            {brand.subModels && brand.subModels.length > 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => toggleBrandGroup(brand.name, e)}
+                                                    className="p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-400 transition-colors cursor-pointer"
+                                                >
+                                                    <svg
+                                                        className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {brand.subModels && isExpanded && (
+                                        <div className="ml-5 mt-1 mb-2 space-y-0.5 border-l-2 border-red-100 dark:border-white/10 pl-2">
+                                            {brand.subModels.map((model) => {
+                                                const isModelSelected = currentModel.toLowerCase() === model.name.toLowerCase();
+                                                const modelCount = getOptionCount('model', model.name);
+                                                return (
+                                                    <button
+                                                        key={model.name}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newModel = isModelSelected ? '' : model.name;
+                                                            const newFilters = { ...filters };
+                                                            if (newModel) {
+                                                                newFilters.model = newModel;
+                                                                newFilters.brand = brand.name;
+                                                            } else {
+                                                                delete newFilters.model;
+                                                            }
+                                                            const params = new URLSearchParams();
+                                                            Object.entries(newFilters).forEach(([k, v]) => { if (v) params.append(k, v); });
+                                                            const qs = params.toString();
+                                                            navigate(`${location.pathname}${qs ? `?${qs}` : ''}`);
+                                                        }}
+                                                        className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs transition-all text-left cursor-pointer ${
+                                                            isModelSelected
+                                                                ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 font-semibold'
+                                                                : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:text-red-600'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2 truncate">
+                                                            <div className={`w-3 h-3 rounded border flex items-center justify-center flex-shrink-0 ${
+                                                                isModelSelected
+                                                                    ? 'bg-red-500 border-red-500'
+                                                                    : 'border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-800'
+                                                            }`}>
+                                                                {isModelSelected && (
+                                                                    <svg className="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+                                                                    </svg>
+                                                                )}
+                                                            </div>
+                                                            <span className="truncate">{model.name}</span>
+                                                        </div>
+                                                        <span className={`text-[10px] ${isModelSelected ? 'text-red-400' : 'text-gray-400'}`}>
+                                                            ({modelCount})
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             );

@@ -2502,10 +2502,21 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {t.productDetail.details}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
-                        {listing.marke && (
+                        {(listing.marke || listing.handy_telefon_art) && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
-                            {renderBrandLink(listing.marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.marke || listing.handy_telefon_art, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                          </div>
+                        )}
+                        {listing.modell && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-500 dark:text-neutral-400">{t.productDetail?.model || 'Model'}</span>
+                            <Link 
+                              to={`/Elektronik/Cep-Telefonu-Telefon?model=${encodeURIComponent(listing.modell)}`}
+                              className="font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors"
+                            >
+                              {listing.modell}
+                            </Link>
                           </div>
                         )}
                         {listing.audio_hifi_art && (
@@ -2514,7 +2525,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.audio_hifi_art}</span>
                           </div>
                         )}
-                        {listing.handy_telefon_art && (
+                        {listing.handy_telefon_art && !['apple', 'samsung', 'xiaomi', 'huawei', 'google', 'oneplus', 'sony', 'lg', 'motorola', 'nokia', 'oppo', 'realme', 'vivo'].includes(listing.handy_telefon_art.toLowerCase()) && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
                             <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.handy_telefon_art}</span>
