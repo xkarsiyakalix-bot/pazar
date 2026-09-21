@@ -15,7 +15,8 @@ const STATIC_BRAND_SLUGS = [
   'philips','asus','lenovo','dell','hp','acer','msi','monster','casper',
   'canon','nikon','microsoft','nintendo','jbl','dyson','bosch','siemens',
   'arcelik','beko','vestel','profilo','tefal','karaca','korkmaz','ikea',
-  'istikbal','bellona','enza-home'
+  'istikbal','bellona','enza-home',
+  'oneplus','motorola','nokia','oppo','realme','vivo','htc'
 ];
 
 // Statik sayfalar
@@ -32,6 +33,7 @@ const STATIC_PAGES = [
   { loc: '/Otomobil', priority: '0.9', changefreq: 'daily' },
   { loc: '/Emlak', priority: '0.9', changefreq: 'daily' },
   { loc: '/Elektronik', priority: '0.9', changefreq: 'daily' },
+  { loc: '/Elektronik/Cep-Telefonu-Telefon', priority: '0.9', changefreq: 'daily' },
   { loc: '/Moda-Guzellik', priority: '0.9', changefreq: 'daily' },
   { loc: '/Ev-Bahce', priority: '0.9', changefreq: 'daily' },
   { loc: '/Spor-Outdoor', priority: '0.9', changefreq: 'daily' },
@@ -64,7 +66,8 @@ module.exports = async (req, res) => {
     // Tüm marka kolonlarından benzersiz değerleri çek
     const brandColumns = [
       'marke', 'car_brand', 'damenbekleidung_marke',
-      'damenschuhe_marke', 'herrenbekleidung_marke', 'herrenschuhe_marke'
+      'damenschuhe_marke', 'herrenbekleidung_marke', 'herrenschuhe_marke',
+      'handy_telefon_art'
     ];
 
     const customBrandSlugs = new Set(STATIC_BRAND_SLUGS);
