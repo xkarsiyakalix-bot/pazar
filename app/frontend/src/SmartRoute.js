@@ -30,7 +30,7 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
             'login', 'register', 'admin', 'settings', 'profile', 'search', 'packages',
             'privacy', 'terms', 'contact', 'hakkimizda', 'iletisim', 'sitemap', 'robots',
             'my-listings', 'favorites', 'messages', 'notifications', 'checkout', 'payment',
-            'ilan', 'product', 'seller', 'store', 'categories'
+            'ilan', 'product', 'seller', 'store', 'categories', 'add-listing', 'ilan-ver'
         ];
 
         if (!slug || reservedPaths.includes(slug.toLowerCase())) {

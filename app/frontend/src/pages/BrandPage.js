@@ -133,7 +133,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                         </div>
                         <div className="flex items-center gap-3 self-start md:self-auto">
                             <Link
-                                to="/ilan-ver"
+                                to="/add-listing"
                                 className="inline-flex items-center justify-center px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all"
                             >
                                 + {brandName} İlanı Ver
@@ -211,7 +211,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                             Bu markaya ait ilk ilanı siz vererek binlerce alıcıya hemen ulaşabilirsiniz.
                         </p>
                         <Link
-                            to="/ilan-ver"
+                            to="/add-listing"
                             className="inline-flex items-center justify-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-md transition-all text-sm"
                         >
                             Hemen İlan Ver
