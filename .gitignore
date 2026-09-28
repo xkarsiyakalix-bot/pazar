@@ -13,9 +13,11 @@ app/frontend/build/
 .env.development.local
 .env.test.local
 .env.production.local
+*.log
 frontend.log
 output.log
 *.db
+supabase/.temp/
 
 # Python
 __pycache__/
