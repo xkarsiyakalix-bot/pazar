@@ -247,7 +247,8 @@ function MobileAppsPage() {
                         {sellingTips.map((tip, index) => (
                             <a
                                 key={index}
-                                href={`/search?q=${tip}`}
+                                href={`/search?q=${encodeURIComponent(tip)}`}
+                                rel="nofollow"
                                 className="px-8 py-4 rounded-[1.5rem] bg-white dark:bg-neutral-800 border border-gray-100 dark:border-white/5 text-gray-800 dark:text-neutral-200 font-bold text-base hover:border-rose-200 dark:hover:border-rose-900 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/50 dark:hover:bg-rose-950/10 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1.5 flex items-center gap-2 group"
                             >
                                 <span className="w-1.5 h-1.5 bg-gray-200 rounded-full group-hover:bg-rose-500 transition-colors"></span>
