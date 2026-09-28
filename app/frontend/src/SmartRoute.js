@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
-import LoadingSpinner from './components/LoadingSpinner';
-import { slugToCategoryMap, slugToSubCategoryMap } from './config/categoryConfigs';
+import ProductDetailSkeleton from './components/skeletons/ProductDetailSkeleton';
+import { slugToCategoryMap } from './config/categoryConfigs';
+import { findBrandBySlug } from './utils/brandUtils';
 
 const StorePage = React.lazy(() => import('./components/Store/StorePage'));
 const NotFoundPage = React.lazy(() => import('./NotFoundPage'));
 const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
 const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
 const BrandPage = React.lazy(() => import('./pages/BrandPage'));
-import { findBrandBySlug } from './utils/brandUtils';
 
 const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [isStore, setIsStore] = useState(null); // null = loading, true = found, false = not found
-    const [isListing, setIsListing] = useState(false);
-    const [isBrand, setIsBrand] = useState(false);
-    const [listingId, setListingId] = useState(null);
-    const [isCategory, setIsCategory] = useState(false);
+    
     const pathParts = location.pathname.split('/').filter(Boolean);
     const slug = decodeURIComponent(pathParts[0] || "");
     const subSlug = decodeURIComponent(pathParts[1] || "");
-    const [retryCount, setRetryCount] = useState(0);
+
+    const stateListing = location.state?.listing;
+    const isStateListing = Boolean(
+        stateListing && (
+            stateListing.slug === slug ||
+            stateListing.id === slug ||
+            String(stateListing.id) === slug ||
+            (stateListing.slug && decodeURIComponent(stateListing.slug) === slug)
+        )
+    );
+
+    const [isStore, setIsStore] = useState(isStateListing ? false : null);
+    const [isListing, setIsListing] = useState(isStateListing);
+    const [isBrand, setIsBrand] = useState(false);
+    const [listingId, setListingId] = useState(isStateListing ? stateListing.id : null);
+    const [isCategory, setIsCategory] = useState(false);
 
     useEffect(() => {
-        // Reserved paths that should never be checked as stores or listings
         const reservedPaths = [
             'login', 'register', 'admin', 'settings', 'profile', 'search', 'packages',
             'privacy', 'terms', 'contact', 'hakkimizda', 'iletisim', 'sitemap', 'robots',
@@ -37,6 +47,21 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
             setIsStore(false);
             setIsListing(false);
             setIsBrand(false);
+            return;
+        }
+
+        // If listing is already provided in navigation state, skip all DB queries!
+        if (stateListing && (
+            stateListing.slug === slug ||
+            stateListing.id === slug ||
+            String(stateListing.id) === slug ||
+            (stateListing.slug && decodeURIComponent(stateListing.slug) === slug)
+        )) {
+            setIsListing(true);
+            setListingId(stateListing.id);
+            setIsStore(false);
+            setIsBrand(false);
+            setIsCategory(false);
             return;
         }
 
@@ -62,21 +87,7 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
             }
 
             try {
-                // 1. Check if it's a Store Slug
-                const { data: storeData, error: storeError } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('store_slug', slug.toLowerCase())
-                    .single();
-
-                if (storeData && !storeError) {
-                    setIsStore(true);
-                    setIsListing(false);
-                    setIsBrand(false);
-                    return;
-                }
-
-                // 2. Check if it's a Listing Slug (clean slug lookup)
+                // 1. Check if it's a Listing Slug first (99% of requests)
                 const { data: listingBySlug } = await supabase
                     .from('listings')
                     .select('id, slug')
@@ -87,6 +98,20 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                     setListingId(listingBySlug.id);
                     setIsListing(true);
                     setIsStore(false);
+                    setIsBrand(false);
+                    return;
+                }
+
+                // 2. Check if it's a Store Slug
+                const { data: storeData, error: storeError } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('store_slug', slug.toLowerCase())
+                    .single();
+
+                if (storeData && !storeError) {
+                    setIsStore(true);
+                    setIsListing(false);
                     setIsBrand(false);
                     return;
                 }
@@ -102,7 +127,6 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                         .maybeSingle();
 
                     if (listingById) {
-                        // Redirect old UUID URL to new clean slug URL
                         if (listingById.slug && listingById.slug !== slug) {
                             navigate(`/${listingById.slug}`, { replace: true });
                             return;
@@ -116,7 +140,6 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                 }
 
                 // 4. Also check old slugs with timestamp suffix (e.g. "title-0375")
-                // Try matching by removing trailing numbers after last hyphen
                 const oldSlugMatch = slug.match(/^(.+)-\d{4}$/);
                 if (oldSlugMatch) {
                     const { data: listingByOldSlug } = await supabase
@@ -169,19 +192,11 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
     }, [slug]);
 
     if (isStore === null) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <LoadingSpinner size="large" />
-            </div>
-        );
+        return <ProductDetailSkeleton />;
     }
 
     return (
-        <React.Suspense fallback={
-            <div className="min-h-[50vh] flex items-center justify-center">
-                <LoadingSpinner size="large" />
-            </div>
-        }>
+        <React.Suspense fallback={<ProductDetailSkeleton />}>
             {isStore && <StorePage sellerId={slug} />}
             {isCategory && (
                 <DynamicCategoryPage

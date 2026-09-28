@@ -335,7 +335,7 @@ select:focus-visible {
 
 /* Smooth Scroll */
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* Instant scroll to prevent scroll-jump on navigation */
 }
 
 /* Touch Device Protections */

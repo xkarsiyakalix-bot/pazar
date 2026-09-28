@@ -47,7 +47,8 @@ const CookiesPolicyPage = React.lazy(() => import('./CookiesPolicyPage'));
 // Components from individual files
 const ReservationButton = React.lazy(() => import('./ReservationButton'));
 const StorePage = React.lazy(() => import('./components/Store/StorePage'));
-const SmartRoute = React.lazy(() => import('./SmartRoute'));
+import SmartRoute from './SmartRoute';
+import ProductDetailSkeleton from './components/skeletons/ProductDetailSkeleton';
 const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
 const CityCategoryLandingPage = React.lazy(() => import('./pages/CityCategoryLandingPage'));
 const AllCitiesPage = React.lazy(() => import('./pages/AllCitiesPage'));
@@ -258,7 +259,11 @@ function ScrollToTop() {
     // AND it's not the initial load of the application.
     // This allows the browser's default scroll restoration to work when reloading or coming back.
     if (!isFirstMount.current && navigationType !== 'POP') {
-      window.scrollTo(0, 0);
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch (e) {
+        window.scrollTo(0, 0);
+      }
     }
 
     // Track the visit
@@ -853,11 +858,7 @@ function App() {
             favorites={favorites}
           />
 
-          <React.Suspense fallback={
-            <div className="min-h-[60vh] flex items-center justify-center">
-              <LoadingSpinner size="large" />
-            </div>
-          }>
+          <React.Suspense fallback={<ProductDetailSkeleton />}>
             <Routes>
             <Route path="/" element={
               <>

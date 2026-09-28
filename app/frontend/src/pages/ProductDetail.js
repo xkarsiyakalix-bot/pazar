@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { t } from '../translations';
 import { useIsMobile } from '../hooks/useIsMobile';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ProductDetailSkeleton from '../components/skeletons/ProductDetailSkeleton';
 import { LazyImage } from '../components/LazyImage';
 import { formatLastSeen, formatPrice } from '../utils/formatUtils';
 import { getListingUrl, getSellerUrl, getCategoryPath } from '../utils/slug';
@@ -713,7 +714,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   }, [id, slug, user?.id]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    } catch (e) {
+      window.scrollTo(0, 0);
+    }
   }, [id, slug]);
 
   // Sync gallery scroll with activeImage state
@@ -962,13 +967,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   // NOW conditional returns AFTER all hooks
   // Show loading state
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner size="medium" className="mb-4" />
-        </div>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   // Show error state
@@ -3069,7 +3068,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {sellerOtherListings.map((otherListing) => (
                         <div
                           key={otherListing.id}
-                          onClick={() => navigate(getListingUrl(otherListing))}
+                          onClick={() => navigate(getListingUrl(otherListing), { state: { listing: otherListing } })}
                           className="bg-gray-50 dark:bg-neutral-800 rounded-lg overflow-hidden hover:shadow-md transition-shadow cursor-pointer group border border-gray-200 dark:border-white/5"
                         >
                           <div className="relative">

@@ -2194,7 +2194,7 @@ function AutosPage() {
                                             <div
                                                 key={listing.id}
                                                 className={`${_isActiveVitrin ? 'bg-purple-50 dark:bg-purple-900/20' : 'bg-white dark:bg-neutral-800'} border ${_isActiveVitrin ? 'border-purple-200 dark:border-purple-500/30' : 'border-gray-200 dark:border-white/5'} rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer`}
-                                                onClick={() => navigate(getListingUrl(listing))}
+                                                onClick={() => navigate(getListingUrl(listing), { state: { listing } })}
                                             >
                                                 <div className="flex flex-col md:flex-row">
                                                     {/* Image Section - Balanced Size */}
