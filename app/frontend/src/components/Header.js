@@ -258,7 +258,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                                                  if (!targetLink) {
                                                                      const listingId = n.listing_id || n.metadata?.listing_id;
                                                                      if (listingId) {
-                                                                         targetLink = getListingUrl({ id: listingId });
+                                                                         targetLink = `/product/${listingId}`;
                                                                      }
                                                                  }
 

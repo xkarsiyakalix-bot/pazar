@@ -23,8 +23,26 @@ export const createSlug = (title) => {
 export const getListingUrl = (listing) => {
     if (!listing) return "/";
     
-    const slug = listing.slug || createSlug(listing.title || "ilan");
-    return `/${slug}`;
+    if (typeof listing === 'string') {
+        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(listing)) {
+            return `/product/${listing}`;
+        }
+        return `/${listing}`;
+    }
+
+    if (listing.slug) {
+        return `/${listing.slug}`;
+    }
+
+    if (listing.title) {
+        return `/${createSlug(listing.title)}`;
+    }
+
+    if (listing.id) {
+        return `/product/${listing.id}`;
+    }
+
+    return "/";
 };
 
 /**

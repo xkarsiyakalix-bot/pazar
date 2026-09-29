@@ -70,7 +70,7 @@ const NotificationsPage = () => {
         }
 
         if (notification.listing_id) {
-            navigate(getListingUrl({ id: notification.listing_id }));
+            navigate(`/product/${notification.listing_id}`);
         }
     };
 
