@@ -2,9 +2,10 @@ import { supabase } from '../lib/supabase';
 
 /**
  * Get recent notifications for current user
+ * @param {number} limit - Number of notifications to fetch
  * @returns {Promise<Array>} List of notifications
  */
-export const getUnreadNotifications = async () => {
+export const getUnreadNotifications = async (limit = 10) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
 
@@ -13,7 +14,7 @@ export const getUnreadNotifications = async () => {
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(limit);
 
     if (error) {
         console.error('Error fetching notifications:', error);
@@ -21,6 +22,34 @@ export const getUnreadNotifications = async () => {
     }
 
     return data || [];
+};
+
+/**
+ * Get all notifications for current user (with pagination)
+ * @param {number} page - Page number (1-based)
+ * @param {number} limit - Items per page
+ * @returns {Promise<{notifications: Array, total: number}>}
+ */
+export const getAllNotifications = async (page = 1, limit = 20) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { notifications: [], total: 0 };
+
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    const { data, count, error } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact' })
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+    if (error) {
+        console.error('Error fetching all notifications:', error);
+        return { notifications: [], total: 0 };
+    }
+
+    return { notifications: data || [], total: count || 0 };
 };
 
 /**
@@ -103,4 +132,36 @@ export const deleteNotification = async (notificationId) => {
     }
 
     return true;
+};
+
+/**
+ * Subscribe to realtime notifications for a user
+ * @param {string} userId - User ID
+ * @param {Function} callback - Callback function on new notification
+ * @returns {Function} Unsubscribe function
+ */
+export const subscribeToNotifications = (userId, callback) => {
+    if (!userId) return () => {};
+
+    const channel = supabase
+        .channel(`user-notifications-${userId}`)
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'notifications',
+                filter: `user_id=eq.${userId}`
+            },
+            (payload) => {
+                if (callback && payload.new) {
+                    callback(payload.new);
+                }
+            }
+        )
+        .subscribe();
+
+    return () => {
+        supabase.removeChannel(channel);
+    };
 };

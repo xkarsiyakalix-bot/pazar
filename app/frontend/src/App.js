@@ -186,6 +186,7 @@ const MyListingsPage = React.lazy(() => import('./MyListingsPage'));
 const SettingsPage = React.lazy(() => import('./SettingsPage'));
 const PaymentPage = React.lazy(() => import('./PaymentPage'));
 const FavoritesPage = React.lazy(() => import('./FavoritesPage'));
+const NotificationsPage = React.lazy(() => import('./NotificationsPage'));
 const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage'));
 const ProfileOverviewPage = React.lazy(() => import('./ProfileOverviewPage'));
 const FollowingPage = React.lazy(() => import('./FollowingPage'));
@@ -1173,6 +1174,7 @@ function App() {
             <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/following" element={<FollowingPage />} />
             <Route path="/followers" element={<FollowersPage />} />
             <Route path="/my-invoices" element={<UserInvoicesPage />} />

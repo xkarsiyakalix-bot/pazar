@@ -80,16 +80,24 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
         }
     }, [user]);
 
-    // Fetch notifications
+    // Fetch notifications + Realtime
     React.useEffect(() => {
+        let unsubscribe = () => {};
+
         const fetchNotifications = async () => {
             if (user) {
                 try {
-                    const { getNotificationCount, getUnreadNotifications } = await import('../api/notifications');
+                    const { getNotificationCount, getUnreadNotifications, subscribeToNotifications } = await import('../api/notifications');
                     const count = await getNotificationCount();
-                    const notifs = await getUnreadNotifications();
+                    const notifs = await getUnreadNotifications(8);
                     setNotificationCount(count);
                     setNotifications(notifs);
+
+                    // Subscribe to realtime notifications (e.g. Vinted-style new favorite)
+                    unsubscribe = subscribeToNotifications(user.id, (newNotif) => {
+                        setNotifications(prev => [newNotif, ...prev]);
+                        setNotificationCount(prev => prev + 1);
+                    });
                 } catch (error) {
                     console.error('Error fetching notifications:', error);
                 }
@@ -99,7 +107,10 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
         if (user) {
             fetchNotifications();
             const interval = setInterval(fetchNotifications, 30000);
-            return () => clearInterval(interval);
+            return () => {
+                clearInterval(interval);
+                unsubscribe();
+            };
         }
     }, [user]);
 
@@ -231,47 +242,66 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                                                 <h3 className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">Bildirimler</h3>
                                                 {notificationCount > 0 && <span className="text-[10px] text-blue-600 font-medium">{notificationCount} Yeni</span>}
                                             </div>
-                                            <div className="max-h-80 overflow-y-auto">
-                                                {notifications.length > 0 ? (
-                                                    notifications.map(n => (
-                                                        <div
-                                                            key={n.id || Math.random()}
-                                                            className="px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors border-b border-neutral-100 dark:border-white/5 last:border-0"
-                                                            onClick={async () => {
-                                                                const { markNotificationAsRead } = await import('../api/notifications');
-                                                                if (n.id) markNotificationAsRead(n.id);
+                                             <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100 dark:divide-white/5">
+                                                 {notifications.length > 0 ? (
+                                                     notifications.map(n => (
+                                                         <div
+                                                             key={n.id || Math.random()}
+                                                             className={`px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors flex items-start gap-3 ${
+                                                                 !n.is_read ? 'bg-rose-50/30 dark:bg-rose-950/10' : ''
+                                                             }`}
+                                                             onClick={async () => {
+                                                                 const { markNotificationAsRead } = await import('../api/notifications');
+                                                                 if (n.id) markNotificationAsRead(n.id);
 
-                                                                // Determine target link
-                                                                let targetLink = n.link || n.url || n.path;
+                                                                 let targetLink = n.link || n.url || n.path;
+                                                                 if (!targetLink) {
+                                                                     const listingId = n.listing_id || n.metadata?.listing_id;
+                                                                     if (listingId) {
+                                                                         targetLink = getListingUrl({ id: listingId });
+                                                                     }
+                                                                 }
 
-                                                                // If no explicit link, check for listing_id to construct product link
-                                                                if (!targetLink) {
-                                                                    const listingId = n.listing_id || n.metadata?.listing_id;
-                                                                    if (listingId) {
-                                                                        targetLink = getListingUrl({ id: listingId });
-                                                                    }
-                                                                }
+                                                                 if (targetLink) navigate(targetLink);
+                                                                 setNotificationDropdownOpen(false);
 
-                                                                if (targetLink) navigate(targetLink);
-                                                                setNotificationDropdownOpen(false);
+                                                                 setNotificationCount(prev => Math.max(0, prev - 1));
+                                                                 setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, is_read: true } : item));
+                                                             }}
+                                                         >
+                                                             {/* Vinted Style Badge Icon */}
+                                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs ${
+                                                                 n.type === 'favorite'
+                                                                     ? 'bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400'
+                                                                     : n.type === 'price_drop'
+                                                                     ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
+                                                                     : 'bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400'
+                                                             }`}>
+                                                                 {n.type === 'favorite' ? '❤️' : n.type === 'price_drop' ? '💸' : '🔔'}
+                                                             </div>
 
-                                                                // Refresh counts locally
-                                                                setNotificationCount(prev => Math.max(0, prev - 1));
-                                                                setNotifications(prev => prev.filter(item => item.id !== n.id));
-                                                            }}
-                                                        >
-                                                            <p className="text-xs text-neutral-800 dark:text-neutral-200 line-clamp-2 font-medium">{n.message || n.content || n.title}</p>
-                                                            <span className="text-[10px] text-neutral-400 mt-1 block">
-                                                                {n.created_at ? new Date(n.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}
-                                                            </span>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="py-8 text-center">
-                                                        <p className="text-sm text-neutral-400">Henüz bildirim bulunmuyor</p>
-                                                    </div>
-                                                )}
-                                            </div>
+                                                             <div className="flex-1 min-w-0">
+                                                                 <div className="flex items-center justify-between gap-1 mb-0.5">
+                                                                     <p className="text-xs font-bold text-neutral-900 dark:text-neutral-100 truncate">
+                                                                         {n.title || (n.type === 'favorite' ? 'İlanınız favorilendi' : 'Bildirim')}
+                                                                     </p>
+                                                                     {!n.is_read && <span className="w-1.5 h-1.5 rounded-full bg-rose-500 flex-shrink-0 animate-pulse" />}
+                                                                 </div>
+                                                                 <p className="text-[11px] text-neutral-600 dark:text-neutral-300 line-clamp-2 leading-relaxed">
+                                                                     {n.message || n.content}
+                                                                 </p>
+                                                                 <span className="text-[9px] text-neutral-400 dark:text-neutral-500 mt-1 block">
+                                                                     {n.created_at ? new Date(n.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}
+                                                                 </span>
+                                                             </div>
+                                                         </div>
+                                                     ))
+                                                 ) : (
+                                                     <div className="py-8 text-center">
+                                                         <p className="text-sm text-neutral-400">Henüz bildirim bulunmuyor</p>
+                                                     </div>
+                                                 )}
+                                             </div>
                                             <div className="px-4 pt-2 border-t border-neutral-50 dark:border-white/5">
                                                 <button
                                                     onClick={() => { navigate('/notifications'); setNotificationDropdownOpen(false); }}
