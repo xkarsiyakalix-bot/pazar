@@ -188,8 +188,9 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
         setIsListing(false);
         setIsCategory(false);
         setIsBrand(false);
+        setListingId(null);
         checkSlug();
-    }, [slug]);
+    }, [slug, location.pathname]);
 
     if (isStore === null) {
         return <ProductDetailSkeleton />;
@@ -208,7 +209,8 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
             )}
             {isListing && (
                 <ProductDetail
-                    id={listingId}
+                    key={location.pathname}
+                    id={isStateListing ? stateListing.id : listingId}
                     slug={slug}
                     addToCart={addToCart}
                     toggleFavorite={toggleFavorite}

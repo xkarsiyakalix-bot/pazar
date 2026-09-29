@@ -471,7 +471,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const slug = propSlug || params.slug || params['*'] || (params.id && !uuidMatch ? params.id : null);
 
   // Cache Keys
-  const CACHE_KEY = `listing_detail_${id || slug}`;
+  const CACHE_KEY = `listing_detail_${slug || id}`;
 
   // Load from Cache Helper
   const getCachedData = () => {
@@ -486,11 +486,18 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
   const cachedData = getCachedData();
   const locationStateListing = location.state?.listing;
+  const isMatchingStateListing = Boolean(
+    locationStateListing && (
+      (slug && (locationStateListing.slug === slug || decodeURIComponent(locationStateListing.slug || '') === slug)) ||
+      (id && (locationStateListing.id === id || String(locationStateListing.id) === id))
+    )
+  );
+  const initialListing = isMatchingStateListing ? locationStateListing : (cachedData?.listing || null);
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   // State for listing data - Init from Cache or Router State
-  const [listing, setListing] = useState(cachedData?.listing || locationStateListing || null);
-  const [loading, setLoading] = useState(!cachedData?.listing && !locationStateListing);
+  const [listing, setListing] = useState(initialListing);
+  const [loading, setLoading] = useState(!initialListing);
   const [error, setError] = useState(null);
 
   // State for seller profile - Init from Cache  
@@ -588,20 +595,21 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         const { fetchListingById, fetchListingBySlug } = await import('../api/listings');
 
         let data = null;
-        if (id) {
-          try {
-            data = await fetchListingById(id);
-          } catch (e) {
-            console.warn('Failed ID lookup:', e);
-          }
-        }
-
-        // If not found by ID, try fetching by slug
-        if (!data && slug) {
+        // Prioritize slug lookup for slug routes to prevent stale ID race condition
+        if (slug) {
           try {
             data = await fetchListingBySlug(slug);
           } catch (e) {
             console.warn('Failed slug lookup:', e);
+          }
+        }
+
+        // Fallback to ID lookup (e.g. for /product/:id routes)
+        if (!data && id) {
+          try {
+            data = await fetchListingById(id);
+          } catch (e) {
+            console.warn('Failed ID lookup:', e);
           }
         }
 

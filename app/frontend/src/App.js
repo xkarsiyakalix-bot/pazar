@@ -499,6 +499,7 @@ function CategorySync({ setSelectedCategory }) {
 }
 
 function App() {
+  const routerLocation = useLocation();
   const [deferNonCritical, setDeferNonCritical] = useState(false);
   
   useEffect(() => {
@@ -928,7 +929,7 @@ function App() {
               </>
             } />
             <Route path="/product/:id" element={
-              <ProductDetail
+              <ProductDetail key={routerLocation.pathname}
                 addToCart={addToCart}
                 toggleFavorite={toggleFavorite}
                 isFavorite={isFavorite}
@@ -1204,7 +1205,7 @@ function App() {
 
             {/* 404 Catch-all Route - Must be last */}
             {/* Smart Catch-all Route: Checks for listing slug or store slug first, then 404 */}
-            <Route path="*" element={<SmartRoute {...smartRouteProps} />} />
+            <Route path="*" element={<SmartRoute key={routerLocation.pathname} {...smartRouteProps} />} />
           </Routes>
           </React.Suspense>
           <Footer />
