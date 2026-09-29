@@ -106,7 +106,18 @@ function Register() {
             setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
             console.error('Registration error:', err);
-            setError(err.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+            let msg = err.message || 'Bir hata oluştu. Lütfen tekrar deneyin.';
+            const lowerMsg = msg.toLowerCase();
+            if (lowerMsg.includes('rate limit')) {
+                msg = 'Kısa sürede çok fazla deneme yapıldı (E-posta limiti aşıldı). Lütfen biraz bekleyin veya yukarıdaki "Google ile Giriş Yap" butonunu kullanın.';
+            } else if (lowerMsg.includes('already registered') || lowerMsg.includes('user already exists')) {
+                msg = 'Bu e-posta adresi zaten kayıtlı. Lütfen giriş yapmayı deneyin.';
+            } else if (lowerMsg.includes('password should be at least')) {
+                msg = 'Şifreniz en az 6 karakter olmalıdır.';
+            } else if (lowerMsg.includes('invalid email')) {
+                msg = 'Lütfen geçerli bir e-posta adresi giriniz.';
+            }
+            setError(msg);
         } finally {
             setLoading(false);
         }
