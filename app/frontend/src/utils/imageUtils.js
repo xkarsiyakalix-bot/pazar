@@ -21,7 +21,7 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
     // Set this to true ONLY if you have Supabase Image Transformation enabled (Pro Plan)
     // If you are on the FREE plan, keep this false to avoid high egress costs 
     // caused by cache-bypassing query parameters on standard URLs.
-    const isTransformationEnabled = false;
+    const isTransformationEnabled = true;
 
     if (!isTransformationEnabled) {
         // Return the direct Supabase URL without any proxy.
