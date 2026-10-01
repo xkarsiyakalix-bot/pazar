@@ -259,7 +259,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
           )}
 
           {/* Favorite button with count (Vinted style) */}
-          {!isOwnListing && (
+          {!isOwnListing ? (
             <button
               onClick={handleFavoriteClick}
               onPointerDown={(e) => e.stopPropagation()}
@@ -285,7 +285,20 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
                 </span>
               )}
             </button>
-          )}
+          ) : favCount > 0 ? (
+            /* Kendi ilanı ise sadece favori sayısını göster (salt okunur) */
+            <div
+              className="absolute top-2 right-2 h-7 px-2 gap-1.5 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm rounded-full shadow-md z-30 flex items-center justify-center border border-white/40 dark:border-white/10"
+              title={`${favCount} kişi favoriledi`}
+            >
+              <svg className="w-3.5 h-3.5 text-red-500 fill-current" viewBox="0 0 24 24">
+                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span className="text-[11px] font-bold leading-none text-red-600 dark:text-red-400">
+                {favCount}
+              </span>
+            </div>
+          ) : null}
         </div>
 
         {/* ── Card Body ── */}

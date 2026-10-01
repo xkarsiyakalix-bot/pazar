@@ -3261,32 +3261,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
                 </div>
 
-                {/* Favori Butonu - Desktop Sidebar */}
-                {!isOwnListing && (
-                  <button
-                    type="button"
-                    onClick={handleToggleFavoriteDetail}
-                    className={`w-full border font-semibold py-3 px-4 rounded-lg transition-all mb-3 hidden sm:flex items-center justify-center gap-2 ${
-                      favorite
-                        ? 'bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-800 text-red-600 dark:text-red-400'
-                        : 'border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300'
-                    }`}
-                  >
-                    {favorite ? (
-                      <svg className="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24">
-                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5 text-gray-500 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                    )}
-                    <span>{favorite ? 'Favorilerimden Çıkar' : 'Favorilere Ekle'}</span>
-                    <span className="text-xs bg-gray-200/80 dark:bg-neutral-700 text-gray-700 dark:text-neutral-200 px-2 py-0.5 rounded-full font-bold ml-1">
-                      {displayFavoriteCount}
-                    </span>
-                  </button>
-                )}
+                {/* Favori Butonu - Desktop Sidebar kaldırıldı; resmin üzerindeki kalp yeterli */}
 
                 {/* Mesaj Gönderme Butonu - Hidden on Mobile per previous request */}
                 <button
