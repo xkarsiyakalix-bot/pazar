@@ -24,8 +24,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Local Netlify folder
-.netlify
 
 # Android TWA
 android-twa/app/build/

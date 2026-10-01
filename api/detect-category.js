@@ -1,24 +1,18 @@
-export default async (request, context) => {
-  if (request.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { imageBase64 } = await request.json();
+    const { imageBase64 } = req.body || {};
 
     if (!imageBase64) {
-      return new Response(JSON.stringify({ error: "Image is required" }), { 
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+      return res.status(400).json({ error: 'Image is required' });
     }
 
-    const apiKey = Netlify.env.get("OPENAI_API_KEY");
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: "OpenAI API key is missing." }), { 
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      });
+      return res.status(500).json({ error: 'OpenAI API key is missing.' });
     }
 
     const systemPrompt = `
@@ -43,21 +37,21 @@ Available Main Categories and their Subcategories (in Turkish):
 If you are not sure, pick the closest one.
 `;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: 'gpt-4o-mini',
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: 'system', content: systemPrompt },
           { 
-            role: "user", 
+            role: 'user', 
             content: [
-              { type: "text", text: "Bu fotoğraftaki ürün hangi kategoriye ait?" },
-              { type: "image_url", image_url: { url: imageBase64, detail: "low" } }
+              { type: 'text', text: 'Bu fotoğraftaki ürün hangi kategoriye ait?' },
+              { type: 'image_url', image_url: { url: imageBase64, detail: 'low' } }
             ]
           }
         ],
@@ -69,26 +63,18 @@ If you are not sure, pick the closest one.
     const data = await response.json();
 
     if (data.error) {
-      console.error("OpenAI API Error:", data.error);
-      return new Response(JSON.stringify({ error: data.error.message }), { status: 500 });
+      console.error('OpenAI API Error:', data.error);
+      return res.status(500).json({ error: data.error.message });
     }
 
     let resultText = data.choices[0].message.content.trim();
-    // Strip markdown formatting if AI added it
     resultText = resultText.replace(/```json/g, '').replace(/```/g, '');
-    
     const parsedResult = JSON.parse(resultText);
 
-    return new Response(JSON.stringify(parsedResult), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
-    });
+    return res.status(200).json(parsedResult);
 
   } catch (error) {
-    console.error("Detect Category Error:", error);
-    return new Response(JSON.stringify({ error: "Görsel analiz edilemedi." }), { 
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    console.error('Detect Category Error:', error);
+    return res.status(500).json({ error: 'Görsel analiz edilemedi.' });
   }
 };

@@ -144,10 +144,10 @@ export const AddListing = () => {
           alert("Hata: " + (data.error || "Açıklama oluşturulamadı."));
         }
       } else {
-        // This usually happens on localhost if Netlify CLI is not used
+        // This usually happens on localhost if serverless functions are not running locally
         const text = await response.text();
         console.error("Received non-JSON response:", text.substring(0, 100));
-        alert("Bağlantı hatası: Sunucu JSON yerine HTML döndürdü. Eğer bilgisayarınızda (localhost) test ediyorsanız, bu özellik sadece canlı sitede (Netlify) veya 'netlify dev' komutu ile çalışır.");
+        alert("Bağlantı hatası: Sunucu JSON yerine HTML döndürdü. Eğer bilgisayarınızda (localhost) test ediyorsanız, bu özellik canlı sitede veya yerel API sunucusu ile çalışır.");
       }
     } catch (error) {
       console.error("AI Error:", error);

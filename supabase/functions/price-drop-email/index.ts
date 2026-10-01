@@ -51,7 +51,7 @@ serve(async (req) => {
                             <p style="margin: 0; font-size: 18px;">${record.message}</p>
                         </div>
                         <p>İlanı hemen incelemek için aşağıdaki butona tıklayabilirsiniz:</p>
-                        <a href="https://exvitrin.netlify.app/listing/${record.listing_id}" 
+                        <a href="https://www.exvitrin.com/product/${record.listing_id}" 
                            style="display: inline-block; background-color: #e53e3e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
                            İlanı Görüntüle
                         </a>

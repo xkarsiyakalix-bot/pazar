@@ -3,7 +3,7 @@
 Latest update: Jan 26, 2026
 
 ## Deployment
-This project is configured for deployment on Netlify via GitHub.
+This project is configured for deployment on Vercel via GitHub.
 
 ## Structure
 - `app/frontend`: Main React application
