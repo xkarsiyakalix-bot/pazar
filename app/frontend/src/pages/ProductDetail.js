@@ -937,20 +937,27 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
   // Fetch favorite count
   useEffect(() => {
-    const fetchFavoriteCount = async () => {
-      if (!id) return;
+    const targetListingId = listing?.id || id;
+    if (!targetListingId) return;
 
+    let isMounted = true;
+    const fetchFavoriteCount = async () => {
       try {
         const { favoritesApi } = await import('../api/favorites');
-        const count = await favoritesApi.getFavoriteCount(id);
-        setFavoriteCount(count);
+        const count = await favoritesApi.getFavoriteCount(targetListingId);
+        if (isMounted) {
+          setFavoriteCount(count || 0);
+        }
       } catch (error) {
         console.error('Error fetching favorite count:', error);
       }
     };
 
     fetchFavoriteCount();
-  }, [id]);
+    return () => {
+      isMounted = false;
+    };
+  }, [listing?.id, id]);
 
 
   // Increment view count (with 3 second delay to avoid counting quick bounces)
@@ -1040,6 +1047,19 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
     }
   };
   const favorite = isFavorite ? isFavorite(listing.id) : false;
+
+  const handleToggleFavoriteDetail = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const targetId = listing?.id || id;
+    if (toggleFavorite && targetId) {
+      const willBeFavorite = !favorite;
+      setFavoriteCount((prev) => Math.max(0, prev + (willBeFavorite ? 1 : -1)));
+      import('../api/favorites').then(({ updateCachedFavoriteCount }) => {
+        updateCachedFavoriteCount(targetId, willBeFavorite ? 1 : -1);
+      }).catch(() => {});
+      toggleFavorite(targetId);
+    }
+  };
 
   const handleShare = () => {
     const url = window.location.href;
@@ -1636,22 +1656,22 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   {/* Favori Kalp Butonu */}
                   {!isOwnListing && (
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite && toggleFavorite(listing.id);
-                      }}
-                      className="w-8 h-8 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all duration-200 flex items-center justify-center"
+                      onClick={handleToggleFavoriteDetail}
+                      className="h-8 px-2.5 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-1.5 border border-white/40 dark:border-white/10"
                       title={favorite ? 'Favorilerimden çıkar' : 'Favorilerime ekle'}
                     >
                       {favorite ? (
-                        <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-red-500 fill-current" viewBox="0 0 24 24">
                           <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                       ) : (
-                        <svg className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        <svg className="w-4 h-4 text-gray-500 dark:text-neutral-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                       )}
+                      <span className={`text-xs font-bold leading-none ${favorite ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-neutral-200'}`}>
+                        {favoriteCount || 0}
+                      </span>
                     </button>
                   )}
                 </div>
@@ -1694,14 +1714,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         )}
 
                         {/* Favorite Count */}
-                        {favoriteCount > 0 && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-neutral-400 mt-2">
-                            <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                            </svg>
-                            <span>{favoriteCount === 1 ? t.productDetail.personFavorited : t.productDetail.peopleFavorited.replace('{count}', favoriteCount)}</span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-neutral-400 mt-2">
+                          <svg className="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                          </svg>
+                          <span className="font-medium">
+                            {favoriteCount > 0
+                              ? (favoriteCount === 1 ? t.productDetail.personFavorited : t.productDetail.peopleFavorited.replace('{count}', favoriteCount))
+                              : '0 kişi favorilere ekledi'}
+                          </span>
+                        </div>
                       </div>
                     )}
 
@@ -3238,6 +3260,33 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
                 </div>
 
+                {/* Favori Butonu - Desktop Sidebar */}
+                {!isOwnListing && (
+                  <button
+                    type="button"
+                    onClick={handleToggleFavoriteDetail}
+                    className={`w-full border font-semibold py-3 px-4 rounded-lg transition-all mb-3 hidden sm:flex items-center justify-center gap-2 ${
+                      favorite
+                        ? 'bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-800 text-red-600 dark:text-red-400'
+                        : 'border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300'
+                    }`}
+                  >
+                    {favorite ? (
+                      <svg className="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-gray-500 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    )}
+                    <span>{favorite ? 'Favorilerimden Çıkar' : 'Favorilere Ekle'}</span>
+                    <span className="text-xs bg-gray-200/80 dark:bg-neutral-700 text-gray-700 dark:text-neutral-200 px-2 py-0.5 rounded-full font-bold ml-1">
+                      {favoriteCount || 0}
+                    </span>
+                  </button>
+                )}
+
                 {/* Mesaj Gönderme Butonu - Hidden on Mobile per previous request */}
                 <button
                   type="button"
@@ -3466,7 +3515,30 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           )}
           {/* Mobile Sticky Contact Buttons */}
           {isMobile && !isOwnListing && (
-            <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-t border-gray-200 dark:border-white/10 p-4 flex gap-3 pb-safe no-print">
+            <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-t border-gray-200 dark:border-white/10 p-3 flex items-center gap-2 pb-safe no-print">
+              {/* Mobile Favorite Button */}
+              <button
+                type="button"
+                onClick={handleToggleFavoriteDetail}
+                className={`h-12 px-3.5 rounded-xl border flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 ${
+                  favorite
+                    ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/50 text-red-600'
+                    : 'bg-white dark:bg-neutral-900 border-gray-200 dark:border-white/10 text-gray-700 dark:text-neutral-300'
+                }`}
+                title={favorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+              >
+                {favorite ? (
+                  <svg className="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-gray-500 dark:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                )}
+                <span className="text-xs font-bold">{favoriteCount || 0}</span>
+              </button>
+
               <button
                 id="mobile-contact-message"
                 onClick={() => setShowMessageModal(true)}
