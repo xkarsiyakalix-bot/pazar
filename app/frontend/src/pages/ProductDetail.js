@@ -3492,29 +3492,6 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           {/* Mobile Sticky Contact Buttons */}
           {isMobile && !isOwnListing && (
             <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white/75 dark:bg-neutral-950/75 backdrop-blur-lg border-t border-gray-200/70 dark:border-white/10 p-3 flex items-center gap-2 pb-safe no-print">
-              {/* Mobile Favorite Button */}
-              <button
-                type="button"
-                onClick={handleToggleFavoriteDetail}
-                className={`h-12 px-3.5 rounded-xl border flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 ${
-                  favorite
-                    ? 'bg-red-50/90 dark:bg-red-950/50 backdrop-blur-sm border-red-200 dark:border-red-900/50 text-red-600'
-                    : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border-gray-200 dark:border-white/10 text-gray-700 dark:text-neutral-300'
-                }`}
-                title={favorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
-              >
-                {favorite ? (
-                  <svg className="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24">
-                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 text-gray-500 dark:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                )}
-                <span className="text-xs font-bold">{displayFavoriteCount}</span>
-              </button>
-
               {/* Mobile Mesaj Gönder (Şeffaf / Glassmorphic) */}
               <button
                 id="mobile-contact-message"
