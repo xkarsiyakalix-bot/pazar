@@ -1046,7 +1046,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
       alert(t.sellerProfile.messageError);
     }
   };
-  const favorite = isFavorite ? isFavorite(listing.id) : false;
+  const favorite = isFavorite ? isFavorite(listing?.id) : false;
+  const displayFavoriteCount = Math.max(favoriteCount || 0, favorite ? 1 : 0);
 
   const handleToggleFavoriteDetail = (e) => {
     if (e && e.stopPropagation) e.stopPropagation();
@@ -1670,7 +1671,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </svg>
                       )}
                       <span className={`text-xs font-bold leading-none ${favorite ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-neutral-200'}`}>
-                        {favoriteCount || 0}
+                        {displayFavoriteCount}
                       </span>
                     </button>
                   )}
@@ -1719,8 +1720,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                           </svg>
                           <span className="font-medium">
-                            {favoriteCount > 0
-                              ? (favoriteCount === 1 ? t.productDetail.personFavorited : t.productDetail.peopleFavorited.replace('{count}', favoriteCount))
+                            {displayFavoriteCount > 0
+                              ? (displayFavoriteCount === 1 ? t.productDetail.personFavorited : t.productDetail.peopleFavorited.replace('{count}', displayFavoriteCount))
                               : '0 kişi favorilere ekledi'}
                           </span>
                         </div>
@@ -3282,7 +3283,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     )}
                     <span>{favorite ? 'Favorilerimden Çıkar' : 'Favorilere Ekle'}</span>
                     <span className="text-xs bg-gray-200/80 dark:bg-neutral-700 text-gray-700 dark:text-neutral-200 px-2 py-0.5 rounded-full font-bold ml-1">
-                      {favoriteCount || 0}
+                      {displayFavoriteCount}
                     </span>
                   </button>
                 )}
@@ -3515,15 +3516,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           )}
           {/* Mobile Sticky Contact Buttons */}
           {isMobile && !isOwnListing && (
-            <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-t border-gray-200 dark:border-white/10 p-3 flex items-center gap-2 pb-safe no-print">
+            <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white/75 dark:bg-neutral-950/75 backdrop-blur-lg border-t border-gray-200/70 dark:border-white/10 p-3 flex items-center gap-2 pb-safe no-print">
               {/* Mobile Favorite Button */}
               <button
                 type="button"
                 onClick={handleToggleFavoriteDetail}
                 className={`h-12 px-3.5 rounded-xl border flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 ${
                   favorite
-                    ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/50 text-red-600'
-                    : 'bg-white dark:bg-neutral-900 border-gray-200 dark:border-white/10 text-gray-700 dark:text-neutral-300'
+                    ? 'bg-red-50/90 dark:bg-red-950/50 backdrop-blur-sm border-red-200 dark:border-red-900/50 text-red-600'
+                    : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border-gray-200 dark:border-white/10 text-gray-700 dark:text-neutral-300'
                 }`}
                 title={favorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
               >
@@ -3536,40 +3537,43 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 )}
-                <span className="text-xs font-bold">{favoriteCount || 0}</span>
+                <span className="text-xs font-bold">{displayFavoriteCount}</span>
               </button>
 
+              {/* Mobile Mesaj Gönder (Şeffaf / Glassmorphic) */}
               <button
                 id="mobile-contact-message"
                 onClick={() => setShowMessageModal(true)}
-                className="flex-1 bg-red-600 text-white font-bold text-sm py-3.5 px-4 rounded-xl shadow-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2"
+                className="flex-1 h-12 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-gray-200 dark:border-white/10 text-gray-800 dark:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800 font-bold text-sm px-3 rounded-xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                {t.productDetail.message}
+                <span>{t.productDetail.message}</span>
               </button>
+
+              {/* Mobile Ara (Şeffaf / Glassmorphic) */}
               {(!showPhone) ? (
                 <button
                   id="mobile-contact-phone-reveal"
                   onClick={() => setShowPhone(true)}
-                  className="flex-1 bg-white border-2 border-green-600 text-green-700 font-bold text-sm py-3.5 px-4 rounded-xl shadow-md hover:bg-green-50 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 h-12 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-gray-200 dark:border-white/10 text-gray-800 dark:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800 font-bold text-sm px-3 rounded-xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  {t.productDetail.call}
+                  <span>{t.productDetail.call}</span>
                 </button>
               ) : (
                 <a
                   id="mobile-contact-call"
                   href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
-                  className="flex-1 bg-green-600 text-white font-bold text-sm py-3.5 px-4 rounded-xl shadow-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 h-12 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-green-500/40 dark:border-green-500/30 text-green-700 dark:text-green-400 font-bold text-sm px-3 rounded-xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  {listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}
+                  <span className="truncate">{listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}</span>
                 </a>
               )}
             </div>

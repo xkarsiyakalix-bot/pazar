@@ -165,3 +165,38 @@ CREATE TRIGGER on_price_drop
     FOR EACH ROW
     WHEN (OLD.price IS DISTINCT FROM NEW.price)
     EXECUTE FUNCTION notify_price_drop();
+
+
+-- ============================================================
+-- 7. FAVORITES RLS: ALLOW PUBLIC/ANONYMOUS TO READ FAVORITE COUNTS
+-- Allows both mobile & desktop (logged in or logged out) to
+-- see the correct favorite count on any listing.
+-- ============================================================
+ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Favorites are viewable by everyone" ON public.favorites;
+CREATE POLICY "Favorites are viewable by everyone"
+    ON public.favorites FOR SELECT
+    USING (true);
+
+-- Allow authenticated users to add favorites
+DROP POLICY IF EXISTS "Users can insert own favorites" ON public.favorites;
+CREATE POLICY "Users can insert own favorites"
+    ON public.favorites FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+-- Allow authenticated users to remove favorites
+DROP POLICY IF EXISTS "Users can delete own favorites" ON public.favorites;
+CREATE POLICY "Users can delete own favorites"
+    ON public.favorites FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- Public helper function to get favorite count with security definer
+CREATE OR REPLACE FUNCTION public.get_listing_favorite_count(target_id UUID)
+RETURNS BIGINT
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+AS $$
+    SELECT COUNT(*) FROM public.favorites WHERE listing_id = target_id;
+$$;

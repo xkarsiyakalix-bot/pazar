@@ -146,10 +146,21 @@ export const favoritesApi = {
      * Get the number of users who favorited a listing
      */
     async getFavoriteCount(listingId) {
+        if (!listingId) return 0;
         if (countCache.has(listingId)) {
             return countCache.get(listingId);
         }
         try {
+            // First attempt: Security Definer RPC function (bypasses any strict RLS)
+            const { data: rpcCount, error: rpcError } = await supabase
+                .rpc('get_listing_favorite_count', { target_id: listingId });
+
+            if (!rpcError && typeof rpcCount === 'number') {
+                countCache.set(listingId, rpcCount);
+                return rpcCount;
+            }
+
+            // Fallback: Direct select with count
             const { count, error } = await supabase
                 .from('favorites')
                 .select('*', { count: 'exact', head: true })
