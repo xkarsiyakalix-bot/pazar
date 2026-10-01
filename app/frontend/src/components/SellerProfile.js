@@ -182,18 +182,39 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <button
                 onClick={() => toggleFollowSeller(seller.id)}
-                className={`flex-1 sm:flex-none px-8 py-4 rounded-2xl font-bold transition-all transform hover:-translate-y-1 active:scale-95 ${isSellerFollowed(seller.id) ? 'bg-green-50 dark:bg-green-500/10 border-2 border-green-500 text-green-700 dark:text-green-500' : 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30'}`}
+                className={`flex-1 sm:flex-none h-12 px-6 rounded-xl font-bold text-sm border transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 shadow-sm ${
+                  isSellerFollowed(seller.id)
+                    ? 'bg-green-50/90 dark:bg-green-950/40 backdrop-blur-sm border-green-200/80 dark:border-green-800/40 text-green-700 dark:text-green-400'
+                    : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border-gray-200/80 dark:border-white/10 text-gray-800 dark:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800'
+                }`}
               >
-                {isSellerFollowed(seller.id) ? t.sellerProfile?.followed || 'Takip Ediliyor' : t.sellerProfile?.follow || 'Takip Et'}
+                {isSellerFollowed(seller.id) ? (
+                  <>
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{t.sellerProfile?.followed || 'Takip Ediliyor'}</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>{t.sellerProfile?.follow || 'Takip Et'}</span>
+                  </>
+                )}
               </button>
               <button
                 onClick={() => setShowMessageModal(true)}
-                className="flex-1 sm:flex-none px-8 py-4 bg-white dark:bg-neutral-800 border-2 border-gray-100 dark:border-white/10 text-gray-700 dark:text-neutral-300 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all font-bold shadow-sm"
+                className="flex-1 sm:flex-none h-12 px-6 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-gray-200/80 dark:border-white/10 text-gray-800 dark:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800 rounded-xl transition-all font-bold text-sm shadow-sm active:scale-95 flex items-center justify-center gap-2"
               >
-                {t.sellerProfile?.message || 'Mesaj Gönder'}
+                <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <span>{t.sellerProfile?.message || 'Mesaj Gönder'}</span>
               </button>
             </div>
           </div>
