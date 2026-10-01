@@ -107,8 +107,8 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
     ? sellerListings
     : sellerListings.filter(l => (l.category || t.common?.others || 'Diğer') === selectedCategory);
 
-  const activeSinceDisplay = seller.memberSince
-    ? new Date(seller.memberSince).toLocaleDateString('tr-TR')
+  const activeSinceDisplay = (seller.memberSince || seller.created_at)
+    ? new Date(seller.memberSince || seller.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
     : (seller.activeSince || '-');
 
   // Determine seller type label

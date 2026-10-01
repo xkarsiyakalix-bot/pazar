@@ -116,8 +116,8 @@ export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, 
     ? sellerListings
     : sellerListings.filter(l => (l.category || t.common.others) === selectedCategory);
 
-  const activeSinceDisplay = seller.memberSince
-    ? new Date(seller.memberSince).toLocaleDateString('tr-TR')
+  const activeSinceDisplay = (seller.memberSince || seller.created_at)
+    ? new Date(seller.memberSince || seller.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
     : (seller.activeSince || '-');
 
   // Determine seller type label
@@ -477,7 +477,7 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                   <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span>{t.sellerProfile.memberSince} {seller.created_at ? new Date(seller.created_at).getFullYear() : 'N/A'}</span>
+                  <span>{t.sellerProfile.memberSince}: {(seller.created_at || seller.memberSince) ? new Date(seller.created_at || seller.memberSince).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) : 'N/A'}</span>
                 </div>
 
                 {/* 3'lü İstatistik Şeridi */}
