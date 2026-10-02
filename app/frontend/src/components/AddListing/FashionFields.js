@@ -117,7 +117,8 @@ export const FashionFields = ({
                                     { val: 'Shorts', label: t.addListing.fashion.women.shorts },
                                     { val: 'Sportbekleidung', label: t.addListing.fashion.women.sportswear },
                                     { val: 'Umstandsmode', label: t.addListing.fashion.women.maternity },
-                                    { val: 'Weitere Damenbekleidung', label: t.addListing.fashion.women.other }
+                                    { val: 'Tesettür Giyim', label: 'Tesettür Giyim' },
+                                     { val: 'Weitere Damenbekleidung', label: t.addListing.fashion.women.other }
                                 ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
                                 {subCategory === 'Kadın Ayakkabıları' && [
                                     { val: 'Ballerinas', label: t.addListing.fashion.shoes.ballerinas },
