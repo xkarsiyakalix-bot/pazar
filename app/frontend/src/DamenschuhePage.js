@@ -24,7 +24,7 @@ const DamenschuhePage = ({ toggleFavorite, isFavorite }) => {
             label: t.addListing.brand,
             type: 'multiselect',
             options: [
-                { value: 'Sonstige', label: 'Sonstige' },
+                { value: 'Diğer', label: 'Diğer' },
                 { value: 'Nike', label: 'Nike' },
                 { value: 'Adidas', label: 'Adidas' },
                 { value: 'Tamaris', label: 'Tamaris' },

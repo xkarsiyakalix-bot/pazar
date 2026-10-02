@@ -22,7 +22,7 @@ const HerrenschuhePage = ({ toggleFavorite, isFavorite }) => {
             label: 'Marke',
             type: 'multiselect',
             options: [
-                'Nike', 'Sonstige', 'Adidas', 'Puma', 'Jordan', 'New Balance',
+                'Nike', 'Diğer', 'Adidas', 'Puma', 'Jordan', 'New Balance',
                 'ASICS', 'Vans', 'Timberland', 'Converse', 'Lloyd', 'Bugatti',
                 'Atlas', 'Tommy Hilfiger', 'Engelbert Strauss', 'FILA',
                 'Reebok', 'Haix', 'Yeezy', 'Lacoste'

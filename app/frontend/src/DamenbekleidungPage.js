@@ -23,6 +23,7 @@ const DamenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
                 { value: 'Şortlar', label: 'Şortlar' },
                 { value: 'Spor Giyim', label: 'Spor Giyim' },
                 { value: 'Hamile Giyim', label: 'Hamile Giyim' },
+                { value: 'Tesettür Giyim', label: 'Tesettür Giyim' },
                 { value: 'Diğer Kadın Giyimi', label: 'Diğer Kadın Giyimi' }
             ],
             field: 'damenbekleidung_art'
@@ -31,7 +32,7 @@ const DamenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Marka',
             type: 'multiselect',
             options: [
-                'Sonstige', 'H&M', 'Esprit', 'Zara', 'Only', 'S.Oliver',
+                'Diğer', 'H&M', 'Esprit', 'Zara', 'Only', 'S.Oliver',
                 'Tommy Hilfiger', 'C&A', 'Shein', 'Adidas', 'Tom Tailor',
                 'Street One', 'Wellensteyn', 'Cecil', 'Vero Moda',
                 'Marc O´Polo', 'Mango', 'Nike', 'Naketano', 'Gerry Weber'

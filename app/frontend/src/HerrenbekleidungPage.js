@@ -28,7 +28,7 @@ const HerrenbekleidungPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Marke',
             type: 'multiselect',
             options: [
-                'Sonstige', 'Adidas', 'Nike', 'Tommy Hilfiger', 'Jack & Jones',
+                'Diğer', 'Adidas', 'Nike', 'Tommy Hilfiger', 'Jack & Jones',
                 'H&M', 'Ralph Lauren', 'S.Oliver', 'Tom Tailor', 'Zara',
                 'Puma', 'Camp David', 'Wellensteyn', 'Levi\'s', 'Hugo Boss',
                 'Esprit', 'C&A', 'Engelbert Strauss', 'Lacoste', 'G-Star'
