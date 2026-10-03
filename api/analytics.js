@@ -7,7 +7,7 @@ function base64url(buf) {
 }
 
 // Create signed JWT for Google Service Account
-function makeJwt(clientEmail, privateKey) {
+function makeJwt(clientEmail, keyObj) {
   const now = Math.floor(Date.now() / 1000);
   const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
   const payload = base64url(JSON.stringify({
@@ -19,11 +19,11 @@ function makeJwt(clientEmail, privateKey) {
   }));
   const sign = crypto.createSign('RSA-SHA256');
   sign.update(header + '.' + payload);
-  const sig = sign.sign(privateKey, 'base64url');
+  const sig = sign.sign(keyObj, 'base64url');
   return header + '.' + payload + '.' + sig;
 }
 
-// HTTPS POST helper
+// HTTPS POST helper for form data
 function post(url, body) {
   return new Promise((resolve, reject) => {
     const data = Buffer.from(body);
@@ -90,17 +90,36 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Fix private key: split on literal backslash-n, join with actual newline
+    // Fix private key format - split on literal backslash-n, join with actual newline
     privateKey = privateKey.split(String.fromCharCode(92) + 'n').join(String.fromCharCode(10));
     // Remove surrounding quotes if present
     if (privateKey.charAt(0) === '"' || privateKey.charAt(0) === "'") {
       privateKey = privateKey.slice(1, -1);
     }
-    // Remove any carriage returns
-    privateKey = privateKey.replace(/\r/g, '');
+    // Trim whitespace/extra chars
+    privateKey = privateKey.trim();
+
+    // Validate and normalize key using crypto.createPrivateKey for robustness
+    let keyObj;
+    try {
+      keyObj = crypto.createPrivateKey({ key: privateKey, format: 'pem' });
+    } catch (keyErr) {
+      // Return diagnostic info to help debug
+      return res.status(500).json({
+        error: 'Private key format error: ' + keyErr.message,
+        hint: 'Check GA_PRIVATE_KEY in Vercel env vars',
+        keyLength: privateKey.length,
+        keyStart: privateKey.substring(0, 30),
+        keyEnd: privateKey.substring(privateKey.length - 30),
+        firstCharCode: privateKey.charCodeAt(0),
+        lastCharCode: privateKey.charCodeAt(privateKey.length - 1),
+        hasRealNewlines: privateKey.indexOf(String.fromCharCode(10)) > -1,
+        hasLiteralNewlines: privateKey.indexOf(String.fromCharCode(92) + 'n') > -1
+      });
+    }
 
     // 1) Get OAuth2 access token via JWT
-    const jwt = makeJwt(clientEmail, privateKey);
+    const jwt = makeJwt(clientEmail, keyObj);
     const tokenRes = await post(
       'https://oauth2.googleapis.com/token',
       'grant_type=' + encodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + encodeURIComponent(jwt)
@@ -142,8 +161,8 @@ module.exports = async (req, res) => {
       }),
     ]);
 
-    const v = (r, row = 0, col = 0) =>
-      parseInt((r && r.rows && r.rows[row] && r.rows[row].metricValues && r.rows[row].metricValues[col] && r.rows[row].metricValues[col].value) || '0', 10);
+    const v = (r, row, col) =>
+      parseInt(r && r.rows && r.rows[row] && r.rows[row].metricValues && r.rows[row].metricValues[col] && r.rows[row].metricValues[col].value || '0', 10);
 
     return res.status(200).json({
       today:  { sessions: v(todayR,0,0), pageviews: v(todayR,0,1), users: v(todayR,0,2) },
