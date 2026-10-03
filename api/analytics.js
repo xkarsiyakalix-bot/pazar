@@ -1,4 +1,3 @@
-// v2 - GA4 Analytics API for ExVitrin admin
 const crypto = require('crypto');
 const https = require('https');
 
@@ -24,7 +23,7 @@ function makeJwt(clientEmail, privateKey) {
   return header + '.' + payload + '.' + sig;
 }
 
-// HTTPS POST helper for form data
+// HTTPS POST helper
 function post(url, body) {
   return new Promise((resolve, reject) => {
     const data = Buffer.from(body);
@@ -40,13 +39,7 @@ function post(url, body) {
     }, res => {
       let raw = '';
       res.on('data', c => raw += c);
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(raw));
-        } catch (e) {
-          resolve({ error: raw });
-        }
-      });
+      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch (e) { resolve({ error: raw }); } });
     });
     req.on('error', reject);
     req.write(data);
@@ -54,7 +47,7 @@ function post(url, body) {
   });
 }
 
-// HTTPS POST helper for JSON
+// HTTPS POST helper for GA JSON
 function gaPost(path, token, body) {
   return new Promise((resolve, reject) => {
     const data = Buffer.from(JSON.stringify(body));
@@ -70,13 +63,7 @@ function gaPost(path, token, body) {
     }, res => {
       let raw = '';
       res.on('data', c => raw += c);
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(raw));
-        } catch (e) {
-          resolve({ error: raw });
-        }
-      });
+      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch (e) { resolve({ error: raw }); } });
     });
     req.on('error', reject);
     req.write(data);
@@ -97,22 +84,22 @@ module.exports = async (req, res) => {
     if (!clientEmail || !privateKey || !propertyId) {
       return res.status(500).json({
         error: 'GA environment variables missing',
-        hasClientEmail: Boolean(clientEmail),
-        hasPrivateKey: Boolean(privateKey),
-        hasPropertyId: Boolean(propertyId)
+        hasEmail: Boolean(clientEmail),
+        hasKey: Boolean(privateKey),
+        hasProp: Boolean(propertyId)
       });
     }
 
-    // Fix escaped newlines if passed as single-line string
-    if (privateKey.includes('\\n')) {
-      privateKey = privateKey.replace(/\\n/g, '\n');
-    }
-    // Remove quotes if wrapped in quotes
-    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+    // Fix private key: split on literal backslash-n, join with actual newline
+    privateKey = privateKey.split(String.fromCharCode(92) + 'n').join(String.fromCharCode(10));
+    // Remove surrounding quotes if present
+    if (privateKey.charAt(0) === '"' || privateKey.charAt(0) === "'") {
       privateKey = privateKey.slice(1, -1);
     }
+    // Remove any carriage returns
+    privateKey = privateKey.replace(/\r/g, '');
 
-    // 1) Get OAuth2 access token
+    // 1) Get OAuth2 access token via JWT
     const jwt = makeJwt(clientEmail, privateKey);
     const tokenRes = await post(
       'https://oauth2.googleapis.com/token',
@@ -126,24 +113,19 @@ module.exports = async (req, res) => {
 
     const basePath = '/v1beta/properties/' + propertyId + ':runReport';
 
-    // 2) Run reports in parallel
-    const [todayReport, weekReport, monthReport, topPagesReport, sourcesReport] = await Promise.all([
-      // Today
+    const [todayR, weekR, monthR, pagesR, srcR] = await Promise.all([
       gaPost(basePath, token, {
         dateRanges: [{ startDate: 'today', endDate: 'today' }],
         metrics: [{ name: 'sessions' }, { name: 'screenPageViews' }, { name: 'activeUsers' }]
       }),
-      // Last 7 days
       gaPost(basePath, token, {
         dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
         metrics: [{ name: 'sessions' }, { name: 'screenPageViews' }, { name: 'activeUsers' }]
       }),
-      // Last 30 days
       gaPost(basePath, token, {
         dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
         metrics: [{ name: 'sessions' }, { name: 'screenPageViews' }, { name: 'activeUsers' }]
       }),
-      // Top 5 pages (last 7 days)
       gaPost(basePath, token, {
         dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
         dimensions: [{ name: 'pagePath' }],
@@ -151,7 +133,6 @@ module.exports = async (req, res) => {
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
         limit: 5
       }),
-      // Traffic sources (last 7 days)
       gaPost(basePath, token, {
         dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
         dimensions: [{ name: 'sessionDefaultChannelGroup' }],
@@ -161,37 +142,25 @@ module.exports = async (req, res) => {
       }),
     ]);
 
-    const getVal = (report, row = 0, col = 0) =>
-      parseInt(report && report.rows && report.rows[row] && report.rows[row].metricValues && report.rows[row].metricValues[col] && report.rows[row].metricValues[col].value || '0', 10);
+    const v = (r, row = 0, col = 0) =>
+      parseInt((r && r.rows && r.rows[row] && r.rows[row].metricValues && r.rows[row].metricValues[col] && r.rows[row].metricValues[col].value) || '0', 10);
 
     return res.status(200).json({
-      today: {
-        sessions: getVal(todayReport, 0, 0),
-        pageviews: getVal(todayReport, 0, 1),
-        users: getVal(todayReport, 0, 2),
-      },
-      week: {
-        sessions: getVal(weekReport, 0, 0),
-        pageviews: getVal(weekReport, 0, 1),
-        users: getVal(weekReport, 0, 2),
-      },
-      month: {
-        sessions: getVal(monthReport, 0, 0),
-        pageviews: getVal(monthReport, 0, 1),
-        users: getVal(monthReport, 0, 2),
-      },
-      topPages: ((topPagesReport && topPagesReport.rows) || []).map(r => ({
-        path: (r.dimensionValues && r.dimensionValues[0] && r.dimensionValues[0].value) || '/',
+      today:  { sessions: v(todayR,0,0), pageviews: v(todayR,0,1), users: v(todayR,0,2) },
+      week:   { sessions: v(weekR,0,0),  pageviews: v(weekR,0,1),  users: v(weekR,0,2)  },
+      month:  { sessions: v(monthR,0,0), pageviews: v(monthR,0,1), users: v(monthR,0,2) },
+      topPages: ((pagesR && pagesR.rows) || []).map(r => ({
+        path:  (r.dimensionValues && r.dimensionValues[0] && r.dimensionValues[0].value) || '/',
         views: parseInt((r.metricValues && r.metricValues[0] && r.metricValues[0].value) || '0', 10),
       })),
-      sources: ((sourcesReport && sourcesReport.rows) || []).map(r => ({
-        channel: (r.dimensionValues && r.dimensionValues[0] && r.dimensionValues[0].value) || 'Direct',
+      sources: ((srcR && srcR.rows) || []).map(r => ({
+        channel:  (r.dimensionValues && r.dimensionValues[0] && r.dimensionValues[0].value) || 'Direct',
         sessions: parseInt((r.metricValues && r.metricValues[0] && r.metricValues[0].value) || '0', 10),
       })),
     });
 
   } catch (err) {
     console.error('Analytics API error:', err);
-    return res.status(500).json({ error: err.message, stack: err.stack });
+    return res.status(500).json({ error: err.message });
   }
 };
