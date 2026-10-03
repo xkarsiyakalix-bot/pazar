@@ -10,6 +10,14 @@ const slides = [
         buttonText: 'Hemen İlan Ver'
     },
     {
+        image: '/assets/exvitrin_banner.png',
+        title: '',
+        subtitle: '',
+        link: 'https://www.exvitrin.com',
+        buttonText: '',
+        external: true
+    },
+    {
         image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=1200',
         title: 'Aradığınız her şey\nburada',
         subtitle: 'Binlerce ilan arasından size uygun olanı bulun',
@@ -51,7 +59,7 @@ export const BannerSlider = () => {
                 >
                     <img
                         src={slide.image}
-                        alt={slide.title.replace('\n', ' ')}
+                        alt={slide.title ? slide.title.replace('\n', ' ') : 'Banner'}
                         width="1200"
                         height="300"
                         className="w-full h-full object-cover"
@@ -59,26 +67,39 @@ export const BannerSlider = () => {
                         {...(index === 0 ? { fetchpriority: "high" } : {})}
                     />
 
-                    {/* Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/60"></div>
-
-                    {/* Text Content */}
-                    <div className="absolute top-1/2 right-4 sm:right-12 transform -translate-y-1/2 text-right max-w-[70%] sm:max-w-[60%] pr-4 sm:pr-8 z-10">
-                        <h2 className="text-white font-bold text-xl sm:text-4xl lg:text-5xl leading-tight drop-shadow-lg whitespace-pre-line mb-2">
-                            {slide.title}
-                        </h2>
-                        {slide.subtitle && (
-                            <p className="text-white/90 text-sm sm:text-lg font-medium drop-shadow-md mb-4 hidden sm:block">
-                                {slide.subtitle}
-                            </p>
-                        )}
+                    {slide.external ? (
                         <a
                             href={slide.link}
-                            className="brand-btn inline-block font-semibold py-2 px-4 sm:py-2.5 sm:px-6 rounded-lg transition-colors text-xs sm:text-sm shadow-md"
-                        >
-                            {slide.buttonText}
-                        </a>
-                    </div>
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute inset-0 z-10"
+                            aria-label="exvitrin.com'a git"
+                        />
+                    ) : (
+                        <>
+                            {/* Overlay Gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/60"></div>
+                            {/* Text Content */}
+                            <div className="absolute top-1/2 right-4 sm:right-12 transform -translate-y-1/2 text-right max-w-[70%] sm:max-w-[60%] pr-4 sm:pr-8 z-10">
+                                <h2 className="text-white font-bold text-xl sm:text-4xl lg:text-5xl leading-tight drop-shadow-lg whitespace-pre-line mb-2">
+                                    {slide.title}
+                                </h2>
+                                {slide.subtitle && (
+                                    <p className="text-white/90 text-sm sm:text-lg font-medium drop-shadow-md mb-4 hidden sm:block">
+                                        {slide.subtitle}
+                                    </p>
+                                )}
+                                {slide.buttonText && (
+                                    <a
+                                        href={slide.link}
+                                        className="brand-btn inline-block font-semibold py-2 px-4 sm:py-2.5 sm:px-6 rounded-lg transition-colors text-xs sm:text-sm shadow-md"
+                                    >
+                                        {slide.buttonText}
+                                    </a>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             ))}
 
