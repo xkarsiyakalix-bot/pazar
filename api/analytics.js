@@ -1,3 +1,4 @@
+// v2 - GA4 Analytics API for ExVitrin admin
 const crypto = require('crypto');
 const https = require('https');
 
