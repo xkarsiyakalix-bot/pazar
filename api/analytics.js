@@ -6,6 +6,34 @@ function base64url(buf) {
   return Buffer.isBuffer(buf) ? buf.toString('base64url') : Buffer.from(buf).toString('base64url');
 }
 
+// Auto-heal private key if copied without header or with stray 'n'
+function cleanPrivateKey(raw) {
+  let key = raw || '';
+  // Convert escaped literal \n to actual newlines
+  key = key.split(String.fromCharCode(92) + 'n').join(String.fromCharCode(10));
+  // Remove wrapping quotes if present
+  if (key.charAt(0) === '"' || key.charAt(0) === "'") {
+    key = key.slice(1, -1);
+  }
+  key = key.trim();
+
+  // If header is missing
+  if (!key.includes('-----BEGIN PRIVATE KEY-----')) {
+    // If it started with stray 'n' from a severed \n
+    if (key.startsWith('nMII')) {
+      key = key.slice(1);
+    }
+    key = '-----BEGIN PRIVATE KEY-----\n' + key;
+  }
+
+  // If footer is missing
+  if (!key.includes('-----END PRIVATE KEY-----')) {
+    key = key + '\n-----END PRIVATE KEY-----';
+  }
+
+  return key;
+}
+
 // Create signed JWT for Google Service Account
 function makeJwt(clientEmail, keyObj) {
   const now = Math.floor(Date.now() / 1000);
@@ -39,7 +67,13 @@ function post(url, body) {
     }, res => {
       let raw = '';
       res.on('data', c => raw += c);
-      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch (e) { resolve({ error: raw }); } });
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(raw));
+        } catch (e) {
+          resolve({ error: raw });
+        }
+      });
     });
     req.on('error', reject);
     req.write(data);
@@ -63,7 +97,13 @@ function gaPost(path, token, body) {
     }, res => {
       let raw = '';
       res.on('data', c => raw += c);
-      res.on('end', () => { try { resolve(JSON.parse(raw)); } catch (e) { resolve({ error: raw }); } });
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(raw));
+        } catch (e) {
+          resolve({ error: raw });
+        }
+      });
     });
     req.on('error', reject);
     req.write(data);
@@ -78,45 +118,20 @@ module.exports = async (req, res) => {
 
   try {
     const clientEmail = process.env.GA_CLIENT_EMAIL;
-    let privateKey = process.env.GA_PRIVATE_KEY || '';
+    const rawKey = process.env.GA_PRIVATE_KEY || '';
     const propertyId = process.env.GA_PROPERTY_ID;
 
-    if (!clientEmail || !privateKey || !propertyId) {
+    if (!clientEmail || !rawKey || !propertyId) {
       return res.status(500).json({
         error: 'GA environment variables missing',
         hasEmail: Boolean(clientEmail),
-        hasKey: Boolean(privateKey),
+        hasKey: Boolean(rawKey),
         hasProp: Boolean(propertyId)
       });
     }
 
-    // Fix private key format - split on literal backslash-n, join with actual newline
-    privateKey = privateKey.split(String.fromCharCode(92) + 'n').join(String.fromCharCode(10));
-    // Remove surrounding quotes if present
-    if (privateKey.charAt(0) === '"' || privateKey.charAt(0) === "'") {
-      privateKey = privateKey.slice(1, -1);
-    }
-    // Trim whitespace/extra chars
-    privateKey = privateKey.trim();
-
-    // Validate and normalize key using crypto.createPrivateKey for robustness
-    let keyObj;
-    try {
-      keyObj = crypto.createPrivateKey({ key: privateKey, format: 'pem' });
-    } catch (keyErr) {
-      // Return diagnostic info to help debug
-      return res.status(500).json({
-        error: 'Private key format error: ' + keyErr.message,
-        hint: 'Check GA_PRIVATE_KEY in Vercel env vars',
-        keyLength: privateKey.length,
-        keyStart: privateKey.substring(0, 30),
-        keyEnd: privateKey.substring(privateKey.length - 30),
-        firstCharCode: privateKey.charCodeAt(0),
-        lastCharCode: privateKey.charCodeAt(privateKey.length - 1),
-        hasRealNewlines: privateKey.indexOf(String.fromCharCode(10)) > -1,
-        hasLiteralNewlines: privateKey.indexOf(String.fromCharCode(92) + 'n') > -1
-      });
-    }
+    const cleanedKey = cleanPrivateKey(rawKey);
+    const keyObj = crypto.createPrivateKey({ key: cleanedKey, format: 'pem' });
 
     // 1) Get OAuth2 access token via JWT
     const jwt = makeJwt(clientEmail, keyObj);
@@ -132,6 +147,7 @@ module.exports = async (req, res) => {
 
     const basePath = '/v1beta/properties/' + propertyId + ':runReport';
 
+    // 2) Run reports in parallel
     const [todayR, weekR, monthR, pagesR, srcR] = await Promise.all([
       gaPost(basePath, token, {
         dateRanges: [{ startDate: 'today', endDate: 'today' }],
@@ -180,6 +196,6 @@ module.exports = async (req, res) => {
 
   } catch (err) {
     console.error('Analytics API error:', err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message, stack: err.stack });
   }
 };
