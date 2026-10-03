@@ -313,6 +313,33 @@ const AdminStats = () => {
 };
 
 
+
+const PeriodStatsCol = ({ title, data, color }) => {
+    const colorMap = {
+        blue: { text: 'text-blue-600', dot: 'bg-blue-600' },
+        purple: { text: 'text-purple-600', dot: 'bg-purple-600' },
+        emerald: { text: 'text-emerald-600', dot: 'bg-emerald-600' }
+    };
+    const c = colorMap[color];
+
+    return (
+        <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 border border-neutral-100 dark:border-white/5 shadow-sm">
+            <h4 className={`text-xs font-black uppercase tracking-widest ${c.text} mb-6 flex items-center gap-2`}>
+                <span className={`w-2 h-2 rounded-full ${c.dot}`}></span>{title}
+            </h4>
+            <div className="space-y-4">
+                <MiniStat label="Yeni Üye" value={data.registrations} />
+                <MiniStat label="Misafir Trafiği" value={data.guests} />
+                <MiniStat label="Üye Girişi" value={data.users} />
+                <div className="pt-2 border-t border-neutral-50 dark:border-white/5">
+                    <MiniStat label="Promosyon Satışı" value={data.sales} />
+                    <MiniStat label="Dönemlik Kazanç" value={`${data.revenue.toLocaleString('tr-TR')} TL`} isHighlight={true} />
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const MiniStat = ({ label, value, isHighlight }) => (
     <div className="flex items-center justify-between">
         <span className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-tight">{label}</span>

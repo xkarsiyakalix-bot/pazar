@@ -52,29 +52,19 @@ export const isPetAdoptionCategory = (category, subCategory) => {
     return false;
   }
 
-  // Direct subcategory name match (exact names from categories.js)
-  const exactPetSubs = [
-    'Köpekler', 'Kediler', 'Kuşlar', 'Balıklar',
-    'Küçük Hayvanlar', 'Çiftlik Hayvanları', 'Atlar', 'Kayıp Hayvanlar'
-  ];
-  if (exactPetSubs.some(s => sub === s.toLowerCase())) return true;
-
-  // If main category is Evcil Hayvanlar / Haustiere
-  if (
-    cat.includes('evcil') || 
-    cat.includes('haustier')
-  ) {
+  // ONLY match if the main category is explicitly Evcil Hayvanlar / Haustiere
+  if (cat.includes('evcil') || cat.includes('haustier')) {
     return true;
   }
 
-  // Animal subcategory keyword match
-  const animalKeywords = [
-    'kedi', 'katze', 'köpek', 'kopek', 'hund', 
-    'kuş', 'kus', 'vogel', 'balık', 'balik', 'fisch', 
-    'atlar', 'pferd', 'kemirgen', 'sürüngen', 'reptil', 
-    'küçük hayvan', 'çiftlik hayvan', 'kayıp hayvan', 'vermisst'
+  // Direct subcategory exact name match (from categories.js) — only if cat check passed above
+  const exactPetSubs = [
+    'köpekler', 'kediler', 'kuşlar', 'balıklar',
+    'küçük hayvanlar', 'çiftlik hayvanları', 'atlar', 'kayıp hayvanlar'
   ];
-  return animalKeywords.some(keyword => sub.includes(keyword) || cat.includes(keyword));
+  if (exactPetSubs.includes(sub)) return true;
+
+  return false;
 };
 
 /**
