@@ -361,7 +361,9 @@ const AdminStats = () => {
                             <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-white/5 shadow-sm">
                                 <h4 className="text-xs font-black uppercase tracking-widest text-blue-600 mb-4">🔥 En Çok Ziyaret Edilen Sayfalar (7 Gün)</h4>
                                 <div className="space-y-2">
-                                    {gaData.topPages.map((p, i) => {
+                                    {gaData.topPages.length === 0 ? (
+                                        <p className="text-xs text-neutral-400 py-3 text-center">Veriler toplanıyor... (Google Analytics ilk verileri 24-48 saat içinde işler)</p>
+                                    ) : gaData.topPages.map((p, i) => {
                                         const maxViews = gaData.topPages[0] ? gaData.topPages[0].views : 1;
                                         return (
                                             <div key={i} className="flex items-center gap-3">
@@ -383,7 +385,9 @@ const AdminStats = () => {
                             <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-white/5 shadow-sm">
                                 <h4 className="text-xs font-black uppercase tracking-widest text-emerald-600 mb-4">🌐 Trafik Kaynakları (7 Gün)</h4>
                                 <div className="space-y-2">
-                                    {gaData.sources.map((s, i) => {
+                                    {gaData.sources.length === 0 ? (
+                                        <p className="text-xs text-neutral-400 py-3 text-center">Veriler toplanıyor... (Google Analytics ilk verileri 24-48 saat içinde işler)</p>
+                                    ) : gaData.sources.map((s, i) => {
                                         const total = gaData.sources.reduce((a, b) => a + b.sessions, 0) || 1;
                                         const pct = Math.round((s.sessions / total) * 100);
                                         const colors = ['bg-blue-500','bg-emerald-500','bg-orange-500','bg-purple-500','bg-red-500','bg-teal-500'];
