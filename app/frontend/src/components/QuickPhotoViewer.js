@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { isPetAdoptionListing } from '../utils/formatUtils';
 
 export const QuickPhotoViewer = ({ listing, initialIndex = 0, onClose }) => {
   const images = (listing?.images && listing.images.length > 0)
@@ -96,6 +97,7 @@ export const QuickPhotoViewer = ({ listing, initialIndex = 0, onClose }) => {
 
   const priceDisplay = (() => {
     if (!listing) return '';
+    if (isPetAdoptionListing(listing)) return '🐾 Sahiplendirme';
     if (listing.price_type === 'giveaway' || listing.price === 0) return 'Ücretsiz';
     if (listing.price) return `${listing.price.toLocaleString('tr-TR')} TL`;
     if (listing.price_type === 'negotiable') return 'Pazarlıklı';

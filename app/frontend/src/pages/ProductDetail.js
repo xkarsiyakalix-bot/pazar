@@ -7,7 +7,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProductDetailSkeleton from '../components/skeletons/ProductDetailSkeleton';
 import { LazyImage } from '../components/LazyImage';
-import { formatLastSeen, formatPrice } from '../utils/formatUtils';
+import { formatLastSeen, formatPrice, isPetAdoptionListing } from '../utils/formatUtils';
 import { getListingUrl, getSellerUrl, getCategoryPath } from '../utils/slug';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import ListingCountdown from '../components/ListingCountdown';
@@ -267,18 +267,24 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
               No: {listing.id ? listing.id.toString().split('-')[0] : '---'} | {new Date().toLocaleDateString('tr-TR')}
             </div>
           </div>
-          <div className="bg-red-600 text-white px-6 py-4 rounded-xl text-center shadow-lg flex-shrink-0 min-w-[150px]">
-            <div className="text-[12px] font-bold uppercase tracking-widest leading-none mb-2 opacity-90">Fiyat</div>
-            <div className="text-5xl font-black tabular-nums leading-none">
-              {listing.category !== 'Jobs' && listing.category !== 'İş İlanları' && (
-                listing.price_type === 'giveaway' || listing.price === 0
-                  ? t.productDetail.giveaway
-                  : listing.price 
-                    ? `${listing.price} TL` 
-                    : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür')
+          <div className={`${isPetAdoptionListing(listing) ? 'bg-emerald-600' : 'bg-red-600'} text-white px-6 py-4 rounded-xl text-center shadow-lg flex-shrink-0 min-w-[150px]`}>
+            <div className="text-[12px] font-bold uppercase tracking-widest leading-none mb-2 opacity-90">
+              {isPetAdoptionListing(listing) ? 'Durum' : 'Fiyat'}
+            </div>
+            <div className={`${isPetAdoptionListing(listing) ? 'text-2xl sm:text-3xl' : 'text-5xl'} font-black tabular-nums leading-none`}>
+              {isPetAdoptionListing(listing) ? (
+                '🐾 Sahiplendirme'
+              ) : (
+                listing.category !== 'Jobs' && listing.category !== 'İş İlanları' && (
+                  listing.price_type === 'giveaway' || listing.price === 0
+                    ? t.productDetail.giveaway
+                    : listing.price 
+                      ? `${listing.price} TL` 
+                      : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür')
+                )
               )}
             </div>
-            {listing.price && listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">Pazarlıklı</div>}
+            {!isPetAdoptionListing(listing) && listing.price && listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">Pazarlıklı</div>}
           </div>
         </div>
 
@@ -1698,15 +1704,21 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     {listing.sub_category !== 'Ausbildung' && listing.sub_category !== 'Bau, Handwerk & Produktion' && listing.category !== 'Jobs' && (
                       <div className="mb-4">
                         <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-neutral-50 mb-1">
-                          {listing.price_type === 'giveaway' || listing.price === 0
-                            ? t.productDetail.giveaway
-                            : typeof listing.price === 'number'
-                              ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
-                              : listing.price?.toString().includes(' TL')
-                                ? listing.price
-                                : listing.price 
-                                  ? `${listing.price} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}` 
-                                  : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
+                          {isPetAdoptionListing(listing) ? (
+                            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-black text-2xl">
+                              <span>🐾</span> Sahiplendirme
+                            </span>
+                          ) : (
+                            listing.price_type === 'giveaway' || listing.price === 0
+                              ? t.productDetail.giveaway
+                              : typeof listing.price === 'number'
+                                ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
+                                : listing.price?.toString().includes(' TL')
+                                  ? listing.price
+                                  : listing.price 
+                                    ? `${listing.price} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}` 
+                                    : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'
+                          )}
                         </div>
                         {listing.stock && (
                           <div className="text-sm text-gray-500 dark:text-neutral-400">
@@ -3125,7 +3137,11 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                               {otherListing.title}
                             </h3>
                             <div className="text-sm font-semibold text-gray-900 dark:text-neutral-50 mb-1">
-                              {otherListing.price}
+                              {isPetAdoptionListing(otherListing) ? (
+                                <span className="text-emerald-600 dark:text-emerald-400 font-bold">🐾 Sahiplendirme</span>
+                              ) : (
+                                otherListing.price
+                              )}
                             </div>
                             {otherListing.shipping && (
                               <div className="text-xs text-gray-500 dark:text-neutral-400 mb-1">

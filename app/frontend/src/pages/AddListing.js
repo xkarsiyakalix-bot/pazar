@@ -19,6 +19,7 @@ import { FamilyFields } from '../components/AddListing/FamilyFields';
 import { PetFields } from '../components/AddListing/PetFields';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { compressImage } from '../utils/imageUtils';
+import { isPetAdoptionCategory } from '../utils/formatUtils';
 
 export const AddListing = () => {
   // Debug logging
@@ -783,8 +784,9 @@ export const AddListing = () => {
           setCategory(data.category || '');
           setSubCategory(data.sub_category || '');
           setCondition(data.condition || 'used');
-          setPrice(data.price_type === 'giveaway' ? t.addListing.options.givingAway : (data.price?.toString() || ''));
-          setPriceType(data.price_type || 'fixed');
+          const isPet = isPetAdoptionCategory(data.category, data.sub_category);
+          setPrice(isPet ? '' : (data.price_type === 'giveaway' ? t.addListing.options.givingAway : (data.price?.toString() || '')));
+          setPriceType(isPet ? 'giveaway' : (data.price_type || 'fixed'));
           setDescription(data.description || '');
           // Postal code fallback or ignore
           setCity(data.city || '');
@@ -1007,13 +1009,14 @@ export const AddListing = () => {
         return val.toString().replace(/\./g, '').replace(',', '.');
       };
 
+      const isPetAdoption = isPetAdoptionCategory(category, subCategory);
       const cleanedPrice = unformatPrice(price);
       const listingData = {
         user_id: user.id,
         title: title.trim(),
         description: description.trim(),
-        price: priceType === 'giveaway' ? 0 : (priceType === 'negotiable' && !price ? null : (parseFloat(cleanedPrice) || 0)),
-        price_type: priceType,
+        price: isPetAdoption ? 0 : (priceType === 'giveaway' ? 0 : (priceType === 'negotiable' && !price ? null : (parseFloat(cleanedPrice) || 0))),
+        price_type: isPetAdoption ? 'giveaway' : priceType,
         category: category.trim(),
         sub_category: subCategory ? subCategory.trim() : null,
         condition: hideConditionAndShipping ? null : condition,
@@ -1906,7 +1909,19 @@ export const AddListing = () => {
                 </div>
               </div>
             )}
-            {(category !== 'İş İlanları' && subCategory !== 'Eğitim / Meslek Eğitimi') && (
+            {isPetAdoptionCategory(category, subCategory) ? (
+              <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
+                <span className="text-2xl flex-shrink-0">🐾</span>
+                <div>
+                  <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+                    Ücretsiz Sahiplendirme İlanı
+                  </h4>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
+                    Mevzuat ve platform politikalarımız gereği evcil hayvanların ticari satışı yasaktır. Bu kategorideki ilanlar <strong>"Sahiplendirme"</strong> olarak ücretsiz yayınlanır ve fiyat talep edilemez.
+                  </p>
+                </div>
+              </div>
+            ) : (category !== 'İş İlanları' && subCategory !== 'Eğitim / Meslek Eğitimi') && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">

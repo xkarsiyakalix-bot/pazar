@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getListingUrl } from '../utils/slug';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import VisibilityPackagesModal from './VisibilityPackagesModal';
+import { isPetAdoptionListing } from '../utils/formatUtils';
 
 export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, compact = false, hidePrice = false, renderCustomFields = null }) => {
   const navigate = useNavigate();
@@ -247,17 +248,23 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               </p>
               <div className="pt-1">
                 {!hidePrice && (
-                  <span className={`text-sm sm:text-xl font-black ${
-                    listing?.price_type === 'giveaway' || listing?.price === 0
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
-                  }`}>
-                    {listing?.price_type === 'giveaway' || listing?.price === 0
-                      ? 'Ücretsiz'
-                      : listing.price
-                      ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
-                      : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
-                  </span>
+                  isPetAdoptionListing(listing) ? (
+                    <span className="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">
+                      <span>🐾</span> Sahiplendirme
+                    </span>
+                  ) : (
+                    <span className={`text-sm sm:text-xl font-black ${
+                      listing?.price_type === 'giveaway' || listing?.price === 0
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {listing?.price_type === 'giveaway' || listing?.price === 0
+                        ? 'Ücretsiz'
+                        : listing.price
+                        ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
+                        : listing.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
+                    </span>
+                  )
                 )}
               </div>
             </div>

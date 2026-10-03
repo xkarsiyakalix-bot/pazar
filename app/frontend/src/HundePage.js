@@ -58,16 +58,11 @@ const HundePage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'hunde_erlaubnis'
         },
-        price: {
-            label: 'Fiyat',
-            type: 'range',
-            field: 'price'
-        },
         offer_type: {
             label: 'Teklif Türü',
             type: 'multiselect',
             options: [
-                { value: 'Satılık/Verilecek', label: 'Satılık/Verilecek' },
+                { value: 'Sahiplendirme', label: 'Sahiplendirme' },
                 { value: 'Aranıyor', label: 'Aranıyor' }
             ],
             field: 'offer_type'

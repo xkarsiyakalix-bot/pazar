@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { CATEGORY_META } from './config/categoryMeta';
+import { isPetAdoptionListing } from './utils/formatUtils';
 
 const SITE_URL = 'https://www.exvitrin.com';
 
@@ -179,9 +180,12 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
 export const ProductSEO = ({ listing }) => {
   if (!listing) return null;
 
-  const priceText = (listing.price && Number(listing.price) > 0)
-    ? `${Number(listing.price).toLocaleString('tr-TR')} TL`
-    : (listing.price === 0 || listing.price_type === 'giveaway' ? 'Ücretsiz' : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : ''));
+  const isPet = isPetAdoptionListing(listing);
+  const priceText = isPet
+    ? 'Sahiplendirme'
+    : (listing.price && Number(listing.price) > 0)
+      ? `${Number(listing.price).toLocaleString('tr-TR')} TL`
+      : (listing.price === 0 || listing.price_type === 'giveaway' ? 'Ücretsiz' : (listing.price_type === 'negotiable' ? 'Pazarlıklı' : ''));
 
   // High-ranking SEO Title: "Nike Air Max 42 - 850 TL | İzmir (İkinci El)"
   const titleParts = [listing.title];

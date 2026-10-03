@@ -6,6 +6,7 @@ import { getListingUrl } from '../utils/slug';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { QuickPhotoViewer } from './QuickPhotoViewer';
 import { getFavoriteCountBatched, updateCachedFavoriteCount } from '../api/favorites';
+import { isPetAdoptionListing } from '../utils/formatUtils';
 
 const LONG_PRESS_MS = 450;
 
@@ -339,17 +340,23 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
               listing?.sub_category !== 'İnşaat, Zanaat & Üretim' &&
               listing?.category !== 'İş İlanları' && (
                 <div className="mb-1.5">
-                  <span className={`text-[15px] font-black ${
-                    listing?.price_type === 'giveaway' || listing?.price === 0
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
-                  }`}>
-                    {listing?.price_type === 'giveaway' || listing?.price === 0
-                      ? 'Ücretsiz'
-                      : listing?.price
-                        ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
-                        : listing?.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
-                  </span>
+                  {isPetAdoptionListing(listing) ? (
+                    <span className="text-[14px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <span>🐾</span> Sahiplendirme
+                    </span>
+                  ) : (
+                    <span className={`text-[15px] font-black ${
+                      listing?.price_type === 'giveaway' || listing?.price === 0
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {listing?.price_type === 'giveaway' || listing?.price === 0
+                        ? 'Ücretsiz'
+                        : listing?.price
+                          ? `${listing.price.toLocaleString('tr-TR')} TL${listing.price_type === 'negotiable' ? ' (Pazarlıklı)' : ''}`
+                          : listing?.price_type === 'negotiable' ? 'Pazarlıklı' : 'Görüşülür'}
+                    </span>
+                  )}
                 </div>
               )}
 
