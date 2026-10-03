@@ -26,8 +26,6 @@ const AdminStats = () => {
     const [realtimeOnlineCount, setRealtimeOnlineCount] = useState(0);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const refreshTimerRef = useRef(null);
-    const [gaData, setGaData] = useState(null);
-    const [gaLoading, setGaLoading] = useState(true);
 
     const loadDashboardData = async (silent = false) => {
         try {
@@ -172,19 +170,6 @@ const AdminStats = () => {
         loadDashboardData();
         const pollInterval = setInterval(() => loadDashboardData(true), 60000);
 
-        // Load Google Analytics data
-        const loadGA = async () => {
-            try {
-                setGaLoading(true);
-                const res = await fetch('/api/analytics');
-                const data = await res.json();
-                if (!data.error) setGaData(data);
-            } catch (e) { console.warn('GA data error:', e); }
-            finally { setGaLoading(false); }
-        };
-        loadGA();
-        const gaInterval = setInterval(loadGA, 300000);
-
         const presenceChannel = supabase.channel('site-presence');
         const updateOnlineCount = () => {
             const state = presenceChannel.presenceState();
@@ -203,7 +188,6 @@ const AdminStats = () => {
         return () => {
             if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
             clearInterval(pollInterval);
-            clearInterval(gaInterval);
             presenceChannel.unsubscribe();
         };
     }, []);
@@ -324,129 +308,10 @@ const AdminStats = () => {
                     </div>
                 </div>
             </div>
-
-            {/* ── Google Analytics Section ── */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-white text-sm font-bold">G</div>
-                    <div>
-                        <h2 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 tracking-tight">Google Analytics</h2>
-                        <p className="text-xs text-neutral-400 uppercase font-bold tracking-widest">Site Trafiği</p>
-                    </div>
-                    {gaLoading && <span className="ml-auto text-xs text-neutral-400 animate-pulse">Yükleniyor…</span>}
-                </div>
-
-                {gaData ? (
-                    <>
-                        {/* KPI Cards */}
-                        <div className="grid grid-cols-3 gap-4">
-                            {[
-                                { label: 'Bugün Oturum', val: gaData.today.sessions, sub: gaData.today.pageviews + ' görüntüleme', color: 'from-blue-500 to-blue-700', icon: '📊' },
-                                { label: 'Haftalık Oturum', val: gaData.week.sessions, sub: gaData.week.users + ' kullanıcı', color: 'from-violet-500 to-purple-700', icon: '📅' },
-                                { label: 'Aylık Oturum', val: gaData.month.sessions, sub: gaData.month.pageviews + ' görüntüleme', color: 'from-emerald-400 to-teal-600', icon: '📈' },
-                            ].map(({ label, val, sub, color, icon }) => (
-                                <div key={label} className="relative overflow-hidden bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-white/5 shadow-sm">
-                                    <div className={"absolute top-0 right-0 w-20 h-20 bg-gradient-to-br " + color + " opacity-5 rounded-bl-full -mr-4 -mt-4"} />
-                                    <div className={"w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow bg-gradient-to-br " + color + " text-white mb-3"}>{icon}</div>
-                                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{label}</p>
-                                    <p className="text-2xl font-display font-black text-neutral-900 dark:text-white tracking-tight">{val.toLocaleString('tr-TR')}</p>
-                                    <p className="text-[11px] text-neutral-400 mt-1">{sub}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Top Pages + Traffic Sources */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Top Pages */}
-                            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-white/5 shadow-sm">
-                                <h4 className="text-xs font-black uppercase tracking-widest text-blue-600 mb-4">🔥 En Çok Ziyaret Edilen Sayfalar (7 Gün)</h4>
-                                <div className="space-y-2">
-                                    {gaData.topPages.length === 0 ? (
-                                        <p className="text-xs text-neutral-400 py-3 text-center">Veriler toplanıyor... (Google Analytics ilk verileri 24-48 saat içinde işler)</p>
-                                    ) : gaData.topPages.map((p, i) => {
-                                        const maxViews = gaData.topPages[0] ? gaData.topPages[0].views : 1;
-                                        return (
-                                            <div key={i} className="flex items-center gap-3">
-                                                <span className="text-[10px] font-black text-neutral-400 w-4">{i + 1}</span>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-xs font-bold text-neutral-700 dark:text-neutral-300 truncate">{p.path}</p>
-                                                    <div className="mt-1 h-1.5 bg-neutral-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: ((p.views / maxViews) * 100) + '%' }} />
-                                                    </div>
-                                                </div>
-                                                <span className="text-xs font-black text-neutral-600 dark:text-neutral-400 shrink-0">{p.views.toLocaleString('tr-TR')}</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Traffic Sources */}
-                            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-white/5 shadow-sm">
-                                <h4 className="text-xs font-black uppercase tracking-widest text-emerald-600 mb-4">🌐 Trafik Kaynakları (7 Gün)</h4>
-                                <div className="space-y-2">
-                                    {gaData.sources.length === 0 ? (
-                                        <p className="text-xs text-neutral-400 py-3 text-center">Veriler toplanıyor... (Google Analytics ilk verileri 24-48 saat içinde işler)</p>
-                                    ) : gaData.sources.map((s, i) => {
-                                        const total = gaData.sources.reduce((a, b) => a + b.sessions, 0) || 1;
-                                        const pct = Math.round((s.sessions / total) * 100);
-                                        const colors = ['bg-blue-500','bg-emerald-500','bg-orange-500','bg-purple-500','bg-red-500','bg-teal-500'];
-                                        return (
-                                            <div key={i} className="flex items-center gap-3">
-                                                <div className={"w-2 h-2 rounded-full shrink-0 " + colors[i % colors.length]} />
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex justify-between mb-1">
-                                                        <span className="text-xs font-bold text-neutral-700 dark:text-neutral-300 truncate">{s.channel}</span>
-                                                        <span className="text-xs font-black text-neutral-500 shrink-0 ml-2">{pct}%</span>
-                                                    </div>
-                                                    <div className="h-1.5 bg-neutral-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                                        <div className={"h-full " + colors[i % colors.length] + " rounded-full"} style={{ width: pct + '%' }} />
-                                                    </div>
-                                                </div>
-                                                <span className="text-xs font-black text-neutral-600 dark:text-neutral-400 shrink-0">{s.sessions}</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                ) : !gaLoading ? (
-                    <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-5 text-center">
-                        <p className="text-amber-700 dark:text-amber-400 text-sm font-bold">⚠️ GA verisi alınamadı</p>
-                        <p className="text-amber-600 dark:text-amber-500 text-xs mt-1">Vercel env variables kontrol edilmeli: GA_PROPERTY_ID, GA_CLIENT_EMAIL, GA_PRIVATE_KEY</p>
-                    </div>
-                ) : null}
-            </div>
         </div>
     );
 };
 
-const PeriodStatsCol = ({ title, data, color }) => {
-    const colorMap = {
-        blue: { text: 'text-blue-600', dot: 'bg-blue-600' },
-        purple: { text: 'text-purple-600', dot: 'bg-purple-600' },
-        emerald: { text: 'text-emerald-600', dot: 'bg-emerald-600' }
-    };
-    const c = colorMap[color];
-
-    return (
-        <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 border border-neutral-100 dark:border-white/5 shadow-sm">
-            <h4 className={`text-xs font-black uppercase tracking-widest ${c.text} mb-6 flex items-center gap-2`}>
-                <span className={`w-2 h-2 rounded-full ${c.dot}`}></span>{title}
-            </h4>
-            <div className="space-y-4">
-                <MiniStat label="Yeni Üye" value={data.registrations} />
-                <MiniStat label="Misafir Trafiği" value={data.guests} />
-                <MiniStat label="Üye Girişi" value={data.users} />
-                <div className="pt-2 border-t border-neutral-50 dark:border-white/5">
-                    <MiniStat label="Promosyon Satışı" value={data.sales} />
-                    <MiniStat label="Dönemlik Kazanç" value={`${data.revenue.toLocaleString('tr-TR')} TL`} isHighlight={true} />
-                </div>
-            </div>
-        </div>
-    );
-};
 
 const MiniStat = ({ label, value, isHighlight }) => (
     <div className="flex items-center justify-between">

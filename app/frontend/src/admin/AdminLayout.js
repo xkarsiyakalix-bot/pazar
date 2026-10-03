@@ -57,6 +57,7 @@ const AdminLayout = () => {
         ...(isSuperAdmin ? [{ name: 'İstatistikler', href: '/admin/sales-reports', icon: '📊' }] : []),
         { name: 'Bildirimler', href: '/admin/reports', icon: '⚠️' },
         { name: 'İş Analitiği', href: '/admin/stats', icon: '📈' },
+        { name: 'Site Trafiği', href: '/admin/traffic', icon: '🌐' },
         { name: 'Ayarlar', href: '/admin/settings', icon: '⚙️' },
     ];
 
