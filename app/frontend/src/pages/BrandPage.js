@@ -126,7 +126,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
 
     const breadcrumbs = [
         { label: 'Ana Sayfa', path: '/' },
-        { label: 'Markalar', path: '#' },
+        { label: 'Markalar', path: '' },
         { label: brandName, path: `/${slug}` }
     ];
 
@@ -310,7 +310,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                                 key={item.id}
                                 listing={item}
                                 toggleFavorite={toggleFavorite}
-                                isFavorite={isFavorite ? isFavorite(item.id) : false}
+                                isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
                             />
                         ))}
                     </div>
@@ -321,7 +321,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                                 key={item.id}
                                 listing={item}
                                 toggleFavorite={toggleFavorite}
-                                isFavorite={isFavorite ? isFavorite(item.id) : false}
+                                isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
                             />
                         ))}
                     </div>

@@ -10,7 +10,7 @@ import React from 'react';
 class ChunkErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, isChunkError: false };
+    this.state = { hasError: false, isChunkError: false, error: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -19,10 +19,11 @@ class ChunkErrorBoundary extends React.Component {
       /Loading chunk \d+ failed/i.test(error?.message || '') ||
       /Loading CSS chunk \d+ failed/i.test(error?.message || '');
 
-    return { hasError: true, isChunkError };
+    return { hasError: true, isChunkError, error };
   }
 
   componentDidCatch(error, info) {
+    console.error('ChunkErrorBoundary caught an error:', error, info);
     const isChunkError =
       error?.name === 'ChunkLoadError' ||
       /Loading chunk \d+ failed/i.test(error?.message || '');

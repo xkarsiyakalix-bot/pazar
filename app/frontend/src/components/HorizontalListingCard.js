@@ -15,7 +15,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
 
   if (!listing) return null;
 
-  const favorite = isFavorite ? isFavorite(listing.id) : false;
+  const favorite = typeof isFavorite === 'function' ? isFavorite(listing?.id) : Boolean(isFavorite);
 
   const handleEdit = (e) => {
     e.stopPropagation();
