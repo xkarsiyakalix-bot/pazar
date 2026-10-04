@@ -164,3 +164,49 @@ export const formatBrandDisplayName = (slug, foundBrand = null) => {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 };
+
+export const matchesSpecificModel = (targetModel, listingModel, listingTitle) => {
+    if (!targetModel) return true;
+    const cleanTarget = String(targetModel).trim();
+    const cleanTargetLower = cleanTarget.toLowerCase();
+
+    // 1. Exact match on explicit model column
+    if (listingModel && String(listingModel).trim().toLowerCase() === cleanTargetLower) {
+        return true;
+    }
+
+    // 2. Title matching
+    if (!listingTitle) return false;
+    const title = String(listingTitle).trim();
+
+    // Escape regex special characters
+    const escaped = cleanTarget.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    // Word boundary check for the model phrase
+    const phraseRegex = new RegExp('(?:^|[\\s([/\\-_])' + escaped + '(?=[\\s)\\-_,.:;!?]|$)', 'i');
+    if (!phraseRegex.test(title)) return false;
+
+    // Disambiguation: if target is NOT Max/Plus/Air, do not match titles that have Max/Plus/Air immediately after
+    if (!cleanTargetLower.includes('max')) {
+        const afterMaxRegex = new RegExp(escaped + '\\s+(?:max)', 'i');
+        if (afterMaxRegex.test(title)) return false;
+    }
+    if (!cleanTargetLower.includes('plus')) {
+        const afterPlusRegex = new RegExp(escaped + '\\s+(?:plus)', 'i');
+        if (afterPlusRegex.test(title)) return false;
+    }
+    if (!cleanTargetLower.includes('pro')) {
+        const afterProRegex = new RegExp(escaped + '\\s+(?:pro)', 'i');
+        if (afterProRegex.test(title)) return false;
+    }
+    if (!cleanTargetLower.includes('air')) {
+        const afterAirRegex = new RegExp(escaped + '\\s+(?:air)', 'i');
+        if (afterAirRegex.test(title)) return false;
+    }
+    if (!cleanTargetLower.includes('mini')) {
+        const afterMiniRegex = new RegExp(escaped + '\\s+(?:mini)', 'i');
+        if (afterMiniRegex.test(title)) return false;
+    }
+
+    return true;
+};

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../SEO';
 import { Breadcrumb, HorizontalListingCard, ListingCard } from '../components';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { findBrandBySlug, formatBrandDisplayName } from '../utils/brandUtils';
+import { findBrandBySlug, formatBrandDisplayName, matchesSpecificModel } from '../utils/brandUtils';
 import { getPhoneModels } from '../data/phoneBrands';
 
 export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
@@ -18,7 +18,25 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('newest');
     const [viewMode, setViewMode] = useState('horizontal'); // 'horizontal' or 'grid'
-    const [selectedModel, setSelectedModel] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const modelParam = searchParams.get('model') || '';
+    const [selectedModel, setSelectedModel] = useState(modelParam);
+
+    useEffect(() => {
+        setSelectedModel(modelParam);
+    }, [modelParam]);
+
+    const handleSelectModel = (modelName) => {
+        const nextModel = selectedModel.toLowerCase() === (modelName || '').toLowerCase() ? '' : modelName;
+        setSelectedModel(nextModel);
+        const nextParams = new URLSearchParams(searchParams);
+        if (nextModel) {
+            nextParams.set('model', nextModel);
+        } else {
+            nextParams.delete('model');
+        }
+        setSearchParams(nextParams, { replace: true });
+    };
 
     const availableModels = useMemo(() => {
         return getPhoneModels(brandName) || [];
@@ -26,11 +44,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
 
     const displayedListings = useMemo(() => {
         if (!selectedModel) return listings;
-        const lower = selectedModel.toLowerCase();
-        return listings.filter(l => 
-            (l.modell && l.modell.toLowerCase().includes(lower)) ||
-            (l.title && l.title.toLowerCase().includes(lower))
-        );
+        return listings.filter(l => matchesSpecificModel(selectedModel, l.modell, l.title));
     }, [listings, selectedModel]);
 
     useEffect(() => {
@@ -111,9 +125,9 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
     }, [slug, brandName, brandData, sortBy]);
 
     const breadcrumbs = [
-        { name: 'Ana Sayfa', url: '/' },
-        { name: 'Markalar', url: '#' },
-        { name: brandName, url: `/${slug}` }
+        { label: 'Ana Sayfa', path: '/' },
+        { label: 'Markalar', path: '#' },
+        { label: brandName, path: `/${slug}` }
     ];
 
     const seoTitle = `${brandName} İkinci El ve Sıfır İlanları | ExVitrin`;
@@ -165,7 +179,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                     <div className="mb-4">
                         <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
                             <button
-                                onClick={() => setSelectedModel('')}
+                                onClick={() => handleSelectModel('')}
                                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                                     !selectedModel
                                         ? 'bg-red-600 text-white shadow-sm'
@@ -178,14 +192,13 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                                 const isMSelected = selectedModel.toLowerCase() === m.name.toLowerCase();
                                 const mLower = m.name.toLowerCase();
                                 const count = listings.filter(l => 
-                                    (l.modell && l.modell.toLowerCase().includes(mLower)) ||
-                                    (l.title && l.title.toLowerCase().includes(mLower))
+                                    matchesSpecificModel(m.name, l.modell, l.title)
                                 ).length;
 
                                 return (
                                     <button
                                         key={m.name}
-                                        onClick={() => setSelectedModel(isMSelected ? '' : m.name)}
+                                        onClick={() => handleSelectModel(m.name)}
                                         className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                             isMSelected
                                                 ? 'bg-red-600 text-white shadow-sm'
@@ -276,7 +289,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                         </p>
                         {selectedModel ? (
                             <button
-                                onClick={() => setSelectedModel('')}
+                                onClick={() => handleSelectModel('')}
                                 className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl shadow-md transition-all text-sm cursor-pointer"
                             >
                                 Tüm Modelleri Göster

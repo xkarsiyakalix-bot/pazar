@@ -298,7 +298,9 @@ const GenericCategoryPage = ({
                         }
                         if (selectedModel) {
                             const safeModel = `%${String(selectedModel).trim().replace(/\s+/g, '%')}%`;
-                            query = query.or(`modell.ilike.${safeModel},title.ilike.${safeModel}`);
+                            // Only filter by modell field (not title) to prevent false positives
+                            // e.g., "iPhone 11 Pro" should NOT match "iPhone 11 Pro Max"
+                            query = query.ilike('modell', safeModel);
                         }
                         return;
                     }
