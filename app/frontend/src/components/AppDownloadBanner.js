@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { isNative } from '../utils/capacitorBridge';
 
 export const AppDownloadBanner = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Zaten uygulama icindeyse gosterme
-        if (isNative()) {
+        // Zaten native uygulama icindeyse gosterme
+        if (typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.()) {
             return;
         }
 
         // Kullanici daha once kapattiysa gosterme (3 gun boyunca)
-        const dismissedAt = localStorage.getItem('exvitrin_app_banner_dismissed');
-        if (dismissedAt) {
-            const threeDays = 3 * 24 * 60 * 60 * 1000;
-            if (Date.now() - parseInt(dismissedAt, 10) < threeDays) {
-                return;
+        try {
+            const dismissedAt = localStorage.getItem('exvitrin_app_banner_dismissed');
+            if (dismissedAt) {
+                const threeDays = 3 * 24 * 60 * 60 * 1000;
+                if (Date.now() - parseInt(dismissedAt, 10) < threeDays) {
+                    return;
+                }
             }
+        } catch (e) {
+            // localStorage erisim hatasi durumunda yoksay
         }
 
         setIsVisible(true);
@@ -24,13 +27,15 @@ export const AppDownloadBanner = () => {
 
     const handleDismiss = () => {
         setIsVisible(false);
-        localStorage.setItem('exvitrin_app_banner_dismissed', Date.now().toString());
+        try {
+            localStorage.setItem('exvitrin_app_banner_dismissed', Date.now().toString());
+        } catch (e) {}
     };
 
     if (!isVisible) return null;
 
     return (
-        <div className="bg-gradient-to-r from-gray-900 via-neutral-900 to-gray-900 text-white px-3 py-2.5 shadow-md border-b border-rose-500/30 sticky top-0 z-50 flex items-center justify-between text-xs sm:text-sm animate-fadeIn">
+        <div className="bg-gradient-to-r from-gray-900 via-neutral-900 to-gray-900 text-white px-3 py-2.5 shadow-md border-b border-rose-500/30 sticky top-0 z-50 flex items-center justify-between text-xs sm:text-sm">
             <div className="flex items-center gap-2.5 min-w-0">
                 <button
                     onClick={handleDismiss}

@@ -32,3 +32,10 @@ android-twa/.gradle/
 android-twa/*.aab
 android-twa/*.apk
 android-twa/*.idsig
+
+# Android Capacitor
+app/frontend/android/.gradle/
+app/frontend/android/app/build/
+app/frontend/android/build/
+*.jks
+*.keystore
