@@ -51,6 +51,24 @@ export const Footer = () => {
                             </span>
                         </div>
 
+                        {/* Google Play Indirme Butonu */}
+                        <div className="flex flex-col items-center md:items-start gap-2">
+                            <span className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">Mobil Uygulamamız</span>
+                            <a
+                                href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block transition-transform hover:scale-105 active:scale-95"
+                                title="Google Play Store'dan Indirin"
+                            >
+                                <img
+                                    src="/images/mobile_android.png"
+                                    alt="Google Play'den Indirin"
+                                    className="h-10 w-auto object-contain rounded-lg shadow-sm"
+                                />
+                            </a>
+                        </div>
+
                         {/* Social Media Icons */}
                         <div className="flex gap-4">
                             {/* Facebook */}

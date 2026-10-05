@@ -111,7 +111,13 @@ function MobileAppsPage() {
                                     </div>
                                 </button>
 
-                                <button className="flex items-center gap-3 bg-white dark:bg-neutral-800 border-2 border-gray-100 dark:border-white/10 text-gray-900 dark:text-neutral-100 px-8 py-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 group">
+                                <a
+                                    href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 bg-white dark:bg-neutral-800 border-2 border-gray-100 dark:border-white/10 text-gray-900 dark:text-neutral-100 px-8 py-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 group"
+                                    title="Google Play'den İndir"
+                                >
                                     <svg className="w-8 h-8 text-gray-900 dark:text-neutral-100 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
                                     </svg>
@@ -119,7 +125,7 @@ function MobileAppsPage() {
                                         <div className="text-[10px] uppercase font-bold opacity-70 leading-none">Get it on</div>
                                         <div className="text-xl font-bold leading-none mt-1 uppercase tracking-tight">Google Play</div>
                                     </div>
-                                </button>
+                                </a>
                             </div>
                         </div>
 
@@ -180,12 +186,18 @@ function MobileAppsPage() {
                             <p className="text-xl text-gray-400 leading-relaxed mb-10">
                                 Google Play üzerinden anında erişin. Gelişmiş Android API'ları ile en akıcı ilan verme deneyimini yaşayın.
                             </p>
-                            <button className="inline-flex items-center gap-4 bg-white text-gray-900 px-10 py-5 rounded-3xl font-black hover:bg-rose-500 hover:text-white transition-all shadow-xl group">
+                            <a
+                                href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-4 bg-white text-gray-900 px-10 py-5 rounded-3xl font-black hover:bg-rose-500 hover:text-white transition-all shadow-xl group"
+                                title="Google Play Store'dan İndir"
+                            >
                                 PLAY STORE'DAN İNDİR
                                 <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -278,7 +290,15 @@ function MobileAppsPage() {
 
                         <div className="flex flex-wrap justify-center gap-6">
                             <img src="/images/mobile_ios.png" className="h-16 w-auto grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" alt="App Store" />
-                            <img src="/images/mobile_android.png" className="h-16 w-auto grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" alt="Google Play" />
+                            <a
+                                href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block transition-transform hover:scale-105 active:scale-95"
+                                title="Google Play'den İndir"
+                            >
+                                <img src="/images/mobile_android.png" className="h-16 w-auto hover:opacity-90 transition-all duration-300 cursor-pointer" alt="Google Play'den İndir" />
+                            </a>
                         </div>
                     </div>
                 </div>

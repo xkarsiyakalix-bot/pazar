@@ -245,6 +245,7 @@ const AdminOnlineUsers = React.lazy(() => import('./admin/AdminOnlineUsers'));
 import { useIsMobile } from './hooks/useIsMobile';
 import { useAuth } from './contexts/AuthContext';
 import MobileBottomNavigation from './components/MobileBottomNavigation';
+import AppDownloadBanner from './components/AppDownloadBanner';
 const ScrollToTopButton = React.lazy(() => import('./components/ScrollToTopButton'));
 
 import { Routes, Route, useLocation, useNavigationType, Navigate } from 'react-router-dom';
@@ -839,6 +840,9 @@ function App() {
           {showWelcomeModal && (
             <WelcomeModal onClose={() => setShowWelcomeModal(false)} />
           )}
+
+          {/* Mobil Uygulama Indirme Banneri */}
+          <AppDownloadBanner />
 
           {/* Header */}
           <Header cartCount={cartItems.length} />
