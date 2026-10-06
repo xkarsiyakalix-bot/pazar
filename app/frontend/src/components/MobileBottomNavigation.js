@@ -8,6 +8,12 @@ const MobileBottomNavigation = () => {
     const { user } = useAuth();
     const [unreadCount, setUnreadCount] = React.useState(0);
 
+    // Eger mesajlasma sayfasinda aktif sohbet aciksa alt menuyu tamamen gizle
+    const isChatOpen = (location.pathname === '/messages' || location.pathname.startsWith('/messages')) && 
+        typeof document !== 'undefined' && 
+        (document.body.classList.contains('chat-open') || Boolean(document.querySelector('[data-chat-active="true"]')));
+    if (isChatOpen) return null;
+
     // Fetch unread message count
     React.useEffect(() => {
         const fetchUnreadCount = async () => {
@@ -75,7 +81,7 @@ const MobileBottomNavigation = () => {
     };
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-white/10 shadow-lg md:hidden z-[9999] px-2 pb-safe transition-colors">
+        <div id="mobile-bottom-navigation" className="mobile-bottom-navigation fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-white/10 shadow-lg md:hidden z-[9999] px-2 pb-safe transition-colors">
             <div className="flex justify-between items-center max-w-md mx-auto h-16">
                 {navItems.map((item) => {
                     let isActive = location.pathname === item.path;

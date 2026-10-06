@@ -79,6 +79,18 @@ function MessagesPage() {
         };
     }, []);
 
+    // Mobilde aktif sohbet acikken alt navigasyon cubugunu gizle
+    useEffect(() => {
+        if (selectedConversation && window.innerWidth < 768) {
+            document.body.classList.add('chat-open');
+        } else {
+            document.body.classList.remove('chat-open');
+        }
+        return () => {
+            document.body.classList.remove('chat-open');
+        };
+    }, [selectedConversation]);
+
     // Mobilde tarayici / telefon geri tusuna basinca sohbetti kapatip listeye don
     useEffect(() => {
         const handlePopState = () => {
@@ -450,7 +462,10 @@ function MessagesPage() {
             <div className="max-w-7xl mx-auto md:px-4">
                 
                 {/* Kleinanzeigen Mobil ve Masaüstü Sabit Çerçeve */}
-                <div className="fixed inset-0 top-[56px] md:relative md:top-0 md:inset-auto w-full bg-white dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-white/10 md:rounded-3xl shadow-none md:shadow-sm overflow-hidden flex flex-col md:flex-row h-[calc(100dvh-56px)] md:h-[750px] z-20">
+                <div
+                    data-chat-active={Boolean(selectedConversation)}
+                    className={`${selectedConversation ? "fixed inset-0 z-[10000] h-[100dvh]" : "fixed inset-0 top-16 bottom-16 h-[calc(100dvh-128px)] z-20"} md:relative md:top-0 md:bottom-auto md:inset-auto md:h-[750px] md:z-20 w-full bg-white dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-white/10 md:rounded-3xl shadow-none md:shadow-sm overflow-hidden flex flex-col md:flex-row`}
+                >
                     
                     {/* SOL SÜTUN / GELEN MESAJLAR LİSTESİ (Sadece liste yukarı-aşağı kayar, sayfa sabit) */}
                     <div className={`w-full md:w-[380px] lg:w-[420px] flex-shrink-0 flex-col border-r border-neutral-200 dark:border-white/10 bg-neutral-50/70 dark:bg-neutral-900/70 h-full overflow-hidden ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
@@ -735,7 +750,7 @@ function MessagesPage() {
                                 </div>
 
                                 {/* 5. SABİT VE DAİMA GÖRÜNÜR MESAJ YAZMA ALANI */}
-                                <div className="p-2.5 sm:p-3 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-white/10 flex-shrink-0 z-20 pb-safe">
+                                <div style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))" }} className="p-2.5 sm:p-3 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-white/10 flex-shrink-0 z-30 pb-safe">
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                                         <input
                                             type="text"
