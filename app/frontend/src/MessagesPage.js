@@ -9,32 +9,38 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { useIsMobile } from './hooks/useIsMobile';
 import ProfileLayout from './ProfileLayout';
 import { getSellerUrl } from './utils/slug';
-import { generateListingNumber } from './components';
 
 function MessagesPage() {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const isMobile = useIsMobile();
 
-    // State
+    // Cache'deki eski bozuk verileri filtrele
     const [conversations, setConversations] = useState(() => {
         try {
             const saved = sessionStorage.getItem('conversations');
-            return saved ? JSON.parse(saved) : [];
+            if (!saved) return [];
+            const parsed = JSON.parse(saved);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.filter(c => c && c.user && c.user.id);
         } catch (e) {
             return [];
         }
     });
+
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedConversation, setSelectedConversation] = useState(() => {
         try {
             const saved = sessionStorage.getItem('selectedConversation');
-            return saved ? JSON.parse(saved) : null;
+            if (!saved) return null;
+            const parsed = JSON.parse(saved);
+            return (parsed && parsed.user && parsed.user.id) ? parsed : null;
         } catch (e) {
-            return [];
+            return null;
         }
     });
+
     const [messageText, setMessageText] = useState('');
     const [loading, setLoading] = useState(() => {
         try {
@@ -44,6 +50,7 @@ function MessagesPage() {
             return true;
         }
     });
+
     const [userProfile, setUserProfile] = useState(null);
     const [canRateUser, setCanRateUser] = useState(false);
     const [hasRated, setHasRated] = useState(false);
@@ -60,6 +67,7 @@ function MessagesPage() {
     });
 
     const isUserBlocked = (userId) => {
+        if (!userId) return false;
         return blockedUsers.includes(userId);
     };
 
@@ -100,7 +108,7 @@ function MessagesPage() {
     // Load user profile
     useEffect(() => {
         const loadUserProfile = async () => {
-            if (user) {
+            if (user?.id) {
                 try {
                     const { fetchUserProfile } = await import('./api/profile');
                     const profile = await fetchUserProfile(user.id);
@@ -111,23 +119,25 @@ function MessagesPage() {
             }
         };
         loadUserProfile();
-    }, [user]);
+    }, [user?.id]);
 
     // Load conversations & Real-time subscription
     useEffect(() => {
-        if (!user) return;
+        if (!user?.id) return;
+
+        let isMounted = true;
 
         const loadConversations = async () => {
             try {
-                const hasCachedData = conversations.length > 0;
-                if (!hasCachedData) setLoading(true);
-
                 const data = await getConversations();
-                setConversations(data || []);
+                if (isMounted) {
+                    const validData = (data || []).filter(c => c && c.user && c.user.id);
+                    setConversations(validData);
+                }
             } catch (error) {
                 console.error('Error loading conversations:', error);
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
@@ -142,19 +152,23 @@ function MessagesPage() {
                 filter: `receiver_id=eq.${user.id}`
             }, (payload) => {
                 const newMessage = payload.new;
+                if (!newMessage) return;
 
                 setConversations(prev => {
                     const existingIdx = prev.findIndex(c =>
-                        (c.user.id === newMessage.sender_id && c.listing?.id === newMessage.listing_id) ||
-                        (c.user.id === newMessage.receiver_id && c.listing?.id === newMessage.listing_id)
+                        c?.user?.id && (
+                            (c.user.id === newMessage.sender_id && c.listing?.id === newMessage.listing_id) ||
+                            (c.user.id === newMessage.receiver_id && c.listing?.id === newMessage.listing_id)
+                        )
                     );
 
                     if (existingIdx > -1) {
                         const updated = [...prev];
                         const conv = { ...updated[existingIdx] };
+                        const existingMessages = conv.messages || [];
 
-                        if (!conv.messages.find(m => m.id === newMessage.id)) {
-                            conv.messages = [...conv.messages, newMessage];
+                        if (!existingMessages.find(m => m.id === newMessage.id)) {
+                            conv.messages = [...existingMessages, newMessage];
                             conv.lastMessage = newMessage;
                             if (newMessage.receiver_id === user.id && !newMessage.read) {
                                 conv.unreadCount = (conv.unreadCount || 0) + 1;
@@ -164,7 +178,7 @@ function MessagesPage() {
                         updated[existingIdx] = conv;
 
                         setSelectedConversation(current => {
-                            if (current &&
+                            if (current?.user?.id &&
                                 ((current.user.id === newMessage.sender_id && current.listing?.id === newMessage.listing_id) ||
                                     (current.user.id === newMessage.receiver_id && current.listing?.id === newMessage.listing_id))) {
                                 return conv;
@@ -182,19 +196,20 @@ function MessagesPage() {
             .subscribe();
 
         return () => {
+            isMounted = false;
             supabase.removeChannel(subscription);
         };
-    }, [user]);
+    }, [user?.id]);
 
     // Handle initiated chat from listing detail
     useEffect(() => {
         const handleInitiatedChat = async () => {
-            if (!user || loading) return;
+            if (!user?.id || loading) return;
 
             const receiverId = location.state?.receiverId;
             if (!receiverId) return;
 
-            const existingConv = conversations.find(c => c.user.id === receiverId);
+            const existingConv = conversations.find(c => c?.user?.id === receiverId);
             if (existingConv) {
                 setSelectedConversation(existingConv);
                 window.history.replaceState({}, document.title);
@@ -224,25 +239,25 @@ function MessagesPage() {
             window.history.replaceState({}, document.title);
         };
         handleInitiatedChat();
-    }, [user, loading, conversations, location.state]);
+    }, [user?.id, loading, conversations, location.state]);
 
     // Mark as read
     useEffect(() => {
-        if (selectedConversation && user) {
+        if (selectedConversation?.user?.id && user?.id) {
             const partnerId = selectedConversation.user.id;
             setConversations(prev => prev.map(conv => {
-                if (conv.user.id === partnerId && conv.listing?.id === selectedConversation.listing?.id) {
+                if (conv?.user?.id === partnerId && conv?.listing?.id === selectedConversation.listing?.id) {
                     return { ...conv, unreadCount: 0 };
                 }
                 return conv;
             }));
             markConversationAsRead(partnerId);
         }
-    }, [selectedConversation, user]);
+    }, [selectedConversation?.user?.id, user?.id]);
 
     // Cache to sessionStorage
     useEffect(() => {
-        if (selectedConversation) {
+        if (selectedConversation?.user?.id) {
             try {
                 sessionStorage.setItem('selectedConversation', JSON.stringify(selectedConversation));
             } catch (e) {}
@@ -262,13 +277,13 @@ function MessagesPage() {
     // Check rating eligibility
     useEffect(() => {
         const checkEligibility = async () => {
-            if (selectedConversation && user) {
+            if (selectedConversation?.user?.id && user?.id) {
                 try {
                     const [eligible, rated] = await Promise.all([
                         checkRatingEligibility(selectedConversation.user.id),
                         hasUserRated(selectedConversation.user.id)
                     ]);
-                    setCanRateUser(eligible && (selectedConversation.messages?.length || 0) >= 5);
+                    setCanRateUser(Boolean(eligible) && (selectedConversation.messages?.length || 0) >= 5);
                     setHasRated(Boolean(rated));
                 } catch (e) {
                     setCanRateUser(false);
@@ -280,12 +295,12 @@ function MessagesPage() {
             }
         };
         checkEligibility();
-    }, [selectedConversation, user]);
+    }, [selectedConversation?.user?.id, user?.id]);
 
     const handleSendMessage = async (e, customText = null) => {
         if (e) e.preventDefault();
         const textToSend = customText || messageText;
-        if (!textToSend.trim() || !selectedConversation || !user) return;
+        if (!textToSend.trim() || !selectedConversation?.user?.id || !user?.id) return;
 
         const receiverId = selectedConversation.user.id;
         const listingId = selectedConversation.listing?.id;
@@ -304,12 +319,12 @@ function MessagesPage() {
 
         setSelectedConversation(prev => ({
             ...prev,
-            messages: [...(prev.messages || []), newMessage]
+            messages: [...(prev?.messages || []), newMessage]
         }));
 
         setConversations(prev => {
             const updated = prev.map(conv => {
-                if (conv.user.id === receiverId && conv.listing?.id === listingId) {
+                if (conv?.user?.id === receiverId && conv?.listing?.id === listingId) {
                     return {
                         ...conv,
                         lastMessage: newMessage,
@@ -333,6 +348,7 @@ function MessagesPage() {
 
     const handleDeleteConversation = async (conv, e) => {
         if (e) e.stopPropagation();
+        if (!conv?.user?.id) return;
         if (!window.confirm('Bu konuşmayı silmek istediğinizden emin misiniz?')) return;
 
         try {
@@ -340,10 +356,10 @@ function MessagesPage() {
             await deleteConversation(conv.user.id, conv.listing?.id);
 
             setConversations(prev => prev.filter(c =>
-                !(c.user.id === conv.user.id && c.listing?.id === conv.listing?.id)
+                !(c?.user?.id === conv.user.id && c?.listing?.id === conv.listing?.id)
             ));
 
-            if (selectedConversation?.user.id === conv.user.id &&
+            if (selectedConversation?.user?.id === conv.user.id &&
                 selectedConversation?.listing?.id === conv.listing?.id) {
                 setSelectedConversation(null);
             }
@@ -353,13 +369,15 @@ function MessagesPage() {
         }
     };
 
-    // Filter conversations
-    const filteredConversations = conversations.filter(conv =>
-        conv.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        conv.listing?.title?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter conversations with full safety
+    const filteredConversations = conversations.filter(conv => {
+        if (!conv || !conv.user) return false;
+        const userName = conv.user.full_name || '';
+        const listingTitle = conv.listing?.title || '';
+        const search = searchTerm.toLowerCase();
+        return userName.toLowerCase().includes(search) || listingTitle.toLowerCase().includes(search);
+    });
 
-    // Kleinanzeigen Tarzı Hızlı Cevap Şablonları
     const quickReplies = [
         'Merhaba, ürün hala satılık mı?',
         'Fiyatta pazarlık payı var mı?',
@@ -367,14 +385,36 @@ function MessagesPage() {
         'Kargo ile gönderim yapıyor musunuz?'
     ];
 
-    if (loading) return <LoadingSpinner size="large" fullScreen />;
+    if (authLoading || loading) return <LoadingSpinner size="large" fullScreen />;
+
+    // Oturum acilmamissa kullaniciyi bilgilendir
+    if (!user) {
+        return (
+            <ProfileLayout>
+                <div className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-3xl p-12 text-center max-w-md mx-auto my-12 shadow-sm">
+                    <div className="w-16 h-16 bg-rose-50 dark:bg-rose-950/40 text-rose-600 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
+                        🔒
+                    </div>
+                    <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">Giriş Yapmalısınız</h2>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
+                        Mesajlarınızı görüntülemek ve alıcı/satıcılarla konuşabilmek için lütfen hesabınıza giriş yapın.
+                    </p>
+                    <button
+                        onClick={() => navigate('/login', { state: { from: '/messages' } })}
+                        className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm transition-all shadow-md active:scale-95"
+                    >
+                        Giriş Yap
+                    </button>
+                </div>
+            </ProfileLayout>
+        );
+    }
 
     return (
         <ProfileLayout>
-            {/* Kleinanzeigen Style Shell */}
             <div className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[calc(100vh-140px)] min-h-[550px] max-h-[850px]">
                 
-                {/* SOL SÜTUN / KONUŞMALAR LİSTESİ (Kleinanzeigen Nachrichten Liste) */}
+                {/* SOL SÜTUN / KONUŞMALAR LİSTESİ */}
                 <div className={`w-full md:w-[380px] lg:w-[420px] flex-shrink-0 flex flex-col border-r border-neutral-200 dark:border-white/10 bg-neutral-50/60 dark:bg-neutral-900/60 ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
                     
                     {/* Header */}
@@ -415,9 +455,10 @@ function MessagesPage() {
                             </div>
                         ) : (
                             filteredConversations.map((conv) => {
+                                if (!conv || !conv.user) return null;
                                 const isSelected = selectedConversation?.user?.id === conv.user?.id && selectedConversation?.listing?.id === conv.listing?.id;
                                 const isDeleted = conv.listing?.is_deleted;
-                                const unread = conv.unreadCount > 0;
+                                const unread = (conv.unreadCount || 0) > 0;
 
                                 return (
                                     <div
@@ -429,7 +470,7 @@ function MessagesPage() {
                                                 : 'hover:bg-white dark:hover:bg-neutral-800/60 bg-transparent'
                                         }`}
                                     >
-                                        {/* İlanın Fotoğrafı veya Kullanıcı Avatarı (Kleinanzeigen stili) */}
+                                        {/* İlan Fotoğrafı veya Avatar */}
                                         <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-neutral-200 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/60 dark:border-white/5">
                                             {conv.listing?.images?.[0] ? (
                                                 <img
@@ -493,9 +534,9 @@ function MessagesPage() {
                     </div>
                 </div>
 
-                {/* SAĞ SÜTUN / SOHBET ALANI (Kleinanzeigen Chat Area) */}
+                {/* SAĞ SÜTUN / SOHBET ALANI */}
                 <div className={`flex-1 flex flex-col bg-white dark:bg-neutral-900 ${isMobile && !selectedConversation ? 'hidden' : 'flex'}`}>
-                    {selectedConversation ? (
+                    {selectedConversation && selectedConversation.user ? (
                         <>
                             {/* Chat Header */}
                             <div className="p-3 sm:p-4 border-b border-neutral-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-neutral-900 z-10">
@@ -579,7 +620,7 @@ function MessagesPage() {
                                 </div>
                             </div>
 
-                            {/* Kleinanzeigen Sabit İlan Kartı Banner'ı */}
+                            {/* Kleinanzeigen Sabit İlan Kartı */}
                             {selectedConversation.listing && (
                                 <div className="p-3 bg-neutral-50 dark:bg-neutral-800/50 border-b border-neutral-200/70 dark:border-white/5 flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-3 min-w-0">
@@ -646,7 +687,7 @@ function MessagesPage() {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            {/* Kleinanzeigen Tarzı Hızlı Cevap Butonları (Quick Replies) */}
+                            {/* Hızlı Cevap Butonları */}
                             <div className="px-3 pt-2 bg-white dark:bg-neutral-900 flex gap-2 overflow-x-auto no-scrollbar">
                                 {quickReplies.map((reply, i) => (
                                     <button
@@ -659,7 +700,7 @@ function MessagesPage() {
                                 ))}
                             </div>
 
-                            {/* Mesaj Yazma Alanı (Input Bar) */}
+                            {/* Mesaj Yazma Inputu */}
                             <div className="p-3 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-white/10">
                                 <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                                     <input
@@ -683,16 +724,18 @@ function MessagesPage() {
                             </div>
 
                             {/* Rating Modal */}
-                            <RatingModal
-                                isOpen={isRatingModalOpen}
-                                onClose={() => setIsRatingModalOpen(false)}
-                                ratedUserId={selectedConversation.user.id}
-                                onSuccess={() => {
-                                    alert('Değerlendirmeniz başarıyla gönderildi!');
-                                    setCanRateUser(false);
-                                    setHasRated(true);
-                                }}
-                            />
+                            {isRatingModalOpen && (
+                                <RatingModal
+                                    isOpen={isRatingModalOpen}
+                                    onClose={() => setIsRatingModalOpen(false)}
+                                    ratedUserId={selectedConversation.user.id}
+                                    onSuccess={() => {
+                                        alert('Değerlendirmeniz başarıyla gönderildi!');
+                                        setCanRateUser(false);
+                                        setHasRated(true);
+                                    }}
+                                />
+                            )}
                         </>
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center text-center p-8 text-neutral-400">

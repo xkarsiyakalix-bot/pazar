@@ -73,9 +73,15 @@ class ChunkErrorBoundary extends React.Component {
             <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-2">
               Bir hata oluştu
             </h2>
-            <p className="text-gray-500 dark:text-neutral-400 text-sm mb-6">
+            <p className="text-gray-500 dark:text-neutral-400 text-sm mb-2">
               Sayfa yüklenirken beklenmedik bir sorun oluştu.
             </p>
+            {this.state.error && (
+              <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-400 text-xs p-3 rounded-xl mb-6 text-left max-w-sm overflow-x-auto font-mono">
+                <p className="font-bold">Hata Detayı:</p>
+                <p className="mt-1">{this.state.error.message || String(this.state.error)}</p>
+              </div>
+            )}
             <button
               onClick={() => window.location.reload()}
               className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2.5 rounded-xl transition-all"
