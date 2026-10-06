@@ -30,6 +30,30 @@ function MessagesPage() {
     });
 
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Mobilde tarayici / telefon geri tusuna basinca sohbetti kapatip listeye don
+    useEffect(() => {
+        const handlePopState = () => {
+            setSelectedConversation(null);
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
+    const handleSelectConversation = (conv) => {
+        setSelectedConversation(conv);
+        // Tarayici gecmisine sahte state ekle ki geri tusu basinca listeye donsun
+        if (window.innerWidth < 768) {
+            window.history.pushState({ chatOpen: true }, '');
+        }
+    };
+
+    const handleBackToList = () => {
+        setSelectedConversation(null);
+        if (window.history.state?.chatOpen) {
+            window.history.back();
+        }
+    };
     const [selectedConversation, setSelectedConversation] = useState(() => {
         try {
             const saved = sessionStorage.getItem('selectedConversation');
@@ -415,7 +439,7 @@ function MessagesPage() {
             <div className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[calc(100vh-140px)] min-h-[550px] max-h-[850px]">
                 
                 {/* SOL SÜTUN / KONUŞMALAR LİSTESİ */}
-                <div className={`w-full md:w-[380px] lg:w-[420px] flex-shrink-0 flex flex-col border-r border-neutral-200 dark:border-white/10 bg-neutral-50/60 dark:bg-neutral-900/60 ${isMobile && selectedConversation ? 'hidden' : 'flex'}`}>
+                <div className={`w-full md:w-[380px] lg:w-[420px] flex-shrink-0 flex-col border-r border-neutral-200 dark:border-white/10 bg-neutral-50/60 dark:bg-neutral-900/60 ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
                     
                     {/* Header */}
                     <div className="p-4 border-b border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900">
@@ -463,7 +487,7 @@ function MessagesPage() {
                                 return (
                                     <div
                                         key={`${conv.user.id}-${conv.listing?.id || 'general'}`}
-                                        onClick={() => setSelectedConversation(conv)}
+                                        onClick={() => handleSelectConversation(conv)}
                                         className={`p-3.5 sm:p-4 flex gap-3 cursor-pointer transition-colors relative ${
                                             isSelected
                                                 ? 'bg-rose-50/70 dark:bg-rose-950/20'
@@ -535,23 +559,23 @@ function MessagesPage() {
                 </div>
 
                 {/* SAĞ SÜTUN / SOHBET ALANI */}
-                <div className={`flex-1 flex flex-col bg-white dark:bg-neutral-900 ${isMobile && !selectedConversation ? 'hidden' : 'flex'}`}>
+                <div className={`flex-1 flex-col bg-white dark:bg-neutral-900 ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
                     {selectedConversation && selectedConversation.user ? (
                         <>
                             {/* Chat Header */}
                             <div className="p-3 sm:p-4 border-b border-neutral-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-neutral-900 z-10">
                                 <div className="flex items-center gap-3 min-w-0">
-                                    {isMobile && (
-                                        <button
-                                            onClick={() => setSelectedConversation(null)}
-                                            className="p-1.5 -ml-1 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
-                                            aria-label="Geri"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
-                                            </svg>
-                                        </button>
-                                    )}
+                                    {/* Mobilde Mesajlar Listesine Don Butonu */}
+                                    <button
+                                        onClick={handleBackToList}
+                                        className="md:hidden flex items-center gap-1.5 p-2 -ml-2 text-rose-600 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/40 rounded-xl active:scale-95 transition-all font-bold text-xs shrink-0"
+                                        aria-label="Mesajlara Dön"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                        <span>Gelenler</span>
+                                    </button>
 
                                     <div
                                         onClick={() => navigate(getSellerUrl(selectedConversation.user), { state: { seller: selectedConversation.user } })}
