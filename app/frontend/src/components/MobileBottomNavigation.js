@@ -8,12 +8,6 @@ const MobileBottomNavigation = () => {
     const { user } = useAuth();
     const [unreadCount, setUnreadCount] = React.useState(0);
 
-    // Eger mesajlasma sayfasinda aktif sohbet aciksa alt menuyu tamamen gizle
-    const isChatOpen = (location.pathname === '/messages' || location.pathname.startsWith('/messages')) && 
-        typeof document !== 'undefined' && 
-        (document.body.classList.contains('chat-open') || Boolean(document.querySelector('[data-chat-active="true"]')));
-    if (isChatOpen) return null;
-
     // Fetch unread message count
     React.useEffect(() => {
         const fetchUnreadCount = async () => {
@@ -35,6 +29,13 @@ const MobileBottomNavigation = () => {
             return () => clearInterval(interval);
         }
     }, [user]);
+
+    // Eger mesajlasma sayfasinda aktif sohbet aciksa alt menuyu tamamen gizle
+    // Not: Tum hook'lar yukarida kosulsuz cagrildiktan sonra kontrol edilmelidir (React Hook Invariant #300 onlemi)
+    const isChatOpen = (location.pathname === '/messages' || location.pathname.startsWith('/messages')) && 
+        typeof document !== 'undefined' && 
+        (document.body.classList.contains('chat-open') || Boolean(document.querySelector('[data-chat-active="true"]')));
+    if (isChatOpen) return null;
 
     const navItems = [
         {
