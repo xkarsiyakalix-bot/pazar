@@ -180,6 +180,9 @@ module.exports = async (req, res) => {
     const v = (r, row, col) =>
       parseInt(r && r.rows && r.rows[row] && r.rows[row].metricValues && r.rows[row].metricValues[col] && r.rows[row].metricValues[col].value || '0', 10);
 
+    // Eger Google API bir hata dondurmusse (403, 404, vb.) konsola ve debug'a verelim
+    const gaError = todayR.error || weekR.error || pagesR.error || srcR.error;
+
     return res.status(200).json({
       today:  { sessions: v(todayR,0,0), pageviews: v(todayR,0,1), users: v(todayR,0,2) },
       week:   { sessions: v(weekR,0,0),  pageviews: v(weekR,0,1),  users: v(weekR,0,2)  },
@@ -192,6 +195,12 @@ module.exports = async (req, res) => {
         channel:  (r.dimensionValues && r.dimensionValues[0] && r.dimensionValues[0].value) || 'Direct',
         sessions: parseInt((r.metricValues && r.metricValues[0] && r.metricValues[0].value) || '0', 10),
       })),
+      debug: {
+        propertyId: propertyId ? String(propertyId).substring(0, 4) + '***' : null,
+        clientEmail: clientEmail ? String(clientEmail).substring(0, 10) + '***' : null,
+        todayRaw: todayR,
+        gaError: gaError || null
+      }
     });
 
   } catch (err) {
