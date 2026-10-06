@@ -509,7 +509,7 @@ function MessagesPage() {
                                             }`}
                                         >
                                             {/* İlan Fotoğrafı veya Avatar */}
-                                            <div className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-neutral-200 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/60 dark:border-white/5">
+                                            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-neutral-200 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/60 dark:border-white/5">
                                                 {conv.listing?.images?.[0] ? (
                                                     <img
                                                         src={conv.listing.images[0]}
@@ -662,7 +662,7 @@ function MessagesPage() {
                                                 <img
                                                     src={selectedConversation.listing.images[0]}
                                                     alt=""
-                                                    className="w-11 h-11 rounded-lg object-cover border border-neutral-200 dark:border-white/10 flex-shrink-0"
+                                                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg object-cover border border-neutral-200 dark:border-white/10 flex-shrink-0"
                                                 />
                                             )}
                                             <div className="min-w-0">
