@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { CATEGORY_META } from './config/categoryMeta';
 import { isPetAdoptionListing } from './utils/formatUtils';
+import { getCategoryPath, getSellerUrl } from './utils/slug';
 
 const SITE_URL = 'https://www.exvitrin.com';
 
@@ -14,6 +15,7 @@ export const SEO = ({
   keywords, 
   image, 
   url, 
+  canonical,
   type = 'website',
   schema,
   breadcrumbs = []
@@ -23,7 +25,10 @@ export const SEO = ({
   const siteUrl = SITE_URL;
   
   // Normalize canonical URL: strip query parameters and hash, remove trailing slashes, enforce clean lowercase
-  const rawPath = url || (typeof window !== 'undefined' ? window.location.pathname : '');
+  const targetPath = canonical || url;
+  const rawPath = targetPath 
+    ? (targetPath.startsWith('http') ? targetPath.replace(/^https?:\/\/[^\/]+/, '') : targetPath)
+    : (typeof window !== 'undefined' ? window.location.pathname : '');
   const cleanPath = (rawPath || '')
     .split('?')[0]
     .split('#')[0]
@@ -140,29 +145,18 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
 
   const keywords = customMeta?.keywords || `${category}, ${subCategory || ''}, ilanlar, satılık, kiralık, ikinci el, exvitrin`.replace(/, ,/g, ',');
 
-  const cleanCat = (category || '')
-    .replace(/&/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .toLowerCase();
-
-  const cleanSub = (subCategory || '')
-    .replace(/&/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .toLowerCase();
+  const canonicalPath = getCategoryPath(category, subCategory);
+  const mainCatPath = getCategoryPath(category);
 
   const breadcrumbs = [
     { name: 'Ana Sayfa', url: '/' },
-    { name: category, url: `/${cleanCat}` }
+    { name: category, url: mainCatPath }
   ];
   
   if (subCategory) {
     breadcrumbs.push({ 
       name: subCategory, 
-      url: `/${cleanCat}/${cleanSub}` 
+      url: canonicalPath 
     });
   }
 
@@ -172,7 +166,7 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
       description={description}
       keywords={keywords}
       breadcrumbs={breadcrumbs}
-      url={`/${cleanCat}${cleanSub ? '/' + cleanSub : ''}`}
+      url={canonicalPath}
     />
   );
 };
@@ -295,11 +289,12 @@ export const SellerSEO = ({ seller, listingCount = 0, averageRating = 0 }) => {
   const description = `${name} kullanıcısının ExVitrin'deki ${listingCount} güncel ilanını ve ${averageRating > 0 ? `${averageRating}/5 puanlı ` : ''}müşteri yorumlarını inceleyin.`;
   
   const keywords = `${name}, satıcı profili, ilanlar, exvitrin`;
+  const sellerUrl = getSellerUrl(seller);
 
   const breadcrumbs = [
     { name: 'Ana Sayfa', url: '/' },
-    { name: 'Satıcılar', url: '/search' },
-    { name: name, url: `/seller/${seller.id}` }
+    { name: 'Satıcılar', url: '/categories' },
+    { name: name, url: sellerUrl }
   ];
 
   return (
@@ -309,6 +304,7 @@ export const SellerSEO = ({ seller, listingCount = 0, averageRating = 0 }) => {
       keywords={keywords}
       image={seller.store_logo || seller.avatar_url}
       breadcrumbs={breadcrumbs}
+      url={sellerUrl}
     />
   );
 };

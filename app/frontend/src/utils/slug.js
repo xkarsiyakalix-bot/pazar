@@ -76,9 +76,9 @@ export const getSellerUrl = (profile) => {
 export const getCategoryPath = (categoryName, subcategoryName = null) => {
     const mainMappings = {
         'Tüm Kategoriler': 'butun-kategoriler',
-        'Vasıta (Otomobil, Bisiklet & Tekne)': 'vasita',
-        'Otomobil, Bisiklet & Tekne': 'vasita',
-        'Otomobil, Bisiklet & Tekne Servisi': 'vasita',
+        'Vasıta (Otomobil, Bisiklet & Tekne)': 'otomobil-bisiklet-tekne',
+        'Otomobil, Bisiklet & Tekne': 'otomobil-bisiklet-tekne',
+        'Otomobil, Bisiklet & Tekne Servisi': 'otomobil-bisiklet-tekne',
         'Emlak': 'emlak',
         'Ev & Bahçe': 'ev-bahce',
         'Moda & Güzellik': 'moda-guzellik',

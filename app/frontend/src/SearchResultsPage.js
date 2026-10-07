@@ -312,6 +312,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
             <Helmet>
                 <title>{query ? `"${query}" Arama Sonuçları | ExVitrin` : 'İlan Ara | ExVitrin'}</title>
                 <meta name="robots" content="noindex, follow" />
+                <link rel="canonical" href="https://www.exvitrin.com/search" />
             </Helmet>
             <div className="max-w-[1400px] mx-auto px-4 py-6">
 
