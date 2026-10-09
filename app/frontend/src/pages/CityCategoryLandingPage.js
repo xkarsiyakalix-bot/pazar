@@ -72,7 +72,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
     return getCityCategorySEO(city || citySlug, category, subCategory, selectedDistrict || parsedDistrict);
   }, [city, citySlug, category, subCategory, selectedDistrict, parsedDistrict]);
 
-  // Fetch category & district counts for this city
+  // Fetch category & district counts for this city (and district if selected)
   useEffect(() => {
     const fetchCountsAndDistricts = async () => {
       const activeCity = city || citySlug;
@@ -89,14 +89,26 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
 
         const catCounts = {};
         const distSet = new Set();
+        const targetDist = (selectedDistrict || '').toLowerCase().trim();
+
         (data || []).forEach(item => {
-          if (item.category) {
-            catCounts[item.category] = (catCounts[item.category] || 0) + 1;
-          }
           if (item.district && item.district.trim()) {
             distSet.add(item.district.trim());
           }
+
+          // If a district is selected, only count categories for that district
+          if (item.category) {
+            if (!targetDist) {
+              catCounts[item.category] = (catCounts[item.category] || 0) + 1;
+            } else {
+              const itemDist = (item.district || '').toLowerCase().trim();
+              if (itemDist.includes(targetDist) || targetDist.includes(itemDist)) {
+                catCounts[item.category] = (catCounts[item.category] || 0) + 1;
+              }
+            }
+          }
         });
+
         setCategoryCounts(catCounts);
         setAvailableDistricts(Array.from(distSet).sort((a, b) => a.localeCompare(b, 'tr-TR')));
       } catch (err) {
@@ -104,7 +116,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
       }
     };
     fetchCountsAndDistricts();
-  }, [city, citySlug]);
+  }, [city, citySlug, selectedDistrict]);
 
   useEffect(() => {
     let isMounted = true;
@@ -136,9 +148,15 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
           query = query.ilike('sub_category', `%${subCategory}%`);
         }
 
-        // Filter by district
+        // Filter by district (handling both Turkish characters and ASCII variants like Karşıyaka / Karsiyaka)
         if (selectedDistrict) {
-          query = query.ilike('district', `%${selectedDistrict}%`);
+          const distVariants = getCityVariants(selectedDistrict);
+          if (distVariants.length > 0) {
+            const distOrFilter = distVariants.map(v => `district.ilike.%${v}%`).join(',');
+            query = query.or(distOrFilter);
+          } else {
+            query = query.ilike('district', `%${selectedDistrict}%`);
+          }
         }
 
         // Filter by price range
@@ -668,10 +686,12 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                   📍
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white">
-                  {city} {category ? `ve ${category}` : ''} İçin Henüz İlan Bulunmuyor
+                  {selectedDistrict ? `${city} ${selectedDistrict}` : city} {category ? `ve ${category}` : ''} İçin Henüz İlan Bulunmuyor
                 </h3>
                 <p className="text-neutral-600 dark:text-neutral-400 text-sm max-w-md mx-auto mt-2 mb-6">
-                  Bu kriterlerde aradığınız ilan bulunamadı. Filtreleri sıfırlayabilir veya bölgede ilk ilanı siz verebilirsiniz!
+                  {selectedDistrict
+                    ? `${selectedDistrict} ilçesinde bu kategoride henüz ilan bulunmuyor. Dilerseniz tüm ${city} ilanlarına göz atabilir veya ilk ilanı siz verebilirsiniz!`
+                    : 'Bu kriterlerde aradığınız ilan bulunamadı. Filtreleri sıfırlayabilir veya bölgede ilk ilanı siz verebilirsiniz!'}
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <Link
@@ -680,14 +700,21 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                   >
                     Hemen Ücretsiz İlan Ver
                   </Link>
+                  {selectedDistrict && (
+                    <Link
+                      to={categorySlug ? `/sehir/${cityToSlug(city)}/${categorySlug}` : `/sehir/${cityToSlug(city)}`}
+                      className="bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 text-neutral-700 dark:text-neutral-200 font-semibold px-5 py-2.5 rounded-xl text-sm"
+                    >
+                      Tüm {city} {category || ''} İlanlarına Bak
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       setPriceRange('all');
                       setCondition('all');
                       setSelectedDistrict('');
-                      if (categorySlug) {
-                        navigate(`/sehir/${citySlug}`);
-                      }
+                      const baseCitySlug = cityToSlug(city || citySlug);
+                      navigate(categorySlug ? `/sehir/${baseCitySlug}/${categorySlug}` : `/sehir/${baseCitySlug}`);
                     }}
                     className="bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 text-neutral-700 dark:text-neutral-200 font-semibold px-5 py-2.5 rounded-xl text-sm"
                   >
