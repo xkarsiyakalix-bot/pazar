@@ -87,36 +87,62 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
         const { data, error } = await query;
         if (error) throw error;
 
-        const catCounts = {};
         const distSet = new Set();
-        const targetDist = (selectedDistrict || '').toLowerCase().trim();
+        const targetDist = (selectedDistrict || parsedDistrict || '').toLowerCase().trim();
 
         (data || []).forEach(item => {
           if (item.district && item.district.trim()) {
             distSet.add(item.district.trim());
           }
+        });
 
-          // If a district is selected, only count categories for that district
+        const rawDistList = Array.from(distSet).sort((a, b) => a.localeCompare(b, 'tr-TR'));
+        setAvailableDistricts(rawDistList);
+
+        // If parsedDistrict or selectedDistrict is an ASCII slug (e.g. "Sehitlik"),
+        // resolve it to the exact Turkish district name (e.g. "Şehitlik") from availableDistricts
+        let resolvedDist = selectedDistrict || parsedDistrict || '';
+        if (targetDist) {
+          const exactMatch = rawDistList.find(d => {
+            const dSlug = cityToSlug(d);
+            return dSlug === targetDist || dSlug === cityToSlug(targetDist);
+          });
+          if (exactMatch) {
+            resolvedDist = exactMatch;
+            if (exactMatch !== selectedDistrict) {
+              setSelectedDistrict(exactMatch);
+            }
+          }
+        }
+
+        // Recalculate category counts with resolved district or targetDist
+        const finalCounts = {};
+        const activeDistFilter = (resolvedDist || '').toLowerCase().trim();
+        (data || []).forEach(item => {
           if (item.category) {
-            if (!targetDist) {
-              catCounts[item.category] = (catCounts[item.category] || 0) + 1;
+            if (!activeDistFilter) {
+              finalCounts[item.category] = (finalCounts[item.category] || 0) + 1;
             } else {
               const itemDist = (item.district || '').toLowerCase().trim();
-              if (itemDist.includes(targetDist) || targetDist.includes(itemDist)) {
-                catCounts[item.category] = (catCounts[item.category] || 0) + 1;
+              const itemDistSlug = cityToSlug(item.district || '');
+              const activeSlug = cityToSlug(activeDistFilter);
+              if (
+                itemDist.includes(activeDistFilter) ||
+                activeDistFilter.includes(itemDist) ||
+                itemDistSlug === activeSlug
+              ) {
+                finalCounts[item.category] = (finalCounts[item.category] || 0) + 1;
               }
             }
           }
         });
-
-        setCategoryCounts(catCounts);
-        setAvailableDistricts(Array.from(distSet).sort((a, b) => a.localeCompare(b, 'tr-TR')));
+        setCategoryCounts(finalCounts);
       } catch (err) {
         console.error('Error fetching city counts & districts:', err);
       }
     };
     fetchCountsAndDistricts();
-  }, [city, citySlug, selectedDistrict]);
+  }, [city, citySlug, selectedDistrict, parsedDistrict]);
 
   useEffect(() => {
     let isMounted = true;

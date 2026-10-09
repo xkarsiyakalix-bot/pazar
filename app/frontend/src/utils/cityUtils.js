@@ -99,6 +99,45 @@ export const getCityVariants = (cityName) => {
     variants.add(raw.toLocaleUpperCase('tr-TR'));
   } catch (e) {}
 
+  // Bidirectional Turkish character expansion
+  // (e.g. "sehitlik" -> generates "şehitlik", "Şehitlik", "ŞEHİTLİK")
+  const charMaps = {
+    'c': ['c', 'ç'],
+    'ç': ['c', 'ç'],
+    'g': ['g', 'ğ'],
+    'ğ': ['g', 'ğ'],
+    'i': ['i', 'ı', 'İ', 'I'],
+    'ı': ['i', 'ı', 'İ', 'I'],
+    'o': ['o', 'ö'],
+    'ö': ['o', 'ö'],
+    's': ['s', 'ş'],
+    'ş': ['s', 'ş'],
+    'u': ['u', 'ü'],
+    'ü': ['u', 'ü']
+  };
+
+  const lowerAscii = ascii.toLowerCase();
+  let combinations = [''];
+  for (const char of lowerAscii) {
+    const choices = charMaps[char] || [char];
+    const nextCombos = [];
+    for (const prefix of combinations) {
+      for (const choice of choices) {
+        nextCombos.push(prefix + choice);
+      }
+    }
+    combinations = nextCombos.length > 64 ? nextCombos.slice(0, 64) : nextCombos;
+  }
+
+  for (const word of combinations) {
+    variants.add(word);
+    variants.add(word.charAt(0).toUpperCase() + word.slice(1));
+    try {
+      variants.add(word.toLocaleUpperCase('tr-TR'));
+      variants.add(word.toLocaleLowerCase('tr-TR'));
+    } catch (e) {}
+  }
+
   return Array.from(variants).filter(Boolean);
 };
 
