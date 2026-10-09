@@ -458,12 +458,14 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                           {/* Subcategories if category selected */}
                           {isSelected && cat.subcategories && cat.subcategories.length > 0 && (
                             <div className="ml-3 pl-2 border-l-2 border-red-200 dark:border-neutral-700 my-1 space-y-1">
-                              {cat.subcategories.map((sub) => {
-                                const sSlug = encodeURIComponent(sub.replace(/\s+/g, '-').toLowerCase());
+                              {cat.subcategories.map((subItem) => {
+                                const subName = typeof subItem === 'string' ? subItem : (subItem?.name || '');
+                                if (!subName) return null;
+                                const sSlug = encodeURIComponent(subName.replace(/\s+/g, '-').toLowerCase());
                                 const isSubSelected = subCategorySlug === sSlug;
                                 return (
                                   <Link
-                                    key={sub}
+                                    key={subName}
                                     to={`/sehir/${citySlug}/${cSlug}/${sSlug}`}
                                     className={`block px-2 py-1 rounded text-[11px] transition-colors ${
                                       isSubSelected
@@ -471,7 +473,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                                         : 'text-neutral-600 dark:text-neutral-400 hover:text-red-600'
                                     }`}
                                   >
-                                    {getCategoryTranslation(sub)}
+                                    {getCategoryTranslation(subName)}
                                   </Link>
                                 );
                               })}
