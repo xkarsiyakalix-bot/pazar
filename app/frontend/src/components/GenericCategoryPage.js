@@ -112,7 +112,7 @@ const GenericCategoryPage = ({
         fetchSubcategoryCounts();
     }, [category]);
 
-    // Fetch ALL listings in this category (without user filters) to compute filter option counts
+    // Fetch listings matching active non-location filters to compute accurate location and option counts
     useEffect(() => {
         const fetchAllForCounts = async () => {
             if (!category) return;
@@ -123,6 +123,82 @@ const GenericCategoryPage = ({
                     .eq('status', 'active')
                     .eq('category', category);
                 if (subCategory) query = query.eq('sub_category', subCategory);
+
+                if (filters.minPrice) query = query.gte('price', parseFloat(filters.minPrice));
+                if (filters.maxPrice) query = query.lte('price', parseFloat(filters.maxPrice));
+
+                // Apply active filters EXCEPT location (federal_state, city) so city counts reflect active filters
+                Object.entries(filterConfig).forEach(([key, config]) => {
+                    if (config.type === 'brand-models') {
+                        const selectedBrand = filters.brand || filters[key];
+                        const selectedModel = filters.model;
+                        if (selectedBrand) {
+                            const safeBrand = `%${String(selectedBrand).trim().replace(/\s+/g, '%')}%`;
+                            query = query.or(`marke.ilike.${safeBrand},handy_telefon_art.ilike.${safeBrand}`);
+                        }
+                        if (selectedModel) {
+                            const safeModel = `%${String(selectedModel).trim().replace(/\s+/g, '%')}%`;
+                            query = query.ilike('modell', safeModel);
+                        }
+                        return;
+                    }
+
+                    // Exclude location filters from count calculation so user can see available counts for other locations
+                    if (key === 'federal_state' || key === 'city' || config.field === 'federal_state' || config.field === 'city') {
+                        return;
+                    }
+
+                    const filterValue = filters[key] || filters[config.field];
+                    if (config.field && filterValue && config.type !== 'range') {
+                        if (config.field === 'offer_type') {
+                            const isOffering = filterValue === 'Satılık' || filterValue === 'Satılık/Kiralık' || filterValue === 'Angebote';
+                            const isSeeking = filterValue === 'Aranıyor' || filterValue === 'Gesuche';
+                            if (isOffering) {
+                                query = query.or('offer_type.eq.Angebote,offer_type.eq.Satılık,offer_type.eq.Satılık/Kiralık,offer_type.is.null');
+                            } else if (isSeeking) {
+                                query = query.or('offer_type.eq.Gesuche,offer_type.eq.Aranıyor');
+                            } else {
+                                query = query.eq(config.field, filterValue);
+                            }
+                        } else if (config.field === 'condition' || config.field === 'zustand') {
+                            const conditionMap = {
+                                'neu': ['neu', 'Yeni'],
+                                'Yeni': ['neu', 'Yeni'],
+                                'neu_mit_etikett': ['neu_mit_etikett', 'Yeni & Etiketli', 'Yeni (Etiketli)'],
+                                'Yeni & Etiketli': ['neu_mit_etikett', 'Yeni & Etiketli', 'Yeni (Etiketli)'],
+                                'sehr_gut': ['sehr_gut', 'Çok İyi'],
+                                'Çok İyi': ['sehr_gut', 'Çok İyi'],
+                                'gut': ['gut', 'İyi'],
+                                'İyi': ['gut', 'İyi'],
+                                'in_ordnung': ['in_ordnung', 'İdare Eder', 'Makul'],
+                                'İdare Eder': ['in_ordnung', 'İdare Eder', 'Makul'],
+                                'defekt': ['defekt', 'Kusurlu', 'Arızalı'],
+                                'Kusurlu': ['defekt', 'Kusurlu', 'Arızalı'],
+                                'Arızalı': ['defekt', 'Kusurlu', 'Arızalı'],
+                                'used': ['used', 'gebraucht', 'İkinci El'],
+                                'İkinci El': ['used', 'gebraucht', 'İkinci El']
+                            };
+                            const mapped = conditionMap[filterValue] || [filterValue];
+                            if (mapped.length > 1) {
+                                query = query.in(config.field, mapped);
+                            } else {
+                                query = query.eq(config.field, filterValue);
+                            }
+                        } else {
+                            query = query.eq(config.field, filterValue);
+                        }
+                    }
+                });
+
+                if (filters.model && !Object.values(filterConfig).some(c => c.type === 'brand-models')) {
+                    const safeModel = `%${String(filters.model).trim().replace(/\s+/g, '%')}%`;
+                    query = query.or(`modell.ilike.${safeModel},title.ilike.${safeModel}`);
+                }
+                if (filters.brand && !Object.values(filterConfig).some(c => c.type === 'brand-models')) {
+                    const safeBrand = `%${String(filters.brand).trim().replace(/\s+/g, '%')}%`;
+                    query = query.or(`marke.ilike.${safeBrand},handy_telefon_art.ilike.${safeBrand}`);
+                }
+
                 const { data, error } = await query;
                 if (error) throw error;
                 setAllCategoryListings(data || []);
@@ -137,14 +213,14 @@ const GenericCategoryPage = ({
                 });
                 const sortedCities = Object.entries(cityCounts)
                     .sort((a, b) => b[1] - a[1])
-                    .map(([city, count]) => ({ value: city, label: `${city} (${count})` }));
+                    .map(([city, count]) => ({ value: city, label: city, count }));
                 setDynamicCityOptions(sortedCities);
             } catch (err) {
                 console.error('Error fetching all category listings for counts:', err);
             }
         };
         fetchAllForCounts();
-    }, [category, subCategory]);
+    }, [category, subCategory, filters, filterConfig]);
 
     // Helper: count listings that match a given field+value
     const getOptionCount = (field, value) => {
@@ -201,6 +277,10 @@ const GenericCategoryPage = ({
                 (l.modell && String(l.modell).toLowerCase().includes(valLower)) ||
                 (l.title && String(l.title).toLowerCase().includes(valLower))
             ).length;
+        }
+
+        if (field === 'federal_state' || field === 'city') {
+            return allCategoryListings.filter(l => (l.city === value || l.federal_state === value)).length;
         }
 
         return allCategoryListings.filter(l => l[field] === value).length;
