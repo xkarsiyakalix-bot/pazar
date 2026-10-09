@@ -23,8 +23,14 @@ export const searchApi = {
             if (params.location && params.location !== 'Türkiye' && params.location !== 'Tüm Şehirler') {
                 const locations = params.location.split(',').filter(Boolean);
                 if (locations.length > 0) {
-                    query = query.in('federal_state', locations);
+                    const orFilters = locations.map(loc => `federal_state.eq.${loc},city.eq.${loc}`).join(',');
+                    query = query.or(orFilters);
                 }
+            }
+
+            // District filter
+            if (params.district) {
+                query = query.ilike('district', `%${params.district}%`);
             }
 
             // Price range filters
@@ -110,6 +116,7 @@ export const searchApi = {
         query = '',
         category = '',
         location = '',
+        district = '',
         minPrice = null,
         maxPrice = null,
         condition = null,
@@ -120,6 +127,7 @@ export const searchApi = {
             q: query,
             category,
             location,
+            district,
             min_price: minPrice,
             max_price: maxPrice,
             condition,

@@ -96,6 +96,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
     const category = searchParams.get('category') || 'Tüm Kategoriler';
     const subCategoryFromURL = searchParams.get('sub_category') || '';
     const location = searchParams.get('location') || '';
+    const district = searchParams.get('district') || '';
 
     // Initialize filters from URL or defaults
     const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'created_at');
@@ -137,6 +138,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
         if (subCategory) params.set('sub_category', subCategory);
         else params.delete('sub_category');
         if (location) params.set('location', location);
+        if (district) params.set('district', district);
 
         // Add filter params (only if not default)
         if (sortBy !== 'created_at') params.set('sortBy', sortBy);
@@ -153,7 +155,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
 
         // Update URL without causing navigation
         setSearchParams(params, { replace: true });
-    }, [sortBy, sortOrder, priceRange, condition, subCategory, category]);
+    }, [sortBy, sortOrder, priceRange, condition, subCategory, category, location, district]);
 
     // Fetch search results from Supabase
     useEffect(() => {
@@ -189,6 +191,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                     category: category !== 'Tüm Kategoriler' ? category : '',
                     subCategory: subCategory || '',
                     location: location !== 'Türkiye' ? location : '',
+                    district: district || '',
                     minPrice,
                     maxPrice,
                     condition: condition !== 'all' ? condition : null,
@@ -208,7 +211,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
         };
 
         fetchResults();
-    }, [query, category, location, sortBy, sortOrder, priceRange, condition]);
+    }, [query, category, location, district, sortBy, sortOrder, priceRange, condition]);
 
     // Check if this search is already saved
     useEffect(() => {

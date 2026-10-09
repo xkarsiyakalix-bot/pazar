@@ -232,6 +232,39 @@ const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:te
   );
 };
 
+const renderLocationLinks = (district, city, linkClassName = "hover:text-red-600 hover:underline transition-colors") => {
+  const cleanCity = city ? String(city).trim() : '';
+  const cleanDistrict = district ? String(district).trim() : '';
+
+  if (!cleanCity && !cleanDistrict) return null;
+
+  return (
+    <>
+      {cleanDistrict && (
+        <>
+          <Link
+            to={`/search?location=${encodeURIComponent(cleanCity || '')}&district=${encodeURIComponent(cleanDistrict)}`}
+            className={linkClassName}
+            title={`${cleanDistrict} İlanları`}
+          >
+            {cleanDistrict}
+          </Link>
+          {cleanCity && <span>, </span>}
+        </>
+      )}
+      {cleanCity && (
+        <Link
+          to={`/search?location=${encodeURIComponent(cleanCity)}`}
+          className={linkClassName}
+          title={`${cleanCity} İlanları`}
+        >
+          {cleanCity}
+        </Link>
+      )}
+    </>
+  );
+};
+
 // Professional Print Flyer (Sales Sign) Component - Optimized for multi-page printing
 const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   if (!listing) return null;
@@ -1755,13 +1788,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {isMobile && (
                         <div className="mt-3 flex justify-between items-center text-[13px] text-gray-600 dark:text-neutral-400 font-medium border-t border-gray-50 dark:border-white/5 pt-3 w-full">
                           <div className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             <span>
-                              {listing.district ? `${listing.district}, ` : ''}
-                              {listing.city || t.common.notAvailable}
+                              {renderLocationLinks(listing.district, listing.city) || t.common.notAvailable}
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5">
@@ -1809,9 +1841,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <div className="text-right">
                         <span className="font-medium text-gray-900 dark:text-neutral-50 block">
                           {listing.show_location === true && listing.address ? `${listing.address}, ` : ''}
-                          {listing.district ? `${listing.district}, ` : ''}
-                          {listing.city || ''}
-                          {!listing.city && t.common.notAvailable}
+                          {renderLocationLinks(listing.district, listing.city) || t.common.notAvailable}
                         </span>
                       </div>
                     </div>
@@ -3054,7 +3084,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {t.productDetail.location || 'Konum'}
                     </h2>
                     <p className="text-sm text-gray-600 dark:text-neutral-400 mb-4">
-                      {listing.address ? `${listing.address}, ` : ''}{listing.district ? `${listing.district}, ` : ''}{listing.city}
+                      {listing.address ? `${listing.address}, ` : ''}{renderLocationLinks(listing.district, listing.city)}
                     </p>
                     <LocationMap city={listing.city} district={listing.district} address={listing.address} />
                   </div>
