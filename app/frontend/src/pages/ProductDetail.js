@@ -24,6 +24,7 @@ import { ReportModal } from '../components/ReportModal';
 import { normalizeSubcategoryName } from '../utils/slug';
 import { generateListingNumber } from '../utils/format';
 import VerifiedBadge from '../components/VerifiedBadge';
+import { cityToSlug } from '../utils/cityUtils';
 import LocationMap from '../components/LocationMap';
 
 const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleReserveDetail, handleExtendDetail, handleDeleteDetail, promotionPackages, selectedPromotions, togglePromotionSelection, calculateTotal, handlePromotionPurchase, navigate, setPrintHideContact, t }) => {
@@ -238,6 +239,8 @@ const renderLocationLinks = (district, city, linkClassName = "hover:text-red-600
 
   if (!cleanCity && !cleanDistrict) return null;
 
+  const citySlug = cleanCity ? cityToSlug(cleanCity) : '';
+
   return (
     <>
       {cleanDistrict && (
@@ -254,7 +257,7 @@ const renderLocationLinks = (district, city, linkClassName = "hover:text-red-600
       )}
       {cleanCity && (
         <Link
-          to={`/search?location=${encodeURIComponent(cleanCity)}`}
+          to={citySlug ? `/sehir/${citySlug}` : `/search?location=${encodeURIComponent(cleanCity)}`}
           className={linkClassName}
           title={`${cleanCity} İlanları`}
         >
