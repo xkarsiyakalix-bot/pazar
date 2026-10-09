@@ -11,6 +11,7 @@ import { RatingDisplay } from '../components/RatingDisplay';
 import { RatingsList } from '../components/RatingsList';
 import { HorizontalListingCard } from '../components/HorizontalListingCard';
 import { SellerSEO } from '../SEO';
+import { shareToFacebook, shareToWhatsApp, shareToTwitter, copyShareLink } from '../utils/shareUtils';
 
 export const SellerProfile = ({ toggleFavorite, isFavorite, toggleFollowSeller, isSellerFollowed }) => {
   const { sellerId } = useParams();
@@ -592,13 +593,15 @@ export const SellerPage = ({ toggleFavorite, isFavorite, toggleFollowSeller, isS
                     ].map((social, idx) => (
                       <button
                         key={idx}
-                        onClick={() => {
+                        onClick={async () => {
                           const url = window.location.href;
-                          if (social.action === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-                          if (social.action === 'whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, '_blank');
-                          if (social.action === 'twitter') window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`, '_blank');
+                          const name = seller?.full_name || 'Satıcı';
+                          if (social.action === 'facebook') shareToFacebook(url, name);
+                          if (social.action === 'whatsapp') shareToWhatsApp(url, name);
+                          if (social.action === 'twitter') shareToTwitter(url, name);
                           if (social.action === 'copy') {
-                            navigator.clipboard.writeText(url).then(() => alert('Profil linki kopyalandı!'));
+                            const ok = await copyShareLink(url);
+                            if (ok) alert('Profil linki kopyalandı!');
                           }
                         }}
                         title={social.label}

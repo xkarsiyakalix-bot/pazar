@@ -1,7 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { shareToFacebook, shareToWhatsApp, shareToTwitter, copyShareLink, isMobileDevice } from '../utils/shareUtils';
 
 export const ShareModal = ({ isOpen, onClose, url, title }) => {
+  const [copied, setCopied] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleCopy = async () => {
+    const success = await copyShareLink(url);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+        onClose();
+      }, 1200);
+    }
+  };
+
+  const handleNativeShare = () => {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({
+        title: title || 'ExVitrin',
+        text: `${title || 'İlan'} - ExVitrin'de!`,
+        url: url
+      }).then(() => {
+        onClose();
+      }).catch(() => {});
+    }
+  };
 
   const shareOptions = [
     {
@@ -12,7 +38,10 @@ export const ShareModal = ({ isOpen, onClose, url, title }) => {
         </svg>
       ),
       color: 'bg-[#1877F2]',
-      onClick: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank')
+      onClick: () => {
+        shareToFacebook(url, title);
+        onClose();
+      }
     },
     {
       name: 'WhatsApp',
@@ -23,8 +52,8 @@ export const ShareModal = ({ isOpen, onClose, url, title }) => {
       ),
       color: 'bg-[#25D366]',
       onClick: () => {
-        const text = `${title} ilanını ExVitrin'de keşfedin!`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+        shareToWhatsApp(url, title);
+        onClose();
       }
     },
     {
@@ -36,36 +65,37 @@ export const ShareModal = ({ isOpen, onClose, url, title }) => {
       ),
       color: 'bg-black',
       onClick: () => {
-        const text = `${title} ilanını ExVitrin'de keşfedin!`;
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        shareToTwitter(url, title);
+        onClose();
       }
     },
     {
-      name: 'Bağlantı',
-      icon: (
+      name: copied ? 'Kopyalandı!' : 'Bağlantı',
+      icon: copied ? (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
         </svg>
       ),
-      color: 'bg-gray-500',
-      onClick: () => {
-        navigator.clipboard.writeText(url).then(() => {
-          alert('Bağlantı panoya kopyalandı!');
-          onClose();
-        });
-      }
+      color: copied ? 'bg-emerald-600' : 'bg-gray-500',
+      onClick: handleCopy
     }
   ];
+
+  const hasNativeShare = typeof navigator !== 'undefined' && Boolean(navigator.share) && isMobileDevice();
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-start justify-end p-4 bg-black/20 dark:bg-black/40 backdrop-blur-[2px]" onClick={onClose}>
       <div
-        className="bg-white dark:bg-neutral-900 w-64 rounded-2xl overflow-hidden shadow-2xl transition-all mt-16 animate-in slide-in-from-top-4 duration-200 border border-transparent dark:border-white/5"
+        className="bg-white dark:bg-neutral-900 w-72 rounded-2xl overflow-hidden shadow-2xl transition-all mt-16 animate-in slide-in-from-top-4 duration-200 border border-gray-100 dark:border-white/5"
         onClick={e => e.stopPropagation()}
       >
         <div className="p-3 border-b border-gray-100 dark:border-white/5 flex items-center justify-between bg-gray-50/50 dark:bg-neutral-950/50">
           <h3 className="text-sm font-bold text-gray-900 dark:text-neutral-50">İlanı Paylaş</h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-gray-200 rounded-full transition-colors">
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-200 dark:hover:bg-neutral-800 rounded-full transition-colors">
             <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -73,14 +103,31 @@ export const ShareModal = ({ isOpen, onClose, url, title }) => {
         </div>
         <div className="p-4 grid grid-cols-2 gap-3">
           {shareOptions.map((opt, i) => (
-            <button key={i} onClick={opt.onClick} className="flex items-center gap-3 p-2 rounded-xl border border-gray-50 hover:bg-gray-50 active:scale-95 transition-all w-full text-left">
-              <div className={`${opt.color} w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0`}>
+            <button
+              key={i}
+              onClick={opt.onClick}
+              className="flex items-center gap-2.5 p-2 rounded-xl border border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 active:scale-95 transition-all w-full text-left"
+            >
+              <div className={`${opt.color} w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0 transition-colors`}>
                 {React.cloneElement(opt.icon, { className: 'w-4 h-4 fill-currentColor' })}
               </div>
               <span className="text-[11px] font-bold text-gray-700 dark:text-neutral-300 leading-tight">{opt.name}</span>
             </button>
           ))}
         </div>
+        {hasNativeShare && (
+          <div className="px-4 pb-4">
+            <button
+              onClick={handleNativeShare}
+              className="w-full py-2 px-3 rounded-xl border border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-800 text-xs font-semibold text-gray-700 dark:text-neutral-300 flex items-center justify-center gap-2 transition-all"
+            >
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              <span>Diğer Uygulamalar</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

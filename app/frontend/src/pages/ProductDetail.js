@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -10,6 +10,7 @@ import { LazyImage } from '../components/LazyImage';
 import { formatLastSeen, formatPrice, isPetAdoptionListing } from '../utils/formatUtils';
 import { getListingUrl, getSellerUrl, getCategoryPath } from '../utils/slug';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { shareToFacebook, shareToWhatsApp, shareToTwitter, copyShareLink } from '../utils/shareUtils';
 import ListingCountdown from '../components/ListingCountdown';
 import MessageModal from '../components/MessageModal';
 import GalleryInfoModal from '../components/GalleryInfoModal';
@@ -589,6 +590,23 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   const [showShareModal, setShowShareModal] = useState(false);
   const { user } = useAuth();
   const isMobile = useIsMobile();
+
+  const canonicalShareUrl = useMemo(() => {
+    if (listing?.slug) {
+      return `https://www.exvitrin.com/${listing.slug}`;
+    }
+    if (listing?.id) {
+      return `https://www.exvitrin.com/product/${listing.id}`;
+    }
+    if (typeof window !== 'undefined' && window.location.href) {
+      const cleanHref = window.location.href.split('?')[0].split('#')[0];
+      if (cleanHref.includes('localhost') && (listing?.id || routeId)) {
+        return `https://www.exvitrin.com/product/${listing?.id || routeId}`;
+      }
+      return cleanHref;
+    }
+    return 'https://www.exvitrin.com';
+  }, [listing, routeId]);
 
   const promotionPackages = [
     { id: 'bump', name: 'Yukarı Çıkar', price: '9,99', duration: 1, durationLabel: 'bir kerelik', effect: 'Yeni dikkat çekin! İlanınız yeni bir ilan gibi görünecek.' },
@@ -3376,10 +3394,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <p className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-3 px-1">{t.productDetail.share}</p>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => {
-                          const url = window.location.href;
-                          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-                        }}
+                        onClick={() => shareToFacebook(canonicalShareUrl, listing?.title)}
                         className="flex-1 bg-[#1877F2] text-white py-2.5 rounded-lg flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
                         title="Facebook"
                       >
@@ -3388,11 +3403,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </svg>
                       </button>
                       <button
-                        onClick={() => {
-                          const url = window.location.href;
-                          const text = `${listing.title} ilanını ExVitrin'de keşfedin!`;
-                          window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-                        }}
+                        onClick={() => shareToWhatsApp(canonicalShareUrl, listing?.title)}
                         className="flex-1 bg-[#25D366] text-white py-2.5 rounded-lg flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
                         title="WhatsApp"
                       >
@@ -3401,11 +3412,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </svg>
                       </button>
                       <button
-                        onClick={() => {
-                          const url = window.location.href;
-                          const text = `${listing.title} ilanını ExVitrin'de keşfedin!`;
-                          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-                        }}
+                        onClick={() => shareToTwitter(canonicalShareUrl, listing?.title)}
                         className="flex-1 bg-zinc-700 shadow-sm text-white py-2.5 rounded-lg flex items-center justify-center hover:bg-zinc-800 hover:scale-105 transition-all border border-zinc-600"
                         title="X"
                       >
@@ -3414,10 +3421,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </svg>
                       </button>
                       <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(window.location.href).then(() => {
-                            alert('Bağlantı panoya kopyalandı!');
-                          });
+                        onClick={async () => {
+                          const ok = await copyShareLink(canonicalShareUrl);
+                          if (ok) alert('Bağlantı panoya kopyalandı!');
                         }}
                         className="flex-1 bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 py-2.5 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all shadow-sm"
                         title="Bağlantıyı Kopyala"
@@ -3491,7 +3497,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           <ShareModal
             isOpen={showShareModal}
             onClose={() => setShowShareModal(false)}
-            url={window.location.href}
+            url={canonicalShareUrl}
             title={listing?.title}
           />
 

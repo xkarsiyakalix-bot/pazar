@@ -742,6 +742,15 @@ module.exports = async (req, res) => {
       }
     }
     if (slug) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      if (isUuid) {
+        const { data, error } = await supabase
+          .from('listings')
+          .select('id, title, description, images, price, category, sub_category, condition, city, slug')
+          .eq('id', slug)
+          .single();
+        if (!error && data) return data;
+      }
       const { data, error } = await supabase
         .from('listings')
         .select('id, title, description, images, price, category, sub_category, condition, city, slug')
@@ -923,7 +932,7 @@ module.exports = async (req, res) => {
             }
             imageWidth = '1200';
             imageHeight = '630';
-            ogType = 'product';
+            ogType = 'website';
             pageUrl = data.slug ? `${SITE_URL}/${data.slug}` : `${SITE_URL}/product/${data.id}`;
           } else {
             // 4. İlan bulunamadıysa: Satıcı mağazası mı?

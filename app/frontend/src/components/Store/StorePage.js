@@ -11,6 +11,7 @@ import { applyPromotionExpiry } from '../../api/listings';
 import { followUser, unfollowUser, isFollowing, getFollowersCount } from '../../api/follows';
 import { getRatings, getUserAverageRating } from '../../api/ratings';
 import { getOptimizedImageUrl } from '../../utils/imageUtils';
+import { shareToFacebook, shareToWhatsApp, shareToTwitter, copyShareLink } from '../../utils/shareUtils';
 
 const StorePage = ({ sellerId: propSellerId }) => {
     const params = useParams();
@@ -382,7 +383,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         <button
                                             onClick={() => {
                                                 const url = window.location.href;
-                                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                                                shareToFacebook(url, storeInfo.store_name || storeInfo.full_name);
                                                 setShowMobileShare(false);
                                             }}
                                             className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-neutral-300 transition-colors"
@@ -398,8 +399,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         <button
                                             onClick={() => {
                                                 const url = window.location.href;
-                                                const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
-                                                window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                                                shareToWhatsApp(url, storeInfo.store_name || storeInfo.full_name);
                                                 setShowMobileShare(false);
                                             }}
                                             className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-neutral-300 transition-colors"
@@ -415,8 +415,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         <button
                                             onClick={() => {
                                                 const url = window.location.href;
-                                                const text = `${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de keşfedin!`;
-                                                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+                                                shareToTwitter(url, storeInfo.store_name || storeInfo.full_name);
                                                 setShowMobileShare(false);
                                             }}
                                             className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-neutral-300 transition-colors"
