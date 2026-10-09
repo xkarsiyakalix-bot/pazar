@@ -61,7 +61,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
 
   const imageUrl = getOptimizedImageUrl(rawImageUrl, 400, 280, 'cover');
 
-  const isReserved = listing?.reserved_by;
+  const isReserved = Boolean(listing?.reserved_by || listing?.is_reserved);
 
   // Override image for Mini- & Nebenjobs and Praktika
   const isMiniJob = listing?.sub_category === 'Yarı Zamanlı & Ek İşler' || listing?.sub_category === 'Staj';

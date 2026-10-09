@@ -35,7 +35,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                 const { fetchListings } = await import('../api/listings');
 
                 const data = await fetchListings({
-                    select: 'id,title,price,price_type,images,category,sub_category,city,is_top,is_gallery,package_type,promotion_expiry,user_id,created_at,slug'
+                    select: 'id,title,price,price_type,images,category,sub_category,city,district,is_top,is_gallery,is_highlighted,is_multi_bump,package_type,promotion_expiry,user_id,created_at,slug,reserved_by,reserved_until'
                 }, { count: false });
                 let topListings = data.filter(listing =>
                     listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type?.toLowerCase())

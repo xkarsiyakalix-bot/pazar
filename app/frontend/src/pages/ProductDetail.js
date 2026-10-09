@@ -1254,6 +1254,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           .select();
 
         if (error) throw error;
+        try {
+          const { clearCache } = await import('../utils/cache');
+          clearCache();
+        } catch (_) {}
         alert(isReservedInternal ? 'Rezervasyon kaldırıldı!' : 'Ürün rezerve edildi!');
         window.location.reload();
       } catch (error) {
