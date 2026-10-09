@@ -5,6 +5,7 @@ import { SEO } from '../SEO';
 import { Breadcrumb, HorizontalListingCard, ListingCard } from '../components';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { 
+  TURKISH_CITIES,
   slugToCity, 
   cityToSlug, 
   slugToCategory, 
