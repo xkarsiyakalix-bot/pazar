@@ -22,7 +22,32 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
   const { citySlug, categorySlug, subCategorySlug } = useParams();
   const navigate = useNavigate();
 
-  const city = useMemo(() => slugToCity(citySlug), [citySlug]);
+  // Parse city and optional district from citySlug (e.g., "denizli-pamukkale" or "denizli")
+  const { parsedCity, parsedDistrict } = useMemo(() => {
+    if (!citySlug) return { parsedCity: null, parsedDistrict: null };
+    const directCity = slugToCity(citySlug);
+    if (directCity) {
+      return { parsedCity: directCity, parsedDistrict: null };
+    }
+
+    // Try finding city as prefix of citySlug (e.g., "denizli-pamukkale" -> city="Denizli", district="Pamukkale")
+    const cleanSlug = citySlug.toLowerCase().trim();
+    for (const c of TURKISH_CITIES) {
+      const cSlug = cityToSlug(c);
+      if (cleanSlug.startsWith(cSlug + '-')) {
+        const distSlug = cleanSlug.slice(cSlug.length + 1);
+        const distFormatted = distSlug
+          .split('-')
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+        return { parsedCity: c, parsedDistrict: distFormatted };
+      }
+    }
+
+    return { parsedCity: citySlug, parsedDistrict: null };
+  }, [citySlug]);
+
+  const city = parsedCity;
   const category = useMemo(() => slugToCategory(categorySlug), [categorySlug]);
   const subCategory = subCategorySlug ? decodeURIComponent(subCategorySlug).replace(/-/g, ' ') : null;
 
@@ -31,15 +56,20 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
   const [sortBy, setSortBy] = useState('newest');
   const [priceRange, setPriceRange] = useState('all');
   const [condition, setCondition] = useState('all');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState(parsedDistrict || '');
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('horizontal'); // 'horizontal' or 'grid'
 
+  // Sync selectedDistrict when URL changes
+  useEffect(() => {
+    setSelectedDistrict(parsedDistrict || '');
+  }, [parsedDistrict]);
+
   const seoData = useMemo(() => {
-    return getCityCategorySEO(city || citySlug, category, subCategory);
-  }, [city, citySlug, category, subCategory]);
+    return getCityCategorySEO(city || citySlug, category, subCategory, selectedDistrict || parsedDistrict);
+  }, [city, citySlug, category, subCategory, selectedDistrict, parsedDistrict]);
 
   // Fetch category & district counts for this city
   useEffect(() => {
@@ -161,8 +191,14 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
   const breadcrumbs = [
     { name: 'Ana Sayfa', url: '/' },
     { name: 'Şehirler', url: '/sehirler' },
-    { name: city || citySlug, url: `/sehir/${citySlug}` }
+    { name: city || citySlug, url: `/sehir/${cityToSlug(city || citySlug)}` }
   ];
+  if (parsedDistrict) {
+    breadcrumbs.push({
+      name: parsedDistrict,
+      url: `/sehir/${citySlug}`
+    });
+  }
   if (category) {
     breadcrumbs.push({
       name: category,
@@ -198,7 +234,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 bg-white/15 px-3 py-1 rounded-full text-xs font-semibold mb-2">
-                <span>📍 {city || citySlug}</span>
+                <span>📍 {parsedDistrict ? `${city}, ${parsedDistrict}` : (city || citySlug)}</span>
                 {category && <span>• {category}</span>}
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
@@ -455,7 +491,11 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                     </label>
                     {selectedDistrict && (
                       <button
-                        onClick={() => setSelectedDistrict('')}
+                        onClick={() => {
+                          setSelectedDistrict('');
+                          const baseCitySlug = cityToSlug(city || citySlug);
+                          navigate(categorySlug ? `/sehir/${baseCitySlug}/${categorySlug}` : `/sehir/${baseCitySlug}`);
+                        }}
                         className="text-[11px] text-red-600 hover:text-red-700"
                       >
                         Tümü
@@ -468,27 +508,41 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                         type="radio"
                         name="district"
                         checked={!selectedDistrict}
-                        onChange={() => setSelectedDistrict('')}
+                        onChange={() => {
+                          setSelectedDistrict('');
+                          const baseCitySlug = cityToSlug(city || citySlug);
+                          navigate(categorySlug ? `/sehir/${baseCitySlug}/${categorySlug}` : `/sehir/${baseCitySlug}`);
+                        }}
                         className="text-red-600 focus:ring-red-500"
                       />
                       <span className={!selectedDistrict ? 'font-bold text-red-600' : 'text-neutral-700 dark:text-neutral-300'}>
                         Tüm İlçeler
                       </span>
                     </label>
-                    {availableDistricts.map((dist) => (
-                      <label key={dist} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700/40 cursor-pointer text-xs">
-                        <input
-                          type="radio"
-                          name="district"
-                          checked={selectedDistrict === dist}
-                          onChange={() => setSelectedDistrict(dist)}
-                          className="text-red-600 focus:ring-red-500"
-                        />
-                        <span className={selectedDistrict === dist ? 'font-bold text-red-600' : 'text-neutral-700 dark:text-neutral-300'}>
-                          {dist}
-                        </span>
-                      </label>
-                    ))}
+                    {availableDistricts.map((dist) => {
+                      const isDistChecked = (selectedDistrict || '').toLowerCase() === dist.toLowerCase();
+                      const distSlug = cityToSlug(dist);
+                      const baseCitySlug = cityToSlug(city || citySlug);
+                      const targetDistUrl = `/sehir/${baseCitySlug}-${distSlug}${categorySlug ? `/${categorySlug}` : ''}`;
+
+                      return (
+                        <label key={dist} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700/40 cursor-pointer text-xs">
+                          <input
+                            type="radio"
+                            name="district"
+                            checked={isDistChecked}
+                            onChange={() => {
+                              setSelectedDistrict(dist);
+                              navigate(targetDistUrl);
+                            }}
+                            className="text-red-600 focus:ring-red-500"
+                          />
+                          <span className={isDistChecked ? 'font-bold text-red-600' : 'text-neutral-700 dark:text-neutral-300'}>
+                            {dist}
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               )}

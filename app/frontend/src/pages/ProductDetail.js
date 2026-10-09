@@ -240,15 +240,21 @@ const renderLocationLinks = (district, city, linkClassName = "hover:text-red-600
   if (!cleanCity && !cleanDistrict) return null;
 
   const citySlug = cleanCity ? cityToSlug(cleanCity) : '';
+  const distSlug = cleanDistrict ? cityToSlug(cleanDistrict) : '';
+
+  // If both city and district are available, link district to /sehir/${citySlug}-${distSlug}
+  const districtUrl = citySlug && distSlug
+    ? `/sehir/${citySlug}-${distSlug}`
+    : `/search?location=${encodeURIComponent(cleanCity || '')}&district=${encodeURIComponent(cleanDistrict || '')}`;
 
   return (
     <>
       {cleanDistrict && (
         <>
           <Link
-            to={`/search?location=${encodeURIComponent(cleanCity || '')}&district=${encodeURIComponent(cleanDistrict)}`}
+            to={districtUrl}
             className={linkClassName}
-            title={`${cleanDistrict} İlanları`}
+            title={`${cleanCity ? `${cleanCity} ` : ''}${cleanDistrict} İlanları`}
           >
             {cleanDistrict}
           </Link>

@@ -137,26 +137,38 @@ export const slugToCategory = (slug) => {
 };
 
 /**
- * Returns unique SEO meta and description text tailored to a city and category
+ * Returns unique SEO meta and description text tailored to a city, district, and category
  */
-export const getCityCategorySEO = (city, category = null, subCategory = null) => {
-  if (city && category && subCategory) {
+export const getCityCategorySEO = (city, category = null, subCategory = null, district = null) => {
+  const locationLabel = district ? `${city} ${district}` : city;
+
+  if (locationLabel && category && subCategory) {
     return {
-      title: `${city} ${subCategory} İlanları - Satılık & Kiralık | ExVitrin`,
-      description: `${city} ${subCategory} ilanları ExVitrin'de! Sahibinden ve kurumsal satıcılardan ${city} genelinde en uygun ${subCategory.toLowerCase()} fırsatlarını keşfedin.`,
-      heading: `${city} ${subCategory} İlanları`,
-      subheading: `${city} ve tüm ilçelerindeki güncel ${subCategory.toLowerCase()} ilanlarını inceleyin, satıcılarla ücretsiz iletişime geçin.`,
-      introText: `${city} şehrinde ${subCategory.toLowerCase()} arayanlar için en güncel ve doğrulanmış ilanlar ExVitrin'de listelenmektedir. ${city} bölgesindeki fırsatları filtreleyebilir veya hemen ücretsiz ilan vererek ürünlerinizi binlerce alıcıyla buluşturabilirsiniz.`
+      title: `${locationLabel} ${subCategory} İlanları - Satılık & Kiralık | ExVitrin`,
+      description: `${locationLabel} ${subCategory} ilanları ExVitrin'de! Sahibinden ve kurumsal satıcılardan ${locationLabel} genelinde en uygun ${subCategory.toLowerCase()} fırsatlarını keşfedin.`,
+      heading: `${locationLabel} ${subCategory} İlanları`,
+      subheading: `${locationLabel} güncel ${subCategory.toLowerCase()} ilanlarını inceleyin, satıcılarla ücretsiz iletişime geçin.`,
+      introText: `${locationLabel} bölgesinde ${subCategory.toLowerCase()} arayanlar için en güncel ve doğrulanmış ilanlar ExVitrin'de listelenmektedir. ${locationLabel} bölgesindeki fırsatları filtreleyebilir veya hemen ücretsiz ilan vererek ürünlerinizi binlerce alıcıyla buluşturabilirsiniz.`
     };
   }
 
-  if (city && category) {
+  if (locationLabel && category) {
     return {
-      title: `${city} ${category} İlanları - Satılık & Kiralık | ExVitrin`,
-      description: `${city} ${category} ilanları ExVitrin'de! ${city} genelinde satılık ve kiralık ${category.toLowerCase()} ürünleri, uygun fiyatlar ve güvenli alışveriş.`,
-      heading: `${city} ${category} İlanları`,
-      subheading: `${city} bölgesindeki en güncel ${category.toLowerCase()} ilanlarını keşfedin veya ücretsiz ilan verin.`,
-      introText: `${city} ilinde ${category.toLowerCase()} kategorisindeki binlerce fırsatı tek tıkla inceleyin. Sahibinden veya kurumsal satıcılardan ${city} içi elden teslim veya kargo seçenekleriyle aradığınız ürünü kolayca bulun.`
+      title: `${locationLabel} ${category} İlanları - Satılık & Kiralık | ExVitrin`,
+      description: `${locationLabel} ${category} ilanları ExVitrin'de! ${locationLabel} genelinde satılık ve kiralık ${category.toLowerCase()} ürünleri, uygun fiyatlar ve güvenli alışveriş.`,
+      heading: `${locationLabel} ${category} İlanları`,
+      subheading: `${locationLabel} bölgesindeki en güncel ${category.toLowerCase()} ilanlarını keşfedin veya ücretsiz ilan verin.`,
+      introText: `${locationLabel} bölgesinde ${category.toLowerCase()} kategorisindeki binlerce fırsatı tek tıkla inceleyin. Sahibinden veya kurumsal satıcılardan ${locationLabel} içi elden teslim veya kargo seçenekleriyle aradığınız ürünü kolayca bulun.`
+    };
+  }
+
+  if (district && city) {
+    return {
+      title: `${city} ${district} İkinci El ve Sıfır İlanlar | ExVitrin`,
+      description: `${city} ${district} satılık ve kiralık ilanlar ExVitrin'de! ${district} bölgesindeki tüm ikinci el eşya, araba, emlak ve ücretsiz ilanlar.`,
+      heading: `${city} ${district} İlanları`,
+      subheading: `${city} ili ${district} ilçesindeki tüm güncel ilanları keşfedin veya ücretsiz ilan verin.`,
+      introText: `${city} ili ${district} ilçesinde kullanmadığınız eşyaları nakite çevirmek ya da uygun fiyatlı ikinci el ürünler bulmak çok kolay. ExVitrin ${district} ilan pazarında komisyonsuz ve ücretsiz ilan verin.`
     };
   }
 
