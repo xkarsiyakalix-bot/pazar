@@ -114,7 +114,7 @@ const ProfileOverviewPage = () => {
 
     return (
         <ProfileLayout>
-            <div className="flex flex-col gap-0 sm:gap-6">
+            <div className="flex flex-col gap-2 sm:gap-6">
                 {/* Horizontal Profile Header */}
                 <div className="bg-white dark:bg-neutral-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow-md p-4 sm:p-8 border border-neutral-200 dark:border-white/10 transition-all">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10">
@@ -253,7 +253,7 @@ const ProfileOverviewPage = () => {
 
                 {/* Recent Listings */}
                 {recentListings && recentListings.length > 0 && (
-                    <div className="mt-8">
+                    <div className="mt-3 sm:mt-8">
                         <div className="flex items-center justify-between mb-4 px-1 sm:px-0">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100">Tüm İlanlarım</h3>
                             <button
