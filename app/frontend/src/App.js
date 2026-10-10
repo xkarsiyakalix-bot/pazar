@@ -870,7 +870,7 @@ function App() {
             <Route path="/" element={
               <>
                 <SEO />
-                <main className="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-20 sm:pb-6 flex gap-4 sm:gap-6">
+                <main className="max-w-[1400px] mx-auto px-3 sm:px-4 pt-0 pb-20 sm:py-6 sm:pb-6 flex gap-4 sm:gap-6">
                   {/* Sidebar - Not rendered on mobile at all to save DOM size */}
                   {!isMobile && (
                     <div className="hidden lg:block">
