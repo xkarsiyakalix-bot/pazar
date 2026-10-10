@@ -13,6 +13,9 @@ const AdminUsers = () => {
     const [page, setPage] = useState(1);
     const [selectedUser, setSelectedUser] = useState(null); // For Modal
     const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'verified', 'admin', 'pro', 'banned'
+    const [lastSeenFilter, setLastSeenFilter] = useState('all'); // 'all', 'today', '7days', '30days', 'never'
+    const [sortBy, setSortBy] = useState('created_at'); // 'created_at', 'last_seen'
+    const [sortAsc, setSortAsc] = useState(false);
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -135,7 +138,29 @@ const AdminUsers = () => {
             matchesFilter = user.is_commercial === true;
         }
 
-        return matchesSearch && matchesFilter;
+        // Apply last seen filter
+        let matchesLastSeen = true;
+        if (lastSeenFilter === 'today') {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            matchesLastSeen = user.last_seen && new Date(user.last_seen) >= today;
+        } else if (lastSeenFilter === '7days') {
+            const since = new Date();
+            since.setDate(since.getDate() - 7);
+            matchesLastSeen = user.last_seen && new Date(user.last_seen) >= since;
+        } else if (lastSeenFilter === '30days') {
+            const since = new Date();
+            since.setDate(since.getDate() - 30);
+            matchesLastSeen = user.last_seen && new Date(user.last_seen) >= since;
+        } else if (lastSeenFilter === 'never') {
+            matchesLastSeen = !user.last_seen;
+        }
+
+        return matchesSearch && matchesFilter && matchesLastSeen;
+    }).sort((a, b) => {
+        const aVal = a[sortBy] ? new Date(a[sortBy]).getTime() : 0;
+        const bVal = b[sortBy] ? new Date(b[sortBy]).getTime() : 0;
+        return sortAsc ? aVal - bVal : bVal - aVal;
     });
 
     // Pagination
@@ -186,6 +211,19 @@ const AdminUsers = () => {
                             Yasaklı
                         </button>
                     </div>
+
+                    {/* Son Giriş Filtresi */}
+                    <select
+                        value={lastSeenFilter}
+                        onChange={(e) => { setLastSeenFilter(e.target.value); setPage(1); }}
+                        className="px-3 py-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-xl text-sm font-semibold text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-red-500 dark:focus:border-red-700 focus:ring-4 focus:ring-red-500/10 shadow-sm cursor-pointer transition-all"
+                    >
+                        <option value="all">🕐 Tüm Zamanlar</option>
+                        <option value="today">📅 Bugün Aktif</option>
+                        <option value="7days">📅 Son 7 Gün</option>
+                        <option value="30days">📅 Son 30 Gün</option>
+                        <option value="never">🚫 Hiç Giriş Yapmamış</option>
+                    </select>
 
                     <div className="relative group flex-1 md:w-80">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -304,8 +342,32 @@ const AdminUsers = () => {
                                 <th className="px-6 py-4">Sistem ID'leri</th>
                                 <th className="px-6 py-4">Abonelik & Tür</th>
                                 <th className="px-6 py-4 text-center">Hesap Durumu</th>
-                                <th className="px-6 py-4">Kayıt Tarihi</th>
-                                <th className="px-6 py-4">Son Görülme</th>
+                                <th
+                                    className="px-6 py-4 cursor-pointer select-none hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                                    onClick={() => {
+                                        if (sortBy === 'created_at') setSortAsc(a => !a);
+                                        else { setSortBy('created_at'); setSortAsc(false); }
+                                        setPage(1);
+                                    }}
+                                >
+                                    <span className="flex items-center gap-1">
+                                        Kayıt Tarihi
+                                        {sortBy === 'created_at' ? (sortAsc ? ' ↑' : ' ↓') : ' ↕'}
+                                    </span>
+                                </th>
+                                <th
+                                    className="px-6 py-4 cursor-pointer select-none hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                                    onClick={() => {
+                                        if (sortBy === 'last_seen') setSortAsc(a => !a);
+                                        else { setSortBy('last_seen'); setSortAsc(false); }
+                                        setPage(1);
+                                    }}
+                                >
+                                    <span className="flex items-center gap-1">
+                                        Son Görülme
+                                        {sortBy === 'last_seen' ? (sortAsc ? ' ↑' : ' ↓') : ' ↕'}
+                                    </span>
+                                </th>
                                 <th className="px-6 py-4 text-right">Hızlı İşlemler</th>
                             </tr>
                         </thead>
