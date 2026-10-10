@@ -317,7 +317,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                 <meta name="robots" content="noindex, follow" />
                 <link rel="canonical" href="https://www.exvitrin.com/search" />
             </Helmet>
-            <div className="max-w-[1400px] mx-auto px-2 sm:px-4 pt-2 sm:pt-6 pb-2 sm:pb-6">
+            <div className="max-w-[1400px] mx-auto px-2 sm:px-4 pt-0 sm:pt-6 pb-2 sm:pb-6">
 
 
                 {/* Başlık, Filtre ve Sonuç Paneli (Profil & Arama Paneli Tarzı) */}
