@@ -317,48 +317,56 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                 <meta name="robots" content="noindex, follow" />
                 <link rel="canonical" href="https://www.exvitrin.com/search" />
             </Helmet>
-            <div className="max-w-[1400px] mx-auto px-4 py-6">
+            <div className="max-w-[1400px] mx-auto px-4 py-2 sm:py-6">
 
 
                 {/* Başlık ve Sonuç Sayısı */}
-                <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 px-0 sm:px-4 md:px-0">
-                    <div>
-                        <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-neutral-100 mb-2">
-                            {query ? `"${query}" için arama sonuçları` : 'Tüm İlanlar'}
-                        </h1>
-                        <p className="text-gray-600 dark:text-neutral-400">
-                            {results.length} {results.length === 1 ? 'ilan' : 'ilan'} bulundu
-                            {category && category !== 'Tüm Kategoriler' && ` - ${category}`}
-                            {location && location !== 'Türkiye' && ` - ${location}`}
-                        </p>
+                <div className="mb-3 sm:mb-6 flex flex-row items-center justify-between gap-3 px-0 sm:px-4 md:px-0">
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-baseline gap-x-2">
+                            <h1 className="text-base sm:text-xl md:text-3xl font-extrabold text-gray-900 dark:text-neutral-100 tracking-tight truncate">
+                                {query ? `"${query}" Sonuçları` : 'Tüm İlanlar'}
+                            </h1>
+                            <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-neutral-400 whitespace-nowrap">
+                                ({results.length} ilan)
+                            </span>
+                        </div>
+                        {(category && category !== 'Tüm Kategoriler') || (location && location !== 'Türkiye') ? (
+                            <p className="text-[11px] sm:text-xs text-gray-500 dark:text-neutral-400 truncate mt-0.5">
+                                {[
+                                    category && category !== 'Tüm Kategoriler' ? category : null,
+                                    location && location !== 'Türkiye' ? location : null
+                                ].filter(Boolean).join(' • ')}
+                            </p>
+                        ) : null}
                     </div>
 
                     {/* Aramayı Kaydet Butonu */}
                     <button
                         onClick={handleToggleSave}
                         className={`
-                            flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md
-                            /* Mobile Styles: Icon only, circular or small pill */
-                            w-10 h-10 rounded-full p-0
+                            flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md shrink-0
+                            /* Mobile Styles: Compact Icon-only circle */
+                            w-8 h-8 sm:w-10 sm:h-10 rounded-full p-0
                             /* Desktop Styles: Full button */
-                            md:w-auto md:h-auto md:px-6 md:py-2 md:rounded-lg md:font-medium
+                            md:w-auto md:h-auto md:px-5 md:py-2 md:rounded-xl md:font-semibold md:text-sm
                             ${isSaved
                                 ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 border border-red-200 dark:border-rose-500/20'
-                                : 'bg-red-500 text-white hover:bg-red-600'
+                                : 'bg-red-600 text-white hover:bg-red-700'
                             }
                         `}
                         title={isSaved ? 'Aramayı Kaydettiniz' : 'Aramayı Kaydet'}
                     >
                         {isSaved ? (
                             <>
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                                 </svg>
-                                <span className="hidden md:inline">Aramayı Kaydettiniz</span>
+                                <span className="hidden md:inline">Kaydedildi</span>
                             </>
                         ) : (
                             <>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
                                 <span className="hidden md:inline">Aramayı Kaydet</span>
@@ -367,7 +375,7 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                     </button>
                 </div>
 
-                <div className="flex items-center gap-3 mb-6 bg-white dark:bg-neutral-800/50 p-3 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+                <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 bg-white dark:bg-neutral-800/50 p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
                     {/* Mobile/Tablet Filter Button */}
                     <button
                         onClick={() => setShowFilters(true)}
