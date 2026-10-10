@@ -317,83 +317,82 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                 <meta name="robots" content="noindex, follow" />
                 <link rel="canonical" href="https://www.exvitrin.com/search" />
             </Helmet>
-            <div className="max-w-[1400px] mx-auto px-3 sm:px-4 pt-1 sm:pt-6 pb-2 sm:pb-6">
+            <div className="max-w-[1400px] mx-auto px-2 sm:px-4 pt-2 sm:pt-6 pb-2 sm:pb-6">
 
 
-                {/* Başlık ve Sonuç Sayısı */}
-                <div className="mb-2 sm:mb-6 flex flex-row items-center justify-between gap-2 sm:gap-3 px-0 sm:px-4 md:px-0">
-                    <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-baseline gap-x-2">
-                            <h1 className="text-sm sm:text-xl md:text-3xl font-extrabold text-gray-900 dark:text-neutral-100 tracking-tight truncate leading-tight">
-                                {query ? `"${query}" Sonuçları` : 'Tüm İlanlar'}
-                            </h1>
-                            <span className="text-[11px] sm:text-sm font-semibold text-gray-500 dark:text-neutral-400 whitespace-nowrap">
-                                ({results.length} ilan)
-                            </span>
+                {/* Başlık, Filtre ve Sonuç Paneli (Profil & Arama Paneli Tarzı) */}
+                <div className="bg-white dark:bg-neutral-900 rounded-2xl sm:rounded-3xl shadow-sm sm:shadow-md p-3 sm:p-6 mb-3 sm:mb-6 border border-neutral-200/80 dark:border-white/10 transition-all">
+                    <div className="flex items-center justify-between gap-3 mb-2 sm:mb-4">
+                        <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-baseline gap-x-2">
+                                <h1 className="text-base sm:text-2xl md:text-3xl font-black text-gray-900 dark:text-neutral-100 tracking-tight truncate">
+                                    {query ? `"${query}" Sonuçları` : 'Tüm İlanlar'}
+                                </h1>
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-neutral-100 dark:bg-white/10 text-neutral-600 dark:text-neutral-300">
+                                    {results.length} ilan
+                                </span>
+                            </div>
+                            {(category && category !== 'Tüm Kategoriler') || (location && location !== 'Türkiye') ? (
+                                <p className="text-[11px] sm:text-xs text-gray-500 dark:text-neutral-400 truncate mt-0.5">
+                                    {[
+                                        category && category !== 'Tüm Kategoriler' ? category : null,
+                                        location && location !== 'Türkiye' ? location : null
+                                    ].filter(Boolean).join(' • ')}
+                                </p>
+                            ) : null}
                         </div>
-                        {(category && category !== 'Tüm Kategoriler') || (location && location !== 'Türkiye') ? (
-                            <p className="text-[10px] sm:text-xs text-gray-500 dark:text-neutral-400 truncate mt-0.5">
-                                {[
-                                    category && category !== 'Tüm Kategoriler' ? category : null,
-                                    location && location !== 'Türkiye' ? location : null
-                                ].filter(Boolean).join(' • ')}
-                            </p>
-                        ) : null}
+
+                        {/* Aramayı Kaydet Butonu */}
+                        <button
+                            onClick={handleToggleSave}
+                            className={`
+                                flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-md shrink-0
+                                px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm
+                                ${isSaved
+                                    ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20'
+                                    : 'bg-red-600 text-white hover:bg-red-700'
+                                }
+                            `}
+                            title={isSaved ? 'Aramayı Kaydettiniz' : 'Aramayı Kaydet'}
+                        >
+                            {isSaved ? (
+                                <>
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                                    </svg>
+                                    <span>Kaydedildi</span>
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    <span>Kaydet</span>
+                                </>
+                            )}
+                        </button>
                     </div>
 
-                    {/* Aramayı Kaydet Butonu */}
-                    <button
-                        onClick={handleToggleSave}
-                        className={`
-                            flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md shrink-0
-                            /* Mobile Styles: Compact Icon-only circle */
-                            w-8 h-8 sm:w-10 sm:h-10 rounded-full p-0
-                            /* Desktop Styles: Full button */
-                            md:w-auto md:h-auto md:px-5 md:py-2 md:rounded-xl md:font-semibold md:text-sm
-                            ${isSaved
-                                ? 'bg-red-50 dark:bg-rose-500/10 text-red-600 dark:text-rose-400 border border-red-200 dark:border-rose-500/20'
-                                : 'bg-red-600 text-white hover:bg-red-700'
-                            }
-                        `}
-                        title={isSaved ? 'Aramayı Kaydettiniz' : 'Aramayı Kaydet'}
-                    >
-                        {isSaved ? (
-                            <>
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                                </svg>
-                                <span className="hidden md:inline">Kaydedildi</span>
-                            </>
-                        ) : (
-                            <>
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <span className="hidden md:inline">Aramayı Kaydet</span>
-                            </>
-                        )}
-                    </button>
-                </div>
+                    {/* Filtrele Butonu ve Breadcrumb Çubuğu */}
+                    <div className="flex items-center gap-2 pt-2 border-t border-neutral-100 dark:border-white/5">
+                        <button
+                            onClick={() => setShowFilters(true)}
+                            className="xl:hidden flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl shadow-sm transition-all active:scale-95 group shrink-0"
+                        >
+                            <svg className="w-4 h-4 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                            <span className="text-xs font-bold">Filtrele</span>
+                            {(priceRange !== 'all' || condition !== 'all' || sortBy !== 'created_at') && (
+                                <span className="w-4 h-4 bg-yellow-400 text-gray-900 text-[10px] font-bold rounded-full flex items-center justify-center">
+                                    !
+                                </span>
+                            )}
+                        </button>
 
-                <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 bg-white dark:bg-neutral-800/50 p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
-                    {/* Mobile/Tablet Filter Button */}
-                    <button
-                        onClick={() => setShowFilters(true)}
-                        className="xl:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 group shrink-0"
-                    >
-                        <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                        </svg>
-                        <span className="text-sm font-bold">Filtrele</span>
-                        {(priceRange !== 'all' || condition !== 'all' || sortBy !== 'created_at') && (
-                            <span className="w-5 h-5 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                                !
-                            </span>
-                        )}
-                    </button>
-
-                    <div className="flex-1 overflow-hidden">
-                        <Breadcrumb items={breadcrumbItems} />
+                        <div className="flex-1 overflow-hidden">
+                            <Breadcrumb items={breadcrumbItems} />
+                        </div>
                     </div>
                 </div>
 
