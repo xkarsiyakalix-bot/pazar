@@ -116,7 +116,7 @@ const ProfileOverviewPage = () => {
         <ProfileLayout>
             <div className="flex flex-col gap-0 sm:gap-6">
                 {/* Horizontal Profile Header */}
-                <div className="bg-white dark:bg-neutral-800 rounded-none sm:rounded-xl shadow-sm sm:shadow-md p-4 sm:p-8 border-y border-x-0 sm:border border-neutral-200 dark:border-white/10 transition-all">
+                <div className="bg-white dark:bg-neutral-800 rounded-lg sm:rounded-xl shadow-sm sm:shadow-md p-4 sm:p-8 border border-neutral-200 dark:border-white/10 transition-all">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10">
                         {/* Left Side: Avatar + Name + Sub-info */}
                         <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-8 w-full lg:w-auto text-center sm:text-left">
