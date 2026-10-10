@@ -234,7 +234,7 @@ const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:te
   );
 };
 
-const renderLocationLinks = (district, city, linkClassName = "hover:text-red-600 hover:underline transition-colors") => {
+const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-gray-400 hover:decoration-red-500 hover:text-red-600 transition-colors") => {
   const cleanCity = city ? String(city).trim() : '';
   const cleanDistrict = district ? String(district).trim() : '';
 
