@@ -317,22 +317,22 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                 <meta name="robots" content="noindex, follow" />
                 <link rel="canonical" href="https://www.exvitrin.com/search" />
             </Helmet>
-            <div className="max-w-[1400px] mx-auto px-4 py-2 sm:py-6">
+            <div className="max-w-[1400px] mx-auto px-3 sm:px-4 pt-1 sm:pt-6 pb-2 sm:pb-6">
 
 
                 {/* Başlık ve Sonuç Sayısı */}
-                <div className="mb-3 sm:mb-6 flex flex-row items-center justify-between gap-3 px-0 sm:px-4 md:px-0">
+                <div className="mb-2 sm:mb-6 flex flex-row items-center justify-between gap-2 sm:gap-3 px-0 sm:px-4 md:px-0">
                     <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-x-2">
-                            <h1 className="text-base sm:text-xl md:text-3xl font-extrabold text-gray-900 dark:text-neutral-100 tracking-tight truncate">
+                            <h1 className="text-sm sm:text-xl md:text-3xl font-extrabold text-gray-900 dark:text-neutral-100 tracking-tight truncate leading-tight">
                                 {query ? `"${query}" Sonuçları` : 'Tüm İlanlar'}
                             </h1>
-                            <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-neutral-400 whitespace-nowrap">
+                            <span className="text-[11px] sm:text-sm font-semibold text-gray-500 dark:text-neutral-400 whitespace-nowrap">
                                 ({results.length} ilan)
                             </span>
                         </div>
                         {(category && category !== 'Tüm Kategoriler') || (location && location !== 'Türkiye') ? (
-                            <p className="text-[11px] sm:text-xs text-gray-500 dark:text-neutral-400 truncate mt-0.5">
+                            <p className="text-[10px] sm:text-xs text-gray-500 dark:text-neutral-400 truncate mt-0.5">
                                 {[
                                     category && category !== 'Tüm Kategoriler' ? category : null,
                                     location && location !== 'Türkiye' ? location : null
