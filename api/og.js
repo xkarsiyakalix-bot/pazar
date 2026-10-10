@@ -923,7 +923,7 @@ module.exports = async (req, res) => {
             }
             imageWidth = '1200';
             imageHeight = '630';
-            ogType = 'product';
+            ogType = 'website';
             pageUrl = data.slug ? `${SITE_URL}/${data.slug}` : `${SITE_URL}/product/${data.id}`;
           } else {
             // 4. İlan bulunamadıysa: Satıcı mağazası mı?
