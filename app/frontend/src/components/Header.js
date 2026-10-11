@@ -6,11 +6,13 @@ import { t } from '../translations';
 import { getListingUrl, getSellerUrl } from '../utils/slug';
 import { useTheme } from '../contexts/ThemeContext';
 import MobileSearchOverlay from './MobileSearchOverlay';
+import AppDownloadBanner from './AppDownloadBanner';
 
 export const Header = ({ followedSellers = [], setSelectedCategory }) => {
     const isMobile = useIsMobile();
     const navigate = useNavigate();
     const { user, signOut } = useAuth();
+    const [isBannerVisible, setIsBannerVisible] = React.useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
     const [unreadCount, setUnreadCount] = React.useState(0);
@@ -129,6 +131,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
     return (
         <>
             <header className="glass fixed w-full top-0 z-50 border-b border-neutral-200/50 dark:border-white/10 shadow-lg overflow-visible">
+                <AppDownloadBanner onVisibilityChange={setIsBannerVisible} />
                 <div className="max-w-[1400px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4 overflow-visible">
                     {/* Mobile Back Button */}
                     {/* Mobile Back Button - Hide on Home and Product Detail pages */}
@@ -515,7 +518,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                 )}
 
             </header >
-            <div className="h-16 sm:h-20 no-print"></div>
+            <div className={`${isBannerVisible ? 'h-[114px] sm:h-20' : 'h-16 sm:h-20'} no-print transition-all duration-200`}></div>
         </>
     );
 };
