@@ -66,12 +66,13 @@ export const AppDownloadBanner = ({ onVisibilityChange }) => {
                         href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all shadow-sm inline-flex items-center gap-1"
+                        className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all shadow-sm inline-flex items-center gap-1.5"
                     >
-                        <span>İndir</span>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        {/* Android Logo */}
+                        <svg className="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24">
+                            <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-1.0003 0-.5517.4482-1.0003.9993-1.0003.5517 0 .9993.4486.9993 1.0003 0 .5517-.4476 1.0003-.9993 1.0003m-11.046 0c-.5511 0-.9993-.4486-.9993-1.0003 0-.5517.4482-1.0003.9993-1.0003.5517 0 .9993.4486.9993 1.0003 0 .5517-.4476 1.0003-.9993 1.0003m11.4045-6.02l1.996-3.4572c.1086-.188.0441-.4285-.1439-.5371-.1879-.1086-.4285-.0441-.5371.1439l-2.0234 3.5046C15.6318 8.4411 13.8824 8 12 8c-1.8824 0-3.6318.4411-5.1731 1.2156L4.8035 5.711c-.1086-.188-.3492-.2525-.5371-.1439-.188.1086-.2525.3491-.1439.5371l1.996 3.4572C2.6889 11.4552 1 14.7335 1 18.5h22c0-3.7665-1.6889-7.0448-5.1185-9.1786" />
                         </svg>
+                        <span>İndir</span>
                     </a>
 
                     {/* Sağ tarafta paneli kapatma butonu */}
