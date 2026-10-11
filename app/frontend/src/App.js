@@ -3,7 +3,6 @@ import LoadingSpinner from './components/LoadingSpinner';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
-import CookieConsent from './components/CookieConsent';
 import DemoWarningModal from './components/DemoWarningModal';
 const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
 const SellerPage = React.lazy(() => import('./pages/SellerPage'));
@@ -1217,8 +1216,7 @@ function App() {
           <Footer />
           {isMobile && <MobileBottomNavigation />}
 
-          {/* CookieConsent and DemoWarningModal rendered immediately - prevents LCP issues */}
-          <CookieConsent />
+          {/* DemoWarningModal rendered immediately - prevents LCP issues */}
           <DemoWarningModal />
 
           {/* Only truly invisible non-critical components are deferred */}
