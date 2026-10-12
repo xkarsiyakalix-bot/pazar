@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import { fetchUserProfile, updateUserProfile, getUserStats, cancelSubscription, reactivateSubscription } from './api/profile';
+import { fetchUserProfile, updateUserProfile, getUserStats, cancelSubscription, reactivateSubscription, checkUsernameAvailability } from './api/profile';
 import { checkUserListingLimit } from './api/listings';
 import { clearCache } from './utils/cache';
 import { t } from './translations';
@@ -18,11 +18,18 @@ const SectionHeader = ({ title, description }) => (
     </div>
 );
 
-const InputField = ({ label, value, onChange, type = 'text', placeholder, required = false, icon = null, disabled = false }) => (
+const InputField = ({ label, value, onChange, type = 'text', placeholder, required = false, icon = null, disabled = false, rightElement = null, helperText = null, status = null }) => (
     <div className="group space-y-1.5 md:space-y-2">
-        <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider group-focus-within:text-purple-600 transition-colors">
-            {label} {required && <span className="text-red-500">*</span>}
-        </label>
+        <div className="flex items-center justify-between">
+            <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider group-focus-within:text-purple-600 transition-colors">
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            {status === 'available' && (
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    ✓ Kullanılabilir
+                </span>
+            )}
+        </div>
         <div className="relative">
             {icon && (
                 <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none text-neutral-400 dark:text-neutral-500 group-focus-within:text-purple-500 transition-colors">
@@ -36,9 +43,31 @@ const InputField = ({ label, value, onChange, type = 'text', placeholder, requir
                 placeholder={placeholder}
                 required={required}
                 disabled={disabled}
-                className={`w-full ${icon ? 'pl-9 md:pl-11' : 'pl-3 md:pl-4'} pr-4 py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all disabled:opacity-60 disabled:bg-neutral-50 dark:disabled:bg-neutral-900`}
+                className={`w-full ${icon ? 'pl-9 md:pl-11' : 'pl-3 md:pl-4'} ${rightElement ? 'pr-11' : 'pr-4'} py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none transition-all disabled:opacity-60 disabled:bg-neutral-50 dark:disabled:bg-neutral-900 ${
+                    status === 'available'
+                        ? 'border-emerald-500 dark:border-emerald-500/80 focus:ring-4 focus:ring-emerald-500/10'
+                        : status === 'unavailable' || status === 'invalid'
+                        ? 'border-rose-400 dark:border-rose-500/80 focus:ring-4 focus:ring-rose-500/10'
+                        : 'border-neutral-200 dark:border-white/10 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500'
+                }`}
             />
+            {rightElement && (
+                <div className="absolute inset-y-0 right-0 pr-3 md:pr-4 flex items-center pointer-events-none">
+                    {rightElement}
+                </div>
+            )}
         </div>
+        {helperText && (
+            <p className={`text-xs mt-1 font-medium ${
+                status === 'available'
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : status === 'unavailable' || status === 'invalid'
+                    ? 'text-rose-500 dark:text-rose-400'
+                    : 'text-neutral-500 dark:text-neutral-400'
+            }`}>
+                {helperText}
+            </p>
+        )}
     </div>
 );
 
@@ -139,8 +168,54 @@ const SettingsPage = () => {
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [securityData, setSecurityData] = useState({ password: '', confirmPassword: '', email: '' });
     const [changingPassword, setChangingPassword] = useState(false);
-    const [changingEmail, setChangingEmail] = useState(false);
     const [listingLimit, setListingLimit] = useState(null);
+    const [usernameStatus, setUsernameStatus] = useState('idle'); // 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid'
+    const [usernameMessage, setUsernameMessage] = useState('');
+
+    useEffect(() => {
+        const rawUsername = (formData.username || '').trim();
+        if (!rawUsername) {
+            setUsernameStatus('idle');
+            setUsernameMessage('');
+            return;
+        }
+
+        // Kullanıcının kendi mevcut kullanıcı adı ise
+        if (profile?.username && rawUsername.toLowerCase() === profile.username.toLowerCase()) {
+            setUsernameStatus('available');
+            setUsernameMessage('Mevcut kullanıcı adınız');
+            return;
+        }
+
+        if (rawUsername.length < 3) {
+            setUsernameStatus('invalid');
+            setUsernameMessage('Kullanıcı adı en az 3 karakter olmalıdır');
+            return;
+        }
+
+        const usernameRegex = /^[a-zA-Z0-9_.]+$/;
+        if (!usernameRegex.test(rawUsername)) {
+            setUsernameStatus('invalid');
+            setUsernameMessage('Sadece harf, rakam, nokta ve alt çizgi kullanılabilir');
+            return;
+        }
+
+        setUsernameStatus('checking');
+        setUsernameMessage('Kontrol ediliyor...');
+
+        const timer = setTimeout(async () => {
+            const res = await checkUsernameAvailability(rawUsername, user?.id);
+            if (res.available) {
+                setUsernameStatus('available');
+                setUsernameMessage('Bu kullanıcı adı boşta ve kullanılabilir');
+            } else {
+                setUsernameStatus('unavailable');
+                setUsernameMessage(res.message || 'Bu kullanıcı adı zaten alınmış');
+            }
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [formData.username, profile?.username, user?.id]);
 
     // Refs
     const fileInputRef = useRef(null);
@@ -421,6 +496,17 @@ const SettingsPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (usernameStatus === 'unavailable') {
+            showFeedback('Lütfen boşta olan, farklı bir kullanıcı adı seçin.', 'error');
+            return;
+        }
+
+        if (usernameStatus === 'invalid') {
+            showFeedback(usernameMessage || 'Geçerli bir kullanıcı adı girin.', 'error');
+            return;
+        }
+
         setSaving(true);
         try {
             const cleanedData = Object.fromEntries(
@@ -687,6 +773,25 @@ const SettingsPage = () => {
                                             onChange={e => setFormData({ ...formData, username: e.target.value })}
                                             placeholder="Profilinizde görünecek takma adınız"
                                             icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                                            status={usernameStatus}
+                                            helperText={usernameMessage}
+                                            rightElement={
+                                                usernameStatus === 'checking' ? (
+                                                    <div className="w-5 h-5 border-2 border-gray-300 border-t-purple-600 rounded-full animate-spin" />
+                                                ) : usernameStatus === 'available' ? (
+                                                    <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm animate-scale-in" title="Kullanıcı adı kullanılabilir">
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </div>
+                                                ) : (usernameStatus === 'unavailable' || usernameStatus === 'invalid') ? (
+                                                    <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm animate-scale-in" title={usernameMessage}>
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </div>
+                                                ) : null
+                                            }
                                         />
                                         <InputField
                                             label="Telefon"

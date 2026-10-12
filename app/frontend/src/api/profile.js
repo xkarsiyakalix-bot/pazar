@@ -249,3 +249,57 @@ export const reactivateSubscription = async (userId) => {
     if (error) throw error;
     return data;
 };
+
+/**
+ * Check if a username is available
+ * @param {string} username - Username to check
+ * @param {string} [currentUserId] - Optional current user ID to exclude
+ * @returns {Promise<{ available: boolean, message: string }>}
+ */
+export const checkUsernameAvailability = async (username, currentUserId = null) => {
+    const cleanUsername = String(username || '').trim().toLowerCase();
+
+    if (!cleanUsername) {
+        return { available: false, message: '' };
+    }
+
+    if (cleanUsername.length < 3) {
+        return { available: false, message: 'Kullanıcı adı en az 3 karakter olmalıdır' };
+    }
+
+    if (cleanUsername.length > 30) {
+        return { available: false, message: 'Kullanıcı adı en fazla 30 karakter olabilir' };
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9_.]+$/;
+    if (!usernameRegex.test(cleanUsername)) {
+        return { available: false, message: 'Sadece harf, rakam, nokta ve alt çizgi kullanılabilir' };
+    }
+
+    try {
+        let query = supabase
+            .from('profiles')
+            .select('id')
+            .ilike('username', cleanUsername);
+
+        if (currentUserId) {
+            query = query.neq('id', currentUserId);
+        }
+
+        const { data, error } = await query.limit(1);
+
+        if (error) {
+            console.error('Error checking username availability:', error);
+            return { available: false, message: 'Kontrol edilemedi' };
+        }
+
+        const isAvailable = !data || data.length === 0;
+        return {
+            available: isAvailable,
+            message: isAvailable ? 'Bu kullanıcı adı kullanılabilir' : 'Bu kullanıcı adı zaten alınmış'
+        };
+    } catch (err) {
+        console.error('Check username exception:', err);
+        return { available: false, message: 'Bir hata oluştu' };
+    }
+};

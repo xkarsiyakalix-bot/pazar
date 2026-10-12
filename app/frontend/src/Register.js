@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { t } from './translations';
+import { checkUsernameAvailability } from './api/profile';
 
 function Register() {
     const navigate = useNavigate();
@@ -13,10 +14,50 @@ function Register() {
         password: '',
         confirmPassword: ''
     });
+    const [usernameStatus, setUsernameStatus] = useState('idle'); // 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid'
+    const [usernameMessage, setUsernameMessage] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
+
+    useEffect(() => {
+        const rawUsername = formData.username.trim();
+        if (!rawUsername) {
+            setUsernameStatus('idle');
+            setUsernameMessage('');
+            return;
+        }
+
+        if (rawUsername.length < 3) {
+            setUsernameStatus('invalid');
+            setUsernameMessage('Kullanıcı adı en az 3 karakter olmalıdır');
+            return;
+        }
+
+        const usernameRegex = /^[a-zA-Z0-9_.]+$/;
+        if (!usernameRegex.test(rawUsername)) {
+            setUsernameStatus('invalid');
+            setUsernameMessage('Sadece harf, rakam, nokta ve alt çizgi kullanılabilir');
+            return;
+        }
+
+        setUsernameStatus('checking');
+        setUsernameMessage('Kontrol ediliyor...');
+
+        const timer = setTimeout(async () => {
+            const res = await checkUsernameAvailability(rawUsername);
+            if (res.available) {
+                setUsernameStatus('available');
+                setUsernameMessage('Bu kullanıcı adı boşta ve kullanılabilir');
+            } else {
+                setUsernameStatus('unavailable');
+                setUsernameMessage(res.message || 'Bu kullanıcı adı zaten alınmış');
+            }
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [formData.username]);
 
     const handleGoogleSignUp = async () => {
         setError('');
@@ -68,6 +109,17 @@ function Register() {
         // Basic field check
         if (!formData.name || !formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
             setError('Lütfen tüm alanları doldurun');
+            return;
+        }
+
+        // Username availability check
+        if (usernameStatus === 'unavailable') {
+            setError('Lütfen boşta olan, farklı bir kullanıcı adı seçin.');
+            return;
+        }
+
+        if (usernameStatus === 'invalid') {
+            setError(usernameMessage || 'Geçerli bir kullanıcı adı girin.');
             return;
         }
 
@@ -196,18 +248,67 @@ function Register() {
                         </div>
 
                         <div>
-                            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                                Takma İsim (Kullanıcı Adı)
-                            </label>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                value={formData.username}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
-                                placeholder="Örn. ahmet123"
-                            />
+                            <div className="flex items-center justify-between mb-2">
+                                <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                                    Takma İsim (Kullanıcı Adı)
+                                </label>
+                                {usernameStatus === 'available' && (
+                                    <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                                        ✓ Kullanılabilir
+                                    </span>
+                                )}
+                            </div>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    className={`w-full pl-4 pr-11 py-3 border rounded-lg transition outline-none focus:ring-2 ${
+                                        usernameStatus === 'available'
+                                            ? 'border-emerald-500 bg-emerald-50/20 focus:ring-emerald-400 focus:border-emerald-500'
+                                            : usernameStatus === 'unavailable' || usernameStatus === 'invalid'
+                                            ? 'border-rose-400 bg-rose-50/20 focus:ring-rose-400 focus:border-rose-500'
+                                            : 'border-gray-300 focus:ring-red-400 focus:border-transparent'
+                                    }`}
+                                    placeholder="Örn. ahmet123"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                />
+
+                                {/* TikTok Tarzı Sağ Durum İkonu */}
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                                    {usernameStatus === 'checking' && (
+                                        <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
+                                    )}
+                                    {usernameStatus === 'available' && (
+                                        <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm animate-scale-in" title="Kullanıcı adı boşta ve kullanılabilir">
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                    {(usernameStatus === 'unavailable' || usernameStatus === 'invalid') && (
+                                        <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm animate-scale-in" title={usernameMessage}>
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            {usernameMessage && (
+                                <p className={`text-xs mt-1.5 font-medium flex items-center gap-1 ${
+                                    usernameStatus === 'available'
+                                        ? 'text-emerald-600'
+                                        : usernameStatus === 'unavailable' || usernameStatus === 'invalid'
+                                        ? 'text-rose-600'
+                                        : 'text-gray-500'
+                                }`}>
+                                    {usernameMessage}
+                                </p>
+                            )}
                         </div>
 
                         <div>
