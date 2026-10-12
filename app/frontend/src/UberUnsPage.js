@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { t } from './translations';
 import { fetchTotalActiveListingsCount } from './api/listings';
 import { fetchTotalUserCount } from './api/profile';
-import { supabase } from './lib/supabase';
 
 function UberUnsPage() {
     const navigate = useNavigate();
@@ -21,16 +20,12 @@ function UberUnsPage() {
         };
         loadCounts();
 
-        const subscription = supabase
-            .channel('public:listings')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'listings' }, () => {
-                fetchTotalActiveListingsCount().then(setListingCount);
-            })
-            .subscribe();
+        // Poll every 60 seconds instead of Realtime subscription (maliyet tasarrufu)
+        const interval = setInterval(() => {
+            fetchTotalActiveListingsCount().then(setListingCount);
+        }, 60000);
 
-        return () => {
-            supabase.removeChannel(subscription);
-        };
+        return () => clearInterval(interval);
     }, []);
 
     const stats = [

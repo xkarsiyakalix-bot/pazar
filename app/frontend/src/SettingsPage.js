@@ -168,6 +168,7 @@ const SettingsPage = () => {
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [securityData, setSecurityData] = useState({ password: '', confirmPassword: '', email: '' });
     const [changingPassword, setChangingPassword] = useState(false);
+    const [changingEmail, setChangingEmail] = useState(false);
     const [listingLimit, setListingLimit] = useState(null);
     const [usernameStatus, setUsernameStatus] = useState('idle'); // 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid'
     const [usernameMessage, setUsernameMessage] = useState('');

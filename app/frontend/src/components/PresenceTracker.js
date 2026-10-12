@@ -148,8 +148,8 @@ export const PresenceTracker = () => {
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
                     await track();
-                    // Heartbeat every 60 seconds
-                    intervalRef.current = setInterval(track, 60000);
+                    // Heartbeat every 5 minutes (reduced from 60s for cost savings)
+                    intervalRef.current = setInterval(track, 300000);
                 }
             });
 
