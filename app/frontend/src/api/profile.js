@@ -48,12 +48,25 @@ export const fetchUserProfileByNumber = async (userNumber) => {
  */
 export const updateUserProfile = async (userId, updates) => {
     console.log('Updating profile for:', userId, 'with updates:', JSON.stringify(updates, null, 2));
-    const { data, error } = await supabase
+    let { data, error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', userId)
         .select()
         .single();
+
+    if (error && error.message && error.message.includes('username_changed_at')) {
+        console.warn('username_changed_at column not found, retrying without it...');
+        const { username_changed_at, ...fallbackUpdates } = updates;
+        const retry = await supabase
+            .from('profiles')
+            .update(fallbackUpdates)
+            .eq('id', userId)
+            .select()
+            .single();
+        data = retry.data;
+        error = retry.error;
+    }
 
     if (error) {
         console.error('Error updating profile (Supabase):', JSON.stringify(error, null, 2));

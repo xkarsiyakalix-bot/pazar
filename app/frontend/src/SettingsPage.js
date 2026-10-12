@@ -217,6 +217,27 @@ const SettingsPage = () => {
         return () => clearTimeout(timer);
     }, [formData.username, profile?.username, user?.id]);
 
+    // Kullanıcı adı ayda 1 defa (30 günde bir) değiştirilebilir
+    const getUsernameChangeInfo = () => {
+        if (!profile?.username_changed_at) {
+            return { canChange: true, daysRemaining: 0 };
+        }
+        const lastChanged = new Date(profile.username_changed_at).getTime();
+        if (isNaN(lastChanged)) {
+            return { canChange: true, daysRemaining: 0 };
+        }
+        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+        const diff = Date.now() - lastChanged;
+
+        if (diff < thirtyDaysMs) {
+            const daysRemaining = Math.max(1, Math.ceil((thirtyDaysMs - diff) / (24 * 60 * 60 * 1000)));
+            return { canChange: false, daysRemaining };
+        }
+        return { canChange: true, daysRemaining: 0 };
+    };
+
+    const { canChange: canChangeUsername, daysRemaining: usernameDaysRemaining } = getUsernameChangeInfo();
+
     // Refs
     const fileInputRef = useRef(null);
     const logoInputRef = useRef(null);
@@ -497,14 +518,23 @@ const SettingsPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (usernameStatus === 'unavailable') {
-            showFeedback('Lütfen boşta olan, farklı bir kullanıcı adı seçin.', 'error');
-            return;
-        }
+        const isUsernameChanged = (formData.username || '').trim().toLowerCase() !== (profile?.username || '').trim().toLowerCase();
 
-        if (usernameStatus === 'invalid') {
-            showFeedback(usernameMessage || 'Geçerli bir kullanıcı adı girin.', 'error');
-            return;
+        if (isUsernameChanged) {
+            if (!canChangeUsername) {
+                showFeedback(`Kullanıcı adınızı ayda 1 defa değiştirebilirsiniz. Bir sonraki değişiklik için ${usernameDaysRemaining} gün kaldı.`, 'error');
+                return;
+            }
+
+            if (usernameStatus === 'unavailable') {
+                showFeedback('Lütfen boşta olan, farklı bir kullanıcı adı seçin.', 'error');
+                return;
+            }
+
+            if (usernameStatus === 'invalid') {
+                showFeedback(usernameMessage || 'Geçerli bir kullanıcı adı girin.', 'error');
+                return;
+            }
         }
 
         setSaving(true);
@@ -523,7 +553,8 @@ const SettingsPage = () => {
                 store_description: storeDescription,
                 store_logo: storeLogo,
                 store_banner: storeBanner,
-                working_hours: workingHours
+                working_hours: workingHours,
+                ...(isUsernameChanged ? { username_changed_at: new Date().toISOString() } : {})
             };
 
             await updateUserProfile(profile.id, finalUpdates);
@@ -772,11 +803,22 @@ const SettingsPage = () => {
                                             value={formData.username}
                                             onChange={e => setFormData({ ...formData, username: e.target.value })}
                                             placeholder="Profilinizde görünecek takma adınız"
+                                            disabled={!canChangeUsername}
                                             icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-                                            status={usernameStatus}
-                                            helperText={usernameMessage}
+                                            status={canChangeUsername ? usernameStatus : null}
+                                            helperText={
+                                                !canChangeUsername
+                                                    ? `🔒 Kullanıcı adınızı ayda 1 kez değiştirebilirsiniz. Değişiklik için ${usernameDaysRemaining} gün kaldı.`
+                                                    : (usernameMessage || 'ℹ️ Kullanıcı adınızı 30 günde bir kez değiştirebilirsiniz.')
+                                            }
                                             rightElement={
-                                                usernameStatus === 'checking' ? (
+                                                !canChangeUsername ? (
+                                                    <div className="w-6 h-6 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center" title={`Kullanıcı adınızı değiştirmek için ${usernameDaysRemaining} gün kaldı`}>
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                        </svg>
+                                                    </div>
+                                                ) : usernameStatus === 'checking' ? (
                                                     <div className="w-5 h-5 border-2 border-gray-300 border-t-purple-600 rounded-full animate-spin" />
                                                 ) : usernameStatus === 'available' ? (
                                                     <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm animate-scale-in" title="Kullanıcı adı kullanılabilir">
