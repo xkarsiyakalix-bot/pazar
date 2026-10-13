@@ -444,14 +444,26 @@ const SettingsPage = () => {
             const fileName = `${user.id}-${Date.now()}.webp`;
             const filePath = `avatars/${fileName}`;
 
-            const { error: uploadError } = await supabase.storage.from('profile-images').upload(filePath, optimizedFile, {
-                cacheControl: '31536000',
-                upsert: false,
-                contentType: 'image/webp'
-            });
-            if (uploadError) throw uploadError;
+            let publicUrl = null;
+            try {
+                const { uploadToR2 } = await import('./api/storage');
+                publicUrl = await uploadToR2(optimizedFile, filePath);
+            } catch (r2Err) {
+                console.warn('R2 avatar upload failed, falling back to Supabase:', r2Err);
+            }
 
-            const { data: { publicUrl } } = supabase.storage.from('profile-images').getPublicUrl(filePath);
+            if (!publicUrl) {
+                const { error: uploadError } = await supabase.storage.from('profile-images').upload(filePath, optimizedFile, {
+                    cacheControl: '31536000',
+                    upsert: false,
+                    contentType: 'image/webp'
+                });
+                if (uploadError) throw uploadError;
+
+                const { data: { publicUrl: sbUrl } } = supabase.storage.from('profile-images').getPublicUrl(filePath);
+                publicUrl = sbUrl;
+            }
+
             await updateUserProfile(profile.id, { avatar_url: publicUrl });
 
             showFeedback('Profil fotoğrafı güncellendi!');
@@ -494,14 +506,25 @@ const SettingsPage = () => {
             const fileName = `${user.id}-${type}-${Date.now()}.webp`;
             const filePath = `store/${fileName}`;
 
-            const { error: uploadError } = await supabase.storage.from('listing-images').upload(filePath, optimizedFile, {
-                cacheControl: '31536000',
-                upsert: false,
-                contentType: 'image/webp'
-            });
-            if (uploadError) throw uploadError;
+            let publicUrl = null;
+            try {
+                const { uploadToR2 } = await import('./api/storage');
+                publicUrl = await uploadToR2(optimizedFile, filePath);
+            } catch (r2Err) {
+                console.warn(`R2 ${type} upload failed, falling back to Supabase:`, r2Err);
+            }
 
-            const { data: { publicUrl } } = supabase.storage.from('listing-images').getPublicUrl(filePath);
+            if (!publicUrl) {
+                const { error: uploadError } = await supabase.storage.from('listing-images').upload(filePath, optimizedFile, {
+                    cacheControl: '31536000',
+                    upsert: false,
+                    contentType: 'image/webp'
+                });
+                if (uploadError) throw uploadError;
+
+                const { data: { publicUrl: sbUrl } } = supabase.storage.from('listing-images').getPublicUrl(filePath);
+                publicUrl = sbUrl;
+            }
 
             if (isLogo) setStoreLogo(publicUrl);
             else setStoreBanner(publicUrl);

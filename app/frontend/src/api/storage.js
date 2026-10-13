@@ -2,7 +2,45 @@ import { supabase } from '../lib/supabase';
 import { processImagesForUpload } from '../utils/imageOptimization';
 
 /**
- * Upload multiple images to Supabase Storage
+ * Convert Blob or File to Base64 string
+ */
+const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+};
+
+/**
+ * Upload single image to Cloudflare R2 via serverless endpoint
+ */
+export const uploadToR2 = async (fileOrBlob, filePath) => {
+    const base64 = await blobToBase64(fileOrBlob);
+    const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            fileName: filePath,
+            base64,
+            contentType: 'image/webp'
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`R2 upload failed with HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.url) {
+        throw new Error('R2 response missing url');
+    }
+    return data.url;
+};
+
+/**
+ * Upload multiple images: primary Cloudflare R2, fallback Supabase Storage
  * @param {File[]} files - Array of image files to upload
  * @param {string} userId - User ID for organizing files
  * @returns {Promise<string[]>} Array of public URLs
@@ -16,7 +54,7 @@ export const uploadListingImages = async (files, userId) => {
     const maxFileSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-    // Optimize images before upload
+    // Optimize images before upload (converts to WebP client-side)
     console.log('Optimizing images...');
     const optimizedFiles = await processImagesForUpload(files, {
         maxWidth: 1200,
@@ -26,13 +64,11 @@ export const uploadListingImages = async (files, userId) => {
     });
 
     for (const file of optimizedFiles) {
-        // Validate file size (after optimization)
         if (file.size > maxFileSize) {
             console.warn(`File ${file.name} is still too large (${file.size} bytes) after optimization. Skipping.`);
             continue;
         }
 
-        // Validate file type
         if (!allowedTypes.includes(file.type)) {
             console.warn(`File ${file.name} has invalid type (${file.type}). Skipping.`);
             continue;
@@ -42,30 +78,42 @@ export const uploadListingImages = async (files, userId) => {
             // Generate unique filename with .webp extension
             const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
 
-            // Upload to Supabase Storage
-            const { data, error } = await supabase.storage
-                .from('listing-images')
-                .upload(fileName, file, {
-                    cacheControl: '31536000', // 1 year cache
-                    upsert: false,
-                    contentType: 'image/webp'
-                });
+            let publicUrl = null;
 
-            if (error) {
-                console.error(`Error uploading ${file.name}:`, error);
-                throw error;
+            // 1. Try uploading to Cloudflare R2 (ultra-fast CDN, $0 egress, $0 transform fee)
+            try {
+                publicUrl = await uploadToR2(file, fileName);
+                console.log(`Successfully uploaded to Cloudflare R2: ${publicUrl}`);
+            } catch (r2Error) {
+                console.warn('R2 upload failed, falling back to Supabase Storage:', r2Error);
             }
 
-            // Get public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('listing-images')
-                .getPublicUrl(fileName);
+            // 2. Fallback to Supabase Storage if Cloudflare R2 is unavailable
+            if (!publicUrl) {
+                const { error } = await supabase.storage
+                    .from('listing-images')
+                    .upload(fileName, file, {
+                        cacheControl: '31536000',
+                        upsert: false,
+                        contentType: 'image/webp'
+                    });
+
+                if (error) {
+                    console.error(`Error uploading ${file.name} to Supabase:`, error);
+                    throw error;
+                }
+
+                const { data: { publicUrl: supabaseUrl } } = supabase.storage
+                    .from('listing-images')
+                    .getPublicUrl(fileName);
+
+                publicUrl = supabaseUrl;
+                console.log(`Successfully uploaded to Supabase Storage: ${publicUrl}`);
+            }
 
             uploadedUrls.push(publicUrl);
-            console.log(`Successfully uploaded: ${fileName}`);
         } catch (error) {
             console.error(`Failed to upload ${file.name}:`, error);
-            // Continue with other files even if one fails
         }
     }
 
@@ -73,7 +121,7 @@ export const uploadListingImages = async (files, userId) => {
 };
 
 /**
- * Delete images from Supabase Storage
+ * Delete images from Cloudflare R2 or Supabase Storage
  * @param {string[]} imageUrls - Array of image URLs to delete
  * @param {string} userId - User ID for permission check
  */
@@ -82,28 +130,24 @@ export const deleteListingImages = async (imageUrls, userId) => {
         return;
     }
 
-    const filePaths = imageUrls.map(url => {
-        // Extract file path from public URL
-        const urlParts = url.split('/listing-images/');
-        return urlParts[1];
-    }).filter(Boolean);
-
-    if (filePaths.length === 0) {
-        return;
-    }
-
-    try {
-        const { error } = await supabase.storage
-            .from('listing-images')
-            .remove(filePaths);
-
-        if (error) {
-            console.error('Error deleting images:', error);
-            throw error;
+    for (const url of imageUrls) {
+        try {
+            if (url.includes('images.exvitrin.com/')) {
+                // Delete from Cloudflare R2
+                await fetch('/api/delete-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+            } else if (url.includes('/listing-images/')) {
+                // Delete from Supabase Storage
+                const path = url.split('/listing-images/')[1];
+                if (path) {
+                    await supabase.storage.from('listing-images').remove([path]);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to delete image:', url, error);
         }
-
-        console.log(`Successfully deleted ${filePaths.length} images`);
-    } catch (error) {
-        console.error('Failed to delete images:', error);
     }
 };
