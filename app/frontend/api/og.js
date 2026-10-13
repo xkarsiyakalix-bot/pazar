@@ -1,7 +1,76 @@
 const { createClient } = require('@supabase/supabase-js');
+const { turkeyDistricts } = require('./turkey_districts');
 
 const SITE_URL = 'https://www.exvitrin.com';
 const LOGO_URL = `${SITE_URL}/logo_exvitrin_2026_small.png`;
+
+function cityToSlug(cityName) {
+  if (!cityName) return '';
+  return String(cityName)
+    .replace(/İ/g, 'i').replace(/I/g, 'i').replace(/ı/g, 'i').toLowerCase()
+    .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+    .replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+const TURKISH_CITIES = Object.keys(turkeyDistricts);
+
+function resolveCityAndDistrict(citySlug) {
+  if (!citySlug) return { city: null, district: null, canonicalSlug: '' };
+  const cleanSlug = cityToSlug(citySlug);
+
+  // 1. Direct city match
+  for (const c of TURKISH_CITIES) {
+    if (cityToSlug(c) === cleanSlug) {
+      return { city: c, district: null, canonicalSlug: cleanSlug };
+    }
+  }
+
+  // 2. City + District match
+  for (const c of TURKISH_CITIES) {
+    const cSlug = cityToSlug(c);
+    if (cleanSlug.startsWith(cSlug + '-')) {
+      const rawDistSlug = cleanSlug.slice(cSlug.length + 1);
+      const districts = turkeyDistricts[c] || [];
+
+      const exactMatch = districts.find(d => cityToSlug(d) === rawDistSlug);
+      if (exactMatch) {
+        return { city: c, district: exactMatch, canonicalSlug: `${cSlug}-${cityToSlug(exactMatch)}` };
+      }
+
+      if (rawDistSlug === 'merkez') {
+        const merkezMatch = districts.find(d => cityToSlug(d).includes('merkez'));
+        if (merkezMatch) {
+          return { city: c, district: merkezMatch, canonicalSlug: `${cSlug}-${cityToSlug(merkezMatch)}` };
+        }
+      }
+
+      const cleanRaw = rawDistSlug.replace(/[^a-z0-9]/g, '');
+      const subMatch = districts.find(d => {
+        const dClean = cityToSlug(d).replace(/[^a-z0-9]/g, '');
+        return dClean === cleanRaw || dClean.includes(cleanRaw) || cleanRaw.includes(dClean);
+      });
+      if (subMatch) {
+        return { city: c, district: subMatch, canonicalSlug: `${cSlug}-${cityToSlug(subMatch)}` };
+      }
+
+      const fallbackDist = rawDistSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      return { city: c, district: fallbackDist, canonicalSlug: cleanSlug };
+    }
+  }
+
+  // 3. District-only lookup
+  for (const c of TURKISH_CITIES) {
+    const districts = turkeyDistricts[c] || [];
+    const distMatch = districts.find(d => cityToSlug(d) === cleanSlug);
+    if (distMatch) {
+      return { city: c, district: distMatch, canonicalSlug: `${cityToSlug(c)}-${cityToSlug(distMatch)}` };
+    }
+  }
+
+  return { city: citySlug, district: null, canonicalSlug: cleanSlug };
+}
+
 
 // ============================
 // KATEGORI AÇIKLAMALARI
@@ -742,15 +811,6 @@ module.exports = async (req, res) => {
       }
     }
     if (slug) {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
-      if (isUuid) {
-        const { data, error } = await supabase
-          .from('listings')
-          .select('id, title, description, images, price, category, sub_category, condition, city, slug')
-          .eq('id', slug)
-          .single();
-        if (!error && data) return data;
-      }
       const { data, error } = await supabase
         .from('listings')
         .select('id, title, description, images, price, category, sub_category, condition, city, slug')
@@ -761,7 +821,7 @@ module.exports = async (req, res) => {
     return null;
   };
 
-  // --- ŞEHİR / KATEGORİ SAYFASI ---
+  // --- ŞEHİR / İLÇE / KATEGORİ SAYFASI ---
   if (type === 'city' || (path && path.startsWith('/sehir'))) {
     const parts = (path || '').replace(/^\//, '').split('/');
     if (parts[0] === 'sehirler') {
@@ -770,19 +830,30 @@ module.exports = async (req, res) => {
     } else {
       const citySlug = parts[1] || '';
       const catSlug = parts[2] || '';
-      const cityName = citySlug ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1) : '';
-      const catName = catSlug ? catSlug.charAt(0).toUpperCase() + catSlug.slice(1) : '';
+      const { city: resolvedCity, district: resolvedDistrict, canonicalSlug } = resolveCityAndDistrict(citySlug);
+      const catName = catSlug ? catSlug.charAt(0).toUpperCase() + catSlug.slice(1).replace(/-/g, ' ') : '';
+      const locationLabel = resolvedDistrict ? `${resolvedCity} ${resolvedDistrict}` : (resolvedCity || citySlug);
 
-      if (cityName && catName) {
-        title = `${cityName} ${catName} İlanları - Satılık & Kiralık | ExVitrin`;
-        description = `${cityName} ${catName} ilanları ExVitrin'de! ${cityName} genelinde en uygun fiyatlı satılık ve kiralık ${catName.toLowerCase()} fırsatları.`;
-      } else if (cityName) {
-        title = `${cityName} İkinci El ve Sıfır İlanlar | ExVitrin`;
-        description = `${cityName} ikinci el ve sıfır ilanlar ExVitrin'de! ${cityName} genelinde araba, emlak, elektronik ve ücretsiz ilanlar.`;
+      if (locationLabel && catName) {
+        title = `${locationLabel} ${catName} İlanları - Satılık & Kiralık | ExVitrin`;
+        description = `${locationLabel} ${catName} ilanları ExVitrin'de! ${locationLabel} genelinde en uygun fiyatlı satılık ve kiralık ${catName.toLowerCase()} fırsatları.`;
+      } else if (resolvedDistrict && resolvedCity) {
+        title = `${resolvedCity} ${resolvedDistrict} İkinci El ve Sıfır İlanlar | ExVitrin`;
+        description = `${resolvedCity} ${resolvedDistrict} satılık ve kiralık ilanlar ExVitrin'de! ${resolvedDistrict} bölgesindeki tüm ikinci el eşya, araba, emlak ve ücretsiz ilanlar.`;
+      } else if (resolvedCity) {
+        title = `${resolvedCity} İkinci El ve Sıfır İlanlar - Alım & Satım | ExVitrin`;
+        description = `${resolvedCity} ikinci el ve sıfır ilanlar ExVitrin'de! ${resolvedCity} genelinde araba, emlak, elektronik ve ücretsiz ilanlar.`;
+      }
+
+      if (canonicalSlug) {
+        pageUrl = `${SITE_URL}/sehir/${canonicalSlug}${catSlug ? `/${catSlug}` : ''}`;
       }
     }
-    pageUrl = `${SITE_URL}${path || ''}`;
+    if (!pageUrl) {
+      pageUrl = `${SITE_URL}${path || ''}`;
+    }
     image = LOGO_URL;
+
 
   // --- KATEGORİ SAYFASI ---
   } else if (type === 'category' && path) {

@@ -14,8 +14,19 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+const { turkeyDistricts } = require('../api/turkey_districts');
 
 const SITE_URL = 'https://www.exvitrin.com';
+
+function cityToSlug(cityName) {
+  if (!cityName) return '';
+  return String(cityName)
+    .replace(/İ/g, 'i').replace(/I/g, 'i').replace(/ı/g, 'i').toLowerCase()
+    .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+    .replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
 
 async function generateSitemap() {
   console.log('Generating sitemap...');
@@ -165,13 +176,25 @@ async function generateSitemap() {
     // Hub page
     addUrl('/sehirler', 'daily', '0.8');
 
-    // City & City+Category pages
+    // 81 Cities and 978 Districts Pages
+    const allCities = Object.keys(turkeyDistricts);
+    allCities.forEach(city => {
+      const citySlug = cityToSlug(city);
+      addUrl(`/sehir/${citySlug}`, 'daily', '0.8');
+      const districts = turkeyDistricts[city] || [];
+      districts.forEach(dist => {
+        const distSlug = cityToSlug(dist);
+        addUrl(`/sehir/${citySlug}-${distSlug}`, 'daily', '0.8');
+      });
+    });
+
+    // Top City & Category pages
     topCities.forEach(city => {
-      addUrl(`/sehir/${city}`, 'daily', '0.8');
       topCategories.forEach(cat => {
         addUrl(`/sehir/${city}/${cat}`, 'daily', '0.8');
       });
     });
+
 
     // Listings
     if (listings) {

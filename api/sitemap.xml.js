@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const { turkeyDistricts } = require('./turkey_districts');
 
 const SITE_URL = 'https://www.exvitrin.com';
 
@@ -54,6 +55,16 @@ function slugifyBrand(text) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
 }
+
+function cityToSlug(cityName) {
+  if (!cityName) return '';
+  return String(cityName)
+    .replace(/İ/g, 'i').replace(/I/g, 'i').replace(/ı/g, 'i').toLowerCase()
+    .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+    .replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
 
 module.exports = async (req, res) => {
   const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://wwzeqleaekdugsnknbbl.supabase.co';
@@ -120,6 +131,31 @@ module.exports = async (req, res) => {
   </url>
 `;
     }
+
+    // 81 İl ve 978 İlçe Sayfaları (Google Search Console SEO)
+    const cities = Object.keys(turkeyDistricts);
+    for (const city of cities) {
+      const citySlug = cityToSlug(city);
+      xml += `  <url>
+    <loc>${SITE_URL}/sehir/${citySlug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+      const districts = turkeyDistricts[city] || [];
+      for (const dist of districts) {
+        const distSlug = cityToSlug(dist);
+        xml += `  <url>
+    <loc>${SITE_URL}/sehir/${citySlug}-${distSlug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+      }
+    }
+
 
     // Marka sayfaları (statik + dinamik custom)
     for (const slug of customBrandSlugs) {

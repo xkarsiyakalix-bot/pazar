@@ -12,10 +12,12 @@ import {
   categoryToSlug, 
   getCityCategorySEO, 
   getCityVariants,
+  resolveCityAndDistrict,
   TOP_SEO_CITIES, 
   TOP_SEO_CATEGORIES 
 } from '../utils/cityUtils';
 
+import { turkeyDistricts } from '../data/turkey_districts';
 import { categories as allCategories } from '../data/categories';
 import { getTurkishCities, getCategoryTranslation } from '../translations';
 
@@ -23,30 +25,20 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
   const { citySlug, categorySlug, subCategorySlug } = useParams();
   const navigate = useNavigate();
 
-  // Parse city and optional district from citySlug (e.g., "denizli-pamukkale" or "denizli")
-  const { parsedCity, parsedDistrict } = useMemo(() => {
-    if (!citySlug) return { parsedCity: null, parsedDistrict: null };
-    const directCity = slugToCity(citySlug);
-    if (directCity) {
-      return { parsedCity: directCity, parsedDistrict: null };
-    }
-
-    // Try finding city as prefix of citySlug (e.g., "denizli-pamukkale" -> city="Denizli", district="Pamukkale")
-    const cleanSlug = citySlug.toLowerCase().trim();
-    for (const c of TURKISH_CITIES) {
-      const cSlug = cityToSlug(c);
-      if (cleanSlug.startsWith(cSlug + '-')) {
-        const distSlug = cleanSlug.slice(cSlug.length + 1);
-        const distFormatted = distSlug
-          .split('-')
-          .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-          .join(' ');
-        return { parsedCity: c, parsedDistrict: distFormatted };
-      }
-    }
-
-    return { parsedCity: citySlug, parsedDistrict: null };
+  // Resolve city and optional district from citySlug (e.g., 'izmir-karsiyaka', 'izmir-bornova', 'istanbul-kadikoy')
+  // Automatically fixes typos and spelling errors to official Turkish names
+  const { city: parsedCity, district: parsedDistrict, canonicalSlug } = useMemo(() => {
+    return resolveCityAndDistrict(citySlug);
   }, [citySlug]);
+
+  // If user entered a non-canonical or misspelled URL (e.g. /sehir/izmir-karşıyaka or /sehir/izmir-karsiyakaa),
+  // smoothly normalize the browser URL to the canonical format
+  useEffect(() => {
+    if (canonicalSlug && citySlug && citySlug.toLowerCase() !== canonicalSlug.toLowerCase()) {
+      const target = `/sehir/${canonicalSlug}${categorySlug ? `/${categorySlug}` : ''}${subCategorySlug ? `/${subCategorySlug}` : ''}`;
+      navigate(target, { replace: true });
+    }
+  }, [canonicalSlug, citySlug, categorySlug, subCategorySlug, navigate]);
 
   const city = parsedCity;
   const category = useMemo(() => slugToCategory(categorySlug), [categorySlug]);
@@ -89,6 +81,9 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
 
         const distSet = new Set();
         const targetDist = (selectedDistrict || parsedDistrict || '').toLowerCase().trim();
+
+        // Always include all official districts for this city
+        (turkeyDistricts[activeCity] || []).forEach(d => distSet.add(d));
 
         (data || []).forEach(item => {
           if (item.district && item.district.trim()) {
@@ -238,26 +233,28 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
     { name: 'Şehirler', url: '/sehirler' },
     { name: city || citySlug, url: `/sehir/${cityToSlug(city || citySlug)}` }
   ];
+  const effectiveSlug = canonicalSlug || citySlug;
+
   if (parsedDistrict) {
     breadcrumbs.push({
       name: parsedDistrict,
-      url: `/sehir/${citySlug}`
+      url: `/sehir/${effectiveSlug}`
     });
   }
   if (category) {
     breadcrumbs.push({
       name: category,
-      url: `/sehir/${citySlug}/${categorySlug}`
+      url: `/sehir/${effectiveSlug}/${categorySlug}`
     });
   }
   if (subCategory) {
     breadcrumbs.push({
       name: subCategory,
-      url: `/sehir/${citySlug}/${categorySlug}/${subCategorySlug}`
+      url: `/sehir/${effectiveSlug}/${categorySlug}/${subCategorySlug}`
     });
   }
 
-  const currentPath = `/sehir/${citySlug}${categorySlug ? `/${categorySlug}` : ''}${subCategorySlug ? `/${subCategorySlug}` : ''}`;
+  const currentPath = `/sehir/${effectiveSlug}${categorySlug ? `/${categorySlug}` : ''}${subCategorySlug ? `/${subCategorySlug}` : ''}`;
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 pb-16">
@@ -265,6 +262,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
         title={seoData.title}
         description={seoData.description}
         url={currentPath}
+        canonical={currentPath}
         breadcrumbs={breadcrumbs}
       />
 
@@ -789,6 +787,40 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
             </div>
           </div>
         </div>
+
+        {/* City Districts Internal Links (SEO PageRank & Crawlability) */}
+        {city && (turkeyDistricts[city] || []).length > 0 && (
+          <div className="mt-8 bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-700/80 shadow-sm">
+            <h3 className="text-sm font-bold text-neutral-900 dark:text-white mb-1.5 flex items-center gap-2">
+              <span>📍</span>
+              <span>{city} İlçeleri İlanları ({turkeyDistricts[city].length} İlçe)</span>
+            </h3>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
+              {city} genelindeki tüm ilçelerin satılık ve kiralık güncel ilanlarına tek tıkla göz atın:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {(turkeyDistricts[city] || []).map((dist) => {
+                const isCurrent = (selectedDistrict || parsedDistrict || '').toLowerCase() === dist.toLowerCase();
+                const distSlug = cityToSlug(dist);
+                const baseCitySlug = cityToSlug(city);
+                const targetUrl = `/sehir/${baseCitySlug}-${distSlug}${categorySlug ? `/${categorySlug}` : ''}`;
+                return (
+                  <Link
+                    key={dist}
+                    to={targetUrl}
+                    className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                      isCurrent
+                        ? 'bg-red-600 text-white border-red-600 font-semibold shadow-sm'
+                        : 'bg-neutral-50 dark:bg-neutral-700/60 text-neutral-700 dark:text-neutral-200 border-neutral-200 dark:border-neutral-600 hover:border-red-500 hover:text-red-600'
+                    }`}
+                  >
+                    {city} {dist} {category ? `${category}` : 'İlanları'}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Other Major Cities (Internal Link Juice for SEO) */}
         <div className="mt-8 bg-neutral-100 dark:bg-neutral-800/60 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700">

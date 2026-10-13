@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const { turkeyDistricts } = require('./turkey_districts');
 
 const SITE_URL = 'https://www.exvitrin.com';
 
@@ -15,7 +16,8 @@ const STATIC_BRAND_SLUGS = [
   'philips','asus','lenovo','dell','hp','acer','msi','monster','casper',
   'canon','nikon','microsoft','nintendo','jbl','dyson','bosch','siemens',
   'arcelik','beko','vestel','profilo','tefal','karaca','korkmaz','ikea',
-  'istikbal','bellona','enza-home'
+  'istikbal','bellona','enza-home',
+  'oneplus','motorola','nokia','oppo','realme','vivo','htc'
 ];
 
 // Statik sayfalar
@@ -32,6 +34,7 @@ const STATIC_PAGES = [
   { loc: '/Otomobil', priority: '0.9', changefreq: 'daily' },
   { loc: '/Emlak', priority: '0.9', changefreq: 'daily' },
   { loc: '/Elektronik', priority: '0.9', changefreq: 'daily' },
+  { loc: '/Elektronik/Cep-Telefonu-Telefon', priority: '0.9', changefreq: 'daily' },
   { loc: '/Moda-Guzellik', priority: '0.9', changefreq: 'daily' },
   { loc: '/Ev-Bahce', priority: '0.9', changefreq: 'daily' },
   { loc: '/Spor-Outdoor', priority: '0.9', changefreq: 'daily' },
@@ -53,6 +56,16 @@ function slugifyBrand(text) {
     .replace(/^-|-$/g, '');
 }
 
+function cityToSlug(cityName) {
+  if (!cityName) return '';
+  return String(cityName)
+    .replace(/İ/g, 'i').replace(/I/g, 'i').replace(/ı/g, 'i').toLowerCase()
+    .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+    .replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+
 module.exports = async (req, res) => {
   const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://wwzeqleaekdugsnknbbl.supabase.co';
   const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3emVxbGVhZWtkdWdzbmtuYmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwNzU5MDUsImV4cCI6MjA1MzY1MTkwNX0.P6NMHxFtUIKVRFieFvMZS7jSuPuEFrLNJqr5gpIGvlA';
@@ -64,7 +77,8 @@ module.exports = async (req, res) => {
     // Tüm marka kolonlarından benzersiz değerleri çek
     const brandColumns = [
       'marke', 'car_brand', 'damenbekleidung_marke',
-      'damenschuhe_marke', 'herrenbekleidung_marke', 'herrenschuhe_marke'
+      'damenschuhe_marke', 'herrenbekleidung_marke', 'herrenschuhe_marke',
+      'handy_telefon_art'
     ];
 
     const customBrandSlugs = new Set(STATIC_BRAND_SLUGS);
@@ -117,6 +131,31 @@ module.exports = async (req, res) => {
   </url>
 `;
     }
+
+    // 81 İl ve 978 İlçe Sayfaları (Google Search Console SEO)
+    const cities = Object.keys(turkeyDistricts);
+    for (const city of cities) {
+      const citySlug = cityToSlug(city);
+      xml += `  <url>
+    <loc>${SITE_URL}/sehir/${citySlug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+      const districts = turkeyDistricts[city] || [];
+      for (const dist of districts) {
+        const distSlug = cityToSlug(dist);
+        xml += `  <url>
+    <loc>${SITE_URL}/sehir/${citySlug}-${distSlug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+      }
+    }
+
 
     // Marka sayfaları (statik + dinamik custom)
     for (const slug of customBrandSlugs) {

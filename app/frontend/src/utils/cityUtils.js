@@ -1,4 +1,5 @@
 import { getTurkishCities } from '../translations';
+import { turkeyDistricts } from '../data/turkey_districts';
 
 export const TURKISH_CITIES = getTurkishCities();
 
@@ -61,6 +62,72 @@ export const slugToCity = (citySlug) => {
   if (!citySlug) return null;
   const clean = citySlug.toLowerCase().trim();
   return slugCityMap[clean] || null;
+};
+
+/**
+ * Resolves any citySlug or districtSlug (even if typed with ASCII, typos, or lone district)
+ * to official Turkish city and district names.
+ * e.g., 'izmir-karsiyaka' -> { city: 'İzmir', district: 'Karşıyaka', canonicalSlug: 'izmir-karsiyaka' }
+ *       'izmir-bornova'   -> { city: 'İzmir', district: 'Bornova', canonicalSlug: 'izmir-bornova' }
+ */
+export const resolveCityAndDistrict = (citySlug) => {
+  if (!citySlug) return { city: null, district: null, canonicalSlug: '' };
+  const cleanSlug = cityToSlug(citySlug);
+
+  // 1. Direct city match (e.g. 'izmir', 'istanbul')
+  for (const c of TURKISH_CITIES) {
+    if (cityToSlug(c) === cleanSlug) {
+      return { city: c, district: null, canonicalSlug: cleanSlug };
+    }
+  }
+
+  // 2. City + District match (e.g. 'izmir-karsiyaka', 'izmir-bornova', 'istanbul-kadikoy')
+  for (const c of TURKISH_CITIES) {
+    const cSlug = cityToSlug(c);
+    if (cleanSlug.startsWith(cSlug + '-')) {
+      const rawDistSlug = cleanSlug.slice(cSlug.length + 1);
+      const districts = turkeyDistricts[c] || [];
+
+      // A. Exact slug match
+      const exactMatch = districts.find(d => cityToSlug(d) === rawDistSlug);
+      if (exactMatch) {
+        return { city: c, district: exactMatch, canonicalSlug: `${cSlug}-${cityToSlug(exactMatch)}` };
+      }
+
+      // Special case: if rawDistSlug is 'merkez' and city has '{City} Merkez' or 'Merkez'
+      if (rawDistSlug === 'merkez') {
+        const merkezMatch = districts.find(d => cityToSlug(d).includes('merkez'));
+        if (merkezMatch) {
+          return { city: c, district: merkezMatch, canonicalSlug: `${cSlug}-${cityToSlug(merkezMatch)}` };
+        }
+      }
+
+      // B. Substring or stripped match (for minor typos or spacing differences)
+      const cleanRaw = rawDistSlug.replace(/[^a-z0-9]/g, '');
+      const subMatch = districts.find(d => {
+        const dClean = cityToSlug(d).replace(/[^a-z0-9]/g, '');
+        return dClean === cleanRaw || dClean.includes(cleanRaw) || cleanRaw.includes(dClean);
+      });
+      if (subMatch) {
+        return { city: c, district: subMatch, canonicalSlug: `${cSlug}-${cityToSlug(subMatch)}` };
+      }
+
+      // Fallback: title-case words
+      const fallbackDist = rawDistSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      return { city: c, district: fallbackDist, canonicalSlug: cleanSlug };
+    }
+  }
+
+  // 3. District-only lookup across all cities (e.g. user visits /sehir/karsiyaka or /sehir/bornova directly)
+  for (const c of TURKISH_CITIES) {
+    const districts = turkeyDistricts[c] || [];
+    const distMatch = districts.find(d => cityToSlug(d) === cleanSlug);
+    if (distMatch) {
+      return { city: c, district: distMatch, canonicalSlug: `${cityToSlug(c)}-${cityToSlug(distMatch)}` };
+    }
+  }
+
+  return { city: citySlug, district: null, canonicalSlug: cleanSlug };
 };
 
 /**
