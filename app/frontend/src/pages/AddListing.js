@@ -792,10 +792,13 @@ export const AddListing = () => {
           setPrice(isPet ? '' : (data.price_type === 'giveaway' ? t.addListing.options.givingAway : (data.price?.toString() || '')));
           setPriceType(isPet ? 'giveaway' : (data.price_type || 'fixed'));
           setDescription(data.description || '');
-          // Postal code fallback or ignore
           setCity(data.city || '');
           setDistrict(data.district || '');
-          setRegion(data.region || '');
+          const cityData = turkeyCities.find(c => c.city === data.city);
+          const loadedRegion = data.region 
+            ? (data.region.endsWith('Bölgesi') ? data.region : `${data.region} Bölgesi`)
+            : (cityData ? cityData.region : '');
+          setRegion(loadedRegion);
           setAddress(data.address || '');
 
           // Use specific contact fields if they exist in the listing
@@ -2303,10 +2306,12 @@ export const AddListing = () => {
                         const selectedCity = e.target.value;
                         setCity(selectedCity);
                         setDistrict('');
-                        // Auto-set region based on selected city
+                        // Auto-set region based on selected city (e.g. İzmir -> Ege Bölgesi)
                         const cityData = turkeyCities.find(c => c.city === selectedCity);
                         if (cityData) {
                           setRegion(cityData.region);
+                        } else {
+                          setRegion('');
                         }
                       }}
                       required
@@ -2341,8 +2346,8 @@ export const AddListing = () => {
                   <input
                     type="text"
                     value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                    className="w-full bg-neutral-50 dark:bg-neutral-800/30 border border-neutral-200 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none cursor-not-allowed"
+                    readOnly
+                    className="w-full bg-neutral-100 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 font-medium focus:outline-none cursor-default"
                     placeholder={t.addListing.autoFill}
                   />
                 </div>
