@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { t, getCategoryTranslation } from '../translations';
 import { turkeyCities } from '../data/turkey_cities';
+import { turkeyDistricts } from '../data/turkey_districts';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { FashionFields } from '../components/AddListing/FashionFields';
 import { RealEstateFields } from '../components/AddListing/RealEstateFields';
@@ -2301,6 +2302,7 @@ export const AddListing = () => {
                       onChange={(e) => {
                         const selectedCity = e.target.value;
                         setCity(selectedCity);
+                        setDistrict('');
                         // Auto-set region based on selected city
                         const cityData = turkeyCities.find(c => c.city === selectedCity);
                         if (cityData) {
@@ -2318,15 +2320,20 @@ export const AddListing = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.district}</label>
-                    <input
-                      type="text"
+                    <select
                       value={district}
                       onChange={(e) => setDistrict(e.target.value)}
                       required
-                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
-                      placeholder={t.addListing.districtPlaceholder}
-                    />
+                      disabled={!city}
+                      className={`w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none ${!city ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <option value="">{city ? t.addListing.districtPlaceholder || 'İlçe seçin' : 'Önce şehir seçin'}</option>
+                      {(turkeyDistricts[city] || []).map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
                   </div>
+
                 </div>
 
                 <div className="animate-in fade-in duration-300">
