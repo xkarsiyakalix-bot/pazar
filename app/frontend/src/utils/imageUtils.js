@@ -20,9 +20,9 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
         return url;
     }
 
-    // Set to false to avoid Supabase $10/mo Image Transformation add-on fee.
-    // Client-side upload already compresses images to ~50KB WebP.
-    const isTransformationEnabled = false;
+    // Re-enabled for legacy Supabase images so they load instantly via Supabase CDN this month.
+    // New images are already uploaded directly to Cloudflare R2!
+    const isTransformationEnabled = true;
 
     if (!isTransformationEnabled) {
         // Return direct clean Supabase URL without proxy or transformation params
