@@ -12,6 +12,7 @@ import { LazyImage } from './LazyLoad';
 import { categories as globalCategories } from './config/categories';
 import { supabase } from './lib/supabase';
 import { getListingUrl } from './utils/slug';
+import { PLACEHOLDER_IMAGE } from './utils/imageUtils';
 import { SKELETON_CONFIG } from './config/skeletonConfig';
 import { ListingGridSkeleton } from './components/skeletons/ListingCardSkeleton';
 import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from './api/savedSearches';
@@ -2200,7 +2201,7 @@ function AutosPage() {
                                                     {/* Image Section - Balanced Size */}
                                                     <div className="md:w-64 h-28 md:h-48 relative group flex-shrink-0 bg-gray-100 dark:bg-neutral-800">
                                                         <LazyImage
-                                                            src={listing.images && listing.images.length > 0 ? listing.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}
+                                                            src={listing.images && listing.images.length > 0 ? listing.images[0] : PLACEHOLDER_IMAGE}
                                                             alt={listing.title}
                                                             className="w-full h-full object-cover transition-transform duration-300"
                                                         />

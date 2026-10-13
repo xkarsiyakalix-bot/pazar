@@ -9,7 +9,7 @@ import ProductDetailSkeleton from '../components/skeletons/ProductDetailSkeleton
 import { LazyImage } from '../components/LazyImage';
 import { formatLastSeen, formatPrice, isPetAdoptionListing } from '../utils/formatUtils';
 import { getListingUrl, getSellerUrl, getCategoryPath } from '../utils/slug';
-import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { getOptimizedImageUrl, PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 import { shareToFacebook, shareToWhatsApp, shareToTwitter, copyShareLink } from '../utils/shareUtils';
 import ListingCountdown from '../components/ListingCountdown';
 import MessageModal from '../components/MessageModal';
@@ -1568,6 +1568,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     >
                       {(() => {
                         const images = listing.images && listing.images.length > 0 ? listing.images : (listing.image ? [listing.image] : []);
+                        if (images.length === 0) {
+                          return (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-neutral-500 bg-gray-50 dark:bg-neutral-800">
+                              <svg className="w-16 h-16 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span className="text-sm font-medium">{t.common?.noImage || 'Fotoğraf eklenmemiş'}</span>
+                            </div>
+                          );
+                        }
                         return images.map((img, index) => (
                           <div key={index} className="w-full h-full flex-shrink-0 snap-center">
                             <img
@@ -1577,6 +1587,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                               onClick={() => setShowLightbox(true)}
                               loading={index === 0 ? "eager" : "lazy"}
                               decoding="async"
+                              onError={(e) => {
+                                e.currentTarget.src = PLACEHOLDER_IMAGE;
+                              }}
                             />
                           </div>
                         ));
@@ -3177,9 +3190,12 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         >
                           <div className="relative">
                             <img
-                              src={otherListing.images && otherListing.images[0] ? otherListing.images[0] : (otherListing.image || 'https://via.placeholder.com/300x200?text=No+Image')}
+                              src={otherListing.images && otherListing.images[0] ? otherListing.images[0] : (otherListing.image || PLACEHOLDER_IMAGE)}
                               alt={otherListing.title}
                               className="w-full h-32 object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = PLACEHOLDER_IMAGE;
+                              }}
                             />
                             {/* Vitrin Badge - Inclusive check */}
                             {(otherListing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(otherListing.package_type?.toLowerCase())) && (

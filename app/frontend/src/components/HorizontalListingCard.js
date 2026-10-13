@@ -4,7 +4,7 @@ import { t } from '../translations';
 import { LazyImage } from './LazyImage';
 import { useAuth } from '../contexts/AuthContext';
 import { getListingUrl } from '../utils/slug';
-import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { getOptimizedImageUrl, PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 import VisibilityPackagesModal from './VisibilityPackagesModal';
 import { isPetAdoptionListing } from '../utils/formatUtils';
 
@@ -188,7 +188,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               src={getOptimizedImageUrl(
                 Array.isArray(listing?.images) && listing.images.length > 0
                   ? listing.images[0]
-                  : listing?.image || 'https://via.placeholder.com/300x200?text=No+Image',
+                  : listing?.image || PLACEHOLDER_IMAGE,
                 300, 200, 'cover'
               )}
               alt={listing?.title || 'İlan Resmi'}
@@ -197,6 +197,9 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               className="w-full h-full object-cover transition-transform duration-500 group-hover/horizontal:scale-[1.06]"
               loading="lazy"
               decoding="async"
+              onError={(e) => {
+                e.currentTarget.src = PLACEHOLDER_IMAGE;
+              }}
             />
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />

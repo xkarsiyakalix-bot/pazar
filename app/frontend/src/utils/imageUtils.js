@@ -10,23 +10,26 @@
  * @param {boolean} preferAVIF - Prefer AVIF format over WebP (default true)
  * @returns {string} Optimized URL
  */
+export const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='280' viewBox='0 0 400 280'%3E%3Crect fill='%23f3f4f6' width='400' height='280'/%3E%3Cpath fill='%239ca3af' d='M160 120a20 20 0 1 0 0-40 20 20 0 0 0 0 40zm-40 60h160l-50-60-40 50-30-30-40 40z'/%3E%3Ctext fill='%236b7280' font-family='sans-serif' font-size='15' font-weight='600' x='50%25' y='215' text-anchor='middle'%3EExVitrin%3C/text%3E%3C/svg%3E";
+
 export const getOptimizedImageUrl = (url, width, height, resize = 'cover', preferAVIF = true) => {
-    if (!url) return '';
+    if (!url) return PLACEHOLDER_IMAGE;
 
     // Check if it's a Supabase Storage URL
-    if (!url.includes('supabase.co/storage/v1/object/public')) {
+    if (!url.includes('supabase.co/storage/v1/')) {
         return url;
     }
 
-    // Set this to true ONLY if you have Supabase Image Transformation enabled (Pro Plan)
-    // If you are on the FREE plan, keep this false to avoid high egress costs 
-    // caused by cache-bypassing query parameters on standard URLs.
-    const isTransformationEnabled = true;
+    // Set to false to avoid Supabase $10/mo Image Transformation add-on fee.
+    // Client-side upload already compresses images to ~50KB WebP.
+    const isTransformationEnabled = false;
 
     if (!isTransformationEnabled) {
-        // Return the direct Supabase URL without any proxy.
-        // wsrv.nl was causing image load failures in production.
-        return url;
+        // Return direct clean Supabase URL without proxy or transformation params
+        if (url.includes('/storage/v1/render/image/public/')) {
+            return url.split('?')[0].replace('/storage/v1/render/image/public/', '/storage/v1/object/public/');
+        }
+        return url.split('?')[0];
     }
 
     // Transformation URL structure: .../render/image/public/[bucket]/[path]

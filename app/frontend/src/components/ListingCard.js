@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { t } from '../translations';
 import { LazyImage } from './LazyImage';
 import { getListingUrl } from '../utils/slug';
-import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { getOptimizedImageUrl, PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 import { QuickPhotoViewer } from './QuickPhotoViewer';
 import { getFavoriteCountBatched, updateCachedFavoriteCount } from '../api/favorites';
 import { isPetAdoptionListing } from '../utils/formatUtils';
@@ -57,7 +57,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   // Get first image from images array, fallback to placeholder
   const rawImageUrl = listing?.images && listing.images.length > 0
     ? listing.images[0]
-    : listing?.image || 'https://via.placeholder.com/400x280?text=No+Image';
+    : listing?.image || PLACEHOLDER_IMAGE;
 
   const imageUrl = getOptimizedImageUrl(rawImageUrl, 400, 280, 'cover');
 
@@ -170,6 +170,10 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
             loading="lazy"
             decoding="async"
             onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              setImageLoaded(true);
+              e.currentTarget.src = PLACEHOLDER_IMAGE;
+            }}
             className={`absolute inset-0 w-full h-full ${imageClasses} ${!isMiniJob ? (imageLoaded ? 'opacity-100' : 'opacity-0') : 'opacity-100'} transition-opacity duration-300`}
           />
 
