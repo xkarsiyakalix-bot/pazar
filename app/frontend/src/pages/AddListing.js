@@ -2295,17 +2295,6 @@ export const AddListing = () => {
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.district}</label>
-                    <input
-                      type="text"
-                      value={district}
-                      onChange={(e) => setDistrict(e.target.value)}
-                      required
-                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
-                      placeholder={t.addListing.districtPlaceholder}
-                    />
-                  </div>
-                  <div>
                     <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.city}</label>
                     <select
                       value={city}
@@ -2326,6 +2315,17 @@ export const AddListing = () => {
                         <option key={c.city} value={c.city}>{c.city}</option>
                       ))}
                     </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.district}</label>
+                    <input
+                      type="text"
+                      value={district}
+                      onChange={(e) => setDistrict(e.target.value)}
+                      required
+                      className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                      placeholder={t.addListing.districtPlaceholder}
+                    />
                   </div>
                 </div>
 

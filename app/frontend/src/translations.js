@@ -91,7 +91,7 @@ export const t = {
         address: 'Adres (isteğe bağlı)',
         addressPlaceholder: 'Sokak ve numara',
         postalCode: 'Posta Kodu',
-        city: 'Şehir / İlçe',
+        city: 'Şehir',
         cityPlaceholder: 'Örn. İstanbul',
         showLocation: 'Konumu ilanda göster',
         yourInfo: 'Bilgileriniz',
