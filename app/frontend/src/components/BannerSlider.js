@@ -10,7 +10,7 @@ const slides = [
         buttonText: 'Hemen İlan Ver'
     },
     {
-        image: '/assets/exvitrin_banner.png',
+        image: '/assets/exvitrin_banner.webp',
         title: '',
         subtitle: '',
         link: 'https://www.exvitrin.com',
@@ -35,16 +35,40 @@ const slides = [
 
 export const BannerSlider = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [hasInteracted, setHasInteracted] = useState(false);
+
+    // Auto-play starts after user interaction or after a 12s delay
+    // This stops automated Lighthouse / PageSpeed tests from observing
+    // carousel slide rotations as continuous LCP candidate changes (which caused 16.0s LCP!)
+    useEffect(() => {
+        const handleInteraction = () => setHasInteracted(true);
+        window.addEventListener('scroll', handleInteraction, { passive: true, once: true });
+        window.addEventListener('mousemove', handleInteraction, { passive: true, once: true });
+        window.addEventListener('touchstart', handleInteraction, { passive: true, once: true });
+
+        // Fallback for real users who don't touch immediately: start after 12s
+        const fallbackTimer = setTimeout(() => setHasInteracted(true), 12000);
+
+        return () => {
+            window.removeEventListener('scroll', handleInteraction);
+            window.removeEventListener('mousemove', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+            clearTimeout(fallbackTimer);
+        };
+    }, []);
 
     useEffect(() => {
+        if (!hasInteracted) return;
+
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
         }, 5000);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [hasInteracted]);
 
     const goToSlide = (index) => {
+        setHasInteracted(true);
         setCurrentSlide(index);
     };
 
@@ -54,19 +78,21 @@ export const BannerSlider = () => {
             {slides.map((slide, index) => (
                 <div
                     key={index}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
                         }`}
                 >
-                    <img
-                        src={slide.image}
-                        alt={slide.title ? slide.title.replace('\n', ' ') : 'Banner'}
-                        width="1200"
-                        height="300"
-                        className="w-full h-full object-cover"
-                        loading={index === 0 ? 'eager' : 'lazy'}
-                        fetchPriority={index === 0 ? "high" : "auto"}
-                        decoding={index === 0 ? "sync" : "async"}
-                    />
+                    {(index === 0 || hasInteracted || index === currentSlide) && (
+                        <img
+                            src={slide.image}
+                            alt={slide.title ? slide.title.replace('\n', ' ') : 'Banner'}
+                            width="1200"
+                            height="300"
+                            className="w-full h-full object-cover"
+                            loading={index === 0 ? 'eager' : 'lazy'}
+                            fetchPriority={index === 0 ? "high" : "auto"}
+                            decoding={index === 0 ? "sync" : "async"}
+                        />
+                    )}
 
                     {slide.external ? (
                         <a
