@@ -109,10 +109,11 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
-      {displayListings.map((listing) => (
+      {displayListings.map((listing, index) => (
         <ListingCard
           key={listing.id}
           listing={listing}
+          priority={index < 4}
           toggleFavorite={toggleFavorite}
           isFavorite={isFavorite}
           isOwnListing={user && listing.user_id === user.id}

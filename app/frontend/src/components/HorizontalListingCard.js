@@ -8,7 +8,7 @@ import { getOptimizedImageUrl, PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 import VisibilityPackagesModal from './VisibilityPackagesModal';
 import { isPetAdoptionListing } from '../utils/formatUtils';
 
-export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, compact = false, hidePrice = false, renderCustomFields = null }) => {
+export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, compact = false, hidePrice = false, renderCustomFields = null, priority = false }) => {
   const navigate = useNavigate();
   const [showVisibilityModal, setShowVisibilityModal] = useState(false);
   const { user } = useAuth();
@@ -195,7 +195,8 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               width="300"
               height="200"
               className="w-full h-full object-cover transition-transform duration-500 group-hover/horizontal:scale-[1.06]"
-              loading="lazy"
+              loading={priority ? "eager" : "lazy"}
+              {...(priority ? { fetchpriority: "high" } : {})}
               decoding="async"
               onError={(e) => {
                 e.currentTarget.src = PLACEHOLDER_IMAGE;

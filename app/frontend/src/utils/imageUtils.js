@@ -20,9 +20,9 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
         return url;
     }
 
-    // Set to false to avoid Supabase $10/mo Image Transformation add-on fee & latency.
-    // When false, images load instantly from direct Supabase CDN without render wait times.
-    const isTransformationEnabled = false;
+    // Supabase Pro Image Transformation is active.
+    // Delivers 10x smaller WebP images with 1-year immutable CDN caching.
+    const isTransformationEnabled = true;
 
     if (!isTransformationEnabled) {
         // Return direct clean Supabase URL without proxy or transformation params

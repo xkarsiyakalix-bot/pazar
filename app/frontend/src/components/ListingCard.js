@@ -10,9 +10,9 @@ import { isPetAdoptionListing } from '../utils/formatUtils';
 
 const LONG_PRESS_MS = 450;
 
-export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, hidePrice = false }) => {
+export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, hidePrice = false, priority = false }) => {
   const navigate = useNavigate();
-  const [imageLoaded, setImageLoaded] = React.useState(false);
+  const [imageLoaded, setImageLoaded] = React.useState(priority);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   // Favorite count state & batch loader
@@ -167,7 +167,8 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
             alt={listing?.title}
             width="400"
             height="280"
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            {...(priority ? { fetchpriority: "high" } : {})}
             decoding="async"
             onLoad={() => setImageLoaded(true)}
             onError={(e) => {
