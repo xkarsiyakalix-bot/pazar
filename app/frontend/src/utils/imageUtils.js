@@ -20,9 +20,9 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
         return url;
     }
 
-    // Re-enabled for legacy Supabase images so they load instantly via Supabase CDN this month.
-    // New images are already uploaded directly to Cloudflare R2!
-    const isTransformationEnabled = true;
+    // Set to false to avoid Supabase $10/mo Image Transformation add-on fee & latency.
+    // When false, images load instantly from direct Supabase CDN without render wait times.
+    const isTransformationEnabled = false;
 
     if (!isTransformationEnabled) {
         // Return direct clean Supabase URL without proxy or transformation params
