@@ -29,7 +29,7 @@
         ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'].forEach(function(ev) {
           window.addEventListener(ev, loadGtm, { passive: true, once: true });
         });
-        setTimeout(loadGtm, 7000);
+        setTimeout(loadGtm, 15000);
       })();
     </script>
     <meta charset="utf-8" />
@@ -238,7 +238,7 @@
             ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'].forEach(function(ev) {
                 window.addEventListener(ev, loadPostHog, { passive: true, once: true });
             });
-            setTimeout(loadPostHog, 7500);
+            setTimeout(loadPostHog, 15000);
         })();
     </script>
 </body>
