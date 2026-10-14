@@ -51,6 +51,7 @@ import ProductDetailSkeleton from './components/skeletons/ProductDetailSkeleton'
 const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage'));
 const CityCategoryLandingPage = React.lazy(() => import('./pages/CityCategoryLandingPage'));
 const AllCitiesPage = React.lazy(() => import('./pages/AllCitiesPage'));
+const RegionLandingPage = React.lazy(() => import('./pages/RegionLandingPage'));
 import MobileCategoryGrid from './components/MobileCategoryGrid';
 
 // Lazy load page components
@@ -1008,6 +1009,35 @@ function App() {
             <Route path="/sehir/:citySlug" element={<CityCategoryLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/sehir/:citySlug/:categorySlug" element={<CityCategoryLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/sehir/:citySlug/:categorySlug/:subCategorySlug" element={<CityCategoryLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+
+            {/* Bölge İniş Sayfaları (7 Coğrafi Bölge SEO Landing Pages) */}
+            <Route path="/bolgeler" element={<Navigate to="/sehirler" replace />} />
+            <Route path="/bolge/:regionSlug" element={<RegionLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+            <Route path="/bolge/:regionSlug/:categorySlug" element={<RegionLandingPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+
+            {/* Bölge Direkt Linkleri ve Yazım Varyasyonları (Örn: /ege-bolgesi, /egebölgesi vb.) */}
+            <Route path="/ege-bolgesi" element={<Navigate to="/bolge/ege-bolgesi" replace />} />
+            <Route path="/egebölgesi" element={<Navigate to="/bolge/ege-bolgesi" replace />} />
+            <Route path="/egebolgesi" element={<Navigate to="/bolge/ege-bolgesi" replace />} />
+            <Route path="/marmara-bolgesi" element={<Navigate to="/bolge/marmara-bolgesi" replace />} />
+            <Route path="/marmarabölgesi" element={<Navigate to="/bolge/marmara-bolgesi" replace />} />
+            <Route path="/marmarabolgesi" element={<Navigate to="/bolge/marmara-bolgesi" replace />} />
+            <Route path="/akdeniz-bolgesi" element={<Navigate to="/bolge/akdeniz-bolgesi" replace />} />
+            <Route path="/akdenizbölgesi" element={<Navigate to="/bolge/akdeniz-bolgesi" replace />} />
+            <Route path="/akdenizbolgesi" element={<Navigate to="/bolge/akdeniz-bolgesi" replace />} />
+            <Route path="/ic-anadolu-bolgesi" element={<Navigate to="/bolge/ic-anadolu-bolgesi" replace />} />
+            <Route path="/icanadolubölgesi" element={<Navigate to="/bolge/ic-anadolu-bolgesi" replace />} />
+            <Route path="/icanadolubolgesi" element={<Navigate to="/bolge/ic-anadolu-bolgesi" replace />} />
+            <Route path="/karadeniz-bolgesi" element={<Navigate to="/bolge/karadeniz-bolgesi" replace />} />
+            <Route path="/karadenizbölgesi" element={<Navigate to="/bolge/karadeniz-bolgesi" replace />} />
+            <Route path="/karadenizbolgesi" element={<Navigate to="/bolge/karadeniz-bolgesi" replace />} />
+            <Route path="/dogu-anadolu-bolgesi" element={<Navigate to="/bolge/dogu-anadolu-bolgesi" replace />} />
+            <Route path="/doguanadolubölgesi" element={<Navigate to="/bolge/dogu-anadolu-bolgesi" replace />} />
+            <Route path="/doguanadolubolgesi" element={<Navigate to="/bolge/dogu-anadolu-bolgesi" replace />} />
+            <Route path="/guneydogu-anadolu-bolgesi" element={<Navigate to="/bolge/guneydogu-anadolu-bolgesi" replace />} />
+            <Route path="/guneydoguanadolubölgesi" element={<Navigate to="/bolge/guneydogu-anadolu-bolgesi" replace />} />
+            <Route path="/guneydoguanadolubolgesi" element={<Navigate to="/bolge/guneydogu-anadolu-bolgesi" replace />} />
+
             {/* Dynamic Routing - Handled by SmartRoute for categories, listings, and stores */}
             {/* === MODA & GÜZELLİK === */}
             <Route path="/Moda-Guzellik/Kadin-Giyimi" element={<DamenbekleidungPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />

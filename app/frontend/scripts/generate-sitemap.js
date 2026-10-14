@@ -15,6 +15,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 const { turkeyDistricts } = require('../api/turkey_districts');
+const { turkeyRegions } = require('../api/turkey_regions');
 
 const SITE_URL = 'https://www.exvitrin.com';
 
@@ -185,6 +186,14 @@ async function generateSitemap() {
       districts.forEach(dist => {
         const distSlug = cityToSlug(dist);
         addUrl(`/sehir/${citySlug}-${distSlug}`, 'daily', '0.8');
+      });
+    });
+
+    // 7 Coğrafi Bölge Sayfaları (Google Search Console SEO)
+    turkeyRegions.forEach(reg => {
+      addUrl(`/bolge/${reg.slug}`, 'daily', '0.9');
+      topCategories.slice(0, 6).forEach(cat => {
+        addUrl(`/bolge/${reg.slug}/${cat}`, 'daily', '0.8');
       });
     });
 

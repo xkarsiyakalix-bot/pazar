@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const { turkeyDistricts } = require('./turkey_districts');
+const { turkeyRegions, findRegionBySlug } = require('./turkey_regions');
 
 const SITE_URL = 'https://www.exvitrin.com';
 const LOGO_URL = `${SITE_URL}/logo_exvitrin_2026_small.png`;
@@ -854,6 +855,30 @@ module.exports = async (req, res) => {
     }
     image = LOGO_URL;
 
+  // --- BÖLGE SAYFASI (Ege Bölgesi, Marmara vb.) ---
+  } else if (type === 'region' || (path && (path.startsWith('/bolge') || path.includes('-bolgesi') || path.includes('bolgesi')))) {
+    const cleanPath = (path || '').replace(/^\//, '');
+    const parts = cleanPath.split('/');
+    const regSlug = parts[0] === 'bolge' ? (parts[1] || '') : parts[0];
+    const catSlug = parts[0] === 'bolge' ? (parts[2] || '') : (parts[1] || '');
+    const foundReg = findRegionBySlug(regSlug);
+
+    if (foundReg) {
+      const catName = catSlug ? catSlug.charAt(0).toUpperCase() + catSlug.slice(1).replace(/-/g, ' ') : '';
+      if (catName) {
+        title = `${foundReg.name} ${catName} İlanları - Satılık & Kiralık | ExVitrin`;
+        description = `${foundReg.name} genelinde ${catName.toLowerCase()} ilanları ExVitrin'de! ${foundReg.cities.slice(0, 5).join(', ')} ve tüm bölge illerinden en uygun fırsatlar.`;
+      } else {
+        title = `${foundReg.name} İkinci El ve Sıfır İlanlar | ExVitrin`;
+        description = `${foundReg.name} satılık ve kiralık ilanları ExVitrin'de! ${foundReg.cities.slice(0, 5).join(', ')} ve tüm bölge illerinden ikinci el eşya, araba, emlak fırsatları.`;
+      }
+      pageUrl = `${SITE_URL}/bolge/${foundReg.slug}${catSlug ? `/${catSlug}` : ''}`;
+    } else {
+      title = 'Türkiye Bölge İlanları | ExVitrin';
+      description = "Türkiye'nin 7 coğrafi bölgesinden satılık ve kiralık ilanlar ExVitrin'de!";
+      pageUrl = `${SITE_URL}${path || ''}`;
+    }
+    image = LOGO_URL;
 
   // --- KATEGORİ SAYFASI ---
   } else if (type === 'category' && path) {

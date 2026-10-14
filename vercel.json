@@ -36,6 +36,17 @@
       "destination": "/api/og?path=/sehir/:path*&type=city"
     },
     {
+      "source": "/bolge/:path*",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebookcatalog|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|Google-InspectionTool|Storebot-Google|bingbot|Applebot|SkypeUriPreview|Iframely|pinterest|vkShare|redditbot|Embedly).*"
+        }
+      ],
+      "destination": "/api/og?path=/bolge/:path*&type=region"
+    },
+    {
       "source": "/product/:id",
       "has": [
         {

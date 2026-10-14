@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const { turkeyDistricts } = require('./turkey_districts');
+const { turkeyRegions } = require('./turkey_regions');
 
 const SITE_URL = 'https://www.exvitrin.com';
 
@@ -155,6 +156,29 @@ module.exports = async (req, res) => {
 `;
       }
     }
+
+    // 7 Coğrafi Bölge Sayfaları (Google Search Console SEO)
+    for (const reg of turkeyRegions) {
+      xml += `  <url>
+    <loc>${SITE_URL}/bolge/${reg.slug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+`;
+      // Popüler kategoriler ile bölge sayfaları
+      const topCats = ['emlak', 'otomobil', 'elektronik', 'ev-bahce', 'moda-guzellik', 'is-ilanlari'];
+      for (const cat of topCats) {
+        xml += `  <url>
+    <loc>${SITE_URL}/bolge/${reg.slug}/${cat}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+      }
+    }
+
 
 
     // Marka sayfaları (statik + dinamik custom)
