@@ -3,26 +3,34 @@
 
 <head>
     <script>
-      // Non-blocking GTM initialization: deferred until browser idle/load
+      // Ultra-fast CWV: Non-blocking GTM initialization deferred to first user interaction or 7s fallback
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      window.addEventListener('load', function() {
-        var loadGtm = function() {
-          if (window._gtm_loaded) return;
+
+      (function() {
+        var gtmLoaded = false;
+        function loadGtm() {
+          if (gtmLoaded) return;
+          gtmLoaded = true;
           window._gtm_loaded = true;
+          cleanup();
           var s = document.createElement('script');
           s.async = true;
           s.src = 'https://www.googletagmanager.com/gtag/js?id=G-9BECKEWWRS';
           document.head.appendChild(s);
           gtag('config', 'G-9BECKEWWRS');
-        };
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(loadGtm, { timeout: 2500 });
-        } else {
-          setTimeout(loadGtm, 2000);
         }
-      });
+        function cleanup() {
+          ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'].forEach(function(ev) {
+            window.removeEventListener(ev, loadGtm, { passive: true });
+          });
+        }
+        ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'].forEach(function(ev) {
+          window.addEventListener(ev, loadGtm, { passive: true, once: true });
+        });
+        setTimeout(loadGtm, 7000);
+      })();
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
@@ -87,8 +95,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     </noscript>
 
-    <!-- Preload critical LCP hero image and logo to prevent layout shift and maximize LCP score -->
-    <link rel="preload" as="image" href="/assets/marketplace_banner.webp" type="image/webp" fetchpriority="high" />
+    <!-- Preload critical LCP hero image with responsive mobile/desktop variants -->
+    <link rel="preload" as="image" href="/assets/marketplace_banner_mobile.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/assets/marketplace_banner.webp" type="image/webp" media="(min-width: 641px)" fetchpriority="high" />
     <link rel="preload" as="image" href="/logo_exvitrin_2026_small.png" fetchpriority="high" />
 
 
@@ -149,9 +158,12 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script>
-        window.addEventListener('load', function() {
-            // Sitedeki FCP ve LCP bitmeden yüklenmemesi için gecikmeli (idle) çağrı
-            setTimeout(function() {
+        (function() {
+            var posthogLoaded = false;
+            function loadPostHog() {
+                if (posthogLoaded) return;
+                posthogLoaded = true;
+                cleanup();
                 !(function (t, e) {
                     var o, n, p, r;
                     e.__SV ||
@@ -215,10 +227,19 @@
                 })(document, window.posthog || []);
                 posthog.init("phc_yJW1VjHGGwmCbbrtczfqqNxgBDbhlhOWcdzcIJEOTFE", {
                     api_host: "https://us.i.posthog.com",
-                    person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well
+                    person_profiles: "identified_only",
                 });
-            }, 4000); // 4 saniye bekle (LCP ve TBT ölçümünü etkilememesi için)
-        });
+            }
+            function cleanup() {
+                ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'].forEach(function(ev) {
+                    window.removeEventListener(ev, loadPostHog, { passive: true });
+                });
+            }
+            ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'].forEach(function(ev) {
+                window.addEventListener(ev, loadPostHog, { passive: true, once: true });
+            });
+            setTimeout(loadPostHog, 7500);
+        })();
     </script>
 </body>
 

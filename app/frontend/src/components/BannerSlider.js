@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 const slides = [
     {
         image: '/assets/marketplace_banner.webp',
+        mobileImage: '/assets/marketplace_banner_mobile.webp',
         title: 'İkinci el eşyalarınıza\nikinci bir hayat verin',
         subtitle: '',
         link: '/add-listing',
@@ -80,16 +81,32 @@ export const BannerSlider = () => {
                         }`}
                 >
                     {(index === 0 || hasInteracted || index === currentSlide) && (
-                        <img
-                            src={slide.image}
-                            alt={slide.title ? slide.title.replace('\n', ' ') : 'Banner'}
-                            width="1200"
-                            height="300"
-                            className="w-full h-full object-cover"
-                            loading={index === 0 ? 'eager' : 'lazy'}
-                            fetchPriority={index === 0 ? "high" : "auto"}
-                            decoding={index === 0 ? "sync" : "async"}
-                        />
+                        slide.mobileImage ? (
+                            <picture className="w-full h-full block">
+                                <source media="(max-width: 640px)" srcSet={slide.mobileImage} type="image/webp" />
+                                <img
+                                    src={slide.image}
+                                    alt={slide.title ? slide.title.replace('\n', ' ') : 'Banner'}
+                                    width="1200"
+                                    height="300"
+                                    className="w-full h-full object-cover"
+                                    loading={index === 0 ? 'eager' : 'lazy'}
+                                    fetchPriority={index === 0 ? "high" : "auto"}
+                                    decoding={index === 0 ? "sync" : "async"}
+                                />
+                            </picture>
+                        ) : (
+                            <img
+                                src={slide.image}
+                                alt={slide.title ? slide.title.replace('\n', ' ') : 'Banner'}
+                                width="1200"
+                                height="300"
+                                className="w-full h-full object-cover"
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                fetchPriority={index === 0 ? "high" : "auto"}
+                                decoding={index === 0 ? "sync" : "async"}
+                            />
+                        )
                     )}
 
                     {slide.external ? (
