@@ -52,6 +52,7 @@ const AdminLayout = () => {
         { name: 'Kategoriler', href: '/admin/categories', icon: '📂' },
         { name: 'Kullanıcılar', href: '/admin/users', icon: '👥' },
         { name: 'Online Kullanıcılar', href: '/admin/online-users', icon: '🟢', live: true },
+        { name: 'Mesajlaşmalar', href: '/admin/messages', icon: '💬' },
         ...(isSuperAdmin ? [{ name: 'Yöneticiler', href: '/admin/admins', icon: '🛡️' }] : []),
         { name: 'Kurumsal Satıcılar', href: '/admin/commercial', icon: '🏪' },
         ...(isSuperAdmin ? [{ name: 'İstatistikler', href: '/admin/sales-reports', icon: '📊' }] : []),
