@@ -83,18 +83,13 @@ export const generateResponsiveImage = (url, width, height, alt = '', className 
  * @param {number} quality - Quality (0.0 to 1.0, default 0.8)
  * @returns {Promise<File>} - A Promise resolving to the compressed WebP file
  */
-export const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
-    return new Promise((resolve, reject) => {
+export const compressImage = (file, maxWidth = 960, quality = 0.72) => {
+    return new Promise((resolve) => {
         // Check if file is an image
-        if (!file.type.match(/image.*/)) {
-            // Not an image, return original file or reject
-            // Here we prefer resolving with original file to avoid breaking non-image uploads if any
+        if (!file.type || !file.type.match(/image.*/)) {
             resolve(file);
             return;
         }
-
-        // If it's already WebP and small enough, maybe skip? 
-        // But for consistency let's process it.
 
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -106,10 +101,14 @@ export const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
                 let width = img.width;
                 let height = img.height;
 
-                // Resize logic
+                // Resize logic: max 960px width or height
                 if (width > maxWidth) {
                     height = Math.round((height * maxWidth) / width);
                     width = maxWidth;
+                }
+                if (height > 960) {
+                    width = Math.round((width * 960) / height);
+                    height = 960;
                 }
 
                 canvas.width = width;
@@ -118,28 +117,34 @@ export const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Convert to WebP blob
+                const makeFile = (blob) => {
+                    const fileName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+                    return new File([blob], fileName, {
+                        type: 'image/webp',
+                        lastModified: Date.now()
+                    });
+                };
+
+                // Convert to WebP blob with optimal quality (target ~40-60KB)
                 canvas.toBlob((blob) => {
                     if (!blob) {
-                        // Fallback to original if conversion fails
                         resolve(file);
                         return;
                     }
 
-                    // Create a new File from the blob
-                    // Preserve original name but change extension to .webp
-                    const fileName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
-                    const newFile = new File([blob], fileName, {
-                        type: 'image/webp',
-                        lastModified: Date.now()
-                    });
-
-                    resolve(newFile);
+                    // If file is still > 120KB, re-compress with slightly lower quality
+                    if (blob.size > 120 * 1024) {
+                        canvas.toBlob((lowerBlob) => {
+                            resolve(makeFile(lowerBlob || blob));
+                        }, 'image/webp', 0.60);
+                    } else {
+                        resolve(makeFile(blob));
+                    }
                 }, 'image/webp', quality);
             };
             img.onerror = (error) => {
                 console.error('Image load error during compression:', error);
-                resolve(file); // Return original on error
+                resolve(file);
             };
         };
         reader.onerror = (error) => {

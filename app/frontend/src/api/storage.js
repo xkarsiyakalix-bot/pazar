@@ -80,17 +80,9 @@ export const uploadListingImages = async (files, userId) => {
 
             let publicUrl = null;
 
-            // 1. Try uploading to Cloudflare R2 (ultra-fast CDN, $0 egress, $0 transform fee)
+            // 1. Primary: Direct Supabase Storage (50KB WebP, immediate upload, ultra-fast CDN)
             try {
-                publicUrl = await uploadToR2(file, fileName);
-                console.log(`Successfully uploaded to Cloudflare R2: ${publicUrl}`);
-            } catch (r2Error) {
-                console.warn('R2 upload failed, falling back to Supabase Storage:', r2Error);
-            }
-
-            // 2. Fallback to Supabase Storage if Cloudflare R2 is unavailable
-            if (!publicUrl) {
-                const { error } = await supabase.storage
+                const { error: supaError } = await supabase.storage
                     .from('listing-images')
                     .upload(fileName, file, {
                         cacheControl: '31536000',
@@ -98,17 +90,28 @@ export const uploadListingImages = async (files, userId) => {
                         contentType: 'image/webp'
                     });
 
-                if (error) {
-                    console.error(`Error uploading ${file.name} to Supabase:`, error);
-                    throw error;
+                if (!supaError) {
+                    const { data: { publicUrl: supabaseUrl } } = supabase.storage
+                        .from('listing-images')
+                        .getPublicUrl(fileName);
+                    publicUrl = supabaseUrl;
+                    console.log(`Successfully uploaded to Supabase Storage: ${publicUrl}`);
+                } else {
+                    console.warn('Supabase upload error, attempting Cloudflare R2 fallback:', supaError);
                 }
+            } catch (err) {
+                console.warn('Supabase exception, attempting Cloudflare R2 fallback:', err);
+            }
 
-                const { data: { publicUrl: supabaseUrl } } = supabase.storage
-                    .from('listing-images')
-                    .getPublicUrl(fileName);
-
-                publicUrl = supabaseUrl;
-                console.log(`Successfully uploaded to Supabase Storage: ${publicUrl}`);
+            // 2. Fallback to Cloudflare R2 if Supabase Storage is unavailable
+            if (!publicUrl) {
+                try {
+                    publicUrl = await uploadToR2(file, fileName);
+                    console.log(`Successfully uploaded to Cloudflare R2 fallback: ${publicUrl}`);
+                } catch (r2Error) {
+                    console.error('All upload attempts failed:', r2Error);
+                    throw r2Error;
+                }
             }
 
             uploadedUrls.push(publicUrl);
