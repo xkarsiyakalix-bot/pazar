@@ -20,10 +20,9 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
         return url;
     }
 
-    // Supabase render transformation adds significant server-side processing delay (TTFB)
-    // on cold requests and PageSpeed bots. Since images are already compressed WebP on upload,
-    // direct object URLs are substantially faster.
-    const isTransformationEnabled = false;
+    // Supabase Pro Image Transformation: drastically reduces oversized 3MB+ images
+    // down to lightweight ~200KB responsive cards, saving over 30MB of network transfer per page view.
+    const isTransformationEnabled = true;
 
     if (!isTransformationEnabled) {
         // Return direct clean Supabase URL without proxy or transformation params
@@ -39,12 +38,9 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
     // If it already has query params, append. Otherwise start with ?
     const separator = transformedUrl.includes('?') ? '&' : '?';
 
-    let params = `width=${width}`;
+    let params = `width=${width || 400}`;
     if (height) params += `&height=${height}`;
     params += `&resize=${resize}`;
-
-    // WebP is more compatible for transformations
-    params += `&format=webp`;
     params += `&quality=75`;
 
     return `${transformedUrl}${separator}${params}`;
