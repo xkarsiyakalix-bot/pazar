@@ -64,7 +64,8 @@ export const BannerSlider = () => {
                         height="300"
                         className="w-full h-full object-cover"
                         loading={index === 0 ? 'eager' : 'lazy'}
-                        {...(index === 0 ? { fetchpriority: "high" } : {})}
+                        fetchPriority={index === 0 ? "high" : "auto"}
+                        decoding={index === 0 ? "sync" : "async"}
                     />
 
                     {slide.external ? (

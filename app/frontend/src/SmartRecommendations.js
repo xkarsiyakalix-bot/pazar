@@ -13,21 +13,30 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
     const { user } = useAuth();
     const loaderRef = useRef(null);
 
-    // Fetch all listings from Supabase
+    // Fetch listings from Supabase (deferred so it doesn't compete with initial LCP/FCP)
     useEffect(() => {
-        const loadListings = async () => {
-            try {
-                // Fetch listings from Supabase, skip count for speed
-                console.log('SmartRecommendations: Fetching listings from Supabase...');
-                const data = await fetchListings({}, { count: false });
-                console.log(`SmartRecommendations: Fetched ${data?.length || 0} listings`);
-                setAllListings(data);
-            } catch (error) {
-                console.error('SmartRecommendations: Error fetching listings:', error);
-                setAllListings([]);
-            }
+        let isMounted = true;
+        const timer = setTimeout(() => {
+            const loadListings = async () => {
+                try {
+                    const data = await fetchListings({
+                        page: 1,
+                        limit: 30,
+                        select: 'id,title,price,price_type,images,category,sub_category,city,district,is_top,is_gallery,is_highlighted,is_multi_bump,package_type,promotion_expiry,user_id,created_at,slug,reserved_by,reserved_until'
+                    }, { count: false });
+                    if (isMounted) setAllListings(data || []);
+                } catch (error) {
+                    console.error('SmartRecommendations error:', error);
+                    if (isMounted) setAllListings([]);
+                }
+            };
+            loadListings();
+        }, 1500);
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timer);
         };
-        loadListings();
     }, []);
 
     const generateRecommendations = useCallback((userHistory) => {

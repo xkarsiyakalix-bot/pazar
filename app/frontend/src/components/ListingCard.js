@@ -168,14 +168,14 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
             width="400"
             height="280"
             loading={priority ? "eager" : "lazy"}
-            {...(priority ? { fetchpriority: "high" } : {})}
-            decoding="async"
+            fetchPriority={priority ? "high" : "auto"}
+            decoding={priority ? "sync" : "async"}
             onLoad={() => setImageLoaded(true)}
             onError={(e) => {
               setImageLoaded(true);
               e.currentTarget.src = PLACEHOLDER_IMAGE;
             }}
-            className={`absolute inset-0 w-full h-full ${imageClasses} ${!isMiniJob ? (imageLoaded ? 'opacity-100' : 'opacity-0') : 'opacity-100'} transition-opacity duration-300`}
+            className={`absolute inset-0 w-full h-full ${imageClasses} ${!isMiniJob ? (imageLoaded || priority ? 'opacity-100' : 'opacity-0') : 'opacity-100'} transition-opacity duration-300`}
           />
 
           {/* Subtle gradient overlay */}

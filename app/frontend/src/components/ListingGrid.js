@@ -19,11 +19,15 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
           setLoading(true);
           // Import fetchListings from api/listings
           const { fetchListings } = await import('../api/listings');
-          // Fetch latest 30 listings sorted strictly by created_at desc (ignoring top priority for Son İlanlar)
-          const data = await fetchListings({ sort_by_newest: true }, { count: false });
+          // Fetch latest 24 listings with only needed card fields to dramatically reduce network payload
+          const data = await fetchListings({
+            sort_by_newest: true,
+            page: 1,
+            limit: 24,
+            select: 'id,title,price,price_type,images,category,sub_category,city,district,is_top,is_gallery,is_highlighted,is_multi_bump,package_type,promotion_expiry,user_id,created_at,slug,reserved_by,reserved_until'
+          }, { count: false });
 
-          // Take only first 30 listings (already sorted by created_at desc)
-          const latestListings = data.slice(0, 30);
+          const latestListings = data || [];
 
           console.log('Fetched latest listings from Supabase:', latestListings);
           setApiListings(latestListings);

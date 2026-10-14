@@ -160,16 +160,19 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                         }}
                     >
                         {loading ? (
-                            [...Array(5)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={`flex-shrink-0 h-56 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded-lg ${isMobile ? 'snap-start' : ''}`}
-                                    style={{
-                                        width: isMobile ? 'calc(45% - 0.75rem)' : `calc((100% - ${(itemsPerPage - 1) * 1.25}rem) / ${itemsPerPage})`,
-                                        minWidth: isMobile ? 'calc(45% - 0.75rem)' : 'auto'
-                                    }}
-                                />
-                            ))
+                            isMobile ? (
+                                <div className="w-full h-16 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded-2xl my-2" />
+                            ) : (
+                                [...Array(5)].map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex-shrink-0 h-56 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded-lg"
+                                        style={{
+                                            width: `calc((100% - ${(itemsPerPage - 1) * 1.25}rem) / ${itemsPerPage})`
+                                        }}
+                                    />
+                                ))
+                            )
                         ) : galleryItems.length === 0 ? (
                             <div className="w-full">
                                 {isMobile ? (
