@@ -861,78 +861,77 @@ function App() {
             favorites={favorites}
           />
 
-          <React.Suspense fallback={<ProductDetailSkeleton />}>
-            <Routes>
-            <Route path="/" element={
-              <>
-                <SEO />
-                <main className="max-w-[1400px] mx-auto px-3 sm:px-4 pt-2 pb-20 sm:py-6 sm:pb-6 flex gap-4 sm:gap-6">
-                  {/* Sidebar - Not rendered on mobile at all to save DOM size */}
-                  {!isMobile && (
-                    <div className="hidden lg:block">
-                      <CategorySidebar
-                        selectedCategory={selectedCategory}
-                        setSelectedCategory={setSelectedCategory}
-                      />
+          {/* Home page rendered OUTSIDE Suspense to prevent BannerSlider LCP being blocked */}
+          {routerLocation.pathname === '/' && (
+            <>
+              <SEO />
+              <main className="max-w-[1400px] mx-auto px-3 sm:px-4 pt-2 pb-20 sm:py-6 sm:pb-6 flex gap-4 sm:gap-6">
+                {/* Sidebar - Not rendered on mobile at all to save DOM size */}
+                {!isMobile && (
+                  <div className="hidden lg:block">
+                    <CategorySidebar
+                      selectedCategory={selectedCategory}
+                      setSelectedCategory={setSelectedCategory}
+                    />
+                  </div>
+                )}
+
+                {/* Main Content Area - Responsive width */}
+                <div className="w-full lg:w-[960px] flex-shrink-0">
+                  {/* Banner Slider - LCP element, must render immediately */}
+                  <BannerSlider />
+
+                  {/* Mobile Category Icon Grid - only on mobile */}
+                  <MobileCategoryGrid setSelectedCategory={setSelectedCategory} />
+
+                  {/* Gallery Section */}
+                  <Gallery toggleFavorite={toggleFavorite} isFavorite={isFavorite} />
+
+                  {/* Latest Listings */}
+                  <section className="mt-6 sm:mt-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg sm:text-xl font-semibold">Son İlanlar</h2>
+                      <a
+                        href="/add-listing"
+                        className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
+                      >
+                        İlan Ver
+                      </a>
                     </div>
-                  )}
+                    <ListingGrid
+                      isLatest={true}
+                      selectedCategory={selectedCategory}
+                      toggleFavorite={toggleFavorite}
+                      isFavorite={isFavorite}
+                    />
+                  </section>
 
-                  {/* Main Content Area - Responsive width */}
-                  <div className="w-full lg:w-[960px] flex-shrink-0">
-                    {/* Banner - Responsive height */}
-                    {/* Banner Slider */}
-                    <BannerSlider />
+                  {/* Special Sellers Section */}
+                  <React.Suspense fallback={null}>
+                    <SpecialSellers
+                      toggleFollowSeller={toggleFollowSeller}
+                      isSellerFollowed={isSellerFollowed}
+                    />
+                  </React.Suspense>
 
-                    {/* Mobile Category Icon Grid - only on mobile */}
-                    <MobileCategoryGrid setSelectedCategory={setSelectedCategory} />
-
-                    {/* Gallery Section */}
-                    <Gallery toggleFavorite={toggleFavorite} isFavorite={isFavorite} />
-
-                    {/* Latest Listings */}
-                    <section className="mt-6 sm:mt-8">
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg sm:text-xl font-semibold">Son İlanlar</h2>
-                        <a
-                          href="/add-listing"
-                          className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
-                        >
-                          İlan Ver
-                        </a>
-                      </div>
-                      <ListingGrid
-                        isLatest={true}
-                        selectedCategory={selectedCategory}
+                  {/* Smart Recommendations - Personalized Listings */}
+                  <div className="mt-8 sm:mt-12">
+                    <h2 className="text-lg sm:text-xl font-semibold mb-4">Önerilen İlanlar</h2>
+                    <React.Suspense fallback={null}>
+                      <SmartRecommendations
                         toggleFavorite={toggleFavorite}
                         isFavorite={isFavorite}
                       />
-                    </section>
-
-                    {/* Special Sellers Section */}
-                    <React.Suspense fallback={null}>
-                      <SpecialSellers
-                        toggleFollowSeller={toggleFollowSeller}
-                        isSellerFollowed={isSellerFollowed}
-                      />
                     </React.Suspense>
-
-                    {/* Smart Recommendations - Personalized Listings */}
-                    <div className="mt-8 sm:mt-12">
-                      <h2 className="text-lg sm:text-xl font-semibold mb-4">Önerilen İlanlar</h2>
-                      <React.Suspense fallback={null}>
-                        <SmartRecommendations
-                          toggleFavorite={toggleFavorite}
-                          isFavorite={isFavorite}
-                        />
-                      </React.Suspense>
-                    </div>
-
-                    {/* Gallery Section */}
-
                   </div>
-                </main>
-              </>
-            } />
+                </div>
+              </main>
+            </>
+          )}
+
+          <React.Suspense fallback={<ProductDetailSkeleton />}>
+            <Routes>
+            <Route path="/" element={null} />
             <Route path="/product/:id" element={
               <ProductDetail key={routerLocation.pathname}
                 addToCart={addToCart}
