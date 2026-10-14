@@ -20,9 +20,10 @@ export const getOptimizedImageUrl = (url, width, height, resize = 'cover', prefe
         return url;
     }
 
-    // Supabase Pro Image Transformation is active.
-    // Delivers 10x smaller WebP images with 1-year immutable CDN caching.
-    const isTransformationEnabled = true;
+    // Supabase render transformation adds significant server-side processing delay (TTFB)
+    // on cold requests and PageSpeed bots. Since images are already compressed WebP on upload,
+    // direct object URLs are substantially faster.
+    const isTransformationEnabled = false;
 
     if (!isTransformationEnabled) {
         // Return direct clean Supabase URL without proxy or transformation params
