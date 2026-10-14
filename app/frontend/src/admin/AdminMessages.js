@@ -469,7 +469,7 @@ export const AdminMessages = () => {
                                         {/* User profile links */}
                                         <div className="flex items-center gap-2">
                                             <a
-                                                href={getSellerUrl(activeConversation.userA.id, activeConversation.userA.full_name)}
+                                                href={getSellerUrl(activeConversation.userA)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 hover:text-red-600 transition-colors"
@@ -477,7 +477,7 @@ export const AdminMessages = () => {
                                                 1. Profil ↗
                                             </a>
                                             <a
-                                                href={getSellerUrl(activeConversation.userB.id, activeConversation.userB.full_name)}
+                                                href={getSellerUrl(activeConversation.userB)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 hover:text-red-600 transition-colors"
