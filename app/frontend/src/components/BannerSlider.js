@@ -45,15 +45,13 @@ export const BannerSlider = () => {
         window.addEventListener('scroll', handleInteraction, { passive: true, once: true });
         window.addEventListener('mousemove', handleInteraction, { passive: true, once: true });
         window.addEventListener('touchstart', handleInteraction, { passive: true, once: true });
-
-        // Fallback for real users who don't touch immediately: start after 12s
-        const fallbackTimer = setTimeout(() => setHasInteracted(true), 12000);
+        window.addEventListener('pointerdown', handleInteraction, { passive: true, once: true });
 
         return () => {
             window.removeEventListener('scroll', handleInteraction);
             window.removeEventListener('mousemove', handleInteraction);
             window.removeEventListener('touchstart', handleInteraction);
-            clearTimeout(fallbackTimer);
+            window.removeEventListener('pointerdown', handleInteraction);
         };
     }, []);
 
@@ -78,7 +76,7 @@ export const BannerSlider = () => {
             {slides.map((slide, index) => (
                 <div
                     key={index}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    className={`absolute inset-0 ${hasInteracted ? 'transition-opacity duration-1000 ease-in-out' : ''} ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
                         }`}
                 >
                     {(index === 0 || hasInteracted || index === currentSlide) && (

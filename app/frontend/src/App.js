@@ -909,18 +909,22 @@ function App() {
                     </section>
 
                     {/* Special Sellers Section */}
-                    <SpecialSellers
-                      toggleFollowSeller={toggleFollowSeller}
-                      isSellerFollowed={isSellerFollowed}
-                    />
+                    <React.Suspense fallback={null}>
+                      <SpecialSellers
+                        toggleFollowSeller={toggleFollowSeller}
+                        isSellerFollowed={isSellerFollowed}
+                      />
+                    </React.Suspense>
 
                     {/* Smart Recommendations - Personalized Listings */}
                     <div className="mt-8 sm:mt-12">
                       <h2 className="text-lg sm:text-xl font-semibold mb-4">Önerilen İlanlar</h2>
-                      <SmartRecommendations
-                        toggleFavorite={toggleFavorite}
-                        isFavorite={isFavorite}
-                      />
+                      <React.Suspense fallback={null}>
+                        <SmartRecommendations
+                          toggleFavorite={toggleFavorite}
+                          isFavorite={isFavorite}
+                        />
+                      </React.Suspense>
                     </div>
 
                     {/* Gallery Section */}
