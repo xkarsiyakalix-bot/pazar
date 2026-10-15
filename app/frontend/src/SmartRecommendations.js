@@ -4,233 +4,134 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { useAuth } from './contexts/AuthContext';
 import { fetchListings } from './api/listings';
 
+const PAGE_SIZE = 30;
+
+const SELECT_FIELDS = 'id,title,price,price_type,images,category,sub_category,city,district,is_top,is_gallery,is_highlighted,is_multi_bump,package_type,promotion_expiry,user_id,created_at,slug,reserved_by,reserved_until';
+
+// Priority score for promoted listings (deterministic part)
+const getPromoPriority = (l) => {
+    const type = l.package_type?.toLowerCase();
+    if (type === 'z_premium' || type === 'premium') return 40;
+    if (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type)) return 35;
+    if (type === 'z_multi_bump' || type === 'multi-bump') return 30;
+    if (l.is_top) return 25;
+    if (l.is_highlighted || type === 'highlight' || type === 'budget') return 20;
+    return 0;
+};
+
+// Shuffle a batch while keeping promoted listings slightly ahead
+const sortBatch = (listings) =>
+    listings
+        .map(l => ({ ...l, _sort: getPromoPriority(l) + Math.random() * 150 }))
+        .sort((a, b) => b._sort - a._sort)
+        .map(({ _sort, ...l }) => l);
+
 export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
     const [displayedListings, setDisplayedListings] = useState([]);
-    const [allRecommendations, setAllRecommendations] = useState([]);
-    const [currentCount, setCurrentCount] = useState(30);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
-    const [allListings, setAllListings] = useState([]);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const { user } = useAuth();
     const loaderRef = useRef(null);
+    const initialLoad = useRef(false);
 
-    // Fetch listings from Supabase (deferred so it doesn't compete with initial LCP/FCP)
-    useEffect(() => {
-        let isMounted = true;
-        const timer = setTimeout(() => {
-            const loadListings = async () => {
-                try {
-                    const data = await fetchListings({
-                        page: 1,
-                        limit: 30,
-                        select: 'id,title,price,price_type,images,category,sub_category,city,district,is_top,is_gallery,is_highlighted,is_multi_bump,package_type,promotion_expiry,user_id,created_at,slug,reserved_by,reserved_until'
-                    }, { count: false });
-                    if (isMounted) setAllListings(data || []);
-                } catch (error) {
-                    console.error('SmartRecommendations error:', error);
-                    if (isMounted) setAllListings([]);
-                }
-            };
-            loadListings();
-        }, 1500);
-
-        return () => {
-            isMounted = false;
-            clearTimeout(timer);
-        };
-    }, []);
-
-    const generateRecommendations = useCallback((userHistory) => {
-        const isNewUser = userHistory.viewedCategories.length === 0 &&
-            userHistory.searchHistory.length === 0 &&
-            userHistory.viewedListings.length === 0;
-
-        if (isNewUser) {
-            // For new users: Show diverse listings from different categories
-            return getDiverseListings();
-        } else {
-            // For returning users: Personalized recommendations
-            return getPersonalizedListings(userHistory);
-        }
-    }, [allListings]);
-
-    useEffect(() => {
-        if (allListings.length === 0) {
-            setLoading(false);
-            return;
-        }
-
-        // Get user history from localStorage
+    // Score a listing based on user history (personalization)
+    const scoreListings = useCallback((listings) => {
         const userHistory = {
             searchHistory: JSON.parse(localStorage.getItem('searchHistory') || '[]'),
             viewedCategories: JSON.parse(localStorage.getItem('viewedCategories') || '[]'),
             viewedListings: JSON.parse(localStorage.getItem('viewedListings') || '[]'),
-            favorites: JSON.parse(localStorage.getItem('favorites') || '[]')
+            favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
         };
 
-        // Generate personalized recommendations
-        let recommendations = generateRecommendations(userHistory);
+        const isNewUser =
+            userHistory.viewedCategories.length === 0 &&
+            userHistory.searchHistory.length === 0 &&
+            userHistory.viewedListings.length === 0;
 
-        // RELAUNCH: Ensure Vitrin (galerie) listings appear twice, distributed far apart
-        const vitrinListings = recommendations.filter(l => l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(l.package_type?.toLowerCase()));
-        if (vitrinListings.length > 0) {
-            // Keep the first 10
-            const firstPart = recommendations.slice(0, 10);
-            const remainingPart = recommendations.slice(10);
+        if (isNewUser) return sortBatch(listings);
 
-            const distributedListings = [...remainingPart];
-            vitrinListings.forEach(l => {
-                // Insert duplicates way down in the list (e.g., after 40th position)
-                const minPos = Math.min(distributedListings.length, 30);
-                const insertPos = minPos + Math.floor(Math.random() * (distributedListings.length - minPos));
-                distributedListings.splice(insertPos, 0, l);
-            });
+        return listings
+            .map(listing => {
+                let score = getPromoPriority(listing);
 
-            recommendations = [...firstPart, ...distributedListings];
-        }
+                if (userHistory.viewedCategories.includes(listing.category)) score += 50;
+                if (userHistory.viewedCategories.includes(listing.sub_category)) score += 30;
 
-        setAllRecommendations(recommendations);
-        setDisplayedListings(recommendations.slice(0, 30));
-        setLoading(false);
-    }, [allListings, generateRecommendations]);
-
-    const getDiverseListings = () => {
-        // Helper to get priority score
-        const getPromoPriority = (l) => {
-            const type = l.package_type?.toLowerCase();
-            // RELAUNCH: Lower base scores to allow mixing with regular items
-            let score = 0;
-            if (type === 'z_premium' || type === 'premium') score = 40;
-            else if (l.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type)) score = 35;
-            else if (type === 'z_multi_bump' || type === 'multi-bump') score = 30;
-            else if (l.is_top) score = 25;
-            else if (l.is_highlighted || type === 'highlight' || type === 'budget') score = 20;
-
-            // Add high randomness so they spread across the whole list
-            return score + (Math.random() * 150);
-        };
-
-        // Get unique categories
-        const categories = [...new Set(allListings.map(l => l.category))];
-        const diverseListings = [];
-
-        // Get 2-3 listings from each category, prioritizing promoted ones
-        categories.forEach(category => {
-            const categoryListings = allListings
-                .filter(l => l.category === category)
-                .sort((a, b) => {
-                    const prioA = getPromoPriority(a);
-                    const prioB = getPromoPriority(b);
-                    if (prioA !== prioB) return prioB - prioA;
-                    return 0.5 - Math.random(); // Random within same priority
-                })
-                .slice(0, 3);
-            diverseListings.push(...categoryListings);
-        });
-
-        // Final sort: Promoted items should be mixed together at the top
-        return diverseListings.sort((a, b) => {
-            const prioA = getPromoPriority(a);
-            const prioB = getPromoPriority(b);
-            // Since we added randomness in getPromoPriority, we just sort by that
-            if (prioA !== prioB) return prioB - prioA;
-            return 0.5 - Math.random();
-        });
-    };
-
-    const getPersonalizedListings = (userHistory) => {
-        const scoredListings = allListings.map(listing => {
-            let score = 0;
-
-            // Boost score based on viewed categories
-            if (userHistory.viewedCategories.includes(listing.category)) {
-                score += 50;
-            }
-            if (userHistory.viewedCategories.includes(listing.subCategory)) {
-                score += 30;
-            }
-
-            // Boost score based on search history
-            userHistory.searchHistory.forEach(searchTerm => {
-                if (listing.title && listing.title.toLowerCase().includes(searchTerm.toLowerCase())) {
-                    score += 40;
-                }
-                if (listing.description && listing.description.toLowerCase().includes(searchTerm.toLowerCase())) {
-                    score += 20;
-                }
-            });
-
-            // Boost score for similar items to favorites
-            if (userHistory.favorites.length > 0) {
-                const favoriteListings = allListings.filter(l => userHistory.favorites.includes(l.id));
-                favoriteListings.forEach(fav => {
-                    if (fav.category === listing.category) score += 25;
-                    if (fav.subCategory === listing.subCategory) score += 15;
-                    if (fav.city === listing.city) score += 10;
+                userHistory.searchHistory.forEach(term => {
+                    if (listing.title?.toLowerCase().includes(term.toLowerCase())) score += 40;
                 });
+
+                if (userHistory.viewedListings.includes(listing.id)) score -= 100;
+
+                score += Math.random() * 200; // scatter
+                return { ...listing, _score: score };
+            })
+            .sort((a, b) => b._score - a._score)
+            .map(({ _score, ...l }) => l);
+    }, []);
+
+    // Fetch a page of listings
+    const loadPage = useCallback(async (pageNum, isFirst = false) => {
+        if (isFirst) setLoading(true);
+        else setLoadingMore(true);
+
+        try {
+            const data = await fetchListings(
+                { page: pageNum, limit: PAGE_SIZE, select: SELECT_FIELDS },
+                { count: false }
+            );
+
+            const sorted = scoreListings(data || []);
+
+            setDisplayedListings(prev => {
+                // Deduplicate by id
+                const existingIds = new Set(prev.map(l => l.id));
+                const fresh = sorted.filter(l => !existingIds.has(l.id));
+                return [...prev, ...fresh];
+            });
+
+            if (!data || data.length < PAGE_SIZE) {
+                setHasMore(false);
             }
-
-            // RELAUNCH: Lower boosts + higher random factor to mix with regular listings
-            const type = listing.package_type?.toLowerCase();
-            let promoBoost = 0;
-            if (type === 'z_premium' || type === 'premium') promoBoost = 60;
-            else if (listing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(type)) promoBoost = 55;
-            else if (type === 'z_multi_bump' || type === 'multi-bump') promoBoost = 50;
-            else if (listing.is_top) promoBoost = 45;
-            else if (listing.is_highlighted || type === 'highlight' || type === 'budget') promoBoost = 40;
-
-            score += promoBoost;
-
-            // Add HUGE randomness (0-200) to ensure items are scattered across the whole list
-            score += Math.random() * 200;
-
-            // Penalize already viewed listings
-            if (userHistory.viewedListings.includes(listing.id)) {
-                score -= 100;
-            }
-
-            // Add some randomness to avoid being too predictable
-            score += Math.random() * 5;
-
-            return { ...listing, score };
-        });
-
-        // Sort by score and return
-        return scoredListings
-            .sort((a, b) => b.score - a.score)
-            .map(({ score, ...listing }) => listing);
-    };
-
-    const loadMore = useCallback(() => {
-        if (currentCount >= allRecommendations.length) return;
-
-        const newCount = currentCount + 30;
-        setDisplayedListings(allRecommendations.slice(0, newCount));
-        setCurrentCount(newCount);
-    }, [currentCount, allRecommendations]);
-
-    const hasMore = currentCount < allRecommendations.length;
-
-    // Infinite Scroll Intersection Observer
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore && !loading) {
-                    loadMore();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
-        if (loaderRef.current) {
-            observer.observe(loaderRef.current);
+        } catch (err) {
+            console.error('SmartRecommendations fetch error:', err);
+            setHasMore(false);
+        } finally {
+            if (isFirst) setLoading(false);
+            else setLoadingMore(false);
         }
+    }, [scoreListings]);
 
+    // Initial load — deferred 1.5s so it doesn't compete with LCP
+    useEffect(() => {
+        if (initialLoad.current) return;
+        initialLoad.current = true;
+
+        const timer = setTimeout(() => {
+            loadPage(1, true);
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [loadPage]);
+
+    // Infinite scroll — load next page when sentinel is visible
+    const handleIntersect = useCallback((entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+            const nextPage = page + 1;
+            setPage(nextPage);
+            loadPage(nextPage, false);
+        }
+    }, [hasMore, loading, loadingMore, page, loadPage]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(handleIntersect, { threshold: 0.1 });
+        if (loaderRef.current) observer.observe(loaderRef.current);
         return () => {
-            if (loaderRef.current) {
-                observer.unobserve(loaderRef.current);
-            }
+            if (loaderRef.current) observer.unobserve(loaderRef.current);
         };
-    }, [loadMore, hasMore, loading]);
+    }, [handleIntersect]);
 
     if (loading) {
         return (
@@ -255,14 +156,14 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
                 ))}
             </div>
 
-            {/* Loading Sentinel */}
+            {/* Infinite scroll sentinel */}
             {hasMore && (
                 <div ref={loaderRef} className="flex justify-center py-8">
-                    <LoadingSpinner size="small" />
+                    {loadingMore && <LoadingSpinner size="small" />}
                 </div>
             )}
 
-            {/* End Message */}
+            {/* End of listings */}
             {!hasMore && displayedListings.length > 0 && (
                 <div className="text-center mt-8 py-6 text-gray-500 dark:text-neutral-400">
                     <p className="text-lg font-medium">Tüm öneriler bu kadar</p>
