@@ -273,7 +273,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                                 )}
                             </div>
                         ) : (
-                            galleryItems.map((item) => (
+                            galleryItems.map((item, index) => (
                                 <div
                                     key={item.id}
                                     className={`flex-shrink-0 ${isMobile ? 'snap-start' : ''}`}
@@ -284,6 +284,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                                 >
                                     <ListingCard
                                         listing={item}
+                                        priority={index < (isMobile ? 2 : 5)}
                                         toggleFavorite={toggleFavorite}
                                         isFavorite={isFavorite}
                                         isOwnListing={user && item.user_id === user.id}
