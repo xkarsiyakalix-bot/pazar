@@ -15,35 +15,17 @@ export const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3
 export const getOptimizedImageUrl = (url, width, height, resize = 'cover', preferAVIF = true) => {
     if (!url) return PLACEHOLDER_IMAGE;
 
-    // Check if it's a Supabase Storage URL
-    if (!url.includes('supabase.co/storage/v1/')) {
-        return url;
+    // Route legacy Supabase Storage URLs to Cloudflare R2 CDN (images.exvitrin.com)
+    if (url.includes('/storage/v1/object/public/listing-images/')) {
+        const cleanUrl = url.split('?')[0];
+        return cleanUrl.replace(/https?:\/\/[^\/]+\/storage\/v1\/object\/public\/listing-images\//, 'https://images.exvitrin.com/');
+    }
+    if (url.includes('/storage/v1/render/image/public/listing-images/')) {
+        const cleanUrl = url.split('?')[0];
+        return cleanUrl.replace(/https?:\/\/[^\/]+\/storage\/v1\/render\/image\/public\/listing-images\//, 'https://images.exvitrin.com/');
     }
 
-    // Supabase Pro Image Transformation: drastically reduces oversized 3MB+ images
-    // down to lightweight ~200KB responsive cards, saving over 30MB of network transfer per page view.
-    const isTransformationEnabled = true;
-
-    if (!isTransformationEnabled) {
-        // Return direct clean Supabase URL without proxy or transformation params
-        if (url.includes('/storage/v1/render/image/public/')) {
-            return url.split('?')[0].replace('/storage/v1/render/image/public/', '/storage/v1/object/public/');
-        }
-        return url.split('?')[0];
-    }
-
-    // Transformation URL structure: .../render/image/public/[bucket]/[path]
-    const transformedUrl = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
-
-    // If it already has query params, append. Otherwise start with ?
-    const separator = transformedUrl.includes('?') ? '&' : '?';
-
-    let params = `width=${width || 400}`;
-    if (height) params += `&height=${height}`;
-    params += `&resize=${resize}`;
-    params += `&quality=75`;
-
-    return `${transformedUrl}${separator}${params}`;
+    return url;
 };
 
 /**
