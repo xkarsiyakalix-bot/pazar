@@ -54,10 +54,10 @@ export const uploadListingImages = async (files, userId) => {
     const maxFileSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-    // Optimize images before upload (converts to WebP client-side)
+    // Optimize images before upload (converts to WebP client-side, ~30KB)
     const optimizedFiles = await processImagesForUpload(files, {
-        maxWidth: 1200,
-        maxHeight: 900,
+        maxWidth: 960,
+        maxHeight: 720,
         quality: 0.75,
         maxFileSize
     });
