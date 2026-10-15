@@ -13,7 +13,7 @@
 export const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='280' viewBox='0 0 400 280'%3E%3Crect fill='%23f3f4f6' width='400' height='280'/%3E%3Cpath fill='%239ca3af' d='M160 120a20 20 0 1 0 0-40 20 20 0 0 0 0 40zm-40 60h160l-50-60-40 50-30-30-40 40z'/%3E%3Ctext fill='%236b7280' font-family='sans-serif' font-size='15' font-weight='600' x='50%25' y='215' text-anchor='middle'%3EExVitrin%3C/text%3E%3C/svg%3E";
 
 export const getOptimizedImageUrl = (url, width, height, resize = 'cover', preferAVIF = true) => {
-    if (!url) return PLACEHOLDER_IMAGE;
+    if (!url || url === '/placeholder-image.jpg') return PLACEHOLDER_IMAGE;
 
     // Route legacy Supabase Storage URLs to Cloudflare R2 CDN (images.exvitrin.com)
     if (url.includes('/storage/v1/object/public/listing-images/')) {

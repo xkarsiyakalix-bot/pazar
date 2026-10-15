@@ -12,7 +12,8 @@ const LONG_PRESS_MS = 450;
 
 export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, hidePrice = false, priority = false }) => {
   const navigate = useNavigate();
-  const [imageLoaded, setImageLoaded] = React.useState(priority);
+  const hasNoImage = (!listing?.images || listing.images.length === 0) && (!listing?.image || listing.image === '/placeholder-image.jpg' || listing.image === PLACEHOLDER_IMAGE);
+  const [imageLoaded, setImageLoaded] = React.useState(priority || hasNoImage);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   // Favorite count state & batch loader
@@ -55,9 +56,11 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   };
 
   // Get first image from images array, fallback to placeholder
-  const rawImageUrl = listing?.images && listing.images.length > 0
-    ? listing.images[0]
-    : listing?.image || PLACEHOLDER_IMAGE;
+  const rawImageUrl = hasNoImage
+    ? PLACEHOLDER_IMAGE
+    : (listing?.images && listing.images.length > 0
+        ? listing.images[0]
+        : listing?.image || PLACEHOLDER_IMAGE);
 
   const imageUrl = getOptimizedImageUrl(rawImageUrl, 400, 280, 'cover');
 
@@ -155,7 +158,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
         {/* ── Image Area ── */}
         <div className="relative overflow-hidden bg-gray-100 dark:bg-neutral-900 h-44" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
           {/* Skeleton shimmer - only before image completes */}
-          {!imageLoaded && !isMiniJob && (
+          {!imageLoaded && !isMiniJob && !hasNoImage && (
             <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 flex items-center justify-center pointer-events-none">
               <svg className="w-10 h-10 text-gray-300 dark:text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />

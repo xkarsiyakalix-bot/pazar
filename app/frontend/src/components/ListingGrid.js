@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { ListingCard } from './ListingCard';
+import { PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 import LoadingSpinner from './LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { SKELETON_CONFIG } from '../config/skeletonConfig';
@@ -49,7 +50,7 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
       // Ensure image field is properly formatted
       image: Array.isArray(listing.images) && listing.images.length > 0
         ? listing.images[0]
-        : listing.image || '/placeholder-image.jpg',
+        : listing.image || PLACEHOLDER_IMAGE,
       // price handling will be done in ListingCard
       price: listing.price,
       price_type: listing.price_type
@@ -116,7 +117,7 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
       {displayListings.map((listing, index) => (
         <ListingCard
           key={listing.id}
-          priority={index < 5}
+          priority={index < 10}
           listing={listing}
           toggleFavorite={toggleFavorite}
           isFavorite={isFavorite}

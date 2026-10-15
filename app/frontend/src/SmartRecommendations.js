@@ -104,16 +104,11 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
         }
     }, [scoreListings]);
 
-    // Initial load — deferred 1.5s so it doesn't compete with LCP
+    // Initial load — load recommendations immediately without artificial delay
     useEffect(() => {
         if (initialLoad.current) return;
         initialLoad.current = true;
-
-        const timer = setTimeout(() => {
-            loadPage(1, true);
-        }, 1500);
-
-        return () => clearTimeout(timer);
+        loadPage(1, true);
     }, [loadPage]);
 
     // Infinite scroll — load next page when sentinel is visible

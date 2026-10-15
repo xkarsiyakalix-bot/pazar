@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { getListingUrl, getSellerUrl } from '../utils/slug';
+import { PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 
 export const AdminMessages = () => {
     const [messages, setMessages] = useState([]);
@@ -196,7 +197,7 @@ export const AdminMessages = () => {
 
     const getListingImageUrl = (listing) => {
         if (!listing || !listing.images || listing.images.length === 0) {
-            return '/placeholder-image.jpg';
+            return PLACEHOLDER_IMAGE;
         }
         return listing.images[0];
     };
@@ -408,7 +409,7 @@ export const AdminMessages = () => {
                                                     src={getListingImageUrl(listing)}
                                                     alt={listing.title}
                                                     className="w-7 h-7 rounded object-cover flex-shrink-0"
-                                                    onError={(e) => { e.currentTarget.src = '/placeholder-image.jpg'; }}
+                                                    onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
                                                 />
                                                 <span className="text-xs font-medium text-gray-700 dark:text-neutral-300 truncate">
                                                     🏷️ {listing.title}
@@ -495,7 +496,7 @@ export const AdminMessages = () => {
                                                     src={getListingImageUrl(activeConversation.listing)}
                                                     alt={activeConversation.listing.title}
                                                     className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                                                    onError={(e) => { e.currentTarget.src = '/placeholder-image.jpg'; }}
+                                                    onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
                                                 />
                                                 <div className="min-w-0">
                                                     <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">İlgili İlan</div>
