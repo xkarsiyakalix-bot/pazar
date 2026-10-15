@@ -9,6 +9,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import ProfileLayout from './ProfileLayout';
 import { useIsMobile } from './hooks/useIsMobile';
 import { getSellerUrl } from './utils/slug';
+import { turkeyDistricts } from './data/turkey_districts';
+import { turkeyCities } from './data/turkey_cities';
 
 // Helper Components defined outside to prevent focus loss on re-render
 const SectionHeader = ({ title, description }) => (
@@ -893,18 +895,60 @@ const SettingsPage = () => {
                                                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
                                             />
                                         </div>
-                                        <InputField
-                                            label="İlçe"
-                                            value={formData.district}
-                                            onChange={e => setFormData({ ...formData, district: e.target.value })}
-                                            placeholder="İlçe"
-                                        />
-                                        <InputField
-                                            label="Şehir"
-                                            value={formData.city}
-                                            onChange={e => setFormData({ ...formData, city: e.target.value })}
-                                            placeholder="Şehir"
-                                        />
+                                        {/* Şehir */}
+                                        <div className="group space-y-1.5 md:space-y-2">
+                                            <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                                Şehir
+                                            </label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                                                    <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                </span>
+                                                <select
+                                                    value={formData.city}
+                                                    onChange={e => setFormData({ ...formData, city: e.target.value, district: '' })}
+                                                    className="w-full pl-9 md:pl-11 pr-4 py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all appearance-none"
+                                                >
+                                                    <option value="">Şehir seçin</option>
+                                                    {turkeyCities.map(c => (
+                                                        <option key={c.city} value={c.city}>{c.city}</option>
+                                                    ))}
+                                                </select>
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* İlçe */}
+                                        <div className="group space-y-1.5 md:space-y-2">
+                                            <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                                İlçe
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    value={formData.district}
+                                                    onChange={e => setFormData({ ...formData, district: e.target.value })}
+                                                    disabled={!formData.city}
+                                                    className={`w-full px-4 py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all appearance-none ${!formData.city ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    <option value="">{formData.city ? 'İlçe seçin' : 'Önce şehir seçin'}</option>
+                                                    {(turkeyDistricts[formData.city] || []).map(d => (
+                                                        <option key={d} value={d}>{d}</option>
+                                                    ))}
+                                                </select>
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>
