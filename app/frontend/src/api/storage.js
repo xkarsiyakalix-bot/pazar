@@ -80,37 +80,38 @@ export const uploadListingImages = async (files, userId) => {
 
             let publicUrl = null;
 
-            // 1. Primary: Direct Supabase Storage (50KB WebP, immediate upload, ultra-fast CDN)
+            // 1. Primary: Cloudflare R2 (images.exvitrin.com CDN — global edge, ultra-fast delivery)
             try {
-                const { error: supaError } = await supabase.storage
-                    .from('listing-images')
-                    .upload(fileName, file, {
-                        cacheControl: '31536000',
-                        upsert: false,
-                        contentType: 'image/webp'
-                    });
-
-                if (!supaError) {
-                    const { data: { publicUrl: supabaseUrl } } = supabase.storage
-                        .from('listing-images')
-                        .getPublicUrl(fileName);
-                    publicUrl = supabaseUrl;
-                    console.log(`Successfully uploaded to Supabase Storage: ${publicUrl}`);
-                } else {
-                    console.warn('Supabase upload error, attempting Cloudflare R2 fallback:', supaError);
-                }
-            } catch (err) {
-                console.warn('Supabase exception, attempting Cloudflare R2 fallback:', err);
+                publicUrl = await uploadToR2(file, fileName);
+                console.log(`Successfully uploaded to Cloudflare R2: ${publicUrl}`);
+            } catch (r2Error) {
+                console.warn('Cloudflare R2 upload failed, attempting Supabase Storage fallback:', r2Error);
             }
 
-            // 2. Fallback to Cloudflare R2 if Supabase Storage is unavailable
+            // 2. Fallback to Supabase Storage if R2 is unavailable
             if (!publicUrl) {
                 try {
-                    publicUrl = await uploadToR2(file, fileName);
-                    console.log(`Successfully uploaded to Cloudflare R2 fallback: ${publicUrl}`);
-                } catch (r2Error) {
-                    console.error('All upload attempts failed:', r2Error);
-                    throw r2Error;
+                    const { error: supaError } = await supabase.storage
+                        .from('listing-images')
+                        .upload(fileName, file, {
+                            cacheControl: '31536000',
+                            upsert: false,
+                            contentType: 'image/webp'
+                        });
+
+                    if (!supaError) {
+                        const { data: { publicUrl: supabaseUrl } } = supabase.storage
+                            .from('listing-images')
+                            .getPublicUrl(fileName);
+                        publicUrl = supabaseUrl;
+                        console.log(`Successfully uploaded to Supabase Storage fallback: ${publicUrl}`);
+                    } else {
+                        console.error('All upload attempts failed:', supaError);
+                        throw new Error(supaError.message);
+                    }
+                } catch (err) {
+                    console.error('All upload attempts failed:', err);
+                    throw err;
                 }
             }
 
