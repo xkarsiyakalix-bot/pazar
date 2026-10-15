@@ -1,4 +1,3 @@
-import { supabase } from '../lib/supabase';
 import { processImagesForUpload } from '../utils/imageOptimization';
 
 /**
@@ -40,7 +39,8 @@ export const uploadToR2 = async (fileOrBlob, filePath) => {
 };
 
 /**
- * Upload multiple images: primary Cloudflare R2, fallback Supabase Storage
+ * Upload multiple images directly to Cloudflare R2 CDN (images.exvitrin.com)
+ * Supabase Storage is completely bypassed.
  * @param {File[]} files - Array of image files to upload
  * @param {string} userId - User ID for organizing files
  * @returns {Promise<string[]>} Array of public URLs
@@ -55,7 +55,6 @@ export const uploadListingImages = async (files, userId) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
     // Optimize images before upload (converts to WebP client-side)
-    console.log('Optimizing images...');
     const optimizedFiles = await processImagesForUpload(files, {
         maxWidth: 1200,
         maxHeight: 900,
@@ -78,46 +77,12 @@ export const uploadListingImages = async (files, userId) => {
             // Generate unique filename with .webp extension
             const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
 
-            let publicUrl = null;
-
-            // 1. Primary: Cloudflare R2 (images.exvitrin.com CDN — global edge, ultra-fast delivery)
-            try {
-                publicUrl = await uploadToR2(file, fileName);
-                console.log(`Successfully uploaded to Cloudflare R2: ${publicUrl}`);
-            } catch (r2Error) {
-                console.warn('Cloudflare R2 upload failed, attempting Supabase Storage fallback:', r2Error);
-            }
-
-            // 2. Fallback to Supabase Storage if R2 is unavailable
-            if (!publicUrl) {
-                try {
-                    const { error: supaError } = await supabase.storage
-                        .from('listing-images')
-                        .upload(fileName, file, {
-                            cacheControl: '31536000',
-                            upsert: false,
-                            contentType: 'image/webp'
-                        });
-
-                    if (!supaError) {
-                        const { data: { publicUrl: supabaseUrl } } = supabase.storage
-                            .from('listing-images')
-                            .getPublicUrl(fileName);
-                        publicUrl = supabaseUrl;
-                        console.log(`Successfully uploaded to Supabase Storage fallback: ${publicUrl}`);
-                    } else {
-                        console.error('All upload attempts failed:', supaError);
-                        throw new Error(supaError.message);
-                    }
-                } catch (err) {
-                    console.error('All upload attempts failed:', err);
-                    throw err;
-                }
-            }
-
+            // Direct Cloudflare R2 upload (images.exvitrin.com CDN)
+            const publicUrl = await uploadToR2(file, fileName);
+            console.log(`Successfully uploaded to Cloudflare R2: ${publicUrl}`);
             uploadedUrls.push(publicUrl);
         } catch (error) {
-            console.error(`Failed to upload ${file.name}:`, error);
+            console.error(`Failed to upload ${file.name} to Cloudflare R2:`, error);
         }
     }
 
@@ -125,33 +90,28 @@ export const uploadListingImages = async (files, userId) => {
 };
 
 /**
- * Delete images from Cloudflare R2 or Supabase Storage
+ * Delete images from Cloudflare R2 CDN
  * @param {string[]} imageUrls - Array of image URLs to delete
- * @param {string} userId - User ID for permission check
  */
-export const deleteListingImages = async (imageUrls, userId) => {
+export const deleteListingImages = async (imageUrls) => {
     if (!imageUrls || imageUrls.length === 0) {
         return;
     }
 
     for (const url of imageUrls) {
         try {
-            if (url.includes('images.exvitrin.com/')) {
-                // Delete from Cloudflare R2
-                await fetch('/api/delete-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url })
-                });
-            } else if (url.includes('/listing-images/')) {
-                // Delete from Supabase Storage
-                const path = url.split('/listing-images/')[1];
-                if (path) {
-                    await supabase.storage.from('listing-images').remove([path]);
-                }
-            }
+            // Normalize URL to delete endpoint
+            const targetUrl = url.includes('/storage/v1/object/public/listing-images/')
+                ? url.replace(/https?:\/\/[^\/]+\/storage\/v1\/object\/public\/listing-images\//, 'https://images.exvitrin.com/')
+                : url;
+
+            await fetch('/api/delete-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: targetUrl })
+            });
         } catch (error) {
-            console.error('Failed to delete image:', url, error);
+            console.error('Failed to delete image from Cloudflare R2:', url, error);
         }
     }
 };
