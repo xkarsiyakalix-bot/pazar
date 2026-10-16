@@ -240,159 +240,92 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="space-y-8 animate-fade-in relative">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                <StatsCard
-                    title="Toplam Üye"
-                    value={stats.totalUsers}
-                    icon="👥"
-                    gradient="from-purple-500 to-indigo-600"
-                    iconColor="text-white"
-                />
-                <StatsCard
-                    title="Aktif İlanlar"
-                    value={stats.activeListings}
-                    icon="✅"
-                    gradient="from-emerald-400 to-green-600"
-                    iconColor="text-white"
-                />
-                <StatsCard
-                    title="Toplam İlan"
-                    value={stats.totalListings}
-                    icon="📊"
-                    gradient="from-blue-500 to-blue-700"
-                    iconColor="text-white"
-                />
-                <StatsCard
-                    title="Bugünkü İlanlar"
-                    value={stats.newListingsToday}
-                    icon="📝"
-                    gradient="from-cyan-400 to-cyan-600"
-                    iconColor="text-white"
-                />
-                <Link to="/admin/sales-reports" className="block transform transition-transform hover:scale-[1.02]">
-                    <StatsCard
-                        title="Toplam Gelir"
-                        value={`${totalRevenue.toLocaleString('tr-TR')} TL`}
-                        icon="💰"
-                        gradient="from-amber-400 to-orange-500"
-                        iconColor="text-white"
-                        isPremium={true}
-                    />
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+                <StatsCard title="Toplam Üye" value={stats.totalUsers} />
+                <StatsCard title="Aktif İlanlar" value={stats.activeListings} />
+                <StatsCard title="Toplam İlan" value={stats.totalListings} />
+                <StatsCard title="Bugünkü İlanlar" value={stats.newListingsToday} />
+                <Link to="/admin/sales-reports" className="block cursor-pointer">
+                    <StatsCard title="Toplam Gelir" value={`${totalRevenue.toLocaleString('tr-TR')} TL`} />
                 </Link>
-                <StatsCard
-                    title="Çevrimiçi"
-                    value={stats.onlineUsers}
-                    icon="🟢"
-                    gradient="from-teal-400 to-emerald-500"
-                    iconColor="text-white"
-                />
+                <StatsCard title="Çevrimiçi" value={stats.onlineUsers} live />
             </div>
 
-            {/* Daily Traffic Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatsCard
-                    title="Günlük Toplam Ziyaretçi"
-                    value={stats.totalVisitorsToday}
-                    icon="📊"
-                    gradient="from-blue-600 to-blue-800"
-                    iconColor="text-white"
-                />
-                <StatsCard
-                    title="Kayıtlı Kullanıcı Girişi"
-                    value={stats.loggedInUsersToday}
-                    icon="👤"
-                    gradient="from-indigo-500 to-purple-600"
-                    iconColor="text-white"
-                />
-                <StatsCard
-                    title="Misafir Ziyaretçi"
-                    value={stats.guestsToday}
-                    icon="👻"
-                    gradient="from-slate-400 to-slate-600"
-                    iconColor="text-white"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <StatsCard title="Günlük Toplam Ziyaretçi" value={stats.totalVisitorsToday} />
+                <StatsCard title="Kayıtlı Kullanıcı Girişi" value={stats.loggedInUsersToday} />
+                <StatsCard title="Misafir Ziyaretçi" value={stats.guestsToday} />
             </div>
 
-
-
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                {/* Payments Section (Left) */}
-                <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-neutral-100 dark:border-white/5 hover:shadow-md transition-all duration-300">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 tracking-tight">Ödemeler & Promosyonlar</h3>
-                        <Link to="/admin/sales-reports" className="px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors flex items-center gap-1">
-                            Raporları Gör 📊
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <div className="bg-white dark:bg-neutral-900 p-5 rounded-lg border border-neutral-200 dark:border-neutral-800">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                        <h3 className="text-base font-medium text-neutral-900 dark:text-neutral-50">Ödemeler & Promosyonlar</h3>
+                        <Link to="/admin/sales-reports" className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors duration-200">
+                            Raporları gör
                         </Link>
                     </div>
-                    <div className="space-y-3">
+                    <div className="divide-y divide-neutral-200 dark:divide-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-md">
                         {recentPromotions.map(promo => (
-                            <div key={promo.id} className="group p-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-white/5 hover:border-blue-200 dark:hover:border-blue-900/50 hover:shadow-sm transition-all duration-200">
-                                <div className="flex justify-between items-start mb-1">
-                                    <div className="font-bold text-neutral-800 dark:text-neutral-200">{promo.profiles?.full_name || 'Bilinmiyor'}</div>
-                                    <div className="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-600">
+                            <div key={promo.id} className="p-3.5">
+                                <div className="flex justify-between items-start gap-3">
+                                    <div className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{promo.profiles?.full_name || 'Bilinmiyor'}</div>
+                                    <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100 tabular-nums whitespace-nowrap">
                                         {promo.price?.toLocaleString('de-DE')} TL
                                     </div>
                                 </div>
-                                <div className="flex justify-between items-center mt-2">
+                                <div className="flex justify-between items-center mt-1.5">
                                     <div className="flex items-center gap-2">
-                                        <span className={`px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${promo.status === 'cancelled'
-                                            ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 ring-1 ring-red-100 dark:ring-red-900/30'
-                                            : 'bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-400 ring-1 ring-neutral-200 dark:ring-white/5'
-                                            }`}>
+                                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
                                             {getPackageName(promo.package_type)}
                                         </span>
                                         {promo.status === 'cancelled' && (
-                                            <span className="text-[10px] font-black text-red-500 uppercase tracking-tighter">İPTAL</span>
+                                            <span className="text-xs text-rose-600 dark:text-rose-400">İptal</span>
                                         )}
                                     </div>
-                                    <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
+                                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
                                         {new Date(promo.created_at).toLocaleDateString('de-DE')}
                                     </span>
                                 </div>
                             </div>
                         ))}
                         {recentPromotions.length === 0 && (
-                            <div className="text-center py-12">
-                                <div className="w-16 h-16 bg-neutral-50 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <span className="text-2xl opacity-30">💰</span>
-                                </div>
-                                <p className="text-neutral-400 dark:text-neutral-500 font-medium text-sm">Henüz ödeme kaydı yok</p>
+                            <div className="text-center py-10">
+                                <p className="text-neutral-500 dark:text-neutral-400 text-sm">Henüz ödeme kaydı yok</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Recent Listings (Middle) */}
-                <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-neutral-100 dark:border-white/5 hover:shadow-md transition-all duration-300">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-50 tracking-tight">Son İlanlar</h3>
-                        <a href="/admin/listings" className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500 font-medium transition-colors">Tümünü İncele →</a>
+                <div className="bg-white dark:bg-neutral-900 p-5 rounded-lg border border-neutral-200 dark:border-neutral-800">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                        <h3 className="text-base font-medium text-neutral-900 dark:text-neutral-50">Son İlanlar</h3>
+                        <Link to="/admin/listings" className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors duration-200">Tümünü incele</Link>
                     </div>
-                    <div className="overflow-hidden bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-white/5">
+                    <div className="overflow-hidden border border-neutral-200 dark:border-neutral-800 rounded-md">
                         <table className="w-full text-left">
-                            <thead className="text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-50/50 dark:bg-neutral-950/50">
+                            <thead className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800">
                                 <tr>
-                                    <th className="px-4 py-3 tracking-wider">İlan Detayı</th>
-                                    <th className="px-4 py-3 text-right tracking-wider">Tarih</th>
+                                    <th className="px-4 py-2.5 font-medium">İlan detayı</th>
+                                    <th className="px-4 py-2.5 font-medium text-right">Tarih</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-neutral-50 dark:divide-white/5">
+                            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
                                 {recentListings.map(listing => (
-                                    <tr key={listing.id} className="group hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 transition-colors cursor-default">
-                                        <td className="px-4 py-3.5">
-                                            <div className="font-bold text-neutral-800 dark:text-neutral-200 truncate max-w-[180px] group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">{listing.title}</div>
+                                    <tr key={listing.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors duration-200">
+                                        <td className="px-4 py-3">
+                                            <div className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-[220px]">{listing.title}</div>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">
+                                                <span className="text-xs text-neutral-500 dark:text-neutral-400">
                                                     #{generateListingNumber(listing)}
                                                 </span>
-                                                <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-medium truncate max-w-[100px]">
+                                                <span className="text-xs text-neutral-400 dark:text-neutral-500 truncate max-w-[120px]">
                                                     {listing.profiles?.full_name}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3.5 text-xs font-medium text-neutral-500 dark:text-neutral-400 text-right tabular-nums">
+                                        <td className="px-4 py-3 text-xs text-neutral-500 dark:text-neutral-400 text-right tabular-nums">
                                             {new Date(listing.created_at).toLocaleDateString('de-DE')}
                                         </td>
                                     </tr>
@@ -406,78 +339,13 @@ const AdminDashboard = () => {
     );
 };
 
-const QuickActionCard = ({ to, icon, title, color, description }) => {
-    const colorClasses = {
-        blue: 'from-blue-50 to-white border-blue-100 text-blue-600 hover:border-blue-300 group-hover:from-blue-600 group-hover:to-blue-700',
-        amber: 'from-amber-50 to-white border-amber-100 text-amber-600 hover:border-amber-300 group-hover:from-amber-600 group-hover:to-amber-700',
-        indigo: 'from-indigo-50 to-white border-indigo-100 text-indigo-600 hover:border-indigo-300 group-hover:from-indigo-600 group-hover:to-indigo-700',
-        emerald: 'from-emerald-50 to-white border-emerald-100 text-emerald-600 hover:border-emerald-300 group-hover:from-emerald-600 group-hover:to-emerald-700',
-        purple: 'from-purple-50 to-white border-purple-100 text-purple-600 hover:border-purple-300 group-hover:from-purple-600 group-hover:to-purple-700',
-        rose: 'from-rose-50 to-white border-rose-100 text-rose-600 hover:border-rose-300 group-hover:from-rose-600 group-hover:to-rose-700',
-        cyan: 'from-cyan-50 to-white border-cyan-100 text-cyan-600 hover:border-cyan-300 group-hover:from-cyan-600 group-hover:to-cyan-700',
-        orange: 'from-orange-50 to-white border-orange-100 text-orange-600 hover:border-orange-300 group-hover:from-orange-600 group-hover:to-orange-700',
-        slate: 'from-slate-50 to-white border-slate-100 text-slate-600 hover:border-slate-300 group-hover:from-slate-600 group-hover:to-slate-700',
-        neutral: 'from-neutral-50 to-white border-neutral-100 text-neutral-600 hover:border-neutral-300 group-hover:from-neutral-600 group-hover:to-neutral-700',
-    };
-
-    const iconBgClasses = {
-        blue: 'bg-blue-100/50 text-blue-600 group-hover:bg-white group-hover:text-blue-600',
-        amber: 'bg-amber-100/50 text-amber-600 group-hover:bg-white group-hover:text-amber-600',
-        indigo: 'bg-indigo-100/50 text-indigo-600 group-hover:bg-white group-hover:text-indigo-600',
-        emerald: 'bg-emerald-100/50 text-emerald-600 group-hover:bg-white group-hover:text-emerald-600',
-        purple: 'bg-purple-100/50 text-purple-600 group-hover:bg-white group-hover:text-purple-600',
-        rose: 'bg-rose-100/50 text-rose-600 group-hover:bg-white group-hover:text-rose-600',
-        cyan: 'bg-cyan-100/50 text-cyan-600 group-hover:bg-white group-hover:text-cyan-600',
-        orange: 'bg-orange-100/50 text-orange-600 group-hover:bg-white group-hover:text-orange-600',
-        slate: 'bg-slate-100/50 text-slate-600 group-hover:bg-white group-hover:text-slate-600',
-        neutral: 'bg-neutral-100/50 text-neutral-600 group-hover:bg-white group-hover:text-neutral-600',
-    };
-
-    const baseClasses = colorClasses[color];
-
-    return (
-        <Link
-            to={to}
-            className={`flex flex-col p-5 bg-gradient-to-br ${baseClasses} dark:from-neutral-900 dark:to-neutral-900 rounded-3xl border dark:border-white/5 transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 group relative overflow-hidden`}
-        >
-            <div className={`w-12 h-12 ${iconBgClasses[color]} dark:bg-neutral-800/50 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:rotate-6`}>
-                {icon}
-            </div>
-            <div className="relative z-10 transition-colors duration-300 group-hover:text-white">
-                <span className="font-black text-neutral-900 dark:text-neutral-50 group-hover:text-white transition-colors duration-300 block mb-0.5 tracking-tight group-hover:scale-[1.02] origin-left">
-                    {title}
-                </span>
-                <span className="text-[10px] uppercase font-black tracking-widest opacity-40 dark:opacity-60 group-hover:opacity-100 group-hover:text-white/80 transition-all duration-300">
-                    {description}
-                </span>
-            </div>
-
-            {/* Subtle background ornament */}
-            <div className={`absolute -bottom-4 -right-4 w-20 h-20 bg-current opacity-[0.03] dark:opacity-[0.05] rounded-full group-hover:scale-150 transition-transform duration-500`}></div>
-        </Link>
-    );
-};
-
-const StatsCard = ({ title, value, icon, gradient, iconColor, isPremium }) => (
-    <div className={`
-        relative overflow-hidden bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-white/5 
-        hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group
-        ${isPremium ? 'ring-2 ring-amber-100 dark:ring-amber-900/20 hover:ring-amber-300 dark:hover:ring-amber-900/40' : ''}
-    `}>
-        <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${gradient} opacity-10 dark:opacity-20 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110`}></div>
-
-        <div className="relative flex items-center">
-            <div className={`
-                w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg mr-4
-                bg-gradient-to-br ${gradient} ${iconColor} transform group-hover:rotate-3 transition-transform
-            `}>
-                {icon}
-            </div>
-            <div>
-                <p className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest mb-1">{title}</p>
-                <p className="text-2xl sm:text-3xl font-display font-black text-neutral-900 dark:text-neutral-50 tracking-tight">{value}</p>
-            </div>
+const StatsCard = ({ title, value, live }) => (
+    <div className="bg-white dark:bg-neutral-900 p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 h-full">
+        <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">{title}</p>
+            {live && <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" aria-hidden="true" />}
         </div>
+        <p className="text-xl font-medium text-neutral-900 dark:text-neutral-50 tabular-nums tracking-tight">{value}</p>
     </div>
 );
 
