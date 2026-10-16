@@ -124,7 +124,6 @@ const ProfileOverviewPage = () => {
     return (
         <ProfileLayout>
             <div className="flex flex-col gap-4 sm:gap-5">
-                <h1 className="sm:hidden text-base font-medium text-neutral-900 dark:text-neutral-100 px-0.5">Profil</h1>
                 <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 sm:p-6 border border-neutral-200 dark:border-neutral-700">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-8">
                         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 w-full lg:w-auto text-center sm:text-left">
