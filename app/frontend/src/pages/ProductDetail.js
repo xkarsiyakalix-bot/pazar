@@ -31,31 +31,26 @@ import LocationMap from '../components/LocationMap';
 const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleReserveDetail, handleExtendDetail, handleDeleteDetail, promotionPackages, selectedPromotions, togglePromotionSelection, calculateTotal, handlePromotionPurchase, navigate, setPrintHideContact, t }) => {
   return (
     <>
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-3 sm:p-6 text-white">
+      <div className="bg-white dark:bg-neutral-900 p-3 sm:p-5 text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 dark:border-neutral-700">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="space-y-1">
-            <h2 className="text-base sm:text-2xl font-black flex items-center gap-1.5 sm:gap-2">
-              <span className="bg-red-500 text-white p-1 rounded-lg">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </span>
+            <h2 className="text-base sm:text-lg font-medium flex items-center gap-2">
               {t.productDetail.ownerDashboard.title}
             </h2>
-            <p className="text-gray-400 text-[10px] sm:text-xs font-medium uppercase tracking-wider">{t.productDetail.ownerDashboard.subtitle}</p>
+            <p className="text-neutral-500 dark:text-neutral-400 text-xs">{t.productDetail.ownerDashboard.subtitle}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 sm:gap-8">
             <div className="text-center group cursor-help">
-              <div className="text-xl sm:text-3xl font-black text-white group-hover:text-red-400 transition-colors">{(listing.views || 0).toLocaleString('tr-TR')}</div>
-              <div className="text-[10px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.visits}</div>
+              <div className="text-xl sm:text-2xl font-medium text-neutral-900 dark:text-neutral-100">{(listing.views || 0).toLocaleString('tr-TR')}</div>
+              <div className="text-[10px] sm:text-xs text-neutral-500">{t.productDetail.ownerDashboard.visits}</div>
             </div>
-            <div className="w-px h-8 sm:h-10 bg-gray-700" />
+            <div className="w-px h-8 sm:h-10 bg-neutral-200 dark:bg-neutral-700" />
             <div className="text-center group cursor-help">
-              <div className="text-xl sm:text-3xl font-black text-white group-hover:text-red-400 transition-colors">{(favoriteCount || 0).toLocaleString('tr-TR')}</div>
-              <div className="text-[10px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.wishlist}</div>
+              <div className="text-xl sm:text-2xl font-medium text-neutral-900 dark:text-neutral-100">{(favoriteCount || 0).toLocaleString('tr-TR')}</div>
+              <div className="text-[10px] sm:text-xs text-neutral-500">{t.productDetail.ownerDashboard.wishlist}</div>
             </div>
-            <div className="w-px h-8 sm:h-10 bg-gray-700" />
+            <div className="w-px h-8 sm:h-10 bg-neutral-200 dark:bg-neutral-700" />
             {listing.promotion_expiry && new Date(listing.promotion_expiry) > new Date() && (
               <>
                 <div className="text-center">
@@ -63,9 +58,9 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
                     expiryDate={new Date(listing.promotion_expiry)}
                     onExpire={() => { }}
                   />
-                  <div className="text-[6px] sm:text-[10px] font-bold text-yellow-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.activePromotion}</div>
+                  <div className="text-[10px] sm:text-xs text-neutral-500">{t.productDetail.ownerDashboard.activePromotion}</div>
                 </div>
-                <div className="w-px h-8 sm:h-10 bg-gray-700" />
+                <div className="w-px h-8 sm:h-10 bg-neutral-200 dark:bg-neutral-700" />
               </>
             )}
             <div className="text-center">
@@ -73,7 +68,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
                 expiryDate={listing.expiry_date ? new Date(listing.expiry_date) : new Date(new Date(listing.created_at).getTime() + 365 * 24 * 60 * 60 * 1000)}
                 onExpire={() => { }}
               />
-              <div className="text-[10px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail.ownerDashboard.adExpiry}</div>
+              <div className="text-[10px] sm:text-xs text-neutral-500">{t.productDetail.ownerDashboard.adExpiry}</div>
             </div>
           </div>
         </div>
@@ -83,7 +78,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4 sm:mb-6">
           <button
             onClick={handleEditDetail}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-red-500 dark:hover:border-red-700 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors duration-200 cursor-pointer group"
           >
             <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -93,7 +88,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
 
           <button
             onClick={handleReserveDetail}
-            className={`flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border ${listing.reserved_by ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20' : 'border-gray-200 dark:border-white/10'} hover:border-blue-500 dark:hover:border-blue-700 hover:shadow-lg transition-all group`}
+            className={`flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border ${listing.reserved_by ? 'border-neutral-800 dark:border-neutral-300' : 'border-neutral-200 dark:border-neutral-700'} hover:border-neutral-400 transition-colors duration-200 cursor-pointer group`}
           >
             <svg className={`w-5 h-5 sm:w-5 sm:h-5 ${listing.reserved_by ? 'text-orange-500' : 'text-gray-400 dark:text-neutral-500'} group-hover:text-blue-500 transition-colors mb-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -103,7 +98,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
 
           <button
             onClick={handleExtendDetail}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-green-500 dark:hover:border-green-700 hover:shadow-lg transition-all group relative"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 transition-colors duration-200 cursor-pointer group relative"
           >
             <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-green-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-0.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -113,7 +108,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
 
           <button
             onClick={handleDeleteDetail}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-red-600 dark:hover:border-red-800 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 transition-colors duration-200 cursor-pointer group"
           >
             <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-600 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -126,7 +121,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
               setPrintHideContact(true);
               setTimeout(() => window.print(), 100);
             }}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-purple-500 dark:hover:border-purple-700 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 transition-colors duration-200 cursor-pointer group"
           >
             <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-purple-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -136,7 +131,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
 
           <button
             onClick={() => navigate('/my-invoices')}
-            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 hover:border-red-500 dark:hover:border-red-700 hover:shadow-lg transition-all group"
+            className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors duration-200 cursor-pointer group"
           >
             <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -187,21 +182,14 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
           </div>
 
           {selectedPromotions.length > 0 && (
-            <div className="p-2 sm:p-6 bg-gray-900 text-white border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-              <div className="flex items-center gap-3 sm:gap-6">
-                <div className="bg-red-500 text-white p-1 rounded-lg animate-bounce hidden sm:block">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-0.63.63-0.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-[7px] font-black uppercase tracking-widest text-gray-400">Seçilen: {selectedPromotions.length}</div>
-                  <div className="text-base sm:text-2xl font-black">{t.productDetail.ownerDashboard.totalPrice}: {calculateTotal()} TL</div>
-                </div>
+            <div className="p-3 sm:p-5 bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+              <div>
+                  <div className="text-xs text-neutral-500">Seçilen: {selectedPromotions.length}</div>
+                  <div className="text-base sm:text-lg font-medium">{t.productDetail.ownerDashboard.totalPrice}: {calculateTotal()} TL</div>
               </div>
               <button
                 onClick={() => handlePromotionPurchase()}
-                className="w-full sm:w-auto px-4 sm:px-10 py-2 sm:py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-black text-[10px] sm:text-lg shadow-xl shadow-red-600/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-2.5 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-md text-sm font-medium hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 cursor-pointer flex items-center justify-center gap-2"
               >
                 {t.productDetail.ownerDashboard.buyNow}
                 <svg className="w-3.5 h-3.5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1426,14 +1414,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           <div className="mb-3 sm:mb-4 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm overflow-x-auto no-print">
             <button
               onClick={() => navigate('/')}
-              className="text-red-500 hover:text-red-600 font-medium whitespace-nowrap"
+              className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium whitespace-nowrap"
             >
               ExVitrin
             </button>
             <span className="text-gray-400">›</span>
             <button
               onClick={() => navigate(getCategoryPath(listing.category))}
-              className="text-gray-700 dark:text-neutral-400 hover:text-red-500 font-medium transition-colors whitespace-nowrap"
+              className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium transition-colors whitespace-nowrap"
             >
               {listing.category}
             </button>
@@ -1442,7 +1430,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <span className="text-gray-400">›</span>
                 <button
                   onClick={() => navigate(getCategoryPath(listing.category, listing.sub_category))}
-                  className="text-gray-700 dark:text-neutral-400 hover:text-red-500 font-medium transition-colors whitespace-nowrap truncate max-w-[150px] sm:max-w-none"
+                  className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium transition-colors whitespace-nowrap truncate max-w-[150px] sm:max-w-none"
                 >
                   {normalizeSubcategoryName(listing.sub_category)}
                 </button>
@@ -1457,7 +1445,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <>
                   <button
                     onClick={() => setShowMobileStats(true)}
-                    className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 rounded-xl shadow-lg border-2 border-red-500/30 flex items-center justify-between"
+                    className="w-full bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 p-3.5 rounded-lg border border-neutral-200 dark:border-neutral-700 flex items-center justify-between cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <span className="bg-red-500 text-white p-2 rounded-lg">
@@ -1467,8 +1455,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </svg>
                       </span>
                       <div className="text-left">
-                        <div className="font-black text-sm uppercase tracking-wider">İlan Yönetimi</div>
-                        <div className="text-[10px] text-gray-400 font-bold uppercase">Ayarlar, İstatistikler & Paketler</div>
+                        <div className="text-sm font-medium">İlan Yönetimi</div>
+                        <div className="text-xs text-neutral-500">Ayarlar, istatistikler ve paketler</div>
                       </div>
                     </div>
                     <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1485,7 +1473,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             </svg>
                           </span>
-                          <h2 className="text-sm font-black text-gray-900 dark:text-neutral-50 uppercase tracking-tight">İlan Yönetimi</h2>
+                          <h2 className="text-sm font-medium text-gray-900 dark:text-neutral-50">İlan Yönetimi</h2>
                         </div>
                         <button
                           onClick={() => setShowMobileStats(false)}
@@ -1497,7 +1485,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         </button>
                       </div>
                       <div className="p-2 pb-10">
-                        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-white/10">
+                        <div className="bg-white dark:bg-neutral-900 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700">
                           <DashboardContent
                             listing={listing}
                             favoriteCount={favoriteCount}
@@ -1520,7 +1508,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   )}
                 </>
               ) : (
-                <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl overflow-hidden border-2 border-red-500/20">
+                <div className="bg-white dark:bg-neutral-900 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700">
                   <DashboardContent
                     listing={listing}
                     favoriteCount={favoriteCount}
@@ -1546,7 +1534,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             {/* Sol Taraf - Ürün Açıklaması */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Ürün Resmi */}
-              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg shadow-none sm:shadow-lg overflow-hidden relative hover:shadow-xl transition-shadow duration-300 z-0 -mx-2 sm:mx-0 border border-transparent dark:sm:border-white/5">
+              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg overflow-hidden relative z-0 -mx-2 sm:mx-0 border border-transparent sm:border-neutral-200 dark:sm:border-neutral-700">
                 <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg overflow-hidden shadow-none sm:shadow-inner p-0 sm:p-3">
                   <div className="relative w-full h-[300px] sm:h-[525px] bg-gray-50 dark:bg-neutral-800 flex items-center justify-center rounded-none sm:rounded-lg overflow-hidden border-0 sm:border border-gray-100 dark:sm:border-white/5">
                     {isMobile && (
@@ -1597,7 +1585,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     </div>
 
                     {listing.images && listing.images.length > 0 && (
-                      <div className="absolute bottom-3 right-3 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-medium z-20 backdrop-blur-sm">
+                      <div className="absolute bottom-3 right-3 bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 px-2 py-0.5 rounded-md text-xs font-medium z-20 border border-neutral-200 dark:border-neutral-600">
                         {t.productDetail.imageCount.replace('{current}', activeImage + 1).replace('{total}', listing.images.length)}
                       </div>
                     )}
@@ -1608,7 +1596,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {/* Previous Button */}
                         <button
                           onClick={() => setActiveImage(activeImage === 0 ? listing.images.length - 1 : activeImage - 1)}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200 hover:scale-110"
+                          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 p-2 rounded-md border border-neutral-200 dark:border-neutral-600 transition-colors duration-200 cursor-pointer"
                           aria-label={t.productDetail.prevImage}
                         >
                           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1619,7 +1607,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {/* Next Button */}
                         <button
                           onClick={() => setActiveImage(activeImage === listing.images.length - 1 ? 0 : activeImage + 1)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-200 hover:scale-110"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 p-2 rounded-md border border-neutral-200 dark:border-neutral-600 transition-colors duration-200 cursor-pointer"
                           aria-label={t.productDetail.nextImage}
                         >
                           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1633,7 +1621,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div className="absolute top-4 left-4 z-20 flex flex-col items-start gap-2">
                       {/* RESERVIERT Badge */}
                       {listing?.reserved_by && (
-                        <div className="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg flex items-center gap-2">
+                        <div className="bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 px-2.5 py-1 rounded-md text-xs font-medium border border-neutral-200 dark:border-neutral-600 flex items-center gap-1.5">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                           </svg>
@@ -1642,31 +1630,30 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {/* Vitrin Badge - Inclusive check */}
                       {(listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(listing?.package_type?.trim().toLowerCase())) && (
-                        <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg border border-white/20 flex items-center gap-2">
-                          <span>⭐ VİTRİN</span>
+                        <div className="bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 text-xs font-medium px-2.5 py-1 rounded-md border border-neutral-200 dark:border-neutral-600">
+                          Vitrin
                         </div>
                       )}
 
 
                       {/* Premium Badge */}
                       {(listing?.package_type?.toLowerCase() === 'premium' || listing?.package_type?.toLowerCase() === 'z_premium') && (
-                        <div className="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.5)] border border-white/20 flex items-center gap-2">
-                          <span>👑 PREMIUM</span>
+                        <div className="bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 text-xs font-medium px-2.5 py-1 rounded-md border border-neutral-200 dark:border-neutral-600">
+                          Premium
                         </div>
                       )}
 
                       {/* Multi-Bump Badge */}
                       {(listing?.package_type?.toLowerCase() === 'multi-bump' || listing?.package_type?.toLowerCase() === 'z_multi_bump') && (
-                        <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg border border-white/20 flex items-center gap-2">
-                          <span>⚡ GÜNLÜK YUKARI</span>
+                        <div className="bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 text-xs font-medium px-2.5 py-1 rounded-md border border-neutral-200 dark:border-neutral-600">
+                          Günlük yukarı
                         </div>
                       )}
 
                       {/* Öne Çıkan Badge */}
                       {listing?.is_highlighted && !listing?.is_top && !listing?.is_gallery && (
-                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 dark:text-neutral-50 text-sm font-bold px-4 py-2 rounded-xl shadow-lg flex flex-col items-center">
-                          <span>✨ Öne Çıkan</span>
-
+                        <div className="bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 text-xs font-medium px-2.5 py-1 rounded-md border border-neutral-200 dark:border-neutral-600">
+                          Öne çıkan
                         </div>
                       )}
                     </div>
@@ -1678,7 +1665,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.images.length > 5 && (
                         <button
                           onClick={(e) => { e.stopPropagation(); scrollThumbnails('left'); }}
-                          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-neutral-800/90 text-gray-700 dark:text-gray-300 rounded-full shadow-md border border-gray-200 dark:border-white/10 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all -ml-3"
+                          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-md border border-neutral-200 dark:border-neutral-600 opacity-0 group-hover:opacity-100 hover:border-neutral-400 transition-colors duration-200 -ml-3 cursor-pointer"
                           aria-label="Previous thumbnails"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -1693,7 +1680,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           <button
                             key={index}
                             onClick={() => handleThumbnailClick(index)}
-                            className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImage === index ? 'border-red-500' : 'border-transparent hover:border-gray-200'}`}
+                            className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden border transition-colors duration-200 cursor-pointer ${activeImage === index ? 'border-neutral-800 dark:border-neutral-200' : 'border-neutral-200 dark:border-neutral-700 hover:border-neutral-400'}`}
                           >
                             <img
                               src={getOptimizedImageUrl(img, 160, 160, 'cover')}
@@ -1702,7 +1689,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                               loading="lazy"
                             />
                             {activeImage === index && (
-                              <div className="absolute inset-0 bg-red-500/10" />
+                              <div className="absolute inset-0 bg-neutral-900/5" />
                             )}
                           </button>
                         ))}
@@ -1712,7 +1699,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.images.length > 5 && (
                         <button
                           onClick={(e) => { e.stopPropagation(); scrollThumbnails('right'); }}
-                          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white/90 dark:bg-neutral-800/90 text-gray-700 dark:text-gray-300 rounded-full shadow-md border border-gray-200 dark:border-white/10 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all -mr-3"
+                          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-md border border-neutral-200 dark:border-neutral-600 opacity-0 group-hover:opacity-100 hover:border-neutral-400 transition-colors duration-200 -mr-3 cursor-pointer"
                           aria-label="Next thumbnails"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -1729,7 +1716,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       e.stopPropagation();
                       setShowShareModal(true);
                     }}
-                    className="w-8 h-8 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-110 transition-all duration-200 flex items-center justify-center text-gray-600 dark:text-neutral-300"
+                      className="w-8 h-8 bg-white/95 dark:bg-neutral-800/95 rounded-md border border-neutral-200 dark:border-neutral-600 hover:border-neutral-400 transition-colors duration-200 flex items-center justify-center text-gray-600 dark:text-neutral-300 cursor-pointer"
                     title="Paylaş"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1741,7 +1728,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   {!isOwnListing && (
                     <button
                       onClick={handleToggleFavoriteDetail}
-                      className="h-8 px-2.5 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm rounded-full shadow hover:bg-white dark:hover:bg-neutral-700 hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-1.5 border border-white/40 dark:border-white/10"
+                      className="h-8 px-2.5 bg-white/95 dark:bg-neutral-800/95 rounded-md hover:border-neutral-400 transition-colors duration-200 flex items-center justify-center gap-1.5 border border-neutral-200 dark:border-neutral-600 cursor-pointer"
                       title={favorite ? 'Favorilerimden çıkar' : 'Favorilerime ekle'}
                     >
                       {favorite ? (
@@ -1772,7 +1759,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               />
 
               {/* Birleştirilmiş İlan Bilgileri Paneli */}
-              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg shadow-none sm:shadow-lg px-4 sm:p-6 py-6 border border-transparent dark:sm:border-white/5">
+              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg px-4 sm:p-6 py-6 border border-transparent sm:border-neutral-200 dark:sm:border-neutral-700">
                 {/* Ürün Başlığı ve Bilgileri */}
                 <div className="space-y-6">
                   {/* Başlık ve Fiyat - Üst Kısım - Back to top per user request */}
@@ -1780,10 +1767,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     {/* Fiyat - En Üstte */}
                     {listing.sub_category !== 'Ausbildung' && listing.sub_category !== 'Bau, Handwerk & Produktion' && listing.category !== 'Jobs' && (
                       <div className="mb-4">
-                        <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-neutral-50 mb-1">
+                        <div className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-neutral-50 mb-1">
                           {isPetAdoptionListing(listing) ? (
-                            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-black text-2xl">
-                              <span>🐾</span> Sahiplendirme
+                            <span className="text-neutral-900 dark:text-neutral-100">
+                              Sahiplendirme
                             </span>
                           ) : (
                             listing.price_type === 'giveaway' || listing.price === 0
@@ -1805,8 +1792,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                         {/* Favorite Count */}
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-neutral-400 mt-2">
-                          <svg className="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                          <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                           </svg>
                           <span className="font-medium">
                             {displayFavoriteCount > 0
@@ -1821,7 +1808,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div>
                       <h1 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-neutral-50 leading-tight">
                         {(listing?.offer_type === 'Aranıyor' || listing?.offer_type === 'Gesuche') && (
-                          <span className="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 px-2 py-0.5 rounded text-xs sm:text-sm font-bold mr-2 uppercase tracking-wider align-middle border border-blue-200 dark:border-blue-800/50 shadow-sm">
+                          <span className="inline-block text-xs sm:text-sm font-medium mr-2 align-middle text-neutral-500 dark:text-neutral-400">
                             Aranıyor
                           </span>
                         )}
@@ -1832,7 +1819,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {isMobile && (
                         <div className="mt-3 flex justify-between items-center text-[13px] text-gray-600 dark:text-neutral-400 font-medium border-t border-gray-50 dark:border-white/5 pt-3 w-full">
                           <div className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
@@ -1854,7 +1841,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
 
                   {/* General Info Grid - Below Title/Price */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b border-gray-100 dark:border-white/5 mb-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 text-sm pb-6 border-b border-neutral-200 dark:border-neutral-700 mb-8">
                     <div className="hidden md:flex justify-between">
                       <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.postedOn}</span>
                       <span className="font-medium text-gray-900 dark:text-neutral-50">
@@ -1909,12 +1896,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                   {/* Quantity Selector - Only for New items */}
                   {(listing.condition === 'Neu' || listing.condition === 'Yeni') && (
-                    <div className="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-lg">
-                      <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
+                    <div className="flex items-center gap-4 p-3 border border-neutral-200 dark:border-neutral-700 rounded-md">
                       <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">Adet:</span>
-                      <div className="flex items-center border-2 border-gray-300 dark:border-white/20 rounded-full bg-white dark:bg-neutral-800 overflow-hidden">
+                      <div className="flex items-center border border-neutral-200 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-800 overflow-hidden">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           className="px-4 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-400 font-bold transition-colors"
@@ -1938,7 +1922,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <button
                         type="button"
                         onClick={() => addToCart({ ...listing, quantity: quantity })}
-                        className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2"
+                        className="flex-1 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium py-2.5 px-5 rounded-md hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-0.63.63-0.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -3120,8 +3104,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Konum Haritası */}
                 {(listing.city || listing.address) && (
                   <div className="mt-8 border-t border-gray-200 dark:border-white/5 pt-8">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
-                      <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -3143,7 +3127,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div>
                       <button
                         onClick={() => setShowLegal(!showLegal)}
-                        className="flex items-center justify-between w-full text-lg font-semibold text-gray-900 dark:text-neutral-50 hover:text-red-500 dark:hover:text-red-400"
+                        className="flex items-center justify-between w-full text-lg font-medium text-gray-900 dark:text-neutral-50 hover:text-neutral-600 dark:hover:text-neutral-300"
                       >
                         <span>{t.productDetail.legalInfo}</span>
                         <svg
@@ -3177,7 +3161,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 if (sellerOtherListings.length === 0) return null;
 
                 return (
-                  <div className="bg-white dark:bg-neutral-900 border border-transparent dark:border-white/5 rounded-lg shadow-lg p-6">
+                  <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg p-5">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-50 mb-4">
                       {seller.name}'in Diğer İlanları
                     </h2>
@@ -3199,13 +3183,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             />
                             {/* Vitrin Badge - Inclusive check */}
                             {(otherListing.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(otherListing.package_type?.toLowerCase())) && (
-                              <div className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-2 py-1 rounded text-xs font-bold z-10">
-                                ⭐ VİTRİN
+                              <div className="absolute top-2 right-2 bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-200 px-1.5 py-0.5 rounded-md text-[10px] font-medium border border-neutral-200 dark:border-neutral-600 z-10">
+                                Vitrin
                               </div>
                             )}
                             {(otherListing.package_type?.toLowerCase() === 'premium' || otherListing.package_type?.toLowerCase() === 'z_premium') && (
-                              <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-400 to-amber-600 text-white px-2 py-1 rounded text-xs font-bold z-10">
-                                PREMIUM
+                              <div className="absolute top-2 right-2 bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-200 px-1.5 py-0.5 rounded-md text-[10px] font-medium border border-neutral-200 dark:border-neutral-600 z-10">
+                                Premium
                               </div>
                             )}
                           </div>
@@ -3215,7 +3199,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             </h3>
                             <div className="text-sm font-semibold text-gray-900 dark:text-neutral-50 mb-1">
                               {isPetAdoptionListing(otherListing) ? (
-                                <span className="text-emerald-600 dark:text-emerald-400 font-bold">🐾 Sahiplendirme</span>
+                                <span className="font-medium">Sahiplendirme</span>
                               ) : (
                                 otherListing.price
                               )}
@@ -3244,7 +3228,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <Link
                         to={sellerPath} state={{ seller }}
                         state={{ sellerProfile }}
-                        className="mt-4 text-red-500 hover:text-red-600 font-medium text-sm block"
+                        className="mt-4 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium text-sm block"
                       >
                         {t.productDetail.allListings.replace('{count}', sellerListingsCount)} →
                       </Link>
@@ -3258,26 +3242,24 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
             {/* Sağ Taraf - Satıcı Profili */}
             <div className="lg:col-span-1">
-              <div className={`bg-white dark:bg-neutral-900 border border-transparent dark:border-white/5 rounded-lg shadow-lg p-6 sticky top-4 ${isMobile ? 'pb-24' : ''}`}>
-                {/* Satıcı Profil Bilgileri */}
-                <div className="flex flex-row items-start gap-4 mb-4 pb-4 border-b dark:border-white/5 text-left">
-                  <div className="flex flex-col items-center gap-3 flex-shrink-0">
+              <div className={`bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 sm:p-5 sticky top-4 ${isMobile ? 'pb-24 mt-2' : ''}`}>
+                <div className="flex flex-row items-start gap-4 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-700 text-left">
+                  <div className="flex flex-col items-center gap-2.5 flex-shrink-0">
                     <div className="relative inline-block">
                       <Link to={sellerPath} state={{ sellerProfile }}>
                         <img
                           key={seller.store_logo || seller.avatar_url || 'default-avatar'}
-                          src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.username || seller.full_name || 'User') + '&background=ef4444&color=fff&size=200'}
+                          src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.username || seller.full_name || 'User') + '&background=e5e5e5&color=404040&size=200'}
                           alt={seller.username || seller.full_name}
-                          className="w-24 h-24 rounded-full object-cover cursor-pointer hover:opacity-90 transition-opacity border-4 border-gray-100 dark:border-neutral-800 shadow-sm"
+                          className="w-20 h-20 rounded-full object-cover cursor-pointer border border-neutral-200 dark:border-neutral-600"
                         />
                       </Link>
                       {seller.is_pro && (
-                        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full border-2 border-white dark:border-neutral-900 shadow-lg z-10">
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 text-[10px] font-medium px-1.5 py-0.5 rounded-md border border-neutral-200 dark:border-neutral-600 z-10">
                           PRO
                         </div>
                       )}
                     </div>
-                    {/* Satıcıyı Takip Et Butonu - Moved under Logo on Mobile */}
                     <button
                       onClick={async () => {
                         setFollowLoading(true);
@@ -3285,16 +3267,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         setFollowLoading(false);
                       }}
                       disabled={followLoading}
-                      className={`w-full py-1.5 px-3 rounded-lg text-[10px] font-bold transition-all border flex items-center justify-center gap-1.5 ${isSellerFollowed(listing.user_id) ? 'bg-green-50 dark:bg-green-900/10 border-green-500 text-green-700 dark:text-green-400' : 'bg-gray-50 dark:bg-neutral-800 border-gray-200 dark:border-white/5 text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                      className={`w-full py-1.5 px-2.5 rounded-md text-xs font-medium transition-colors duration-200 border flex items-center justify-center gap-1.5 cursor-pointer ${isSellerFollowed(listing.user_id) ? 'bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-600 text-neutral-800 dark:text-neutral-200' : 'bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400'
                         } ${followLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {followLoading ? (
                         <LoadingSpinner size="small" />
                       ) : (
                         <>
-                          <svg className={`w-3.5 h-3.5 ${isSellerFollowed(listing.user_id) ? 'text-green-500' : 'text-blue-500'}`} fill={isSellerFollowed(listing.user_id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <svg className="w-3.5 h-3.5 text-neutral-500" fill={isSellerFollowed(listing.user_id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
                           {isSellerFollowed(listing.user_id) ? t.productDetail.followingSeller : t.productDetail.followSeller}
                         </>
@@ -3302,47 +3284,46 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     </button>
                   </div>
 
-                  <div className="flex-1 min-w-0 pt-1">
+                  <div className="flex-1 min-w-0 pt-0.5">
                     <Link
                       to={sellerPath} state={{ seller }}
                       state={{ sellerProfile }}
-                      className="font-bold text-lg sm:text-xl text-gray-900 dark:text-neutral-50 cursor-pointer hover:text-red-500 transition-colors mb-2 flex items-center gap-1.5 truncate"
+                      className="font-medium text-base sm:text-lg text-neutral-900 dark:text-neutral-50 cursor-pointer hover:underline mb-1.5 flex items-center gap-1.5 min-w-0"
                     >
                       <span className="truncate">{seller.username || listing.contact_name || seller.full_name || t.productDetail.unknownSeller}</span>
                       <VerifiedBadge isVerified={seller.is_verified} size="sm" />
                     </Link>
+                    {seller.is_verified && (
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1.5">Doğrulanmış Satıcı</p>
+                    )}
 
-                    {/* City Location */}
-                    {/* City Location */}
                     {(listing.city || listing.address) && (
-                      <div className="flex items-center gap-1.5 mb-2 text-sm text-gray-600 dark:text-neutral-400">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <div className="flex items-center gap-1.5 mb-1.5 text-sm text-neutral-600 dark:text-neutral-400">
+                        <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span className="font-medium">{listing.city || ''}</span>
+                        <span>{listing.city || ''}</span>
                       </div>
                     )}
 
                     {!isCommercial && (
-                      <div className="text-xs uppercase tracking-wide text-red-500 font-black mb-2">{sellerTypeLabel}</div>
+                      <div className="inline-block text-xs text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600 rounded-md px-2 py-0.5 mb-2">{sellerTypeLabel}</div>
                     )}
 
-                    {/* Last Seen Indicator */}
-                    <div className="flex items-center gap-1.5 mb-2 text-sm">
-                      <div className={`w-2 h-2 rounded-full ${seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 ? 'bg-green-500 animate-pulse' : 'bg-gray-400 dark:bg-neutral-600'}`}></div>
-                      <span className="font-bold text-gray-700 dark:text-neutral-300">
+                    <div className="flex items-center gap-1.5 mb-1.5 text-sm">
+                      <div className={`w-1.5 h-1.5 rounded-full ${seller.last_seen && (new Date() - new Date(seller.last_seen)) < 5 * 60 * 1000 ? 'bg-emerald-600' : 'bg-neutral-400 dark:bg-neutral-600'}`}></div>
+                      <span className="text-neutral-600 dark:text-neutral-300">
                         {formatLastSeen(seller.last_seen)}
                       </span>
                     </div>
 
-                    <div className="text-xs text-gray-500 dark:text-neutral-400 font-bold lowercase mb-2">
+                    <div className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
                       {t.productDetail.memberSince} <span className="capitalize">{activeSinceDisplay}</span>
                     </div>
 
-                    {/* Seller Rating */}
                     {sellerRating && (
-                      <div className="mt-2 flex justify-start scale-110 origin-left">
+                      <div className="mt-1 flex justify-start">
                         <RatingDisplay
                           userRating={sellerRating}
                           showDetails={false}
@@ -3360,9 +3341,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <button
                   type="button"
                   onClick={() => setShowMessageModal(true)}
-                  className="w-full border border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
+                  className="w-full border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 text-neutral-800 dark:text-neutral-200 font-medium py-2.5 px-4 rounded-md transition-colors duration-200 mb-2 hidden sm:flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   {t.productDetail.message}
@@ -3373,9 +3354,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   <button
                     type="button"
                     onClick={() => setShowPhone(true)}
-                    className="w-full border border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-neutral-300 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
+                    className="w-full border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 text-neutral-800 dark:text-neutral-200 font-medium py-2.5 px-4 rounded-md transition-colors duration-200 mb-2 hidden sm:flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     {t.productDetail.call}

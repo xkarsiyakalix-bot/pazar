@@ -124,9 +124,10 @@ const ProfileOverviewPage = () => {
     return (
         <ProfileLayout>
             <div className="flex flex-col gap-4 sm:gap-5">
+                <h1 className="sm:hidden text-base font-medium text-neutral-900 dark:text-neutral-100 px-0.5">Profil</h1>
                 <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 sm:p-6 border border-neutral-200 dark:border-neutral-700">
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-8">
-                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 w-full lg:w-auto text-center sm:text-left">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-8">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 w-full lg:w-auto text-center sm:text-left">
                             <div className="relative">
                                 <div className="w-20 h-20 sm:w-24 sm:h-24 bg-neutral-100 dark:bg-neutral-700 rounded-full flex items-center justify-center overflow-hidden border border-neutral-200 dark:border-neutral-600">
                                     {profile?.store_logo || profile?.avatar_url ? (
@@ -141,12 +142,15 @@ const ProfileOverviewPage = () => {
                             </div>
 
                             <div className="flex-1 min-w-0">
-                                <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-2 mb-1">
-                                    <h3 className="text-lg sm:text-xl font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                                <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-1.5 sm:gap-2 mb-1">
+                                    <h3 className="text-lg sm:text-xl font-medium text-neutral-900 dark:text-neutral-100 flex items-center justify-center gap-2">
                                         {profile?.full_name || 'Kullanıcı'}
                                         <VerifiedBadge isVerified={profile?.is_verified} size="lg" />
                                     </h3>
-                                    <span className="hidden lg:inline-block text-xs text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600 rounded-md px-2 py-0.5">Bireysel Üye</span>
+                                    {profile?.is_verified && (
+                                        <p className="sm:hidden text-xs text-neutral-500 dark:text-neutral-400">Doğrulanmış Satıcı</p>
+                                    )}
+                                    <span className="inline-block text-xs text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600 rounded-md px-2 py-0.5">Bireysel Üye</span>
                                 </div>
                                 <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate">{profile?.email}</p>
                                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-3">
