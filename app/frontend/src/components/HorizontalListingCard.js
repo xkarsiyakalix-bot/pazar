@@ -8,7 +8,7 @@ import { getOptimizedImageUrl, PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 import VisibilityPackagesModal from './VisibilityPackagesModal';
 import { isPetAdoptionListing } from '../utils/formatUtils';
 
-export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, compact = false, hidePrice = false, renderCustomFields = null, priority = false }) => {
+export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, compact = false, hidePrice = false, renderCustomFields = null, priority = false, quiet = false }) => {
   const navigate = useNavigate();
   const [showVisibilityModal, setShowVisibilityModal] = useState(false);
   const { user } = useAuth();
@@ -174,16 +174,22 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
   return (
     <>
       <div
-        className={`${
-          isVitrin
-            ? 'bg-purple-50/40 dark:bg-purple-900/10 border-l-4 border-purple-500 shadow-[0_0_16px_rgba(147,51,234,0.15)] rounded-lg mx-0.5 sm:mx-0'
-            : 'bg-white dark:bg-neutral-800/70 border border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 rounded-lg'
-        } transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-0.5 overflow-hidden group/horizontal flex flex-col`}
+        className={
+          quiet
+            ? 'bg-white dark:bg-neutral-800 border-0 cursor-pointer overflow-hidden group/horizontal flex flex-col'
+            : `${
+                isVitrin
+                  ? 'bg-purple-50/40 dark:bg-purple-900/10 border-l-4 border-purple-500 shadow-[0_0_16px_rgba(147,51,234,0.15)] rounded-lg mx-0.5 sm:mx-0'
+                  : 'bg-white dark:bg-neutral-800/70 border border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 rounded-lg'
+              } transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-0.5 overflow-hidden group/horizontal flex flex-col`
+        }
         onClick={() => navigate(getListingUrl(listing), { state: { listing } })}
       >
         <div className="flex flex-row">
-          {/* Image Section */}
-          <div className="w-32 sm:w-48 md:w-60 h-32 sm:h-40 md:h-48 relative group flex-shrink-0 bg-gray-100 dark:bg-neutral-900 border-r border-gray-100 dark:border-white/5 overflow-hidden">
+          <div className={quiet
+            ? 'w-24 sm:w-36 h-24 sm:h-28 relative flex-shrink-0 bg-neutral-100 dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-700 overflow-hidden'
+            : 'w-32 sm:w-48 md:w-60 h-32 sm:h-40 md:h-48 relative group flex-shrink-0 bg-gray-100 dark:bg-neutral-900 border-r border-gray-100 dark:border-white/5 overflow-hidden'
+          }>
             <img
               src={getOptimizedImageUrl(
                 Array.isArray(listing?.images) && listing.images.length > 0
@@ -194,7 +200,7 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               alt={listing?.title || 'İlan Resmi'}
               width="300"
               height="200"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover/horizontal:scale-[1.06]"
+              className={quiet ? 'w-full h-full object-cover' : 'w-full h-full object-cover transition-transform duration-500 group-hover/horizontal:scale-[1.06]'}
               loading={priority ? "eager" : "lazy"}
               {...(priority ? { fetchpriority: "high" } : {})}
               decoding="async"
@@ -202,34 +208,40 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                 e.currentTarget.src = PLACEHOLDER_IMAGE;
               }}
             />
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
-            {/* RESERVIERT Badge - always on top */}
+            {!quiet && <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />}
             {isReserved && (
-              <div className="absolute top-1 left-1 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm z-30">
-                REZERVE
+              <div className={quiet
+                ? 'absolute top-1.5 left-1.5 bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-200 px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-neutral-200 dark:border-neutral-600 z-30'
+                : 'absolute top-1 left-1 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm z-30'
+              }>
+                Rezerve
               </div>
             )}
 
-            {/* Package Badges */}
             {isPromoActive && (
-              <div className="absolute top-1 right-1 flex flex-col gap-1 items-end z-20">
-                {/* Vitrin / Gallery Badge */}
+              <div className="absolute top-1.5 right-1.5 flex flex-col gap-1 items-end z-20">
                 {isVitrin && (
-                  <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black shadow-md border border-white/20 uppercase tracking-wider">
-                    ⭐ VİTRİN
+                  <div className={quiet
+                    ? 'bg-white/95 dark:bg-neutral-900/90 text-neutral-700 dark:text-neutral-200 px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-neutral-200 dark:border-neutral-600'
+                    : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black shadow-md border border-white/20 uppercase tracking-wider'
+                  }>
+                    {quiet ? 'Vitrin' : '⭐ VİTRİN'}
                   </div>
                 )}
 
-                {/* Premium / Plus Badges */}
                 {listing?.package_type && !['basic', 'top', 'galerie', 'gallery', 'galeri', 'vitrin'].includes(listing.package_type.toLowerCase()) && (
-                  <div className={`px-1.5 py-0.5 rounded text-[8px] font-black shadow-md border border-white/20 uppercase tracking-wider ${['premium', 'z_premium'].includes(listing.package_type.toLowerCase())
-                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white'
-                    : 'bg-neutral-800 text-white'
-                    }`}>
-                    {['premium', 'z_premium'].includes(listing.package_type.toLowerCase()) ? '👑 PREMIUM' :
-                      listing.package_type.toLowerCase() === 'plus' ? '⭐ PLUS' :
-                        listing.package_type.toUpperCase()}
+                  <div className={quiet
+                    ? 'bg-white/95 dark:bg-neutral-900/90 text-neutral-700 dark:text-neutral-200 px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-neutral-200 dark:border-neutral-600'
+                    : `px-1.5 py-0.5 rounded text-[8px] font-black shadow-md border border-white/20 uppercase tracking-wider ${['premium', 'z_premium'].includes(listing.package_type.toLowerCase())
+                      ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white'
+                      : 'bg-neutral-800 text-white'
+                    }`
+                  }>
+                    {quiet
+                      ? (['premium', 'z_premium'].includes(listing.package_type.toLowerCase()) ? 'Premium' : listing.package_type.toLowerCase() === 'plus' ? 'Plus' : listing.package_type)
+                      : (['premium', 'z_premium'].includes(listing.package_type.toLowerCase()) ? '👑 PREMIUM' :
+                        listing.package_type.toLowerCase() === 'plus' ? '⭐ PLUS' :
+                          listing.package_type.toUpperCase())}
                   </div>
                 )}
               </div>
@@ -237,31 +249,40 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
           </div>
 
           {/* Info Section */}
-          <div className="flex-1 p-3 sm:p-5 flex flex-col justify-between overflow-hidden">
+          <div className={`flex-1 ${quiet ? 'p-3 sm:p-4' : 'p-3 sm:p-5'} flex flex-col justify-between overflow-hidden`}>
             <div className="space-y-1">
-              <h4 className="text-sm sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover/horizontal:text-red-600 dark:group-hover/horizontal:text-red-400 transition-colors">
+              <h4 className={quiet
+                ? 'text-sm sm:text-[15px] font-medium text-neutral-900 dark:text-neutral-100 line-clamp-1'
+                : 'text-sm sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover/horizontal:text-red-600 dark:group-hover/horizontal:text-red-400 transition-colors'
+              }>
                 {(listing?.offer_type === 'Aranıyor' || listing?.offer_type === 'Gesuche') && (
-                  <span className="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold mr-1.5 uppercase tracking-wider align-middle border border-blue-200 dark:border-blue-800/50">
+                  <span className={quiet
+                    ? 'inline-block text-neutral-500 dark:text-neutral-400 text-xs font-medium mr-1.5 align-middle'
+                    : 'inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold mr-1.5 uppercase tracking-wider align-middle border border-blue-200 dark:border-blue-800/50'
+                  }>
                     Aranıyor
                   </span>
                 )}
                 {listing?.title}
               </h4>
-              <p className="text-[11px] sm:text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1">
+              <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1">
                 {listing?.description}
               </p>
               <div className="pt-1">
                 {!hidePrice && (
                   isPetAdoptionListing(listing) ? (
-                    <span className="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">
-                      <span>🐾</span> Sahiplendirme
+                    <span className={quiet ? 'text-sm font-medium text-neutral-800 dark:text-neutral-200' : 'text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1'}>
+                      {!quiet && <span>🐾</span>} Sahiplendirme
                     </span>
                   ) : (
-                    <span className={`text-sm sm:text-xl font-black ${
-                      listing?.price_type === 'giveaway' || listing?.price === 0
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }`}>
+                    <span className={quiet
+                      ? 'text-sm sm:text-base font-medium text-neutral-900 dark:text-neutral-100'
+                      : `text-sm sm:text-xl font-black ${
+                          listing?.price_type === 'giveaway' || listing?.price === 0
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-red-600 dark:text-red-400'
+                        }`
+                    }>
                       {listing?.price_type === 'giveaway' || listing?.price === 0
                         ? 'Ücretsiz'
                         : listing.price
@@ -273,39 +294,39 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
               </div>
             </div>
 
-            {/* Location and Date */}
-            <div className="flex items-center text-[10px] text-neutral-500 dark:text-neutral-400 gap-3 mt-auto pt-2">
+            <div className={`flex items-center text-xs text-neutral-500 dark:text-neutral-400 gap-3 mt-auto ${quiet ? 'pt-1.5' : 'pt-2'}`}>
               <span className="flex items-center gap-1">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 {listing.city}
               </span>
               <span className="ml-auto flex items-center gap-2">
-                {isOwnListing && <span>{listing?.views || 0} İzlenme</span>}
+                {isOwnListing && <span>{listing?.views || 0} izlenme</span>}
                 <span>{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
               </span>
             </div>
 
-            {/* Desktop Actions - Only inside info on desktop */}
             {isOwnListing && (
-              <div className="hidden sm:flex flex-wrap gap-2 mt-3 pt-3 border-t border-neutral-100 dark:border-white/5">
-                <button onClick={handleEdit} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Düzenle</button>
-                <button onClick={handleExtend} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Uzat</button>
-                <button onClick={handleReserve} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">{isReserved ? 'Rezerve Kaldır' : 'Rezerve Et'}</button>
-                <button onClick={handleDelete} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Sil</button>
-                <button onClick={handleBump} className="px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm">Yukarı Çıkar</button>
+              <div className={`hidden sm:flex flex-wrap gap-1.5 ${quiet ? 'mt-2.5 pt-2.5 border-t border-neutral-200 dark:border-neutral-700' : 'mt-3 pt-3 border-t border-neutral-100 dark:border-white/5'}`}>
+                <button onClick={handleEdit} className={quiet ? 'px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md hover:border-neutral-400 transition-colors duration-200 cursor-pointer' : 'px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm'}>Düzenle</button>
+                <button onClick={handleExtend} className={quiet ? 'px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md hover:border-neutral-400 transition-colors duration-200 cursor-pointer' : 'px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm'}>Uzat</button>
+                <button onClick={handleReserve} className={quiet ? 'px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md hover:border-neutral-400 transition-colors duration-200 cursor-pointer' : 'px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm'}>{isReserved ? 'Rezerve Kaldır' : 'Rezerve Et'}</button>
+                <button onClick={handleDelete} className={quiet ? 'px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md hover:border-neutral-400 transition-colors duration-200 cursor-pointer' : 'px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm'}>Sil</button>
+                <button onClick={handleBump} className={quiet ? 'px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md hover:border-neutral-400 transition-colors duration-200 cursor-pointer' : 'px-3 py-1.5 text-[11px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all shadow-sm'}>Yukarı Çıkar</button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile Actions - Full width scrollable row below everything */}
         {isOwnListing && (
-          <div className="sm:hidden flex flex-nowrap overflow-x-auto no-scrollbar gap-1.5 px-3 pb-3 pt-2 border-t border-neutral-50 dark:border-white/5 bg-neutral-50/50 dark:bg-neutral-900/50">
-            <button onClick={handleEdit} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Düzenle</button>
-            <button onClick={handleExtend} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Uzat</button>
-            <button onClick={handleReserve} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">{isReserved ? 'Dur' : 'Rezerve'}</button>
-            <button onClick={handleDelete} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px) font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Sil</button>
-            <button onClick={handleBump} className="whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md">Yukarı Çıkar</button>
+          <div className={quiet
+            ? 'sm:hidden flex flex-nowrap overflow-x-auto no-scrollbar gap-1.5 px-3 pb-3 pt-2 border-t border-neutral-200 dark:border-neutral-700'
+            : 'sm:hidden flex flex-nowrap overflow-x-auto no-scrollbar gap-1.5 px-3 pb-3 pt-2 border-t border-neutral-50 dark:border-white/5 bg-neutral-50/50 dark:bg-neutral-900/50'
+          }>
+            <button onClick={handleEdit} className={quiet ? 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md cursor-pointer' : 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md'}>Düzenle</button>
+            <button onClick={handleExtend} className={quiet ? 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md cursor-pointer' : 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md'}>Uzat</button>
+            <button onClick={handleReserve} className={quiet ? 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md cursor-pointer' : 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md'}>{isReserved ? 'Dur' : 'Rezerve'}</button>
+            <button onClick={handleDelete} className={quiet ? 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md cursor-pointer' : 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md'}>Sil</button>
+            <button onClick={handleBump} className={quiet ? 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600 rounded-md cursor-pointer' : 'whitespace-nowrap flex-shrink-0 px-3 py-1.5 text-[10px] font-bold bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-white/10 rounded-md'}>Yukarı Çıkar</button>
           </div>
         )}
       </div>
