@@ -168,23 +168,23 @@ const ProfileOverviewPage = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-row items-center gap-3 sm:gap-6 w-full lg:w-auto pt-5 lg:pt-0 border-t lg:border-t-0 lg:border-l border-neutral-200 dark:border-neutral-700 lg:pl-8">
-                            <div className="flex flex-col gap-0.5 text-center lg:text-left p-2 lg:p-0">
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Katılım</span>
-                                <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                        <div className="grid grid-cols-3 w-full lg:w-auto lg:flex lg:flex-row items-stretch lg:items-center pt-0 lg:pt-0 mt-1 sm:mt-0 border border-neutral-200 dark:border-neutral-700 lg:border-0 lg:border-l rounded-md lg:rounded-none overflow-hidden lg:overflow-visible divide-x divide-neutral-200 dark:divide-neutral-700 lg:divide-x-0 lg:gap-6 lg:pl-8">
+                            <div className="flex flex-col gap-0.5 text-center lg:text-left px-2 py-2.5 lg:p-0 min-w-0">
+                                <span className="text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400">Katılım</span>
+                                <span className="text-xs sm:text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
                                     {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' }) : '-'}
                                 </span>
                             </div>
-                            <div className="flex flex-col gap-0.5 text-center lg:text-left p-2 lg:p-0">
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Konum</span>
-                                <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{profile?.city || 'Belirtilmedi'}</span>
+                            <div className="flex flex-col gap-0.5 text-center lg:text-left px-2 py-2.5 lg:p-0 min-w-0">
+                                <span className="text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400">Konum</span>
+                                <span className="text-xs sm:text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">{profile?.city || 'Belirtilmedi'}</span>
                             </div>
-                            <div className="flex flex-col gap-0.5 text-center lg:text-left col-span-2 md:col-span-1 p-2 lg:p-0">
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Satıcı No</span>
+                            <div className="flex flex-col gap-0.5 text-center lg:text-left px-2 py-2.5 lg:p-0 min-w-0">
+                                <span className="text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400">Satıcı No</span>
                                 <Link
                                     to={getSellerUrl(profile)}
                                     state={{ sellerProfile: profile }}
-                                    className="text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:underline"
+                                    className="text-xs sm:text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:underline truncate"
                                 >
                                     #{profile?.user_number || 'N/A'}
                                 </Link>
