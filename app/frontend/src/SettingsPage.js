@@ -12,30 +12,33 @@ import { getSellerUrl } from './utils/slug';
 import { turkeyDistricts } from './data/turkey_districts';
 import { turkeyCities } from './data/turkey_cities';
 
-// Helper Components defined outside to prevent focus loss on re-render
+const fieldBorder = (status) => {
+    if (status === 'available') return 'border-emerald-600/70';
+    if (status === 'unavailable' || status === 'invalid') return 'border-rose-400';
+    return 'border-neutral-200 dark:border-neutral-700 focus:border-neutral-400 dark:focus:border-neutral-500';
+};
+
 const SectionHeader = ({ title, description }) => (
-    <div className="mb-3 md:mb-4">
-        <h2 className="text-lg md:text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">{title}</h2>
-        {description && <p className="text-neutral-500 dark:text-neutral-400 mt-1 text-xs md:text-sm">{description}</p>}
+    <div className="mb-5 pb-3 border-b border-neutral-200 dark:border-neutral-700">
+        <h2 className="text-base md:text-[17px] font-medium text-neutral-900 dark:text-neutral-100">{title}</h2>
+        {description && <p className="text-neutral-500 dark:text-neutral-400 mt-1 text-sm leading-relaxed">{description}</p>}
     </div>
 );
 
 const InputField = ({ label, value, onChange, type = 'text', placeholder, required = false, icon = null, disabled = false, rightElement = null, helperText = null, status = null }) => (
-    <div className="group space-y-1.5 md:space-y-2">
+    <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-            <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider group-focus-within:text-purple-600 transition-colors">
-                {label} {required && <span className="text-red-500">*</span>}
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                {label} {required && <span className="text-rose-500">*</span>}
             </label>
             {status === 'available' && (
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                    ✓ Kullanılabilir
-                </span>
+                <span className="text-xs text-emerald-700 dark:text-emerald-400">Kullanılabilir</span>
             )}
         </div>
         <div className="relative">
             {icon && (
-                <div className="absolute inset-y-0 left-0 pl-3 md:pl-4 flex items-center pointer-events-none text-neutral-400 dark:text-neutral-500 group-focus-within:text-purple-500 transition-colors">
-                    {React.cloneElement(icon, { className: 'w-4 h-4 md:w-5 md:h-5' })}
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400 dark:text-neutral-500">
+                    {React.cloneElement(icon, { className: 'w-4 h-4' })}
                 </div>
             )}
             <input
@@ -45,24 +48,18 @@ const InputField = ({ label, value, onChange, type = 'text', placeholder, requir
                 placeholder={placeholder}
                 required={required}
                 disabled={disabled}
-                className={`w-full ${icon ? 'pl-9 md:pl-11' : 'pl-3 md:pl-4'} ${rightElement ? 'pr-11' : 'pr-4'} py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none transition-all disabled:opacity-60 disabled:bg-neutral-50 dark:disabled:bg-neutral-900 ${
-                    status === 'available'
-                        ? 'border-emerald-500 dark:border-emerald-500/80 focus:ring-4 focus:ring-emerald-500/10'
-                        : status === 'unavailable' || status === 'invalid'
-                        ? 'border-rose-400 dark:border-rose-500/80 focus:ring-4 focus:ring-rose-500/10'
-                        : 'border-neutral-200 dark:border-white/10 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500'
-                }`}
+                className={`w-full ${icon ? 'pl-9' : 'pl-3'} ${rightElement ? 'pr-10' : 'pr-3'} py-2.5 bg-white dark:bg-neutral-900 border rounded-md text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-0 transition-colors duration-200 disabled:opacity-60 disabled:bg-neutral-50 dark:disabled:bg-neutral-800 ${fieldBorder(status)}`}
             />
             {rightElement && (
-                <div className="absolute inset-y-0 right-0 pr-3 md:pr-4 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     {rightElement}
                 </div>
             )}
         </div>
         {helperText && (
-            <p className={`text-xs mt-1 font-medium ${
+            <p className={`text-xs leading-relaxed ${
                 status === 'available'
-                    ? 'text-emerald-600 dark:text-emerald-400'
+                    ? 'text-emerald-700 dark:text-emerald-400'
                     : status === 'unavailable' || status === 'invalid'
                     ? 'text-rose-500 dark:text-rose-400'
                     : 'text-neutral-500 dark:text-neutral-400'
@@ -74,8 +71,8 @@ const InputField = ({ label, value, onChange, type = 'text', placeholder, requir
 );
 
 const TextArea = ({ label, value, onChange, rows = 4, placeholder, maxLength }) => (
-    <div className="group space-y-1.5 md:space-y-2">
-        <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider group-focus-within:text-purple-600 transition-colors">
+    <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
             {label}
         </label>
         <textarea
@@ -84,11 +81,11 @@ const TextArea = ({ label, value, onChange, rows = 4, placeholder, maxLength }) 
             rows={rows}
             placeholder={placeholder}
             maxLength={maxLength}
-            className="w-full px-3 md:px-4 py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all resize-none"
+            className="w-full px-3 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-0 focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors duration-200 resize-none"
         />
         {maxLength && (
             <div className="text-right">
-                <span className="text-[10px] md:text-xs font-medium text-neutral-400 dark:text-neutral-500">
+                <span className="text-xs text-neutral-400 dark:text-neutral-500">
                     {(value || '').length}/{maxLength}
                 </span>
             </div>
@@ -100,13 +97,32 @@ const Toggle = ({ active, onChange }) => (
     <button
         type="button"
         onClick={onChange}
-        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${active ? 'bg-purple-600' : 'bg-neutral-200'}`}
+        aria-pressed={active}
+        className="relative inline-flex h-11 min-w-[44px] items-center justify-center flex-shrink-0 cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/60"
     >
-        <span
-            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${active ? 'translate-x-5' : 'translate-x-0'}`}
-        />
+        <span className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-colors duration-200 ${active ? 'bg-neutral-900 border-neutral-900 dark:bg-neutral-100 dark:border-neutral-100' : 'bg-neutral-200 border-neutral-200 dark:bg-neutral-700 dark:border-neutral-600'}`}>
+            <span
+                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white dark:bg-neutral-900 transition duration-200 ${active ? 'translate-x-4' : 'translate-x-0.5'}`}
+            />
+        </span>
     </button>
 );
+
+const SectionIcon = ({ id }) => {
+    const cls = 'w-4 h-4';
+    if (id === 'profile') return (
+        <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+    );
+    if (id === 'store') return (
+        <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+    );
+    if (id === 'security') return (
+        <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+    );
+    return (
+        <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+    );
+};
 
 const SettingsPage = () => {
     const isMobile = useIsMobile();
@@ -656,10 +672,10 @@ const SettingsPage = () => {
 
 
     const sections = [
-        { id: 'profile', name: 'Profil', icon: '👤', desc: 'Kişisel bilgiler' },
-        { id: 'store', name: 'Mağaza', icon: '🏪', desc: 'Kurumsal ayarlar' },
-        { id: 'security', name: 'Güvenlik', icon: '🔒', desc: 'Şifre ve giriş' },
-        { id: 'notifications', name: 'Bildirimler', icon: '🔔', desc: 'Haberler' },
+        { id: 'profile', name: 'Profil', desc: 'Kişisel bilgiler' },
+        { id: 'store', name: 'Mağaza', desc: 'Kurumsal ayarlar' },
+        { id: 'security', name: 'Güvenlik', desc: 'Şifre ve giriş' },
+        { id: 'notifications', name: 'Bildirimler', desc: 'Haberler' },
     ];
 
     if (loading || authLoading) return <LoadingSpinner size="large" fullScreen />;
@@ -668,63 +684,53 @@ const SettingsPage = () => {
         <ProfileLayout>
             <div className="max-w-4xl mx-auto pb-20">
 
-                {/* Modern Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 mb-6 md:mb-10 px-4 md:px-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                        <div>
-                            <h1 className="text-2xl md:text-3xl font-display font-bold text-neutral-900 dark:text-neutral-100">Ayarlar</h1>
-                            <p className="text-neutral-500 dark:text-neutral-400 text-sm md:text-lg">Hesabınızı ve tercihlerinizi yönetin.</p>
-                        </div>
-                        <div className="flex items-center gap-2">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8 px-4 md:px-0">
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-medium text-neutral-900 dark:text-neutral-100">Ayarlar</h1>
+                        <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1">Hesabınızı ve tercihlerinizi yönetin.</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Link
+                            to={getSellerUrl(profile)}
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors duration-200"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                            {isPro && (profile?.subscription_expiry ? new Date(profile.subscription_expiry) > new Date() : false) ? 'Mağazamı Gör' : 'Profilimi Gör'}
+                        </Link>
+                        {(isPro || profile?.is_commercial) && (profile?.subscription_expiry ? new Date(profile.subscription_expiry) > new Date() : false) ? (
                             <Link
-                                to={getSellerUrl(profile)}
-                                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 rounded-xl text-sm font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-300 transition-all shadow-sm"
+                                to={profile?.store_slug ? `/${profile.store_slug}` : `/store/${user?.id}`}
+                                className="inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors duration-200"
                             >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                {isPro && (profile?.subscription_expiry ? new Date(profile.subscription_expiry) > new Date() : false) ? 'Mağazamı Gör' : 'Profilimi Gör'}
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                                Mağazayı Gör
                             </Link>
-                            {(isPro || profile?.is_commercial) && (profile?.subscription_expiry ? new Date(profile.subscription_expiry) > new Date() : false) ? (
-                                <Link
-                                    to={profile?.store_slug ? `/${profile.store_slug}` : `/store/${user?.id}`}
-                                    className="flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 rounded-xl text-sm font-bold text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 hover:border-purple-200 transition-all shadow-sm"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                                    Mağazayı Gör
-                                </Link>
-                            ) : (
-                                <button
-                                    onClick={() => navigate('/packages')}
-                                    className="relative overflow-hidden flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl text-sm font-black text-white shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:scale-105 active:scale-95 transition-all group border border-amber-400/50"
-                                >
-                                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
-                                    <span className="relative z-10 text-lg">✨</span>
-                                    <span className="relative z-10">MAĞAZA OLUŞTUR</span>
-                                </button>
-                            )}
-                            {/* Progress Indicator */}
-
-                        </div>
+                        ) : (
+                            <button
+                                onClick={() => navigate('/packages')}
+                                className="inline-flex items-center gap-2 px-3 py-2 bg-neutral-900 dark:bg-neutral-100 border border-neutral-900 dark:border-neutral-100 rounded-md text-sm font-medium text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 cursor-pointer"
+                            >
+                                Mağaza oluştur
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="sticky top-[60px] md:top-24 z-30 bg-gray-50/95 dark:bg-neutral-900/95 backdrop-blur-sm py-2 md:py-4 mb-4 md:mb-8 px-4 md:px-0 transition-colors">
-                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <div className="sticky top-[60px] md:top-24 z-30 bg-gray-50/95 dark:bg-neutral-900/95 backdrop-blur-sm mb-6 md:mb-8 px-4 md:px-0">
+                    <div className="flex gap-0 overflow-x-auto no-scrollbar border-b border-neutral-200 dark:border-neutral-700">
                         {sections.map(section => {
                             const isActive = activeSection === section.id;
                             return (
                                 <button
                                     key={section.id}
                                     onClick={() => setActiveSection(section.id)}
-                                    className={`
-                                        flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full text-xs md:text-sm font-bold whitespace-nowrap transition-all duration-300
-                                        ${isActive
-                                            ? 'bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 shadow-lg shadow-neutral-200 dark:shadow-none transform scale-105'
-                                            : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 border border-neutral-200 dark:border-white/10 hover:border-neutral-300'
-                                        }
-                                    `}
+                                    className={`flex items-center gap-2 px-3 md:px-4 py-2.5 text-sm whitespace-nowrap border-b -mb-px transition-colors duration-200 cursor-pointer ${
+                                        isActive
+                                            ? 'border-neutral-900 dark:border-neutral-100 text-neutral-900 dark:text-neutral-100 font-medium'
+                                            : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
+                                    }`}
                                 >
-                                    <span className="text-base md:text-inherit">{section.icon}</span>
+                                    <SectionIcon id={section.id} />
                                     {section.name}
                                 </button>
                             );
@@ -732,11 +738,12 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
-                {/* Feedback Toast */}
                 {message && (
-                    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-2xl font-bold text-sm animate-fade-in-up flex items-center gap-3 backdrop-blur-md ${messageType === 'success' ? 'bg-green-600/90 text-white' : 'bg-red-600/90 text-white'
-                        }`}>
-                        <span>{messageType === 'success' ? '✨' : '⚠️'}</span>
+                    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-md border text-sm font-medium ${
+                        messageType === 'success'
+                            ? 'bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border-neutral-200 dark:border-neutral-600'
+                            : 'bg-white dark:bg-neutral-800 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800'
+                    }`}>
                         {message}
                     </div>
                 )}
@@ -744,20 +751,18 @@ const SettingsPage = () => {
                 <div className="space-y-6">
                     {/* Profile Section */}
                     {activeSection === 'profile' && (
-                        <div className="space-y-6 animate-fade-in">
-                            {/* Avatar & Cover Card */}
-                            <div className="bg-white dark:bg-neutral-800 rounded-xl md:rounded-xl p-4 md:p-8 shadow-sm border border-neutral-100 dark:border-white/5 relative overflow-hidden group mx-4 md:mx-0">
-                                <div className="absolute top-0 left-0 w-full h-24 md:h-32 bg-gradient-to-r from-purple-100 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/10 opacity-50"></div>
-                                <div className="relative pt-8 md:pt-12 flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6">
-                                    <div className="relative group/avatar cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full p-1 bg-white dark:bg-neutral-700 ring-4 ring-white dark:ring-neutral-700 shadow-xl relative overflow-hidden">
+                        <div className="space-y-6">
+                            <div className="bg-white dark:bg-neutral-800 rounded-lg p-5 md:p-6 border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
+                                <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4">
+                                    <div className="relative cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border border-neutral-200 dark:border-neutral-600 relative">
                                             <img
-                                                src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || 'U')}&background=9333ea&color=fff`}
-                                                className="w-full h-full rounded-full object-cover transition-transform duration-500 group-hover/avatar:scale-110"
+                                                src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || 'U')}&background=e5e5e5&color=404040`}
+                                                className="w-full h-full rounded-full object-cover"
                                                 alt="Avatar"
                                             />
-                                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
-                                                <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-0.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-0.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                             </div>
                                             {uploadingAvatar && (
                                                 <div className="absolute inset-0 bg-white/80 dark:bg-neutral-800/80 flex items-center justify-center">
@@ -767,16 +772,16 @@ const SettingsPage = () => {
                                         </div>
                                         <input type="file" ref={fileInputRef} onChange={handleAvatarUpload} className="hidden" accept="image/*" />
                                     </div>
-                                    <div className="flex-1 text-center md:text-left pb-2">
-                                        <h3 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+                                    <div className="flex-1 text-center sm:text-left">
+                                        <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
                                             {profile?.username || profile?.full_name || 'İsimsiz Kullanıcı'}
                                         </h3>
-                                        <p className="text-sm md:text-base text-neutral-500 dark:text-neutral-400 font-medium">@{profile?.user_number || 'user'}</p>
+                                        <p className="text-sm text-neutral-500 dark:text-neutral-400">@{profile?.user_number || 'user'}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10 mx-4 md:mx-0">
+                            <form onSubmit={handleSubmit} className="space-y-8 mx-4 md:mx-0 bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700">
                                 {/* Kişisel Bilgiler Section */}
                                 <div className="space-y-4 md:space-y-5">
                                     <SectionHeader title="Kişisel Bilgiler" description="İlanlarınızda ve profilinizde görünecek temel bilgiler." />
@@ -800,8 +805,8 @@ const SettingsPage = () => {
                                             status={canChangeUsername ? usernameStatus : null}
                                             helperText={
                                                 !canChangeUsername
-                                                    ? `🔒 Kullanıcı adınızı ayda 1 kez değiştirebilirsiniz. Değişiklik için ${usernameDaysRemaining} gün kaldı.`
-                                                    : (usernameMessage || 'ℹ️ Kullanıcı adınızı 30 günde bir kez değiştirebilirsiniz.')
+                                                    ? `Kullanıcı adınızı ayda 1 kez değiştirebilirsiniz. Değişiklik için ${usernameDaysRemaining} gün kaldı.`
+                                                    : (usernameMessage || 'Kullanıcı adınızı 30 günde bir kez değiştirebilirsiniz.')
                                             }
                                             rightElement={
                                                 !canChangeUsername ? (
@@ -811,15 +816,15 @@ const SettingsPage = () => {
                                                         </svg>
                                                     </div>
                                                 ) : usernameStatus === 'checking' ? (
-                                                    <div className="w-5 h-5 border-2 border-gray-300 border-t-purple-600 rounded-full animate-spin" />
+                                                    <div className="w-4 h-4 border border-neutral-300 border-t-neutral-700 rounded-full animate-spin" />
                                                 ) : usernameStatus === 'available' ? (
-                                                    <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm animate-scale-in" title="Kullanıcı adı kullanılabilir">
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                                    <div className="w-5 h-5 rounded-full border border-emerald-600 text-emerald-600 flex items-center justify-center" title="Kullanıcı adı kullanılabilir">
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                                         </svg>
                                                     </div>
                                                 ) : (usernameStatus === 'unavailable' || usernameStatus === 'invalid') ? (
-                                                    <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm animate-scale-in" title={usernameMessage}>
+                                                    <div className="w-5 h-5 rounded-full border border-rose-500 text-rose-500 flex items-center justify-center" title={usernameMessage}>
                                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
@@ -862,21 +867,21 @@ const SettingsPage = () => {
                                             />
                                         </div>
                                         {/* Şehir */}
-                                        <div className="group space-y-1.5 md:space-y-2">
-                                            <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                        <div className="space-y-1.5">
+                                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                                 Şehir
                                             </label>
                                             <div className="relative">
                                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
-                                                    <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                     </svg>
                                                 </span>
                                                 <select
                                                     value={formData.city}
                                                     onChange={e => setFormData({ ...formData, city: e.target.value, district: '' })}
-                                                    className="w-full pl-9 md:pl-11 pr-4 py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all appearance-none"
+                                                    className="w-full pl-9 pr-8 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-0 focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors duration-200 appearance-none"
                                                 >
                                                     <option value="">Şehir seçin</option>
                                                     {turkeyCities.map(c => (
@@ -892,8 +897,8 @@ const SettingsPage = () => {
                                         </div>
 
                                         {/* İlçe */}
-                                        <div className="group space-y-1.5 md:space-y-2">
-                                            <label className="block text-[10px] md:text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                        <div className="space-y-1.5">
+                                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                                 İlçe
                                             </label>
                                             <div className="relative">
@@ -901,7 +906,7 @@ const SettingsPage = () => {
                                                     value={formData.district}
                                                     onChange={e => setFormData({ ...formData, district: e.target.value })}
                                                     disabled={!formData.city}
-                                                    className={`w-full px-4 py-2.5 md:py-3.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm md:text-base text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all appearance-none ${!formData.city ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    className={`w-full px-3 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-0 focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors duration-200 appearance-none ${!formData.city ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                 >
                                                     <option value="">{formData.city ? 'İlçe seçin' : 'Önce şehir seçin'}</option>
                                                     {(turkeyDistricts[formData.city] || []).map(d => (
@@ -919,11 +924,11 @@ const SettingsPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end pt-4">
+                                <div className="flex justify-end pt-2 border-t border-neutral-200 dark:border-neutral-700">
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="w-full md:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-bold rounded-xl md:rounded-xl shadow-xl shadow-neutral-200 dark:shadow-none hover:bg-black dark:hover:bg-white hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
+                                        className="w-full md:w-auto px-5 py-2.5 mt-4 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium rounded-md hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                                     >
                                         {saving && <LoadingSpinner size="small" />}
                                         Değişiklikleri Kaydet
@@ -935,102 +940,82 @@ const SettingsPage = () => {
 
                     {/* Store Section */}
                     {activeSection === 'store' && (
-                        <div className="space-y-8 animate-fade-in">
+                        <div className="space-y-6">
                             {!isPro && !profile?.is_commercial ? (
                                 <>
-                                    <div className="bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 rounded-xl md:rounded-xl p-0.5 md:p-1 shadow-2xl overflow-hidden relative group mx-4 md:mx-0 border border-amber-100 dark:border-white/5">
-                                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] dark:opacity-10"></div>
-                                        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-3xl rounded-lg md:rounded-xl p-6 md:p-12 relative overflow-hidden">
-                                            {/* Background Glows (Adaptive) */}
-                                            <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-400/10 dark:bg-purple-600/20 rounded-full blur-3xl group-hover:bg-amber-400/20 dark:group-hover:bg-purple-600/30 transition-colors duration-1000"></div>
-                                            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-orange-600/5 dark:bg-rose-600/10 rounded-full blur-3xl"></div>
+                                    <div className="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0 p-5 md:p-8">
+                                        <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-3">Kurumsal PRO</p>
+                                        <h3 className="text-xl md:text-2xl font-medium text-neutral-900 dark:text-white mb-3 leading-snug">
+                                            Sadece ilan vermeyin, marka olun.
+                                        </h3>
+                                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6 leading-relaxed max-w-xl">
+                                            <strong className="font-medium text-neutral-900 dark:text-white">Kurumsal PRO</strong> paket ile sınırsız ilan, onaylı mağaza rozeti ve size özel vitrin tasarımı. Rakiplerinizin bir adım önüne geçin.
+                                        </p>
 
-                                            <div className="relative z-10 text-center max-w-2xl mx-auto">
-                                                <div className="inline-block px-4 py-1.5 mb-8 text-[10px] font-black tracking-[0.2em] text-amber-600 dark:text-amber-400 uppercase bg-amber-500/10 rounded-full border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)] dark:shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-                                                    ★ KURUMSAL PRO DÜNYASI ★
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border border-neutral-200 dark:border-neutral-700 rounded-md overflow-hidden mb-6">
+                                            {[
+                                                { title: 'Kurumsal PRO', desc: 'En prestijli satıcı rozeti' },
+                                                { title: 'Sınırsız İlan', desc: 'Limitsiz ürün listeleme hakkı' },
+                                                { title: 'Özel Vitrin', desc: 'Size özel mağaza tasarımı' },
+                                                { title: 'Onaylı Satıcı', desc: 'Mavi tik ile güven verin' }
+                                            ].map((item, i) => (
+                                                <div key={i} className={`p-4 ${i % 2 === 0 ? 'sm:border-r' : ''} ${i < 2 ? 'border-b' : ''} border-neutral-200 dark:border-neutral-700`}>
+                                                    <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-0.5">{item.title}</div>
+                                                    <div className="text-xs text-neutral-500 dark:text-neutral-400">{item.desc}</div>
                                                 </div>
-                                                <h3 className="text-2xl md:text-5xl font-black text-neutral-900 dark:text-white mb-4 md:mb-8 tracking-tight leading-tight">
-                                                    Sadece İlan Vermeyin,<br />
-                                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 dark:from-amber-300 dark:via-yellow-400 dark:to-amber-500 drop-shadow-sm dark:drop-shadow-lg font-black">Marka Olun.</span>
-                                                </h3>
-                                                <p className="text-sm md:text-lg text-neutral-600 dark:text-white/70 mb-8 md:mb-12 leading-relaxed max-w-xl mx-auto font-medium">
-                                                    <strong className="text-neutral-900 dark:text-white">Kurumsal PRO</strong> paket ile sınırsız ilan, onaylı mağaza rozeti ve size özel vitrin tasarımı. Rakiplerinizin bir adım önüne geçin.
-                                                </p>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 text-left mb-10 md:mb-16">
-                                                    {[
-                                                        { icon: '👑', title: 'Kurumsal PRO', desc: 'En prestijli satıcı rozeti' },
-                                                        { icon: '🚀', title: 'Sınırsız İlan', desc: 'Limitsiz ürün listeleme hakkı' },
-                                                        { icon: '💎', title: 'Özel Vitrin', desc: 'Size özel mağaza tasarımı' },
-                                                        { icon: '✅', title: 'Onaylı Satıcı', desc: 'Mavi tik ile güven verin' }
-                                                    ].map((item, i) => (
-                                                        <div key={i} className="flex gap-3 md:gap-4 p-3 md:p-4 rounded-xl md:rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 hover:border-amber-500/30 hover:bg-amber-50/50 dark:hover:bg-neutral-800 transition-all text-left group-hover:scale-[1.02] duration-300 shadow-sm dark:shadow-none">
-                                                            <span className="text-2xl drop-shadow-md">{item.icon}</span>
-                                                            <div>
-                                                                <div className="font-bold text-neutral-900 dark:text-neutral-100 text-sm mb-1">{item.title}</div>
-                                                                <div className="text-xs text-neutral-500 dark:text-neutral-400 group-hover:text-amber-700 dark:group-hover:text-neutral-300 transition-colors font-medium">{item.desc}</div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <button
-                                                    onClick={() => navigate('/packages')}
-                                                    className="relative overflow-hidden w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black text-lg rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-amber-500/30 hover:shadow-amber-500/50 flex items-center justify-center gap-3 mx-auto group"
-                                                >
-                                                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-12"></div>
-                                                    <span className="relative z-10">KURUMSAL PRO'YA GEÇ</span>
-                                                    <svg className="w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                                    </svg>
-                                                </button>
-                                            </div>
+                                            ))}
                                         </div>
+                                        <button
+                                            onClick={() => navigate('/packages')}
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium rounded-md hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 cursor-pointer"
+                                        >
+                                            Kurumsal PRO'ya geç
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </button>
                                     </div>
 
-                                    {/* Standard User Listing Stats */}
-                                    <div className="bg-white dark:bg-neutral-800 p-6 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/5 mx-4 md:mx-0">
+                                    <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                                         <SectionHeader title="İlan Kullanımı" description="Standart kullanıcı olarak ilan limitleriniz ve kullanım durumunuz." />
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                                            <div className="bg-neutral-50 dark:bg-neutral-900/50 p-6 rounded-xl border border-neutral-100 dark:border-white/5">
-                                                <div className="flex justify-between items-center mb-4">
-                                                    <span className="text-xs font-bold text-neutral-400 uppercase">Aktif Kullanım</span>
-                                                    <span className="text-sm font-black text-neutral-900 dark:text-neutral-100">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-700">
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <span className="text-sm text-neutral-500">Aktif kullanım</span>
+                                                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                                                         {listingLimit?.currentCount || userStats?.monthlyListings || 0} / 20
                                                     </span>
                                                 </div>
-                                                <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden mb-2">
+                                                <div className="h-px w-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden mb-3">
                                                     <div
-                                                        className="h-full bg-blue-500 rounded-full transition-all duration-1000"
+                                                        className="h-full bg-neutral-800 dark:bg-neutral-200 transition-all duration-300"
                                                         style={{ width: `${Math.min(100, (((listingLimit?.currentCount || userStats?.monthlyListings || 0) / 20) * 100))}%` }}
                                                     ></div>
                                                 </div>
-                                                <p className="text-[10px] text-neutral-400 italic">Ücretsiz ilan hakkınız her 30 günde bir yenilenir.</p>
+                                                <p className="text-xs text-neutral-500">Ücretsiz ilan hakkınız her 30 günde bir yenilenir.</p>
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-4">
-                                                <div className="bg-neutral-50 dark:bg-neutral-900/50 p-4 rounded-xl border border-neutral-100 dark:border-white/5 flex flex-col justify-center">
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase mb-1">Kalan Hak</span>
-                                                    <span className="text-xl font-black text-neutral-900 dark:text-neutral-100">
+                                                <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-700 flex flex-col justify-center">
+                                                    <span className="text-sm text-neutral-500 mb-1">Kalan hak</span>
+                                                    <span className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
                                                         {Math.max(0, 20 - (listingLimit?.currentCount || userStats?.monthlyListings || 0))}
                                                     </span>
                                                 </div>
-                                                <div className="bg-neutral-50 dark:bg-neutral-900/50 p-4 rounded-xl border border-neutral-100 dark:border-white/5 flex flex-col justify-center">
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase mb-1">Toplam Limit</span>
-                                                    <span className="text-xl font-black text-neutral-900 dark:text-neutral-100">20</span>
+                                                <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-700 flex flex-col justify-center">
+                                                    <span className="text-sm text-neutral-500 mb-1">Toplam limit</span>
+                                                    <span className="text-lg font-medium text-neutral-900 dark:text-neutral-100">20</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="mt-8 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-900/30 rounded-xl flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-white dark:bg-neutral-800 rounded-xl flex items-center justify-center text-xl shadow-sm border border-purple-100 dark:border-purple-800/20">👑</div>
-                                                <div>
-                                                    <p className="text-xs font-bold text-neutral-900 dark:text-neutral-100">Daha fazla ilan vermeniz mi gerekiyor?</p>
-                                                    <p className="text-[10px] text-neutral-500">Kurumsal paketlerle limitlerinizi artırın.</p>
-                                                </div>
+                                        <div className="mt-5 pt-4 border-t border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div>
+                                                <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Daha fazla ilan vermeniz mi gerekiyor?</p>
+                                                <p className="text-xs text-neutral-500 mt-0.5">Kurumsal paketlerle limitlerinizi artırın.</p>
                                             </div>
-                                            <button onClick={() => navigate('/packages')} className="px-4 py-2 bg-purple-600 text-white text-[10px] font-bold rounded-lg hover:bg-purple-700 transition-colors">Paketleri İncele</button>
+                                            <button onClick={() => navigate('/packages')} className="px-4 py-2 border border-neutral-200 dark:border-neutral-600 text-neutral-800 dark:text-neutral-200 text-sm font-medium rounded-md hover:border-neutral-400 transition-colors duration-200 cursor-pointer">Paketleri incele</button>
                                         </div>
                                     </div>
                                 </>
@@ -1044,29 +1029,15 @@ const SettingsPage = () => {
 
                                         return (
                                             <div className="space-y-8">
-                                                {/* Enhanced Subscription Status Card - Adaptive Light/Dark Design */}
-                                                <div className="bg-white dark:bg-neutral-900 p-6 md:p-10 rounded-xl md:rounded-xl shadow-xl shadow-neutral-200/50 dark:shadow-none border border-neutral-100 dark:border-white/10 relative overflow-hidden group mx-4 md:mx-0">
-                                                    {/* Background Glows (Adaptive) */}
-                                                    <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 dark:bg-purple-600/20 rounded-full blur-[100px] -mr-40 -mt-40 transition-colors duration-700"></div>
-                                                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-600/10 rounded-full blur-[100px] -ml-32 -mb-32"></div>
-
-                                                    <div className="relative z-10">
-                                                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-10">
-                                                            <div className="flex items-center gap-6">
-                                                                {(() => {
-                                                                    const icon = displayTier === 'unlimited' ? '💎' : displayTier === 'pack2' ? '⭐' : displayTier === 'pack1' ? '🚀' : '📦';
-                                                                    const gradient = displayTier === 'unlimited' ? 'from-indigo-500 to-purple-600' : 'from-amber-400 to-orange-500';
-                                                                    return (
-                                                                        <>
-                                                                            <div className={`w-20 h-20 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center text-4xl shadow-lg shadow-purple-500/20 text-white shrink-0`}>
-                                                                                {icon}
-                                                                            </div>
-                                                                            <div>
+                                                <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
+                                                    <div>
+                                                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-6 pb-6 border-b border-neutral-200 dark:border-neutral-700">
+                                                            <div>
                                                                                 <div className="flex items-center gap-2 mb-1.5">
-                                                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500">Mevcut Planınız</span>
-                                                                                    <span className="px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 text-[9px] font-bold rounded-full border border-green-500/20">AKTİF</span>
+                                                                                    <span className="text-sm text-neutral-500 dark:text-neutral-400">Mevcut planınız</span>
+                                                                                    <span className="px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-md">Aktif</span>
                                                                                 </div>
-                                                                                <h3 className="text-2xl md:text-3xl font-black text-neutral-900 dark:text-white leading-none mb-3">
+                                                                                <h3 className="text-xl md:text-2xl font-medium text-neutral-900 dark:text-white leading-snug mb-3">
                                                                                     {displayTier === 'unlimited' ? 'Sınırsız Abonelik' :
                                                                                         displayTier === 'pack2' ? 'Pro Kurumsal' :
                                                                                             displayTier === 'pack1' ? 'Başlangıç Kurumsal' : 'Standart Kullanıcı'}
@@ -1082,27 +1053,23 @@ const SettingsPage = () => {
 
                                                                                     return (
                                                                                         <div className="flex items-center gap-4">
-                                                                                            <div className="flex items-center gap-2 pr-4 border-r border-neutral-200 dark:border-white/10">
-                                                                                                <span className="text-lg font-black text-neutral-900 dark:text-white">{listingLimit?.currentCount || 0} / {effectiveLimit}</span>
-                                                                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-tighter">İlan</span>
+                                                                                            <div className="flex items-center gap-2 pr-4 border-r border-neutral-200 dark:border-neutral-700">
+                                                                                                <span className="text-base font-medium text-neutral-900 dark:text-white">{listingLimit?.currentCount || 0} / {effectiveLimit}</span>
+                                                                                                <span className="text-xs text-neutral-500">ilan</span>
                                                                                             </div>
                                                                                             {expiryDate && (() => {
                                                                                                 const diff = expiryDate.getTime() - now.getTime();
                                                                                                 const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
                                                                                                 return (
                                                                                                     <div className="flex items-center gap-2">
-                                                                                                        <span className="text-lg font-black text-purple-600 dark:text-purple-400">{days}</span>
-                                                                                                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-tighter">GÜN KALDI</span>
+                                                                                                        <span className="text-base font-medium text-neutral-900 dark:text-neutral-100">{days}</span>
+                                                                                                        <span className="text-xs text-neutral-500">gün kaldı</span>
                                                                                                     </div>
                                                                                                 );
                                                                                             })()}
                                                                                         </div>
                                                                                     );
                                                                                 })()}
-                                                                            </div>
-                                                                        </>
-                                                                    );
-                                                                })()}
                                                             </div>
 
                                                             {displayTier !== 'free' && (
@@ -1110,7 +1077,7 @@ const SettingsPage = () => {
                                                                     <button
                                                                         onClick={handleReactivateSubscription}
                                                                         disabled={saving}
-                                                                        className="px-5 py-2.5 bg-green-500/10 hover:bg-green-500/20 text-green-600 dark:text-green-400 text-xs font-bold rounded-xl border border-green-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                        className="px-4 py-2 text-sm font-medium rounded-md border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                                                                     >
                                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                                                         Yenilemeyi Tekrar Aç
@@ -1119,7 +1086,7 @@ const SettingsPage = () => {
                                                                     <button
                                                                         onClick={handleCancelSubscription}
                                                                         disabled={saving}
-                                                                        className="px-5 py-2.5 bg-neutral-100 dark:bg-white/5 hover:bg-neutral-200 dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-400 text-xs font-bold rounded-xl border border-neutral-200 dark:border-white/10 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                        className="px-4 py-2 text-sm font-medium rounded-md border border-neutral-200 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-neutral-400 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                                                                     >
                                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                                                         Yenilemeyi Kapat
@@ -1142,54 +1109,42 @@ const SettingsPage = () => {
                                                                 const currentCount = listingLimit ? listingLimit.currentCount : (userStats?.monthlyListings || 0);
 
                                                                 return (
-                                                                    <div className="bg-neutral-50 dark:bg-white/5 p-6 rounded-xl border border-neutral-100 dark:border-white/5">
-                                                                        <div className="flex items-center justify-between mb-4">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <div className="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]"></div>
-                                                                                <p className="text-neutral-500 dark:text-white/50 text-[10px] font-black uppercase tracking-widest">İlan Kullanımı</p>
-                                                                            </div>
-                                                                            <span className="text-lg font-black text-neutral-900 dark:text-white">
+                                                                    <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-700">
+                                                                        <div className="flex items-center justify-between mb-3">
+                                                                            <p className="text-sm text-neutral-500">İlan kullanımı</p>
+                                                                            <span className="text-sm font-medium text-neutral-900 dark:text-white">
                                                                                 {currentCount} / {limitStr}
                                                                             </span>
                                                                         </div>
-                                                                        <div className="h-3 w-full bg-neutral-200 dark:bg-white/10 rounded-full overflow-hidden mb-3">
+                                                                        <div className="h-px w-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden mb-3">
                                                                             <div
-                                                                                className="h-full bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 rounded-full transition-all duration-1000"
+                                                                                className="h-full bg-neutral-800 dark:bg-neutral-200 transition-all duration-300"
                                                                                 style={{ width: limitNum === Infinity ? '5%' : `${Math.min(100, (currentCount / (limitNum || 1)) * 100)}%` }}
                                                                             ></div>
                                                                         </div>
-                                                                        <p className="text-[10px] text-neutral-400 dark:text-white/40 font-bold italic pl-1">Son 30 gündeki aktif ilanlarınızın durumu.</p>
+                                                                        <p className="text-xs text-neutral-500">Son 30 gündeki aktif ilanlarınızın durumu.</p>
                                                                     </div>
                                                                 );
                                                             })()}
 
-                                                            <div className="bg-neutral-50 dark:bg-white/5 p-6 rounded-xl border border-neutral-100 dark:border-white/5 relative overflow-hidden flex flex-col justify-center">
-                                                                <div className="space-y-4">
+                                                            <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-700 flex flex-col justify-center">
+                                                                <div className="space-y-3">
                                                                     <div className="flex items-center justify-between">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                                            <span className="text-[10px] text-neutral-500 dark:text-white/50 font-black uppercase tracking-widest">Bitiş Tarihi</span>
-                                                                        </div>
-                                                                        <span className="text-sm font-black text-neutral-900 dark:text-white">
+                                                                        <span className="text-sm text-neutral-500">Bitiş tarihi</span>
+                                                                        <span className="text-sm font-medium text-neutral-900 dark:text-white">
                                                                             {profile?.subscription_expiry ? new Date(profile.subscription_expiry).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Süresiz'}
                                                                         </span>
                                                                     </div>
-                                                                    <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-white/10">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                                                                            <span className="text-[10px] text-neutral-500 dark:text-white/50 font-black uppercase tracking-widest">Abonelik Durumu</span>
-                                                                        </div>
-                                                                        <span className={`text-xs font-black uppercase tracking-[0.15em] ${isActive ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
-                                                                            {isActive ? 'AKTİF' : 'SÜRESİ DOLDU'}
+                                                                    <div className="flex items-center justify-between pt-3 border-t border-neutral-200 dark:border-neutral-700">
+                                                                        <span className="text-sm text-neutral-500">Abonelik durumu</span>
+                                                                        <span className={`text-sm font-medium ${isActive ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600'}`}>
+                                                                            {isActive ? 'Aktif' : 'Süresi doldu'}
                                                                         </span>
                                                                     </div>
-                                                                    <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-white/10">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <div className={`w-2 h-2 rounded-full ${profile?.cancel_at_period_end ? 'bg-amber-500' : 'bg-green-500'}`}></div>
-                                                                            <span className="text-[10px] text-neutral-500 dark:text-white/50 font-black uppercase tracking-widest">Yenileme</span>
-                                                                        </div>
-                                                                        <span className={`text-[10px] font-black uppercase tracking-widest ${profile?.cancel_at_period_end ? 'text-amber-600 dark:text-amber-400' : 'text-green-600 dark:text-green-400'}`}>
-                                                                            {profile?.cancel_at_period_end ? 'KAPALI (Bitişte Sona Erer)' : 'AÇIK (Otomatik Yenilenir)'}
+                                                                    <div className="flex items-center justify-between pt-3 border-t border-neutral-200 dark:border-neutral-700">
+                                                                        <span className="text-sm text-neutral-500">Yenileme</span>
+                                                                        <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                                                                            {profile?.cancel_at_period_end ? 'Kapalı (bitişte sona erer)' : 'Açık (otomatik yenilenir)'}
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -1201,38 +1156,35 @@ const SettingsPage = () => {
                                                 {/* Mağaza Görünümü ve Çalışma Saatleri */}
                                                 {(subscriptionTier !== 'free') && (
                                                     <>
-                                                        <div className="bg-white dark:bg-neutral-800 p-5 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/10 mx-4 md:mx-0">
+                                                        <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                                                             <SectionHeader title="Mağaza Görünümü" description="Müşterilerinizin sizi nasıl göreceğini tasarlayın." />
                                                             {(!subscriptionTier || subscriptionTier === 'free') && (
-                                                                <div className="mb-8 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-xl flex items-center gap-4 text-amber-800 dark:text-amber-400">
-                                                                    <div className="w-10 h-10 bg-amber-100 dark:bg-amber-800/30 rounded-xl flex items-center justify-center text-xl shrink-0">⚠️</div>
-                                                                    <p className="text-sm font-medium">
-                                                                        Logo, Banner ve Özelleştirilmiş Mağaza Linki özellikleri <span className="font-bold underline cursor-pointer" onClick={() => navigate('/packages')}>Kurumsal Paket</span> üyeleri için geçerlidir.
-                                                                    </p>
+                                                                <div className="mb-5 p-3 border border-neutral-200 dark:border-neutral-700 rounded-md text-sm text-neutral-600 dark:text-neutral-400">
+                                                                    Logo, banner ve özelleştirilmiş mağaza linki özellikleri <span className="underline cursor-pointer" onClick={() => navigate('/packages')}>Kurumsal Paket</span> üyeleri için geçerlidir.
                                                                 </div>
                                                             )}
 
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                                                                <div className="flex flex-col gap-4">
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                                                <div className="flex flex-col gap-2">
                                                                     <div
                                                                         onClick={() => (subscriptionTier && subscriptionTier !== 'free') ? logoInputRef.current?.click() : navigate('/packages')}
-                                                                        className={`group relative border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all w-32 h-32 mx-auto overflow-hidden ${(subscriptionTier && subscriptionTier !== 'free') ? 'border-neutral-200 dark:border-neutral-700 hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20' : 'border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900 grayscale opacity-75'}`}
+                                                                        className={`relative border border-dashed rounded-md p-4 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 w-32 h-32 mx-auto overflow-hidden ${(subscriptionTier && subscriptionTier !== 'free') ? 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-500' : 'border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 opacity-70'}`}
                                                                     >
-                                                                        {storeLogo ? <img src={storeLogo} className="absolute inset-0 w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500" alt="Logo" /> : <div className="text-center group-hover:scale-110 transition-transform text-neutral-400"><svg className="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span className="text-[10px] font-bold">Logo</span></div>}
+                                                                        {storeLogo ? <img src={storeLogo} className="absolute inset-0 w-full h-full object-contain p-2" alt="Logo" /> : <div className="text-center text-neutral-400"><svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span className="text-xs">Logo</span></div>}
                                                                         <input type="file" ref={logoInputRef} onChange={(e) => handleStoreMediaUpload(e, 'logo')} className="hidden" accept="image/*" />
                                                                     </div>
-                                                                    <div className="text-center text-sm font-bold">Logo</div>
+                                                                    <div className="text-center text-sm text-neutral-600 dark:text-neutral-300">Logo</div>
                                                                 </div>
 
-                                                                <div className="flex flex-col gap-4">
+                                                                <div className="flex flex-col gap-2">
                                                                     <div
                                                                         onClick={() => (subscriptionTier && subscriptionTier !== 'free') ? bannerInputRef.current?.click() : navigate('/packages')}
-                                                                        className={`group relative border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/1] overflow-hidden ${(subscriptionTier && subscriptionTier !== 'free') ? 'border-neutral-200 dark:border-neutral-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20' : 'border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900 grayscale opacity-75'}`}
+                                                                        className={`relative border border-dashed rounded-md p-4 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 aspect-[3/1] overflow-hidden ${(subscriptionTier && subscriptionTier !== 'free') ? 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-500' : 'border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 opacity-70'}`}
                                                                     >
-                                                                        {storeBanner ? <img src={storeBanner} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Banner" /> : <div className="text-center group-hover:scale-110 transition-transform text-neutral-400"><svg className="w-8 h-8 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span className="text-[10px] font-bold">Banner</span></div>}
+                                                                        {storeBanner ? <img src={storeBanner} className="absolute inset-0 w-full h-full object-cover" alt="Banner" /> : <div className="text-center text-neutral-400"><svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h0.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span className="text-xs">Banner</span></div>}
                                                                         <input type="file" ref={bannerInputRef} onChange={(e) => handleStoreMediaUpload(e, 'banner')} className="hidden" accept="image/*" />
                                                                     </div>
-                                                                    <div className="text-center text-sm font-bold">Banner</div>
+                                                                    <div className="text-center text-sm text-neutral-600 dark:text-neutral-300">Banner</div>
                                                                 </div>
                                                             </div>
 
@@ -1247,7 +1199,7 @@ const SettingsPage = () => {
                                                                             disabled={subscriptionTier !== 'unlimited'}
                                                                         />
                                                                         {subscriptionTier !== 'unlimited' && (
-                                                                            <p className="text-[10px] text-amber-500 font-medium">Sadece Sınırsız Paket ile değiştirilebilir.</p>
+                                                                            <p className="text-xs text-neutral-500">Sadece Sınırsız Paket ile değiştirilebilir.</p>
                                                                         )}
                                                                     </div>
                                                                     <div className="space-y-1">
@@ -1257,10 +1209,10 @@ const SettingsPage = () => {
                                                                             onChange={e => setFormData({ ...formData, store_slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
                                                                             placeholder="emre"
                                                                             disabled={subscriptionTier !== 'unlimited'}
-                                                                            icon={<span className="text-[10px] font-black text-neutral-400">exvitrin/</span>}
+                                                                            icon={<span className="text-[10px] text-neutral-400">exvitrin/</span>}
                                                                         />
                                                                         {subscriptionTier !== 'unlimited' && (
-                                                                            <p className="text-[10px] text-amber-500 font-medium">Sadece Sınırsız Paket ile kişiselleştirilebilir.</p>
+                                                                            <p className="text-xs text-neutral-500">Sadece Sınırsız Paket ile kişiselleştirilebilir.</p>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -1268,26 +1220,24 @@ const SettingsPage = () => {
                                                             </div>
                                                         </div>
 
-                                                        <div className="bg-white dark:bg-neutral-800 p-5 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/10 mx-4 md:mx-0">
+                                                        <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                                                             <SectionHeader title="Çalışma Saatleri" description="Müşterileriniz ne zaman açık olduğunuzu bilsin." />
-                                                            <div className="mb-6 flex items-center justify-between bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800/30">
+                                                            <div className="mb-5 flex items-center justify-between p-3 rounded-md border border-neutral-200 dark:border-neutral-700">
                                                                 <div className="flex items-center gap-3">
-                                                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-neutral-700 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-sm">
-                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                                    </div>
-                                                                    <span className="font-bold text-purple-900 dark:text-neutral-100">Her Zaman Açık (7/24)</span>
+                                                                    <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                                    <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Her zaman açık (7/24)</span>
                                                                 </div>
                                                                 <Toggle active={workingHours.isAlwaysOpen} onChange={() => setWorkingHours(prev => ({ ...prev, isAlwaysOpen: !prev.isAlwaysOpen }))} />
                                                             </div>
 
                                                             {!workingHours.isAlwaysOpen && (
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                                                                     {Object.entries(workingHours).map(([key, day]) => {
                                                                         if (key === 'isAlwaysOpen') return null;
                                                                         return (
-                                                                            <div key={key} className={`p-4 rounded-xl border transition-all ${day.active ? 'bg-white dark:bg-neutral-800/50 border-neutral-100 dark:border-white/5' : 'bg-neutral-50/50 dark:bg-neutral-900/30 border-transparent opacity-60'}`}>
+                                                                            <div key={key} className={`p-3 rounded-md border ${day.active ? 'border-neutral-200 dark:border-neutral-700' : 'border-neutral-100 dark:border-neutral-800 opacity-60'}`}>
                                                                                 <div className="flex items-center justify-between mb-3">
-                                                                                    <span className="font-bold text-sm text-neutral-900 dark:text-neutral-100">
+                                                                                    <span className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                                                                                         {day.name || {
                                                                                             mon: 'Pazartesi', tue: 'Salı', wed: 'Çarşamba',
                                                                                             thu: 'Perşembe', fri: 'Cuma', sat: 'Cumartesi', sun: 'Pazar'
@@ -1301,14 +1251,14 @@ const SettingsPage = () => {
                                                                                             type="time"
                                                                                             value={day.open}
                                                                                             onChange={(e) => handleWorkingHourChange(key, 'open', e.target.value)}
-                                                                                            className="flex-1 px-3 py-2 bg-neutral-100 dark:bg-neutral-800 border-none rounded-lg text-xs font-bold focus:ring-2 focus:ring-purple-500"
+                                                                                            className="flex-1 px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs focus:outline-none focus:ring-0 focus:border-neutral-400"
                                                                                         />
-                                                                                        <span className="text-neutral-400 font-bold">-</span>
+                                                                                        <span className="text-neutral-400">–</span>
                                                                                         <input
                                                                                             type="time"
                                                                                             value={day.close}
                                                                                             onChange={(e) => handleWorkingHourChange(key, 'close', e.target.value)}
-                                                                                            className="flex-1 px-3 py-2 bg-neutral-100 dark:bg-neutral-800 border-none rounded-lg text-xs font-bold focus:ring-2 focus:ring-purple-500"
+                                                                                            className="flex-1 px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs focus:outline-none focus:ring-0 focus:border-neutral-400"
                                                                                         />
                                                                                     </div>
                                                                                 )}
@@ -1318,8 +1268,8 @@ const SettingsPage = () => {
                                                                 </div>
                                                             )}
 
-                                                            <div className="mt-8 flex justify-end">
-                                                                <button onClick={handleSubmit} disabled={saving} className="w-full md:w-auto px-8 py-4 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-bold rounded-xl hover:scale-105 transition-all disabled:opacity-50">Kaydet</button>
+                                                            <div className="mt-5 pt-4 border-t border-neutral-200 dark:border-neutral-700 flex justify-end">
+                                                                <button onClick={handleSubmit} disabled={saving} className="w-full md:w-auto px-5 py-2.5 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium rounded-md hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 disabled:opacity-50 cursor-pointer">Kaydet</button>
                                                             </div>
                                                         </div>
                                                     </>
@@ -1334,53 +1284,46 @@ const SettingsPage = () => {
 
                     {/* Security Section */}
                     {activeSection === 'security' && (
-                        <div className="space-y-6 animate-fade-in">
-                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/5 mx-4 md:mx-0">
+                        <div className="space-y-6">
+                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                                 <SectionHeader
                                     title="E-posta Adresini Değiştir"
                                     description="Yeni bir e-posta adresi girdiğinizde, onaylamanız için bir doğrulama mesajı alacaksınız."
                                 />
 
-                                <form onSubmit={handleEmailChange} className="max-w-md space-y-6">
+                                <form onSubmit={handleEmailChange} className="max-w-md space-y-4">
                                     <InputField
                                         label="Yeni E-posta Adresi"
                                         type="email"
                                         value={securityData.email}
                                         onChange={e => setSecurityData({ ...securityData, email: e.target.value })}
                                         placeholder="ornek@mail.com"
-                                        icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
+                                        icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
                                     />
                                     <button
                                         type="submit"
                                         disabled={changingEmail || !securityData.email || securityData.email === user.email}
-                                        className="w-full sm:w-auto px-8 py-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-xl font-bold hover:bg-black dark:hover:bg-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+                                        className="w-full sm:w-auto px-5 py-2.5 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-md text-sm font-medium hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                     >
-                                        {changingEmail ? (
-                                            <LoadingSpinner size="small" />
-                                        ) : (
-                                            <>
-                                                <span>E-postayı Güncelle</span>
-                                                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                                            </>
-                                        )}
+                                        {changingEmail ? <LoadingSpinner size="small" /> : 'E-postayı güncelle'}
                                     </button>
                                 </form>
                             </div>
 
-                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/10 mx-4 md:mx-0">
+                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                                 <SectionHeader
                                     title="Şifre Değiştir"
                                     description="Hesabınızın güvenliği için düzenli aralıklarla şifrenizi güncellemenizi öneririz."
                                 />
 
-                                <form onSubmit={handlePasswordChange} className="max-w-md space-y-6">
+                                <form onSubmit={handlePasswordChange} className="max-w-md space-y-4">
                                     <InputField
                                         label="Yeni Şifre"
                                         type="password"
                                         value={securityData.password}
                                         onChange={e => setSecurityData({ ...securityData, password: e.target.value })}
                                         placeholder="••••••••"
-                                        icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>}
+                                        icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>}
                                     />
                                     <InputField
                                         label="Yeni Şifre (Tekrar)"
@@ -1388,41 +1331,33 @@ const SettingsPage = () => {
                                         value={securityData.confirmPassword}
                                         onChange={e => setSecurityData({ ...securityData, confirmPassword: e.target.value })}
                                         placeholder="••••••••"
-                                        icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-0.133-2.052-0.382-3.016z" /></svg>}
+                                        icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-0.133-2.052-0.382-3.016z" /></svg>}
                                     />
                                     <button
                                         type="submit"
                                         disabled={changingPassword || !securityData.password}
-                                        className="w-full sm:w-auto px-8 py-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-xl font-bold hover:bg-black dark:hover:bg-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+                                        className="w-full sm:w-auto px-5 py-2.5 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-md text-sm font-medium hover:bg-neutral-800 dark:hover:bg-white transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                     >
-                                        {changingPassword ? (
-                                            <LoadingSpinner size="small" />
-                                        ) : (
-                                            <>
-                                                <span>Şifreyi Güncelle</span>
-                                                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                            </>
-                                        )}
+                                        {changingPassword ? <LoadingSpinner size="small" /> : 'Şifreyi güncelle'}
                                     </button>
                                 </form>
                             </div>
 
-                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/10 mx-4 md:mx-0">
+                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                                 <SectionHeader
                                     title="İletişim Tercihleri"
                                     description="ExVitrin ekibinin sizinle nasıl iletişim kurmasını istediğinizi seçin."
                                 />
-                                <div className="space-y-4">
-                                    {/* ... iterated items ... */}
+                                <div className="divide-y divide-neutral-200 dark:divide-neutral-700 border border-neutral-200 dark:border-neutral-700 rounded-md">
                                     {[
                                         { label: 'E-posta Bildirimleri', desc: 'Kampanyalar ve önemli güncellemeler hakkında mail al.' },
                                         { label: 'SMS Bilgilendirme', desc: 'Acil durumlar ve hesap güvenliği için SMS al.' },
                                         { label: 'Pazarlama İletileri', desc: 'Size özel tekliflerden haberdar olun.' }
                                     ].map((item, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-3 md:p-4 bg-neutral-50 dark:bg-neutral-900 rounded-xl md:rounded-xl border border-neutral-100 dark:border-white/5 hover:border-purple-200 transition-colors group">
+                                        <div key={idx} className="flex items-center justify-between p-3 md:p-4">
                                             <div>
-                                                <p className="font-bold text-neutral-700 dark:text-neutral-200">{item.label}</p>
-                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">{item.desc}</p>
+                                                <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{item.label}</p>
+                                                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{item.desc}</p>
                                             </div>
                                             <Toggle active={true} onChange={() => { }} />
                                         </div>
@@ -1430,20 +1365,15 @@ const SettingsPage = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/10 mx-4 md:mx-0">
+                            <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                                 <SectionHeader
                                     title="Oturum Yönetimi"
                                     description="Şüpheli bir durum fark ederseniz tüm açık oturumlarınızı kapatabilirsiniz."
                                 />
-                                <div className="p-6 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/20 flex flex-col sm:flex-row items-center justify-between gap-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-white dark:bg-neutral-700 rounded-xl flex items-center justify-center text-red-500 shadow-sm">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-red-900 dark:text-red-400">Tüm Oturumlardan Çıkış Yap</p>
-                                            <p className="text-xs text-red-600/70 dark:text-red-400/60 font-medium">Bu işlem mevcut oturumunuz dahil her yerden çıkış yapmanızı sağlar.</p>
-                                        </div>
+                                <div className="p-4 rounded-md border border-rose-200 dark:border-rose-900/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div>
+                                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Tüm oturumlardan çıkış yap</p>
+                                        <p className="text-xs text-neutral-500 mt-0.5">Bu işlem mevcut oturumunuz dahil her yerden çıkış yapmanızı sağlar.</p>
                                     </div>
                                     <button
                                         onClick={async () => {
@@ -1453,27 +1383,22 @@ const SettingsPage = () => {
                                                 navigate('/login');
                                             }
                                         }}
-                                        className="whitespace-nowrap px-6 py-2.5 bg-white dark:bg-neutral-800 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-xl font-bold hover:bg-red-600 dark:hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                        className="whitespace-nowrap px-4 py-2 border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-400 rounded-md text-sm font-medium hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors duration-200 cursor-pointer"
                                     >
-                                        Tümünü Kapat
+                                        Tümünü kapat
                                     </button>
                                 </div>
                             </div>
                         </div>
                     )}
                     {activeSection === 'notifications' && (
-                        <div className="bg-white dark:bg-neutral-800 p-5 md:p-8 rounded-xl md:rounded-xl shadow-sm border border-neutral-100 dark:border-white/10 animate-fade-in mx-4 md:mx-0">
+                        <div className="bg-white dark:bg-neutral-800 p-5 md:p-6 rounded-lg border border-neutral-200 dark:border-neutral-700 mx-4 md:mx-0">
                             <SectionHeader title="Bildirim Tercihleri" description="Hangi konularda bildirim almak istediğinizi seçin." />
 
-                            <div className="space-y-4">
+                            <div className="divide-y divide-neutral-200 dark:divide-neutral-700 border border-neutral-200 dark:border-neutral-700 rounded-md">
                                 {['Yeni Mesajlar', 'İlan Onayları', 'Favoriye Eklenenler', 'Fiyat Düşüşleri', 'Sistem Duyuruları'].map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-between p-3 md:p-4 bg-neutral-50 dark:bg-neutral-900 rounded-xl md:rounded-xl border border-neutral-100 dark:border-white/5 hover:border-purple-200 transition-colors group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center text-neutral-400 group-hover:text-purple-500 transition-colors shadow-sm">
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-0.214 1.055-0.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                                            </div>
-                                            <span className="font-bold text-neutral-700 dark:text-neutral-200">{item}</span>
-                                        </div>
+                                    <div key={idx} className="flex items-center justify-between p-3 md:p-4">
+                                        <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{item}</span>
                                         <Toggle active={true} onChange={() => { }} />
                                     </div>
                                 ))}
