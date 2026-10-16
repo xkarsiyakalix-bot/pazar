@@ -74,46 +74,46 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
         </div>
       </div>
 
-      <div className="p-2 sm:p-4 bg-gray-50/50 dark:bg-neutral-950/50 transition-colors duration-300">
+      <div className="p-2 sm:p-4 bg-white dark:bg-neutral-900">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4 sm:mb-6">
           <button
             onClick={handleEditDetail}
             className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors duration-200 cursor-pointer group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <svg className="w-5 h-5 text-neutral-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 transition-colors">{t.productDetail.ownerDashboard.edit}</span>
+            <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">{t.productDetail.ownerDashboard.edit}</span>
           </button>
 
           <button
             onClick={handleReserveDetail}
             className={`flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border ${listing.reserved_by ? 'border-neutral-800 dark:border-neutral-300' : 'border-neutral-200 dark:border-neutral-700'} hover:border-neutral-400 transition-colors duration-200 cursor-pointer group`}
           >
-            <svg className={`w-5 h-5 sm:w-5 sm:h-5 ${listing.reserved_by ? 'text-orange-500' : 'text-gray-400 dark:text-neutral-500'} group-hover:text-blue-500 transition-colors mb-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <svg className={`w-5 h-5 mb-1 ${listing.reserved_by ? 'text-neutral-800 dark:text-neutral-100' : 'text-neutral-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 text-center transition-colors">{listing.reserved_by ? t.productDetail.ownerDashboard.unreserve : t.productDetail.ownerDashboard.reserve}</span>
+            <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 text-center">{listing.reserved_by ? t.productDetail.ownerDashboard.unreserve : t.productDetail.ownerDashboard.reserve}</span>
           </button>
 
           <button
             onClick={handleExtendDetail}
             className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 transition-colors duration-200 cursor-pointer group relative"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-green-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-0.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <svg className="w-5 h-5 text-neutral-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-0.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 text-center leading-none transition-colors">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[10px] text-green-600 dark:text-green-400 font-black">(9,99 TL)</span></span>
+            <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 text-center leading-none">{t.productDetail.ownerDashboard.extend}<br /><span className="text-[10px] text-neutral-500">(9,99 TL)</span></span>
           </button>
 
           <button
             onClick={handleDeleteDetail}
             className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 transition-colors duration-200 cursor-pointer group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-600 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <svg className="w-5 h-5 text-neutral-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-0.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 transition-colors">{t.productDetail.ownerDashboard.delete}</span>
+            <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">{t.productDetail.ownerDashboard.delete}</span>
           </button>
 
           <button
@@ -123,58 +123,58 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
             }}
             className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 transition-colors duration-200 cursor-pointer group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-purple-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            <svg className="w-5 h-5 text-neutral-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 text-center leading-none transition-colors">İlanı Yazdır</span>
+            <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 text-center leading-none">İlanı Yazdır</span>
           </button>
 
           <button
             onClick={() => navigate('/my-invoices')}
             className="flex flex-col items-center justify-center p-2 sm:p-3 bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors duration-200 cursor-pointer group"
           >
-            <svg className="w-5 h-5 sm:w-5 sm:h-5 text-gray-400 dark:text-neutral-500 group-hover:text-red-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg className="w-5 h-5 text-neutral-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span className="text-xs sm:text-xs font-bold text-gray-700 dark:text-neutral-300 transition-colors">{t.productDetail.ownerDashboard.invoices}</span>
+            <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">{t.productDetail.ownerDashboard.invoices}</span>
           </button>
         </div>
 
-        <div className="bg-white dark:bg-neutral-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-inner transition-colors duration-300">
+        <div className="bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-gray-100/80 dark:bg-neutral-950/80 transition-colors duration-300">
-                <tr className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-neutral-400">
-                  <th className="px-3 sm:px-6 py-3 w-8 sm:w-10">#</th>
-                  <th className="px-3 sm:px-6 py-3">{t.productDetail.ownerDashboard.highlightTitle}</th>
-                  <th className="px-3 sm:px-6 py-3 hidden sm:table-cell">{t.productDetail.ownerDashboard.effect}</th>
-                  <th className="px-3 sm:px-6 py-3">{t.productDetail.ownerDashboard.duration}</th>
-                  <th className="px-3 sm:px-6 py-3 text-right">{t.productDetail.ownerDashboard.price}</th>
+              <thead className="bg-neutral-50 dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800">
+                <tr className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+                  <th className="px-3 sm:px-5 py-2.5 w-8 sm:w-10">#</th>
+                  <th className="px-3 sm:px-5 py-2.5">{t.productDetail.ownerDashboard.highlightTitle}</th>
+                  <th className="px-3 sm:px-5 py-2.5 hidden sm:table-cell">{t.productDetail.ownerDashboard.effect}</th>
+                  <th className="px-3 sm:px-5 py-2.5">{t.productDetail.ownerDashboard.duration}</th>
+                  <th className="px-3 sm:px-5 py-2.5 text-right">{t.productDetail.ownerDashboard.price}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-white/5 text-[11px] sm:text-sm transition-colors duration-300">
-                {promotionPackages.map((pkg, idx) => (
+              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800 text-[11px] sm:text-sm">
+                {promotionPackages.map((pkg) => (
                   <tr
                     key={pkg.id}
                     onClick={() => togglePromotionSelection(pkg.id)}
-                    className={`hover:bg-red-50/30 dark:hover:bg-red-900/10 transition-colors group cursor-pointer ${idx % 2 !== 0 ? 'bg-red-50/10 dark:bg-neutral-950/20' : ''} ${selectedPromotions.includes(pkg.id) ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
+                    className={`hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors cursor-pointer ${selectedPromotions.includes(pkg.id) ? 'bg-neutral-50 dark:bg-neutral-800/80' : ''}`}
                   >
-                    <td className="px-3 sm:px-6 py-3">
-                      <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-all ${selectedPromotions.includes(pkg.id) ? 'bg-red-500 border-red-500' : 'border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800'}`}>
+                    <td className="px-3 sm:px-5 py-3">
+                      <div className={`w-4 h-4 rounded-sm border flex items-center justify-center ${selectedPromotions.includes(pkg.id) ? 'bg-neutral-900 border-neutral-900 dark:bg-neutral-100 dark:border-neutral-100' : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800'}`}>
                         {selectedPromotions.includes(pkg.id) && (
-                          <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+                          <svg className="w-2.5 h-2.5 text-white dark:text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                           </svg>
                         )}
                       </div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3">
-                      <div className="font-black text-gray-900 dark:text-neutral-50 group-hover:text-red-500 transition-colors text-xs sm:text-base">{pkg.name}</div>
-                      <div className="text-[10px] text-gray-400 dark:text-neutral-500 sm:hidden mt-1 leading-relaxed transition-colors">{pkg.effect}</div>
+                    <td className="px-3 sm:px-5 py-3">
+                      <div className="font-medium text-neutral-900 dark:text-neutral-50 text-xs sm:text-sm">{pkg.name}</div>
+                      <div className="text-[10px] text-neutral-500 sm:hidden mt-1 leading-relaxed">{pkg.effect}</div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 text-gray-500 dark:text-neutral-400 font-medium hidden sm:table-cell transition-colors">{pkg.effect}</td>
-                    <td className="px-3 sm:px-6 py-3 font-bold text-gray-600 dark:text-neutral-300 whitespace-nowrap transition-colors">{pkg.duration === 1 ? t.productDetail.ownerDashboard.once : `${pkg.duration} Gün`}</td>
-                    <td className="px-3 sm:px-6 py-3 text-right font-black text-red-600 whitespace-nowrap">{pkg.price} TL</td>
+                    <td className="px-3 sm:px-5 py-3 text-neutral-500 hidden sm:table-cell">{pkg.effect}</td>
+                    <td className="px-3 sm:px-5 py-3 text-neutral-600 dark:text-neutral-300 whitespace-nowrap">{pkg.duration === 1 ? t.productDetail.ownerDashboard.once : `${pkg.duration} Gün`}</td>
+                    <td className="px-3 sm:px-5 py-3 text-right font-medium text-neutral-900 dark:text-neutral-50 whitespace-nowrap">{pkg.price} TL</td>
                   </tr>
                 ))}
               </tbody>
@@ -199,7 +199,7 @@ const DashboardContent = ({ listing, favoriteCount, handleEditDetail, handleRese
             </div>
           )}
 
-          <div className="bg-gray-50 dark:bg-neutral-950 px-4 sm:px-6 py-1.5 sm:py-3 text-[6px] sm:text-[10px] font-bold text-gray-400 dark:text-neutral-500 text-right uppercase tracking-[0.1em] sm:tracking-[0.2em] transition-colors duration-300">
+          <div className="bg-neutral-50 dark:bg-neutral-950 px-4 sm:px-5 py-2 text-[11px] text-neutral-500 text-right border-t border-neutral-200 dark:border-neutral-800">
             {t.productDetail.ownerDashboard.vatIncluded}
           </div>
         </div>
@@ -222,7 +222,7 @@ const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:te
   );
 };
 
-const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-gray-400 hover:decoration-red-500 hover:text-red-600 transition-colors") => {
+const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors") => {
   const cleanCity = city ? String(city).trim() : '';
   const cleanDistrict = district ? String(district).trim() : '';
 
@@ -1408,7 +1408,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
         }
       `}</style>
 
-      <div className={`min-h-screen bg-gray-50 dark:bg-neutral-950 no-print ${isMobile ? 'pb-48' : ''}`}>
+      <div className={`min-h-screen bg-neutral-50 dark:bg-neutral-950 no-print ${isMobile ? 'pb-48' : ''}`}>
         {listing && <ProductSEO listing={listing} />}
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
           <div className="mb-3 sm:mb-4 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm overflow-x-auto no-print">
@@ -1534,9 +1534,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             {/* Sol Taraf - Ürün Açıklaması */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Ürün Resmi */}
-              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg overflow-hidden relative z-0 -mx-2 sm:mx-0 border border-transparent sm:border-neutral-200 dark:sm:border-neutral-700">
-                <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg overflow-hidden shadow-none sm:shadow-inner p-0 sm:p-3">
-                  <div className="relative w-full h-[300px] sm:h-[525px] bg-gray-50 dark:bg-neutral-800 flex items-center justify-center rounded-none sm:rounded-lg overflow-hidden border-0 sm:border border-gray-100 dark:sm:border-white/5">
+              <div className="bg-white dark:bg-neutral-900 relative z-0 -mx-2 sm:mx-0 border-y sm:border border-neutral-200 dark:border-neutral-800 sm:rounded-md overflow-hidden">
+                <div className="p-0">
+                  <div className="relative w-full h-[300px] sm:h-[525px] bg-neutral-50 dark:bg-neutral-800 flex items-center justify-center overflow-hidden">
                     {isMobile && (
                       <button
                         onClick={() => navigate(-1)}
@@ -1660,7 +1660,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
                   {/* Gallery Thumbnails */}
                   {listing.images && listing.images.length > 1 && (
-                    <div className="relative mt-3 group">
+                    <div className="relative px-3 py-3 border-t border-neutral-200 dark:border-neutral-800 group">
                       {/* Left Arrow */}
                       {listing.images.length > 5 && (
                         <button
@@ -1759,15 +1759,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               />
 
               {/* Birleştirilmiş İlan Bilgileri Paneli */}
-              <div className="bg-transparent sm:bg-white dark:sm:bg-neutral-900 rounded-none sm:rounded-lg px-4 sm:p-6 py-6 border border-transparent sm:border-neutral-200 dark:sm:border-neutral-700">
+              <div className="bg-white dark:bg-neutral-900 px-4 sm:p-6 py-6 border-y sm:border border-neutral-200 dark:border-neutral-800 sm:rounded-md">
                 {/* Ürün Başlığı ve Bilgileri */}
                 <div className="space-y-6">
                   {/* Başlık ve Fiyat - Üst Kısım - Back to top per user request */}
-                  <div className="pb-6 border-b border-gray-100 dark:border-white/5">
+                  <div className="pb-5 border-b border-neutral-200 dark:border-neutral-800">
                     {/* Fiyat - En Üstte */}
                     {listing.sub_category !== 'Ausbildung' && listing.sub_category !== 'Bau, Handwerk & Produktion' && listing.category !== 'Jobs' && (
                       <div className="mb-4">
-                        <div className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-neutral-50 mb-1">
+                        <div className="text-2xl sm:text-[28px] font-semibold text-neutral-900 dark:text-neutral-50 mb-1 tracking-tight">
                           {isPetAdoptionListing(listing) ? (
                             <span className="text-neutral-900 dark:text-neutral-100">
                               Sahiplendirme
@@ -1806,7 +1806,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                     {/* Başlık */}
                     <div>
-                      <h1 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-neutral-50 leading-tight">
+                      <h1 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-neutral-50 leading-snug tracking-tight">
                         {(listing?.offer_type === 'Aranıyor' || listing?.offer_type === 'Gesuche') && (
                           <span className="inline-block text-xs sm:text-sm font-medium mr-2 align-middle text-neutral-500 dark:text-neutral-400">
                             Aranıyor
@@ -1841,7 +1841,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
 
                   {/* General Info Grid - Below Title/Price */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 text-sm pb-6 border-b border-neutral-200 dark:border-neutral-700 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 text-sm pb-5 border-b border-neutral-200 dark:border-neutral-800 mb-6">
                     <div className="hidden md:flex justify-between">
                       <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.postedOn}</span>
                       <span className="font-medium text-gray-900 dark:text-neutral-50">
@@ -1937,10 +1937,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {((listing.kilometerstand !== undefined && listing.kilometerstand !== null) || (listing.kilometer !== undefined && listing.kilometer !== null) || listing.erstzulassung || listing.bj || listing.leistung || listing.power || listing.vehicle_type || listing.fahrzeugtyp || listing.hu ||
                   ['Autos', 'Motorräder & Motorroller', 'Wohnwagen & Wohnmobile', 'Nutzfahrzeuge & Anhänger', 'Weiteres Auto, Rad & Boot'].includes(listing.subCategory) ||
                   ['Autos', 'Motorräder & Motorroller', 'Wohnwagen & Wohnmobile', 'Nutzfahrzeuge & Anhänger', 'Weiteres Auto, Rad & Boot'].includes(listing.sub_category)) && (
-                    <div className="mb-12">
-                      <div className="pb-8 mb-8">
-                        <div className="mb-8">
-                          <h2 className="text-2xl font-bold text-gray-900 dark:text-neutral-50">
+                    <div className="mb-6">
+                      <div className="pb-4 mb-4">
+                        <div className="mb-4 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                          <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
                             {t.productDetail.vehicleDetails}
                           </h2>
                         </div>
@@ -1956,79 +1956,79 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           {(listing.modell || listing.car_model || listing.carModel) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.model}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.modell || listing.car_model || listing.carModel}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{listing.modell || listing.car_model || listing.carModel}</span>
                             </div>
                           )}
                           {(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.propertyType || t.productDetail.art}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType)}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{translateVal(listing.vehicle_type || listing.fahrzeugtyp || listing.fhz_type || listing.vehicleType)}</span>
                             </div>
                           )}
                           {(listing.kilometerstand !== undefined && listing.kilometerstand !== null || listing.kilometer !== undefined && listing.kilometer !== null || listing.kilometerStand !== undefined && listing.kilometerStand !== null) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.mileage}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{(listing.kilometerstand || listing.kilometer || listing.kilometerStand).toLocaleString('tr-TR')} km</span>
                             </div>
                           )}
                           {(listing.erstzulassung || listing.bj) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.firstRegistration}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.erstzulassung || listing.bj}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{listing.erstzulassung || listing.bj}</span>
                             </div>
                           )}
                           {(listing.kraftstoff || listing.fuel_type) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.fuelType}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.kraftstoff || listing.fuel_type)}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{translateVal(listing.kraftstoff || listing.fuel_type)}</span>
                             </div>
                           )}
                           {(listing.leistung || listing.power) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.power}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.leistung || listing.power} PS</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{listing.leistung || listing.power} PS</span>
                             </div>
                           )}
                           {listing.hubraum && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.displacement}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.hubraum} cm³</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{listing.hubraum} cm³</span>
                             </div>
                           )}
                           {listing.getriebe && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.transmission}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.getriebe)}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{translateVal(listing.getriebe)}</span>
                             </div>
                           )}
                           {listing.door_count && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.doorCount}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.door_count}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{listing.door_count}</span>
                             </div>
                           )}
                           {listing.hu && (
                             <div className="flex justify-between">
                               <span className="text-gray-500 dark:text-neutral-400 font-medium">{t.productDetail.huUntil}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{listing.hu}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{listing.hu}</span>
                             </div>
                           )}
                           {(listing.schadstoffklasse || listing.emission_class) && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.emissionClass}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.schadstoffklasse || listing.emission_class)}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{translateVal(listing.schadstoffklasse || listing.emission_class)}</span>
                             </div>
                           )}
                           {listing.exterior_color && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.exteriorColor}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.exterior_color)}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{translateVal(listing.exterior_color)}</span>
                             </div>
                           )}
                           {listing.interior_material && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-neutral-400 font-medium">{t.productDetail.interiorMaterial}</span>
-                              <span className="font-bold text-gray-900 dark:text-neutral-50">{translateVal(listing.interior_material)}</span>
+                              <span className="font-medium text-neutral-900 dark:text-neutral-50">{translateVal(listing.interior_material)}</span>
                             </div>
                           )}
                         </div>
@@ -2055,13 +2055,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {/* Car Amenities */}
                         {listing.car_amenities && listing.car_amenities.length > 0 && (
                           <div className="pt-8 border-t border-gray-200 dark:border-white/5">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-5">
+                            <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 mb-3">
                               {t.productDetail.amenities}
                             </h3>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
                               {listing.car_amenities.map(amenity => (
                                 <div key={amenity} className="flex items-center gap-2 text-[13px] text-gray-700 dark:text-neutral-300 font-medium">
-                                  <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <svg className="w-5 h-5 text-neutral-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>
                                   <span>{translateVal(amenity)}</span>
@@ -2081,7 +2081,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Wohnzimmer Details */}
                 {listing.wohnzimmer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2096,7 +2096,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Schlafzimmer, Küche, Heimwerken & Beleuchtung Details */}
                 {(listing.schlafzimmer_art || listing.kueche_esszimmer_art || listing.heimwerken_art || listing.lamba_aydinlatma_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2131,7 +2131,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Fahrräder & Zubehör Details */}
                 {(listing.bike_type || listing.art_type) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2154,7 +2154,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Baby & Kinderkleidung / Kinderschuhe Details */}
                 {(listing.baby_kinderkleidung_art || listing.baby_kinderkleidung_size || listing.baby_kinderkleidung_color || listing.baby_kinderkleidung_gender || listing.baby_kinderschuhe_art || listing.baby_kinderschuhe_size || listing.baby_kinderschuhe_color) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2207,7 +2207,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kinderwagen & Buggys Details */}
                 {(listing.kinderwagen_buggys_color || listing.kinderwagen_buggys_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2232,7 +2232,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   listing.herrenbekleidung_color || listing.herrenbekleidung_art || listing.herrenbekleidung_size || listing.herrenbekleidung_marke ||
                   listing.herrenschuhe_color || listing.herrenschuhe_art || listing.herrenschuhe_size || listing.herrenschuhe_marke) && (
                     <div className="mb-8">
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                      <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                         {t.productDetail.details}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2320,7 +2320,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Babyschalen & Kindersitze Details */}
                 {listing.babyschalen_kindersitze_color && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2335,7 +2335,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kinderzimmermöbel Details */}
                 {listing.kinderzimmermobel_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2350,7 +2350,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Spielzeug Details */}
                 {listing.spielzeug_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2364,7 +2364,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.fische_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2379,7 +2379,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.haustier_zubehoer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2394,7 +2394,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Hunde Details */}
                 {(listing.hunde_art || listing.hunde_alter || listing.hunde_geimpft || listing.hunde_erlaubnis) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2429,7 +2429,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Katzen Details */}
                 {(listing.katzen_art || listing.katzen_alter || listing.katzen_geimpft || listing.katzen_erlaubnis) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2464,7 +2464,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kleintiere Details */}
                 {(listing.kleintiere_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2481,7 +2481,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Nutztiere Details */}
                 {(listing.nutztiere_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2498,7 +2498,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Pferde Details */}
                 {(listing.pferde_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2515,7 +2515,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Vermisste Tiere Details */}
                 {(listing.vermisste_tiere_status) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2532,7 +2532,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Vögel Details */}
                 {(listing.voegel_art) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2549,7 +2549,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Taschen & Accessoires Details */}
                 {listing.taschen_accessoires_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2564,7 +2564,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Uhren & Schmuck Details */}
                 {listing.uhren_schmuck_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2579,7 +2579,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Beauty & Gesundheit Details */}
                 {listing.beauty_gesundheit_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2598,7 +2598,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   listing.notebooks_art || listing.pcs_art || listing.videospiele_art ||
                   listing.weitere_elektronik_art || listing.dienstleistungen_elektronik_art) && (
                     <div className="mb-8">
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                      <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                         {t.productDetail.details}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2705,7 +2705,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.altenpflege_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2720,7 +2720,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Sprachkurse Details */}
                 {listing.sprachkurse_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2735,7 +2735,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kunst & Gestaltung Details */}
                 {listing.kunst_gestaltung_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2750,7 +2750,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Weiteres Haus & Garten Details */}
                 {listing.weiteres_haus_garten_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2765,7 +2765,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Küche & Esszimmer Details */}
                 {listing.kueche_esszimmer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2780,7 +2780,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Heimwerken (Ev Tadilatı) Details */}
                 {listing.heimwerken_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2795,7 +2795,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Gartenzubehör & Pflanzen Details */}
                 {listing.gartenzubehoer_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2810,7 +2810,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Modellbau Details */}
                 {listing.modellbau_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2825,7 +2825,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Handarbeit & Basteln Details */}
                 {listing.handarbeit_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -2840,7 +2840,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Damenbekleidung / Kadın Giyimi Details */}
                 {(listing.damenbekleidung_art || listing.damenbekleidung_marke || listing.damenbekleidung_size || listing.damenbekleidung_color) && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
@@ -3007,13 +3007,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div className="mt-8 space-y-8">
                       {listing.amenities?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
+                          <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 mb-3">
                             {t.productDetail.amenities}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.amenities.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                                <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
+                                <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
@@ -3024,13 +3024,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {listing.general_features?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
+                          <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 mb-3">
                             {t.productDetail.features}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.general_features.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                                <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
+                                <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
@@ -3041,13 +3041,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {listing.apartment_features?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
+                          <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 mb-3">
                             {t.productDetail.apartmentFeatures}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.apartment_features.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                                <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
+                                <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
@@ -3058,13 +3058,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       )}
                       {listing.house_features?.length > 0 && (
                         <div>
-                          <h3 className="text-base font-bold text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
+                          <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 mb-3">
                             {t.productDetail.houseFeatures}
                           </h3>
                           <div className="flex flex-wrap gap-x-8 gap-y-3">
                             {listing.house_features.map((item, i) => (
-                              <span key={i} className="text-sm font-bold text-gray-800 dark:text-neutral-200 flex items-center gap-2">
-                                <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
+                                <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
@@ -3080,10 +3080,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Reise & Eventservices Details */}
                 {listing.reise_eventservices_art && (
                   <div className="mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 border-b-2 border-gray-300 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-6 border-b border-neutral-200 dark:border-neutral-800 mb-6">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
                         <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.reise_eventservices_art}</span>
@@ -3095,16 +3095,16 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {/* Ürün Açıklaması */}
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50 mb-4">{t.productDetail.description}</h2>
-                  <p className="text-sm text-gray-700 dark:text-neutral-300 whitespace-pre-line leading-relaxed">
+                  <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3">{t.productDetail.description}</h2>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-300 whitespace-pre-line leading-relaxed">
                     {description}
                   </p>
                 </div>
 
                 {/* Konum Haritası */}
                 {(listing.city || listing.address) && (
-                  <div className="mt-8 border-t border-gray-200 dark:border-white/5 pt-8">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-neutral-50 mb-4 flex items-center gap-2">
+                  <div className="mt-6 border-t border-neutral-200 dark:border-neutral-800 pt-6">
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 flex items-center gap-2">
                       <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -3194,7 +3194,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             )}
                           </div>
                           <div className="p-3">
-                            <h3 className="text-xs font-medium text-gray-800 dark:text-neutral-200 mb-1 line-clamp-2 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors">
+                            <h3 className="text-xs font-medium text-neutral-800 dark:text-neutral-200 mb-1 line-clamp-2 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors">
                               {otherListing.title}
                             </h3>
                             <div className="text-sm font-semibold text-gray-900 dark:text-neutral-50 mb-1">
@@ -3242,7 +3242,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
             {/* Sağ Taraf - Satıcı Profili */}
             <div className="lg:col-span-1">
-              <div className={`bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 sm:p-5 sticky top-4 ${isMobile ? 'pb-24 mt-2' : ''}`}>
+              <div className={`bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 sm:rounded-md p-4 sm:p-5 sticky top-4 ${isMobile ? 'pb-24 mt-2' : ''}`}>
                 <div className="flex flex-row items-start gap-4 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-700 text-left">
                   <div className="flex flex-col items-center gap-2.5 flex-shrink-0">
                     <div className="relative inline-block">
@@ -3341,10 +3341,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <button
                   type="button"
                   onClick={() => setShowMessageModal(true)}
-                  className="w-full border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 text-neutral-800 dark:text-neutral-200 font-medium py-2.5 px-4 rounded-md transition-colors duration-200 mb-2 hidden sm:flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full bg-neutral-900 dark:bg-neutral-100 hover:bg-neutral-800 dark:hover:bg-white text-white dark:text-neutral-900 font-medium py-2.5 px-4 rounded-md transition-colors duration-200 mb-2 hidden sm:flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   {t.productDetail.message}
                 </button>
@@ -3364,9 +3364,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 ) : (
                   <a
                     href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
-                    className="w-full border border-gray-300 dark:border-white/10 hover:bg-green-50 dark:hover:bg-green-900/10 hover:border-green-500 text-gray-700 dark:text-neutral-300 hover:text-green-700 dark:hover:text-green-400 font-semibold py-3 px-4 rounded-lg transition-colors mb-3 hidden sm:flex items-center justify-center gap-2"
+                    className="w-full border border-neutral-300 dark:border-neutral-600 hover:border-neutral-500 text-neutral-800 dark:text-neutral-200 font-medium py-2.5 px-4 rounded-md transition-colors mb-2 hidden sm:flex items-center justify-center gap-2"
                   >
-                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     {listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}
@@ -3375,14 +3375,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {/* Satıcının Diğer İlanlarına Hızlı Erişim */}
                 {sellerListingsCount > 0 && (
-                  <div className="mb-4 p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5">
-                    <span className="text-gray-900 dark:text-neutral-50 block mb-1">
+                  <div className="mb-4 p-3 border border-neutral-200 dark:border-neutral-800 rounded-md">
+                    <span className="text-neutral-900 dark:text-neutral-50 block mb-1 text-sm">
                       {t.productDetail.moreListingsFrom.replace('{name}', seller.username || seller.full_name || seller.name || t.productDetail.unknownSeller)}
                     </span>
                     <Link
                       to={sellerPath} state={{ seller }}
                       state={{ sellerProfile }}
-                      className="text-sm text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 font-medium block"
+                      className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium block"
                     >
                       {t.productDetail.allListings.replace('{count}', '')} →
                     </Link>
@@ -3390,34 +3390,34 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 )}
 
                 {/* Warenkorb Section Removed as per request for Autos & Wohnwagen */}                {/* Teilen & Drucken - Hidden on mobile */}
-                <div className="mt-4 space-y-3 pt-4 border-t border-gray-100 dark:border-white/5 no-print hidden sm:block">
-                  <div className="pt-2">
-                    <p className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-3 px-1">{t.productDetail.share}</p>
+                <div className="mt-4 space-y-2 pt-4 border-t border-neutral-200 dark:border-neutral-800 no-print hidden sm:block">
+                  <div className="pt-1">
+                    <p className="text-[11px] font-medium text-neutral-500 mb-2">{t.productDetail.share}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => shareToFacebook(canonicalShareUrl, listing?.title)}
-                        className="flex-1 bg-[#1877F2] text-white py-2.5 rounded-lg flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
+                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
                         title="Facebook"
                       >
-                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                           <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                       </button>
                       <button
                         onClick={() => shareToWhatsApp(canonicalShareUrl, listing?.title)}
-                        className="flex-1 bg-[#25D366] text-white py-2.5 rounded-lg flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
+                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
                         title="WhatsApp"
                       >
-                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                           <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967-0.273-0.099-0.471-0.148-0.67.15-0.197.297-0.767.966-0.94 1.164-0.173.199-0.347.223-0.644.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458.13-0.606.134-0.133.298-0.347.446-0.52.149-0.174.198-0.298.298-0.497.099-0.198.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52.074-0.792.372-0.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-0.085 1.758-0.719 2.006-1.413.248-0.694.248-1.289.173-1.413-0.074-0.124-0.272-0.198-0.57-0.347m-5.421 7.403h-0.004a9.27 9.27 0 01-4.723-1.292l-0.339-0.202-3.51.92 1.017-3.65-0.213-0.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
                         </svg>
                       </button>
                       <button
                         onClick={() => shareToTwitter(canonicalShareUrl, listing?.title)}
-                        className="flex-1 bg-zinc-700 shadow-sm text-white py-2.5 rounded-lg flex items-center justify-center hover:bg-zinc-800 hover:scale-105 transition-all border border-zinc-600"
+                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
                         title="X"
                       >
-                        <svg className="w-5 h-5 fill-currentColor" viewBox="0 0 1200 1227">
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 1200 1227">
                           <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
                         </svg>
                       </button>
@@ -3426,7 +3426,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           const ok = await copyShareLink(canonicalShareUrl);
                           if (ok) alert('Bağlantı panoya kopyalandı!');
                         }}
-                        className="flex-1 bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 py-2.5 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all shadow-sm"
+                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
                         title="Bağlantıyı Kopyala"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3440,7 +3440,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       setPrintHideContact(false);
                       setTimeout(() => window.print(), 100);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/10 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors text-gray-700 dark:text-neutral-300"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-neutral-200 dark:border-neutral-700 rounded-md hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors text-neutral-700 dark:text-neutral-300 cursor-pointer"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9V2h12v7M6 18H5a2 2 0 01-2-2v-5h18v5a2 2 0 01-2 2h-1m-12 0h12v4H6v-4z" />
@@ -3449,7 +3449,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </button>
                   <button
                     onClick={() => setShowReportModal(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-white/10 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800 transition-colors text-gray-700 dark:text-neutral-300"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-neutral-200 dark:border-neutral-700 rounded-md hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors text-neutral-700 dark:text-neutral-300 cursor-pointer"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
@@ -3459,21 +3459,21 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 </div>
 
                 {/* Sicherheitstipps - Moved back into the panel per user request */}
-                <div className="mt-6 pt-0 md:pt-6 border-t-0 md:border-t border-gray-100 dark:border-white/5">
+                <div className="mt-5 pt-0 md:pt-5 border-t-0 md:border-t border-neutral-200 dark:border-neutral-800">
                   <div className="flex items-start gap-2 mb-3">
-                    <h3 className="font-semibold text-gray-900 dark:text-neutral-50">{t.productDetail.safetyTips}:</h3>
+                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">{t.productDetail.safetyTips}:</h3>
                   </div>
-                  <ul className="space-y-2 text-sm text-gray-700 dark:text-neutral-300">
+                  <ul className="space-y-1.5 text-sm text-neutral-600 dark:text-neutral-400">
                     <li className="flex items-start gap-2">
-                      <span className="text-yellow-600 dark:text-yellow-500 mt-0.5">•</span>
+                      <span className="text-neutral-400 mt-0.5">–</span>
                       <span>{t.productDetail.safetyTip1}</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-yellow-600 dark:text-yellow-500 mt-0.5">•</span>
+                      <span className="text-neutral-400 mt-0.5">–</span>
                       <span>{t.productDetail.safetyTip2}</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-yellow-600 dark:text-yellow-500 mt-0.5">•</span>
+                      <span className="text-neutral-400 mt-0.5">–</span>
                       <span>{t.productDetail.safetyTip3}</span>
                     </li>
                   </ul>
@@ -3504,15 +3504,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
           {/* Seller's Recent Listings */}
           {sellerRecentListings.length > 0 && (
-            <div className="mt-12">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-neutral-50">
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
                   Bu Satıcının Diğer İlanları
                 </h2>
                 <Link
                   to={sellerPath} state={{ seller }}
                   state={{ sellerProfile }}
-                  className="text-sm md:text-base text-red-600 hover:text-red-700 font-semibold transition-colors flex items-center gap-1"
+                  className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium transition-colors flex items-center gap-1"
                 >
                   Tümünü Gör
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3520,13 +3520,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </svg>
                 </Link>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
                 {sellerRecentListings.map(item => (
                   <ListingCard
                     key={item.id}
                     listing={item}
                     toggleFavorite={toggleFavorite}
                     isFavorite={isFavorite}
+                    variant="quiet"
                   />
                 ))}
               </div>
@@ -3535,17 +3536,18 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
           {/* Category Related Listings */}
           {categoryListings.length > 0 && (
-            <div className="mt-12 mb-12">
-              <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-neutral-50 mb-6">
+            <div className="mt-8 mb-10">
+              <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-4 pb-3 border-b border-neutral-200 dark:border-neutral-800">
                 {listing?.category} Kategorisindeki Benzer İlanlar
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
                 {categoryListings.map(item => (
                   <ListingCard
                     key={item.id}
                     listing={item}
                     toggleFavorite={toggleFavorite}
                     isFavorite={isFavorite}
+                    variant="quiet"
                   />
                 ))}
               </div>
@@ -3553,28 +3555,26 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           )}
           {/* Mobile Sticky Contact Buttons */}
           {isMobile && !isOwnListing && (
-            <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white/75 dark:bg-neutral-950/75 backdrop-blur-lg border-t border-gray-200/70 dark:border-white/10 p-3 flex items-center gap-2 pb-safe no-print">
-              {/* Mobile Mesaj Gönder (Şeffaf / Glassmorphic) */}
+            <div className="fixed bottom-16 left-0 right-0 z-[100] bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 p-3 flex items-center gap-2 pb-safe no-print">
               <button
                 id="mobile-contact-message"
                 onClick={() => setShowMessageModal(true)}
-                className="flex-1 h-12 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-gray-200 dark:border-white/10 text-gray-800 dark:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800 font-bold text-sm px-3 rounded-xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="flex-1 h-11 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium text-sm px-3 rounded-md flex items-center justify-center gap-2 cursor-pointer"
               >
-                <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h0.01M12 12h0.01M16 12h0.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-0.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <span>{t.productDetail.message}</span>
               </button>
 
-              {/* Mobile Ara (Şeffaf / Glassmorphic) */}
               {(!showPhone) ? (
                 <button
                   id="mobile-contact-phone-reveal"
                   onClick={() => setShowPhone(true)}
-                  className="flex-1 h-12 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-gray-200 dark:border-white/10 text-gray-800 dark:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800 font-bold text-sm px-3 rounded-xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 h-11 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-100 font-medium text-sm px-3 rounded-md flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   <span>{t.productDetail.call}</span>
                 </button>
@@ -3582,10 +3582,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 <a
                   id="mobile-contact-call"
                   href={listing.show_phone_number === true ? (listing.contact_phone ? `tel:${listing.contact_phone.replace(/\s+/g, '')}` : (seller?.phone ? `tel:${seller.phone.replace(/\s+/g, '')}` : '#')) : '#'}
-                  className="flex-1 h-12 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border border-green-500/40 dark:border-green-500/30 text-green-700 dark:text-green-400 font-bold text-sm px-3 rounded-xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 h-11 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-600 text-neutral-800 dark:text-neutral-100 font-medium text-sm px-3 rounded-md flex items-center justify-center gap-2"
                 >
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   <span className="truncate">{listing.show_phone_number === true ? (listing.contact_phone || seller?.phone || t.productDetail.noPhoneNumber) : t.productDetail.noPhoneNumber}</span>
                 </a>

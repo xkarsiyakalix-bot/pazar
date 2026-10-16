@@ -10,7 +10,7 @@ import { isPetAdoptionListing } from '../utils/formatUtils';
 
 const LONG_PRESS_MS = 450;
 
-export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, hidePrice = false, priority = false }) => {
+export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, hidePrice = false, priority = false, variant = 'default' }) => {
   const navigate = useNavigate();
   const hasNoImage = (!listing?.images || listing.images.length === 0) && (!listing?.image || listing.image === '/placeholder-image.jpg' || listing.image === PLACEHOLDER_IMAGE);
   const [imageLoaded, setImageLoaded] = React.useState(priority || hasNoImage);
@@ -69,12 +69,15 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   // Override image for Mini- & Nebenjobs and Praktika
   const isMiniJob = listing?.sub_category === 'Yarı Zamanlı & Ek İşler' || listing?.sub_category === 'Staj';
   const displayImage = isMiniJob ? '/favicon.png' : imageUrl;
+  const quiet = variant === 'quiet';
   const imageClasses = isMiniJob
-    ? "w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
-    : "w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]";
+    ? `w-full h-full object-contain p-6 ${quiet ? '' : 'transition-transform duration-500 group-hover:scale-105'}`
+    : `w-full h-full object-cover ${quiet ? '' : 'transition-transform duration-500 group-hover:scale-[1.04]'}`;
 
   // Determine card styles based on promotion type
-  let cardClasses = "listing-card rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group relative bg-white dark:bg-neutral-800/60 dark:backdrop-blur-sm flex flex-col h-full overflow-hidden border ";
+  let cardClasses = quiet
+    ? "listing-card rounded-md border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors duration-200 cursor-pointer group relative bg-white dark:bg-neutral-900 flex flex-col h-full overflow-hidden "
+    : "listing-card rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group relative bg-white dark:bg-neutral-800/60 dark:backdrop-blur-sm flex flex-col h-full overflow-hidden border ";
 
   const pkgType = listing?.package_type?.toLowerCase();
   const now = new Date();
@@ -82,16 +85,18 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
   const isPromoActive = !promoExpiry || promoExpiry > now;
   const isActiveVitrin = isPromoActive && (listing?.is_gallery || ['galerie', 'gallery', 'galeri', 'vitrin'].includes(pkgType));
 
-  if (isActiveVitrin) {
-    cardClasses += "border-purple-400/50 ring-2 ring-purple-200/30 dark:ring-purple-700/20 hover:border-purple-500/70 ";
-  } else if (isPromoActive && (pkgType === 'premium' || pkgType === 'z_premium' || (listing?.is_top && !pkgType))) {
-    cardClasses += "border-red-400/50 ring-2 ring-red-200/20 dark:ring-red-700/20 hover:border-red-500/70 ";
-  } else if (isPromoActive && (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing?.is_multi_bump)) {
-    cardClasses += "border-orange-400/50 ring-2 ring-orange-100/30 dark:ring-orange-700/20 hover:border-orange-500/70 ";
-  } else if (isPromoActive && (listing?.is_highlighted || pkgType === 'highlight' || pkgType === 'budget')) {
-    cardClasses += "border-yellow-400/50 hover:border-yellow-500/70 ";
-  } else {
-    cardClasses += "border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 ";
+  if (!quiet) {
+    if (isActiveVitrin) {
+      cardClasses += "border-purple-400/50 ring-2 ring-purple-200/30 dark:ring-purple-700/20 hover:border-purple-500/70 ";
+    } else if (isPromoActive && (pkgType === 'premium' || pkgType === 'z_premium' || (listing?.is_top && !pkgType))) {
+      cardClasses += "border-red-400/50 ring-2 ring-red-200/20 dark:ring-red-700/20 hover:border-red-500/70 ";
+    } else if (isPromoActive && (pkgType === 'multi-bump' || pkgType === 'z_multi_bump' || listing?.is_multi_bump)) {
+      cardClasses += "border-orange-400/50 ring-2 ring-orange-100/30 dark:ring-orange-700/20 hover:border-orange-500/70 ";
+    } else if (isPromoActive && (listing?.is_highlighted || pkgType === 'highlight' || pkgType === 'budget')) {
+      cardClasses += "border-yellow-400/50 hover:border-yellow-500/70 ";
+    } else {
+      cardClasses += "border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 ";
+    }
   }
 
   const imagesCount = listing?.images?.length || (listing?.image ? 1 : 0);
