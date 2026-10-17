@@ -52,6 +52,7 @@ const DynamicCategoryPage = React.lazy(() => import('./pages/DynamicCategoryPage
 const CityCategoryLandingPage = React.lazy(() => import('./pages/CityCategoryLandingPage'));
 const AllCitiesPage = React.lazy(() => import('./pages/AllCitiesPage'));
 const RegionLandingPage = React.lazy(() => import('./pages/RegionLandingPage'));
+const BrandsDirectoryPage = React.lazy(() => import('./pages/BrandsDirectoryPage'));
 import MobileCategoryGrid from './components/MobileCategoryGrid';
 
 // Lazy load page components
@@ -1178,6 +1179,7 @@ function App() {
             <Route path="/Otomobil-Bisiklet-Tekne/Diger-Otomobil-Bisiklet-Tekne" element={<WeiteresAutoRadBootPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
 
             {/* === MAIN CATEGORIES === */}
+            <Route path="/markalar" element={<BrandsDirectoryPage />} />
             <Route path="/Butun-Kategoriler" element={<AlleKategorienPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/kategoriler" element={<Navigate to="/Butun-Kategoriler" replace />} />
             <Route path="/seller" element={<Navigate to="/" replace />} />

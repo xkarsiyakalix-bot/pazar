@@ -95,6 +95,8 @@ export const POPULAR_BRANDS = [
     { name: 'Enza Home', slug: 'enza-home', category: 'Mobilya' }
 ];
 
+import allBrandsData from '../data/allBrands.json';
+
 export const slugifyBrand = (text) => {
     if (!text || typeof text !== 'string') return '';
     
@@ -126,7 +128,12 @@ export const findBrandBySlug = (slug) => {
     if (!slug) return null;
     const cleanSlug = slug.toLowerCase().trim();
 
-    // 1. Direct match in POPULAR_BRANDS
+    // 1. Direct O(1) match in comprehensive allBrandsData
+    if (allBrandsData[cleanSlug]) {
+        return allBrandsData[cleanSlug];
+    }
+
+    // 2. Direct match in POPULAR_BRANDS
     const brand = POPULAR_BRANDS.find(b => 
         b.slug === cleanSlug || 
         (b.aliases && b.aliases.includes(cleanSlug)) ||
@@ -134,7 +141,51 @@ export const findBrandBySlug = (slug) => {
     );
     if (brand) return brand;
 
+    // 3. Fallback search through allBrandsData aliases & names
+    for (const key in allBrandsData) {
+        const item = allBrandsData[key];
+        if (item.aliases && item.aliases.includes(cleanSlug)) {
+            return item;
+        }
+        if (slugifyBrand(item.name) === cleanSlug) {
+            return item;
+        }
+    }
+
     return null;
+};
+
+export const getAllBrandsList = () => {
+    return Object.values(allBrandsData);
+};
+
+export const getAlphabeticalBrands = () => {
+    const list = Object.values(allBrandsData);
+    const groups = {};
+
+    list.forEach(brand => {
+        if (!brand || !brand.name) return;
+        const firstChar = brand.name.trim().charAt(0).toLocaleUpperCase('tr-TR');
+        let letter = firstChar;
+
+        if (/[0-9]/.test(firstChar)) {
+            letter = '0-9';
+        } else if (!/[A-ZÇĞİÖŞÜ]/.test(firstChar)) {
+            letter = '#';
+        }
+
+        if (!groups[letter]) {
+            groups[letter] = [];
+        }
+        groups[letter].push(brand);
+    });
+
+    // Her harf içindeki markaları alfabetik sırala
+    Object.keys(groups).forEach(letter => {
+        groups[letter].sort((a, b) => a.name.localeCompare(b.name, 'tr-TR'));
+    });
+
+    return groups;
 };
 
 export const extractListingBrand = (listing) => {

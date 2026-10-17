@@ -11,6 +11,7 @@ export const Footer = () => {
                         <h3 className="text-white font-semibold mb-4">ExVitrin</h3>
                         <ul className="space-y-2 text-sm">
                             <li><a href="/categories" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.allCategories}</a></li>
+                            <li><a href="/markalar" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>A'dan Z'ye Markalar</a></li>
                             <li><a href="/sehirler" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>Şehir İlanları (81 İl)</a></li>
                             <li><a href="/hakkimizda" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.aboutUs}</a></li>
                             <li><a href="/mobile-apps" className="flex items-center gap-1.5 hover:text-white dark:hover:text-neutral-50 transition-colors group"><span className="brand-text group-hover:translate-x-0.5 transition-transform">›</span>{t.footer.mobileApps}</a></li>

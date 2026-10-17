@@ -62,6 +62,7 @@ async function generateSitemap() {
     // 3. Define clean canonical static routes (no duplicates or noindexed paths)
     const staticRoutes = [
       '',
+      '/markalar',
       '/hakkimizda',
       '/iletisim',
       '/sehirler',
@@ -223,6 +224,17 @@ async function generateSitemap() {
           : (profile.user_number ? `/seller/${profile.user_number}` : `/seller/${profile.id}`);
         addUrl(sellerPath, 'weekly', '0.7', lastMod);
       });
+    }
+
+    // Brand Pages (A-Z All Brands)
+    try {
+      const allBrandsJson = require('../src/data/allBrands.json');
+      Object.keys(allBrandsJson).forEach(slug => {
+        addUrl(`/${slug}`, 'weekly', '0.7');
+      });
+      console.log(`Added ${Object.keys(allBrandsJson).length} brand pages to sitemap.`);
+    } catch (e) {
+      console.warn('⚠️ Could not load brands for sitemap:', e.message);
     }
 
     const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>

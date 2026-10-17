@@ -126,7 +126,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
 
     const breadcrumbs = [
         { label: 'Ana Sayfa', path: '/' },
-        { label: 'Markalar', path: '' },
+        { label: 'Markalar', path: '/markalar' },
         { label: brandName, path: `/${slug}` }
     ];
 
@@ -153,9 +153,17 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                 <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-neutral-700 mt-4 mb-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <span className="inline-block px-3 py-1 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-full text-xs font-bold tracking-wider uppercase mb-2">
-                                Marka Vitrini
-                            </span>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="inline-block px-3 py-1 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-full text-xs font-bold tracking-wider uppercase">
+                                    {brandData?.category ? `${brandData.category} Vitrini` : 'Marka Vitrini'}
+                                </span>
+                                <Link
+                                    to="/markalar"
+                                    className="text-xs text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                >
+                                    (Tüm Markalar ›)
+                                </Link>
+                            </div>
                             <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
                                 {brandName} İlanları
                             </h1>
