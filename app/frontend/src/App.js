@@ -16,18 +16,16 @@ import { favoritesApi } from './api/favorites';
 import { getFollowing, followUser, unfollowUser } from './api/follows';
 
 
-// Critical components - static import from barrel
-import {
-  Header,
-  Footer,
-  PresenceTracker,
-  PWAInstallBanner,
-  SearchSection,
-  ListingGrid,
-  CategorySidebar,
-  Gallery,
-  BannerSlider
-} from './components';
+// Critical components - direct imports to avoid dragging unused barrel components into main bundle
+import Header from './components/Header';
+import Footer from './components/Footer';
+import PresenceTracker from './components/PresenceTracker';
+import PWAInstallBanner from './components/PWAInstallBanner';
+import SearchSection from './components/SearchSection';
+import ListingGrid from './components/ListingGrid';
+import CategorySidebar from './components/CategorySidebar';
+import Gallery from './components/Gallery';
+import BannerSlider from './components/BannerSlider';
 
 // Non-critical components - lazy load
 const CategoryGallery = React.lazy(() => import('./components/CategoryGallery'));
@@ -890,7 +888,8 @@ function App() {
                   <Gallery toggleFavorite={toggleFavorite} isFavorite={isFavorite} />
 
                   {/* Latest Listings */}
-                  <section className="mt-6 sm:mt-8">
+                  {/* min-h reserves space to prevent CLS when listings load */}
+                  <section className="mt-6 sm:mt-8 min-h-[600px] sm:min-h-[700px]">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg sm:text-xl font-semibold">Son İlanlar</h2>
                       <a

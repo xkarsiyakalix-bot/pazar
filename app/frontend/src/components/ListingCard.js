@@ -182,7 +182,7 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
             height="280"
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "auto"}
-            decoding={priority ? "sync" : "async"}
+            decoding="async"
             onLoad={() => setImageLoaded(true)}
             onError={(e) => {
               setImageLoaded(true);
