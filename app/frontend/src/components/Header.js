@@ -5,14 +5,14 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import { t } from '../translations';
 import { getListingUrl, getSellerUrl } from '../utils/slug';
 import { useTheme } from '../contexts/ThemeContext';
-import AppDownloadBanner, { getInitialAppBannerVisibility } from './AppDownloadBanner';
 import MobileSearchOverlay from './MobileSearchOverlay';
+import AppDownloadBanner from './AppDownloadBanner';
 
 export const Header = ({ followedSellers = [], setSelectedCategory }) => {
     const isMobile = useIsMobile();
     const navigate = useNavigate();
     const { user, signOut } = useAuth();
-    const [isBannerVisible, setIsBannerVisible] = React.useState(getInitialAppBannerVisibility);
+    const [isBannerVisible, setIsBannerVisible] = React.useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
     const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
     const [unreadCount, setUnreadCount] = React.useState(0);

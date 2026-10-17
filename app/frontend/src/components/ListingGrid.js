@@ -117,7 +117,7 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
       {displayListings.map((listing, index) => (
         <ListingCard
           key={listing.id}
-          priority={index < 2}
+          priority={index < 10}
           listing={listing}
           toggleFavorite={toggleFavorite}
           isFavorite={isFavorite}

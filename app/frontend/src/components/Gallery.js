@@ -110,8 +110,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
 
     return (
         <>
-            {/* min-h reserves space to prevent CLS when vitrin items load */}
-            <section className="mt-6 min-h-[240px] sm:min-h-[280px]">
+            <section className="mt-6">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-50">Vitrin</h2>
                 <div className="flex items-center gap-2 sm:gap-4">
@@ -162,16 +161,7 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                     >
                         {loading ? (
                             isMobile ? (
-                                /* Mobile: horizontal scroll skeleton cards matching real card size to prevent CLS */
-                                <div className="flex gap-4 w-full overflow-hidden pb-4">
-                                    {[...Array(2)].map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className="flex-shrink-0 w-[45vw] rounded-2xl bg-gray-200 dark:bg-neutral-800 animate-pulse"
-                                            style={{ height: '200px' }}
-                                        />
-                                    ))}
-                                </div>
+                                <div className="w-full h-16 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded-2xl my-2" />
                             ) : (
                                 [...Array(5)].map((_, i) => (
                                     <div
