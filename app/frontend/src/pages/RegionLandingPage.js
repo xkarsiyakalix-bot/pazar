@@ -31,12 +31,36 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
   const [loading, setLoading] = useState(true);
   const [selectedCity, setSelectedCity] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [priceRange, setPriceRange] = useState('all');
+  const [minPriceInput, setMinPriceInput] = useState('');
+  const [maxPriceInput, setMaxPriceInput] = useState('');
+  const [appliedMinPrice, setAppliedMinPrice] = useState('');
+  const [appliedMaxPrice, setAppliedMaxPrice] = useState('');
   const [condition, setCondition] = useState('all');
   const [categoryCounts, setCategoryCounts] = useState({});
   const [cityCounts, setCityCounts] = useState({});
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('horizontal');
+
+  // Debounced auto-apply for price inputs
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAppliedMinPrice(minPriceInput);
+      setAppliedMaxPrice(maxPriceInput);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [minPriceInput, maxPriceInput]);
+
+  const handleApplyPrice = () => {
+    setAppliedMinPrice(minPriceInput);
+    setAppliedMaxPrice(maxPriceInput);
+  };
+
+  const handleClearPrice = () => {
+    setMinPriceInput('');
+    setMaxPriceInput('');
+    setAppliedMinPrice('');
+    setAppliedMaxPrice('');
+  };
 
   // Breadcrumbs
   const breadcrumbs = [
@@ -119,14 +143,11 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
           query = query.eq('category', category);
         }
 
-        if (priceRange === 'under100') {
-          query = query.lte('price', 100);
-        } else if (priceRange === '100-500') {
-          query = query.gte('price', 100).lte('price', 500);
-        } else if (priceRange === '500-1000') {
-          query = query.gte('price', 500).lte('price', 1000);
-        } else if (priceRange === 'over1000') {
-          query = query.gte('price', 1000);
+        if (appliedMinPrice && !isNaN(Number(appliedMinPrice)) && Number(appliedMinPrice) > 0) {
+          query = query.gte('price', Number(appliedMinPrice));
+        }
+        if (appliedMaxPrice && !isNaN(Number(appliedMaxPrice)) && Number(appliedMaxPrice) > 0) {
+          query = query.lte('price', Number(appliedMaxPrice));
         }
 
         if (condition && condition !== 'all') {
@@ -158,7 +179,7 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
 
     fetchListings();
     return () => { isMounted = false; };
-  }, [region, selectedCity, category, sortBy, priceRange, condition]);
+  }, [region, selectedCity, category, sortBy, appliedMinPrice, appliedMaxPrice, condition]);
 
   if (!region) {
     return (
@@ -392,31 +413,53 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
 
               {/* Price Range */}
               <div>
-                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
-                  Fiyat Aralığı
-                </label>
-                <div className="space-y-1.5 text-xs">
-                  {[
-                    { id: 'all', label: 'Tümü' },
-                    { id: 'under100', label: '0 - 100 TL' },
-                    { id: '100-500', label: '100 - 500 TL' },
-                    { id: '500-1000', label: '500 - 1.000 TL' },
-                    { id: 'over1000', label: '1.000 TL ve üzeri' }
-                  ].map((p) => (
-                    <label key={p.id} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700/40 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="regionPrice"
-                        checked={priceRange === p.id}
-                        onChange={() => setPriceRange(p.id)}
-                        className="text-red-600 focus:ring-red-500"
-                      />
-                      <span className={priceRange === p.id ? 'font-bold text-red-600' : 'text-neutral-700 dark:text-neutral-300'}>
-                        {p.label}
-                      </span>
-                    </label>
-                  ))}
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                    Fiyat Aralığı (TL)
+                  </label>
+                  {(minPriceInput || maxPriceInput) && (
+                    <button
+                      type="button"
+                      onClick={handleClearPrice}
+                      className="text-[11px] text-red-600 hover:text-red-700 font-semibold cursor-pointer"
+                    >
+                      Temizle
+                    </button>
+                  )}
                 </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] text-neutral-400 dark:text-neutral-500 mb-1">En az</label>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="0 TL"
+                      value={minPriceInput}
+                      onChange={(e) => setMinPriceInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
+                      className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-red-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-neutral-400 dark:text-neutral-500 mb-1">En çok</label>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="∞ TL"
+                      value={maxPriceInput}
+                      onChange={(e) => setMaxPriceInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
+                      className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-red-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleApplyPrice}
+                  className="mt-2.5 w-full py-1.5 px-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg text-xs font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  Filtrele
+                </button>
               </div>
             </div>
           </div>
