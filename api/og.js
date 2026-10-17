@@ -682,6 +682,11 @@ const STATIC_PAGES_META = {
     description: 'ExVitrin vasıta ilanları için mevzuat ve yasal bilgilendirme.',
     keywords: 'vasıta yasal uyarı'
   },
+  'markalar': {
+    title: 'A\'dan Z\'ye Tüm Markalar | ExVitrin',
+    description: '2.400\'den fazla markayı A\'dan Z\'ye keşfedin. Zara, Apple, Nike, Dyson, Samsung, Zuzu ve binlerce markanın sıfır ve ikinci el ilanları ExVitrin\'de!',
+    keywords: 'markalar, a dan z ye markalar, moda markaları, elektronik markaları, ikinci el markalar, exvitrin'
+  },
   'hayvan-haklari-ve-yasal-uyari': {
     title: 'Hayvan Hakları ve Yasal Uyarı | ExVitrin',
     description: 'ExVitrin evcil hayvan ilanları yasal bilgilendirme ve hayvan hakları beyanı.',
@@ -689,67 +694,46 @@ const STATIC_PAGES_META = {
   }
 };
 
+let allBrandsMap = null;
+try {
+  allBrandsMap = require('./allBrands.json');
+} catch (e) {
+  try {
+    allBrandsMap = require('../app/frontend/src/data/allBrands.json');
+  } catch (err) {
+    allBrandsMap = {};
+  }
+}
+
 const getBrandMeta = (slug) => {
   if (!slug) return null;
-  const brandList = [
-    { name: 'BMW', slug: 'bmw' },
-    { name: 'Mercedes-Benz', slug: 'mercedes-benz', aliases: ['mercedes'] },
-    { name: 'Audi', slug: 'audi' },
-    { name: 'Volkswagen', slug: 'volkswagen', aliases: ['vw'] },
-    { name: 'Ford', slug: 'ford' },
-    { name: 'Opel', slug: 'opel' },
-    { name: 'Renault', slug: 'renault' },
-    { name: 'Fiat', slug: 'fiat' },
-    { name: 'Toyota', slug: 'toyota' },
-    { name: 'Honda', slug: 'honda' },
-    { name: 'Hyundai', slug: 'hyundai' },
-    { name: 'Peugeot', slug: 'peugeot' },
-    { name: 'Seat', slug: 'seat' },
-    { name: 'Skoda', slug: 'skoda' },
-    { name: 'Volvo', slug: 'volvo' },
-    { name: 'Nissan', slug: 'nissan' },
-    { name: 'Porsche', slug: 'porsche' },
-    { name: 'Tesla', slug: 'tesla' },
-    { name: 'Nike', slug: 'nike' },
-    { name: 'Adidas', slug: 'adidas' },
-    { name: 'Puma', slug: 'puma' },
-    { name: 'Zara', slug: 'zara' },
-    { name: 'H&M', slug: 'hm', aliases: ['h-m', 'h&m'] },
-    { name: 'Mango', slug: 'mango' },
-    { name: 'LC Waikiki', slug: 'lc-waikiki', aliases: ['lcw'] },
-    { name: 'Koton', slug: 'koton' },
-    { name: 'Mavi', slug: 'mavi' },
-    { name: 'Tommy Hilfiger', slug: 'tommy-hilfiger' },
-    { name: 'Calvin Klein', slug: 'calvin-klein' },
-    { name: 'Lacoste', slug: 'lacoste' },
-    { name: 'Apple', slug: 'apple', aliases: ['iphone', 'ipad', 'macbook'] },
-    { name: 'Samsung', slug: 'samsung' },
-    { name: 'Xiaomi', slug: 'xiaomi' },
-    { name: 'Huawei', slug: 'huawei' },
-    { name: 'Sony', slug: 'sony', aliases: ['playstation'] },
-    { name: 'LG', slug: 'lg' },
-    { name: 'Philips', slug: 'philips' },
-    { name: 'Asus', slug: 'asus' },
-    { name: 'Lenovo', slug: 'lenovo' },
-    { name: 'Dell', slug: 'dell' },
-    { name: 'HP', slug: 'hp' },
-    { name: 'Bosch', slug: 'bosch' },
-    { name: 'Siemens', slug: 'siemens' },
-    { name: 'Arçelik', slug: 'arcelik' },
-    { name: 'Beko', slug: 'beko' },
-    { name: 'Vestel', slug: 'vestel' },
-    { name: 'Dyson', slug: 'dyson' },
-    { name: 'IKEA', slug: 'ikea' }
-  ];
+  const cleanSlug = String(slug).toLowerCase().trim();
 
-  const found = brandList.find(b => b.slug === slug || (b.aliases && b.aliases.includes(slug)));
-  if (!found) return null;
+  // 1. Check allBrandsMap
+  if (allBrandsMap && allBrandsMap[cleanSlug]) {
+    const brand = allBrandsMap[cleanSlug];
+    return {
+      title: `${brand.name} İkinci El ve Sıfır İlanları | ExVitrin`,
+      description: `En güncel ${brand.name} ilanları, ikinci el ve sıfır fiyatları ExVitrin'de! Güvenli alışveriş ve uygun fiyatlarla hemen keşfedin.`,
+      keywords: `${brand.name}, ${brand.name} ilanları, ikinci el ${brand.name}, satılık ${brand.name}, exvitrin`
+    };
+  }
 
-  return {
-    title: `${found.name} İkinci El ve Sıfır İlanları | ExVitrin`,
-    description: `En güncel ${found.name} ilanları, ikinci el ve sıfır fiyatları ExVitrin'de! Güvenli alışveriş ve uygun fiyatlarla hemen keşfedin.`,
-    keywords: `${found.name}, ${found.name} ilanları, ikinci el ${found.name}, satılık ${found.name}`
-  };
+  // 2. Check aliases in allBrandsMap
+  if (allBrandsMap) {
+    for (const k in allBrandsMap) {
+      const b = allBrandsMap[k];
+      if (b.aliases && b.aliases.includes(cleanSlug)) {
+        return {
+          title: `${b.name} İkinci El ve Sıfır İlanları | ExVitrin`,
+          description: `En güncel ${b.name} ilanları, ikinci el ve sıfır fiyatları ExVitrin'de! Güvenli alışveriş ve uygun fiyatlarla hemen keşfedin.`,
+          keywords: `${b.name}, ${b.name} ilanları, ikinci el ${b.name}, satılık ${b.name}, exvitrin`
+        };
+      }
+    }
+  }
+
+  return null;
 };
 
 function getCategoryMeta(path) {

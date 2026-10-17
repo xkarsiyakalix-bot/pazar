@@ -295,3 +295,4 @@ export const BrandsDirectoryPage = () => {
 };
 
 export default BrandsDirectoryPage;
+
