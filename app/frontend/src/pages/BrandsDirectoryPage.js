@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../SEO';
 import { Breadcrumb } from '../components';
@@ -39,9 +39,20 @@ const POPULAR_BRANDS_HIGHLIGHT = [
 export const BrandsDirectoryPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [allBrands, setAllBrands] = useState([]);
+    const [groupedBrands, setGroupedBrands] = useState({});
 
-    const allBrands = useMemo(() => getAllBrandsList(), []);
-    const groupedBrands = useMemo(() => getAlphabeticalBrands(), []);
+    // Load all brands data on mount (lazy — not in main bundle)
+    useEffect(() => {
+        let cancelled = false;
+        Promise.all([getAllBrandsList(), getAlphabeticalBrands()]).then(([list, groups]) => {
+            if (!cancelled) {
+                setAllBrands(list);
+                setGroupedBrands(groups);
+            }
+        });
+        return () => { cancelled = true; };
+    }, []);
 
     const letters = useMemo(() => {
         const standardLetters = [

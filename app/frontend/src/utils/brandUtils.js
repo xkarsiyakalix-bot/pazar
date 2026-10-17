@@ -95,7 +95,17 @@ export const POPULAR_BRANDS = [
     { name: 'Enza Home', slug: 'enza-home', category: 'Mobilya' }
 ];
 
-import allBrandsData from '../data/allBrands.json';
+// allBrands.json is NOT statically imported here to keep the main bundle small.
+// It is loaded on-demand via dynamic import and cached after first load.
+let _allBrandsCache = null;
+
+const loadAllBrands = async () => {
+    if (!_allBrandsCache) {
+        const mod = await import('../data/allBrands.json');
+        _allBrandsCache = mod.default;
+    }
+    return _allBrandsCache;
+};
 
 export const slugifyBrand = (text) => {
     if (!text || typeof text !== 'string') return '';
@@ -118,48 +128,72 @@ export const slugifyBrand = (text) => {
         .toLowerCase()
         .trim()
         .replace(/&/g, '')
-        .replace(/['’´]/g, '')
+        .replace(/[''´]/g, '')
         .replace(/[^a-z0-9\s-]/g, '')
         .replace(/[\s_]+/g, '-')
         .replace(/^-+|-+$/g, '');
 };
 
+/**
+ * Synchronously checks POPULAR_BRANDS first (always in bundle).
+ * For an exhaustive check against all 2,500+ brands, use findBrandBySlugAsync.
+ */
 export const findBrandBySlug = (slug) => {
     if (!slug) return null;
     const cleanSlug = slug.toLowerCase().trim();
 
-    // 1. Direct O(1) match in comprehensive allBrandsData
-    if (allBrandsData[cleanSlug]) {
-        return allBrandsData[cleanSlug];
+    // 1. If allBrands is already cached (loaded by BrandPage/BrandsDirectoryPage), use it
+    if (_allBrandsCache) {
+        if (_allBrandsCache[cleanSlug]) return _allBrandsCache[cleanSlug];
+        // Fallback search through aliases & names
+        for (const key in _allBrandsCache) {
+            const item = _allBrandsCache[key];
+            if (item.aliases && item.aliases.includes(cleanSlug)) return item;
+            if (slugifyBrand(item.name) === cleanSlug) return item;
+        }
     }
 
-    // 2. Direct match in POPULAR_BRANDS
-    const brand = POPULAR_BRANDS.find(b => 
-        b.slug === cleanSlug || 
+    // 2. Synchronous match in POPULAR_BRANDS (always available, covers top ~95 brands)
+    const brand = POPULAR_BRANDS.find(b =>
+        b.slug === cleanSlug ||
         (b.aliases && b.aliases.includes(cleanSlug)) ||
         slugifyBrand(b.name) === cleanSlug
     );
-    if (brand) return brand;
+    return brand || null;
+};
 
-    // 3. Fallback search through allBrandsData aliases & names
+/**
+ * Async version — loads all 2,500+ brands if needed. Use in SmartRoute for
+ * slugs that weren't matched by the synchronous findBrandBySlug.
+ */
+export const findBrandBySlugAsync = async (slug) => {
+    if (!slug) return null;
+    const syncResult = findBrandBySlug(slug);
+    if (syncResult) return syncResult;
+
+    const allBrandsData = await loadAllBrands();
+    const cleanSlug = slug.toLowerCase().trim();
+
+    if (allBrandsData[cleanSlug]) return allBrandsData[cleanSlug];
+
     for (const key in allBrandsData) {
         const item = allBrandsData[key];
-        if (item.aliases && item.aliases.includes(cleanSlug)) {
-            return item;
-        }
-        if (slugifyBrand(item.name) === cleanSlug) {
-            return item;
-        }
+        if (item.aliases && item.aliases.includes(cleanSlug)) return item;
+        if (slugifyBrand(item.name) === cleanSlug) return item;
     }
 
     return null;
 };
 
-export const getAllBrandsList = () => {
+/** Async — loads all brands data on demand. */
+export const getAllBrandsList = async () => {
+    const allBrandsData = await loadAllBrands();
     return Object.values(allBrandsData);
 };
 
-export const getAlphabeticalBrands = () => {
+/** Async — loads all brands data on demand, grouped alphabetically. */
+export const getAlphabeticalBrands = async () => {
+    const allBrandsData = await loadAllBrands();
     const list = Object.values(allBrandsData);
     const groups = {};
 

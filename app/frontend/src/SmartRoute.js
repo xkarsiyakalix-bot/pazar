@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import ProductDetailSkeleton from './components/skeletons/ProductDetailSkeleton';
 import { slugToCategoryMap } from './config/categoryConfigs';
-import { findBrandBySlug } from './utils/brandUtils';
+import { findBrandBySlug, findBrandBySlugAsync } from './utils/brandUtils';
 
 const StorePage = React.lazy(() => import('./components/Store/StorePage'));
 const NotFoundPage = React.lazy(() => import('./NotFoundPage'));
@@ -77,8 +77,8 @@ const SmartRoute = ({ addToCart, toggleFavorite, isFavorite, toggleFollowSeller,
                 return;
             }
 
-            // 0.5. Check if it's a known Brand
-            const brandInfo = findBrandBySlug(slug);
+            // 0.5. Check if it's a known Brand (sync check POPULAR_BRANDS first, then async full list)
+            const brandInfo = await findBrandBySlugAsync(slug);
             if (brandInfo) {
                 setIsBrand(true);
                 setIsStore(false);

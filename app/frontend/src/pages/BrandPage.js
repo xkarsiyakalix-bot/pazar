@@ -4,14 +4,24 @@ import { supabase } from '../lib/supabase';
 import { SEO } from '../SEO';
 import { Breadcrumb, HorizontalListingCard, ListingCard } from '../components';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { findBrandBySlug, formatBrandDisplayName, matchesSpecificModel } from '../utils/brandUtils';
+import { findBrandBySlugAsync, formatBrandDisplayName, matchesSpecificModel } from '../utils/brandUtils';
 import { getPhoneModels } from '../data/phoneBrands';
 
 export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
     const params = useParams();
     const slug = propSlug || params.slug || '';
 
-    const brandData = useMemo(() => findBrandBySlug(slug), [slug]);
+    const [brandData, setBrandData] = useState(null);
+
+    // Async brand lookup — keeps allBrands.json out of the main bundle
+    useEffect(() => {
+        let cancelled = false;
+        findBrandBySlugAsync(slug).then(data => {
+            if (!cancelled) setBrandData(data);
+        });
+        return () => { cancelled = true; };
+    }, [slug]);
+
     const brandName = useMemo(() => formatBrandDisplayName(slug, brandData), [slug, brandData]);
 
     const [listings, setListings] = useState([]);
