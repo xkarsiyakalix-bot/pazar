@@ -1,34 +1,29 @@
 import React, { useState, useEffect } from 'react';
 
+export const getInitialAppBannerVisibility = () => {
+    if (typeof window === 'undefined') return false;
+    if (window.innerWidth >= 768) return false;
+    if (window.Capacitor?.isNativePlatform?.()) return false;
+    try {
+        const dismissedAt = localStorage.getItem('exvitrin_app_banner_dismissed');
+        if (dismissedAt) {
+            const twoDays = 2 * 24 * 60 * 60 * 1000;
+            if (Date.now() - parseInt(dismissedAt, 10) < twoDays) {
+                return false;
+            }
+        }
+    } catch (e) {
+        return false;
+    }
+    return true;
+};
+
 export const AppDownloadBanner = ({ onVisibilityChange }) => {
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(getInitialAppBannerVisibility);
 
     useEffect(() => {
-        // Zaten native uygulama içindeyse gösterme
-        if (typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.()) {
-            setIsVisible(false);
-            onVisibilityChange?.(false);
-            return;
-        }
-
-        // Kullanıcı daha önce kapattıysa gösterme (örneğin 2 gün)
-        try {
-            const dismissedAt = localStorage.getItem('exvitrin_app_banner_dismissed');
-            if (dismissedAt) {
-                const twoDays = 2 * 24 * 60 * 60 * 1000;
-                if (Date.now() - parseInt(dismissedAt, 10) < twoDays) {
-                    setIsVisible(false);
-                    onVisibilityChange?.(false);
-                    return;
-                }
-            }
-        } catch (e) {
-            // localStorage erişim hatası
-        }
-
-        setIsVisible(true);
-        onVisibilityChange?.(true);
-    }, [onVisibilityChange]);
+        onVisibilityChange?.(isVisible);
+    }, [isVisible, onVisibilityChange]);
 
     const handleDismiss = () => {
         setIsVisible(false);

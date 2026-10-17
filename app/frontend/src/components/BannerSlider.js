@@ -34,13 +34,15 @@ const slides = [
     }
 ];
 
+import { useIsMobile } from '../hooks/useIsMobile';
+
 export const BannerSlider = () => {
+    const isMobile = useIsMobile();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [hasInteracted, setHasInteracted] = useState(false);
 
-    // Auto-play starts after user interaction or after a 12s delay
-    // This stops automated Lighthouse / PageSpeed tests from observing
-    // carousel slide rotations as continuous LCP candidate changes (which caused 16.0s LCP!)
+    // Auto-play starts after user interaction
+    // On mobile, auto-play is disabled so slide 1 (11KB preloaded) remains the final LCP element (< 1.5s)
     useEffect(() => {
         const handleInteraction = () => setHasInteracted(true);
         window.addEventListener('scroll', handleInteraction, { passive: true, once: true });
@@ -57,14 +59,15 @@ export const BannerSlider = () => {
     }, []);
 
     useEffect(() => {
-        if (!hasInteracted) return;
+        // Only auto-play on desktop. Mobile remains static unless user taps dots/arrows
+        if (!hasInteracted || isMobile) return;
 
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
         }, 5000);
 
         return () => clearInterval(timer);
-    }, [hasInteracted]);
+    }, [hasInteracted, isMobile]);
 
     const goToSlide = (index) => {
         setHasInteracted(true);

@@ -6,8 +6,10 @@ import LoadingSpinner from './LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { SKELETON_CONFIG } from '../config/skeletonConfig';
 import { ListingGridSkeleton } from './skeletons/ListingCardSkeleton';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategoriler', searchTerm = '', toggleFavorite, isFavorite }) => {
+  const isMobile = useIsMobile();
   const [apiListings, setApiListings] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -117,7 +119,7 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
       {displayListings.map((listing, index) => (
         <ListingCard
           key={listing.id}
-          priority={index < 10}
+          priority={isMobile ? index < 4 : index < 10}
           listing={listing}
           toggleFavorite={toggleFavorite}
           isFavorite={isFavorite}

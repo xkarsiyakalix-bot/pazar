@@ -161,7 +161,15 @@ export const Gallery = ({ toggleFavorite, isFavorite, priceRange = 'all', filter
                     >
                         {loading ? (
                             isMobile ? (
-                                <div className="w-full h-16 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded-2xl my-2" />
+                                <div className="flex gap-4 w-full overflow-hidden pb-4">
+                                    {[...Array(2)].map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className="flex-shrink-0 w-[45vw] rounded-2xl bg-gray-200 dark:bg-neutral-800 animate-pulse"
+                                            style={{ height: '200px' }}
+                                        />
+                                    ))}
+                                </div>
                             ) : (
                                 [...Array(5)].map((_, i) => (
                                     <div
