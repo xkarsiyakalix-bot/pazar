@@ -32,16 +32,16 @@ const STATIC_PAGES = [
   { loc: '/cerez-politikasi', priority: '0.5', changefreq: 'monthly' },
   { loc: '/yasal-uyarilar', priority: '0.5', changefreq: 'monthly' },
   // Kategoriler
-  { loc: '/Otomobil', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Emlak', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Elektronik', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Elektronik/Cep-Telefonu-Telefon', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Moda-Guzellik', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Ev-Bahce', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Spor-Outdoor', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Hobi-Koleksiyon', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Motosiklet', priority: '0.9', changefreq: 'daily' },
-  { loc: '/Is-Dunyasi', priority: '0.8', changefreq: 'daily' },
+  { loc: '/otomobil', priority: '0.9', changefreq: 'daily' },
+  { loc: '/emlak', priority: '0.9', changefreq: 'daily' },
+  { loc: '/elektronik', priority: '0.9', changefreq: 'daily' },
+  { loc: '/elektronik/cep-telefonu-telefon', priority: '0.9', changefreq: 'daily' },
+  { loc: '/moda-guzellik', priority: '0.9', changefreq: 'daily' },
+  { loc: '/ev-bahce', priority: '0.9', changefreq: 'daily' },
+  { loc: '/spor-outdoor', priority: '0.9', changefreq: 'daily' },
+  { loc: '/hobi-koleksiyon', priority: '0.9', changefreq: 'daily' },
+  { loc: '/motosiklet', priority: '0.9', changefreq: 'daily' },
+  { loc: '/is-dunyasi', priority: '0.8', changefreq: 'daily' },
 ];
 
 function slugifyBrand(text) {
