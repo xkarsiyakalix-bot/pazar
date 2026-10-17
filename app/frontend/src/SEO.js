@@ -171,7 +171,7 @@ export const CategorySEO = ({ category, subCategory, listingCount = 0 }) => {
   );
 };
 
-export const ProductSEO = ({ listing }) => {
+export const ProductSEO = ({ listing, rating = null, reviews = [] }) => {
   if (!listing) return null;
 
   const isPet = isPetAdoptionListing(listing);
@@ -214,6 +214,13 @@ export const ProductSEO = ({ listing }) => {
     { name: listing.title, url: listingUrl }
   ];
 
+  // Build aggregate rating and reviews if available
+  const hasRating = rating && Number(rating.average_rating || rating.averageRating || 0) > 0 && Number(rating.total_reviews || rating.totalReviews || 0) > 0;
+  const avgRatingVal = hasRating ? Number(rating.average_rating || rating.averageRating).toFixed(1) : null;
+  const reviewCountVal = hasRating ? Number(rating.total_reviews || rating.totalReviews) : 0;
+
+  const validReviews = Array.isArray(reviews) ? reviews.filter(r => r && (r.comment || r.rating)) : [];
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -225,6 +232,32 @@ export const ProductSEO = ({ listing }) => {
       '@type': 'Brand',
       'name': listing.category || 'İkinci El'
     },
+    ...(hasRating ? {
+      'aggregateRating': {
+        '@type': 'AggregateRating',
+        'ratingValue': avgRatingVal,
+        'reviewCount': reviewCountVal,
+        'bestRating': '5',
+        'worstRating': '1'
+      }
+    } : {}),
+    ...(validReviews.length > 0 ? {
+      'review': validReviews.slice(0, 5).map(r => ({
+        '@type': 'Review',
+        'author': {
+          '@type': 'Person',
+          'name': r.rater?.full_name || 'Kullanıcı'
+        },
+        ...(r.created_at ? { 'datePublished': new Date(r.created_at).toISOString().split('T')[0] } : {}),
+        'reviewRating': {
+          '@type': 'Rating',
+          'ratingValue': r.rating || 5,
+          'bestRating': '5',
+          'worstRating': '1'
+        },
+        'reviewBody': r.comment || 'Güvenilir satıcı.'
+      }))
+    } : {}),
     'offers': {
       '@type': 'Offer',
       'price': listing.price ? Number(listing.price).toFixed(2) : "0.00",

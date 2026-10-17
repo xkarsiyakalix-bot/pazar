@@ -1409,7 +1409,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
       `}</style>
 
       <div className={`min-h-screen bg-neutral-50 dark:bg-neutral-950 no-print ${isMobile ? 'pb-48' : ''}`}>
-        {listing && <ProductSEO listing={listing} />}
+        {listing && <ProductSEO listing={listing} rating={sellerRating} reviews={sellerRatings} />}
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
           <div className="mb-3 sm:mb-4 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm overflow-x-auto no-print">
             <button
