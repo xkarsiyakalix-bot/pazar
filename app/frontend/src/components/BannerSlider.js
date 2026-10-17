@@ -77,14 +77,19 @@ export const BannerSlider = () => {
     return (
         <div className="mb-6 sm:mb-8 overflow-hidden shadow-lg relative bg-gray-100 dark:bg-neutral-900 h-[180px] sm:h-[250px] md:h-[300px] group">
             {/* Slides */}
-            {slides.map((slide, index) => (
-                <div
-                    key={index}
-                    className={`absolute inset-0 ${hasInteracted ? 'transition-opacity duration-1000 ease-in-out' : ''} ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                        }`}
-                >
-                    {(index === 0 || hasInteracted || index === currentSlide) && (
-                        slide.mobileImage ? (
+            {slides.map((slide, index) => {
+                const shouldRender = isMobile
+                    ? (index === currentSlide)
+                    : (index === 0 || hasInteracted || index === currentSlide);
+
+                return (
+                    <div
+                        key={index}
+                        className={`absolute inset-0 ${hasInteracted ? 'transition-opacity duration-1000 ease-in-out' : ''} ${index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                            }`}
+                    >
+                        {shouldRender && (
+                            slide.mobileImage ? (
                             <picture className="w-full h-full block">
                                 <source media="(max-width: 640px)" srcSet={slide.mobileImage} type="image/webp" />
                                 <img
@@ -146,7 +151,8 @@ export const BannerSlider = () => {
                         </>
                     )}
                 </div>
-            ))}
+            );
+        })}
 
             {/* Navigation Dots */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">

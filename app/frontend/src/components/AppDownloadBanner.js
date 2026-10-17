@@ -43,6 +43,10 @@ export const AppDownloadBanner = ({ onVisibilityChange }) => {
                     <img
                         src="/logo_exvitrin_2026_small.png"
                         alt="ExVitrin"
+                        width="32"
+                        height="32"
+                        loading="lazy"
+                        decoding="async"
                         className="w-8 h-8 rounded-lg shadow-sm flex-shrink-0 object-contain bg-white/10 p-0.5"
                     />
                     <div className="min-w-0 flex-1">

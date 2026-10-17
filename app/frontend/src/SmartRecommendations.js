@@ -3,6 +3,7 @@ import { ListingCard } from './components';
 import LoadingSpinner from './components/LoadingSpinner';
 import { useAuth } from './contexts/AuthContext';
 import { fetchListings } from './api/listings';
+import { useIsMobile } from './hooks/useIsMobile';
 
 const PAGE_SIZE = 30;
 
@@ -27,14 +28,34 @@ const sortBatch = (listings) =>
         .map(({ _sort, ...l }) => l);
 
 export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
+    const isMobile = useIsMobile();
+    const pageSize = isMobile ? 12 : PAGE_SIZE;
     const [displayedListings, setDisplayedListings] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const [inView, setInView] = useState(!isMobile);
+    const [loading, setLoading] = useState(!isMobile);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const { user } = useAuth();
     const loaderRef = useRef(null);
+    const sectionRef = useRef(null);
     const initialLoad = useRef(false);
+
+    // On mobile, defer loading until user approaches the section
+    useEffect(() => {
+        if (inView) return;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                setInView(true);
+                observer.disconnect();
+            }
+        }, { rootMargin: '400px' });
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+        return () => observer.disconnect();
+    }, [inView]);
 
     // Score a listing based on user history (personalization)
     const scoreListings = useCallback((listings) => {
@@ -79,7 +100,7 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
 
         try {
             const data = await fetchListings(
-                { page: pageNum, limit: PAGE_SIZE, select: SELECT_FIELDS },
+                { page: pageNum, limit: pageSize, select: SELECT_FIELDS },
                 { count: false }
             );
 
@@ -92,7 +113,7 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
                 return [...prev, ...fresh];
             });
 
-            if (!data || data.length < PAGE_SIZE) {
+            if (!data || data.length < pageSize) {
                 setHasMore(false);
             }
         } catch (err) {
@@ -102,14 +123,14 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
             if (isFirst) setLoading(false);
             else setLoadingMore(false);
         }
-    }, [scoreListings]);
+    }, [scoreListings, pageSize]);
 
-    // Initial load — load recommendations immediately without artificial delay
+    // Initial load — desktop loads immediately; mobile loads when inView becomes true
     useEffect(() => {
-        if (initialLoad.current) return;
+        if (!inView || initialLoad.current) return;
         initialLoad.current = true;
         loadPage(1, true);
-    }, [loadPage]);
+    }, [inView, loadPage]);
 
     // Infinite scroll — load next page when sentinel is visible
     const handleIntersect = useCallback((entries) => {
@@ -128,16 +149,20 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
         };
     }, [handleIntersect]);
 
+    if (!inView) {
+        return <div ref={sectionRef} className="min-h-[120px]" />;
+    }
+
     if (loading) {
         return (
-            <div className="flex justify-center items-center py-12">
+            <div ref={sectionRef} className="flex justify-center items-center py-12 min-h-[120px]">
                 <LoadingSpinner size="medium" />
             </div>
         );
     }
 
     return (
-        <div>
+        <div ref={sectionRef}>
             {/* Listings Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {displayedListings.map((listing, index) => (

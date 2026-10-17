@@ -22,11 +22,11 @@ export const ListingGrid = ({ isLatest = false, selectedCategory = 'Tüm Kategor
           setLoading(true);
           // Import fetchListings from api/listings
           const { fetchListings } = await import('../api/listings');
-          // Fetch latest 24 listings with only needed card fields to dramatically reduce network payload
+          // Fetch latest listings (12 on mobile to cut network payload, 24 on desktop)
           const data = await fetchListings({
             sort_by_newest: true,
             page: 1,
-            limit: 24,
+            limit: isMobile ? 12 : 24,
             select: 'id,title,price,price_type,images,category,sub_category,city,district,is_top,is_gallery,is_highlighted,is_multi_bump,package_type,promotion_expiry,user_id,created_at,slug,reserved_by,reserved_until'
           }, { count: false });
 
