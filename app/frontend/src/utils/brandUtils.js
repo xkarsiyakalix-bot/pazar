@@ -221,6 +221,61 @@ export const getAllBrandsList = async () => {
     return list;
 };
 
+/**
+ * Fast search across all brands with ranking (starts-with, exact, category boost).
+ * Dynamically loads allBrands.json on demand.
+ */
+export const searchBrandsAsync = async (query, categoryFilter = null, limit = 15) => {
+    const cleanQuery = (query || '').trim().toLocaleLowerCase('tr-TR');
+    const allBrandsData = await loadAllBrands();
+    const allList = Object.values(allBrandsData);
+
+    // If query is empty, return popular / category-specific brands
+    if (!cleanQuery) {
+        if (categoryFilter) {
+            const catLower = categoryFilter.toLowerCase();
+            const catMatches = allList.filter(b => b.category && b.category.toLowerCase().includes(catLower));
+            if (catMatches.length > 0) return catMatches.slice(0, limit);
+        }
+        return POPULAR_BRANDS.slice(0, limit);
+    }
+
+    const cleanSlugQuery = slugifyBrand(cleanQuery);
+
+    // Score and rank matches
+    const scored = [];
+    for (const b of allList) {
+        if (!b || !b.name) continue;
+        const nameLower = b.name.toLocaleLowerCase('tr-TR');
+        const slugLower = (b.slug || '').toLowerCase();
+
+        let score = 0;
+        if (nameLower === cleanQuery || slugLower === cleanSlugQuery) {
+            score = 100; // Exact match
+        } else if (nameLower.startsWith(cleanQuery)) {
+            score = 80; // Starts with query
+        } else if (slugLower.startsWith(cleanSlugQuery)) {
+            score = 70;
+        } else if (nameLower.includes(` ${cleanQuery}`)) {
+            score = 60; // Word boundary match
+        } else if (nameLower.includes(cleanQuery)) {
+            score = 40; // Substring match
+        } else if (b.aliases && b.aliases.some(a => a.toLowerCase().includes(cleanSlugQuery))) {
+            score = 30; // Alias match
+        }
+
+        if (score > 0) {
+            if (categoryFilter && b.category && b.category.toLowerCase().includes(categoryFilter.toLowerCase())) {
+                score += 15; // Category relevance boost
+            }
+            scored.push({ brand: b, score });
+        }
+    }
+
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, limit).map(s => s.brand);
+};
+
 /** Async — loads all brands data on demand, grouped alphabetically. */
 export const getAlphabeticalBrands = async () => {
     const list = await getAllBrandsList();
