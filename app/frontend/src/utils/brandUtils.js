@@ -185,16 +185,45 @@ export const findBrandBySlugAsync = async (slug) => {
     return null;
 };
 
-/** Async — loads all brands data on demand. */
+/** Async — loads all brands data on demand and dynamically merges any custom user brands in active listings */
 export const getAllBrandsList = async () => {
     const allBrandsData = await loadAllBrands();
-    return Object.values(allBrandsData);
+    const list = Object.values(allBrandsData);
+
+    try {
+        const { supabase } = await import('../lib/supabase');
+        const { data } = await supabase
+            .from('listings')
+            .select('marke')
+            .eq('status', 'active')
+            .not('marke', 'is', null)
+            .neq('marke', '')
+            .limit(200);
+
+        if (data && data.length > 0) {
+            const existingSlugs = new Set(list.map(b => b.slug));
+            data.forEach(item => {
+                const bName = item.marke?.trim();
+                if (!bName || ['diğer', 'diger', 'andere', 'other'].includes(bName.toLowerCase())) return;
+                const bSlug = slugifyBrand(bName);
+                if (bSlug && !existingSlugs.has(bSlug)) {
+                    existingSlugs.add(bSlug);
+                    list.push({
+                        name: bName,
+                        slug: bSlug,
+                        category: 'Markalar'
+                    });
+                }
+            });
+        }
+    } catch (_) {}
+
+    return list;
 };
 
 /** Async — loads all brands data on demand, grouped alphabetically. */
 export const getAlphabeticalBrands = async () => {
-    const allBrandsData = await loadAllBrands();
-    const list = Object.values(allBrandsData);
+    const list = await getAllBrandsList();
     const groups = {};
 
     list.forEach(brand => {

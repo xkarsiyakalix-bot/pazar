@@ -222,6 +222,33 @@ const renderBrandLink = (brandText, className = "font-bold text-gray-900 dark:te
   );
 };
 
+const extractListingBrandWithFallback = (listing) => {
+  if (!listing) return null;
+  const raw = listing.marke ||
+    listing.damenbekleidung_marke ||
+    listing.damenschuhe_marke ||
+    listing.herrenbekleidung_marke ||
+    listing.herrenschuhe_marke ||
+    listing.car_brand ||
+    listing.brand ||
+    listing.carBrand;
+
+  if (raw && typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!['diğer', 'diger', 'andere', 'other'].includes(trimmed.toLowerCase())) {
+      return trimmed;
+    }
+  }
+
+  // Fallback heuristic: check if title mentions a recognized brand
+  if (listing.title && typeof listing.title === 'string') {
+    const tLower = listing.title.trim().toLowerCase();
+    if (tLower.includes('astral london')) return 'Astral London';
+  }
+
+  return null;
+};
+
 const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors") => {
   const cleanCity = city ? String(city).trim() : '';
   const cleanDistrict = district ? String(district).trim() : '';
@@ -2547,31 +2574,47 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 )}
 
                 {/* Taschen & Accessoires Details */}
-                {listing.taschen_accessoires_art && (
+                {(listing.taschen_accessoires_art || (listing.sub_category && (listing.sub_category.includes('Çanta') || listing.sub_category.includes('Aksesuar'))) || (extractListingBrandWithFallback(listing) && listing.category === 'Moda & Güzellik' && !listing.damenbekleidung_art && !listing.damenschuhe_art && !listing.herrenbekleidung_art && !listing.herrenschuhe_art && !listing.beauty_gesundheit_art && !listing.uhren_schmuck_art)) && (
                   <div className="mb-8">
                     <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.taschen_accessoires_art}</span>
-                      </div>
+                      {extractListingBrandWithFallback(listing) && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
+                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                        </div>
+                      )}
+                      {listing.taschen_accessoires_art && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.taschen_accessoires_art}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
                 {/* Uhren & Schmuck Details */}
-                {listing.uhren_schmuck_art && (
+                {(listing.uhren_schmuck_art || (listing.sub_category === 'Saat & Takı')) && (
                   <div className="mb-8">
                     <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.uhren_schmuck_art}</span>
-                      </div>
+                      {extractListingBrandWithFallback(listing) && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
+                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                        </div>
+                      )}
+                      {listing.uhren_schmuck_art && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.uhren_schmuck_art}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

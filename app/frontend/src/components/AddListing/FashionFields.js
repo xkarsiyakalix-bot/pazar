@@ -47,8 +47,25 @@ export const FashionFields = ({
     setSelectedTaschenAccessoiresArt,
     // Watches & Jewelry
     selectedUhrenSchmuckArt,
-    setSelectedUhrenSchmuckArt
+    setSelectedUhrenSchmuckArt,
+    // Universal Brand (Bags, Accessories, etc.)
+    brand,
+    setBrand
 }) => {
+    const BAG_BRANDS = [
+        'Astral London', 'Michael Kors', 'Guess', 'Louis Vuitton', 'Gucci', 'Prada',
+        'Calvin Klein', 'Tommy Hilfiger', 'Zara', 'Mango', 'Vakko', 'Beymen',
+        'Pierre Cardin', 'Kanken (Fjällräven)', 'Samsonite', 'Eastpak', 'Nike',
+        'Adidas', 'Puma', 'Lacoste', 'David Jones', 'Tergan', 'Matmazel', 'Desa',
+        'Kipling', 'Longchamp', 'Coach', 'Chanel', 'Dior', 'Hermès', 'Fendi',
+        'Celine', 'Yves Saint Laurent (YSL)', 'Balenciaga', 'Burberry', 'Versace',
+        'Victoria\'s Secret', 'Bershka', 'Stradivarius', 'Pull & Bear', 'H&M',
+        'LC Waikiki', 'Koton'
+    ];
+    const isKnownBagBrand = brand && BAG_BRANDS.includes(brand);
+    const [customBagBrand, setCustomBagBrand] = useState(brand && !isKnownBagBrand ? brand : '');
+    const [isCustomBag, setIsCustomBag] = useState(Boolean(brand && !isKnownBagBrand));
+
     const [customFashionBrand, setCustomFashionBrand] = useState('');
     const [isCustomFashion, setIsCustomFashion] = useState(false);
     const [customShoeBrand, setCustomShoeBrand] = useState('');
@@ -418,25 +435,71 @@ export const FashionFields = ({
                 </div>
             )}
 
-            {/* Art Selection for Taschen & Accessoires */}
+            {/* Art & Brand Selection for Taschen & Accessoires */}
             {(subCategory === 'Çanta & Aksesuar' || subCategory === 'Çanta & Aksesuarlar') && (
-                <div className="mt-4">
-                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
-                    <select
-                        value={selectedTaschenAccessoiresArt}
-                        onChange={(e) => setSelectedTaschenAccessoiresArt(e.target.value)}
-                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
-                    >
-                        <option value="">{t.productDetail.pleaseChoose}</option>
-                        {[
-                            { val: 'Bere, Atkı & Eldiven', label: t.addListing.fashion.accessories.hats },
-                            { val: 'Güneş Gözlükleri', label: t.addListing.fashion.accessories.sunglasses },
-                            { val: 'Çanta & Sırt Çantaları', label: t.addListing.fashion.accessories.bags },
-                            { val: 'Diğer Çanta & Aksesuarlar', label: t.addListing.fashion.accessories.other }
-                        ].map(item => (
-                            <option key={item.val} value={item.val}>{item.label}</option>
-                        ))}
-                    </select>
+                <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
+                    <h3 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6 flex items-center gap-3">{t.productDetail.details}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Art Selector */}
+                        <div>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
+                            <select
+                                value={selectedTaschenAccessoiresArt}
+                                onChange={(e) => setSelectedTaschenAccessoiresArt(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
+                            >
+                                <option value="">{t.productDetail.pleaseChoose}</option>
+                                {[
+                                    { val: 'Çanta & Sırt Çantaları', label: t.addListing.fashion.accessories.bags },
+                                    { val: 'Güneş Gözlükleri', label: t.addListing.fashion.accessories.sunglasses },
+                                    { val: 'Bere, Atkı & Eldiven', label: t.addListing.fashion.accessories.hats },
+                                    { val: 'Cüzdan & Kartlık', label: 'Cüzdan & Kartlık' },
+                                    { val: 'Kemer & Şapka', label: 'Kemer & Şapka' },
+                                    { val: 'Bavul & Seyahat Çantası', label: 'Bavul & Seyahat Çantası' },
+                                    { val: 'Diğer Çanta & Aksesuarlar', label: t.addListing.fashion.accessories.other }
+                                ].map(item => (
+                                    <option key={item.val} value={item.val}>{item.label}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Brand Selector */}
+                        <div>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.brand}</label>
+                            <select
+                                value={isCustomBag ? 'Diğer' : (brand || '')}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === 'Diğer') {
+                                        setIsCustomBag(true);
+                                        if (setBrand) setBrand(customBagBrand || '');
+                                    } else {
+                                        setIsCustomBag(false);
+                                        if (setBrand) setBrand(val);
+                                    }
+                                }}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
+                            >
+                                <option value="">{t.productDetail.pleaseChoose}</option>
+                                <option value="Diğer">{t.addListing.other || 'Diğer (Özel Marka Yaz)'}</option>
+                                {BAG_BRANDS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            </select>
+
+                            {isCustomBag && (
+                                <input
+                                    type="text"
+                                    placeholder="Özel marka adını yazınız (örn. Astral London, Guess...)"
+                                    value={customBagBrand}
+                                    onChange={(e) => {
+                                        const text = e.target.value;
+                                        setCustomBagBrand(text);
+                                        if (setBrand) setBrand(text);
+                                    }}
+                                    className="mt-2 w-full bg-white dark:bg-neutral-800 border border-amber-300 dark:border-amber-700 rounded-xl px-4 py-2.5 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                                />
+                            )}
+                        </div>
+                    </div>
                 </div>
             )}
 

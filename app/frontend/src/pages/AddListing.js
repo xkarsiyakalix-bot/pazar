@@ -1165,6 +1165,10 @@ export const AddListing = () => {
         job_type: jobType || null,
         marke: (selectedCarBrand === 'Diğer' ? brand : selectedCarBrand) || 
                (selectedPhoneBrand === 'Diğer' ? brand : selectedPhoneBrand) || 
+               damenbekleidungMarke ||
+               damenschuheMarke ||
+               herrenbekleidungMarke ||
+               selectedHerrenschuheMarke ||
                brand || null,
         modell: selectedCarModel || selectedPhoneModel || null,
         kilometerstand: mileage ? parseInt(mileage.toString().replace(/\D/g, '')) : null,
@@ -1679,6 +1683,8 @@ export const AddListing = () => {
                 setSelectedUhrenSchmuckArt={setSelectedUhrenSchmuckArt}
                 selectedBeautyGesundheitArt={selectedBeautyGesundheitArt}
                 setSelectedBeautyGesundheitArt={setSelectedBeautyGesundheitArt}
+                brand={brand}
+                setBrand={setBrand}
               />
             )}
 

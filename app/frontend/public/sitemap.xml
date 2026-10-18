@@ -6607,6 +6607,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.exvitrin.com/astral-london</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.exvitrin.com/zara</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
