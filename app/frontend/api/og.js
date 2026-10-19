@@ -1055,7 +1055,7 @@ module.exports = async (req, res) => {
                 'Content-Type': 'text/html; charset=utf-8',
                 'Cache-Control': 'no-cache, no-store, must-revalidate'
               });
-              return res.end(`<!DOCTYPE html>
+              res.end(`<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
@@ -1069,11 +1069,13 @@ module.exports = async (req, res) => {
   <a href="${SITE_URL}" style="color: #dc2626; font-weight: bold;">ExVitrin Ana Sayfasına Dön &rarr;</a>
 </body>
 </html>`);
+              return;
             }
           }
         } catch (err) {
           console.error('Error fetching listing or store data:', err);
         }
+        if (res.headersSent) return;
       }
     }
 
@@ -1183,6 +1185,7 @@ module.exports = async (req, res) => {
 </body>
 </html>`;
 
+  if (res.headersSent) return;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=604800');
   res.status(200).send(html);

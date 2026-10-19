@@ -422,7 +422,7 @@
       "destination": "/api/og?type=category&path=/Butun-Kategoriler"
     },
     {
-      "source": "/:slug",
+      "source": "/:slug((?!search|add-listing|login|register|profile|checkout|messages|admin|reset-password|forgot-password).*)",
       "has": [
         {
           "type": "header",
