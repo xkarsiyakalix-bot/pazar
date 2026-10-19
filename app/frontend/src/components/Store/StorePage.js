@@ -335,14 +335,14 @@ const StorePage = ({ sellerId: propSellerId }) => {
     }
 
     return (
-        <div className="bg-white dark:bg-neutral-950 min-h-screen pb-12 transition-colors">
+        <div className="bg-white dark:bg-neutral-950 min-h-screen pb-24 lg:pb-12 transition-colors">
             <SEO
                 title={storeInfo.store_name || storeInfo.full_name}
                 description={`${storeInfo.store_name || storeInfo.full_name} mağazasını ExVitrin'de ziyaret edin. ${listings.length} aktif ilan, uygun fiyatlar ve güvenli alışveriş.`}
                 image={storeInfo.store_logo || storeInfo.avatar_url}
             />
 
-            {/* Breadcrumb section */}
+            {/* Breadcrumb */}
             <div className="max-w-[1400px] mx-auto px-4 pt-4 -mb-2">
                 <Breadcrumb
                     items={[
@@ -351,7 +351,8 @@ const StorePage = ({ sellerId: propSellerId }) => {
                     ]}
                 />
             </div>
-            {/* Store Banner */}
+
+            {/* ── BANNER ─────────────────────────────────────────────────────── */}
             <div className="max-w-[1400px] mx-auto px-0 md:px-4 pt-0 md:pt-4">
                 <div className="relative h-52 md:h-56 bg-neutral-200 dark:bg-neutral-900 overflow-hidden md:rounded-md md:border md:border-neutral-200 dark:md:border-neutral-800">
                     {storeInfo.store_banner ? (
@@ -361,10 +362,13 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             className="w-full h-full object-cover"
                         />
                     ) : (
-                        <div className="w-full h-full bg-neutral-800"></div>
+                        <div className="w-full h-full bg-neutral-800" />
                     )}
 
+                    {/* Gradient overlay + content */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/5 p-4 md:p-7 flex flex-col justify-end">
+
+                        {/* Share button – top right */}
                         <div className="absolute top-3 right-3 z-[100]" ref={shareDropdownRef}>
                             <button
                                 onClick={() => setShowMobileShare(!showMobileShare)}
@@ -372,7 +376,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                 aria-label="Paylaş"
                             >
                                 <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-0.482-0.114-0.938-0.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                 </svg>
                             </button>
 
@@ -380,66 +384,38 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                 <div className="absolute right-0 top-full mt-1.5 w-44 bg-white dark:bg-neutral-900 rounded-md shadow-sm border border-neutral-200 dark:border-neutral-800 p-1 z-[100]">
                                     <div className="flex flex-col gap-0.5">
                                         <button
-                                            onClick={() => {
-                                                const url = window.location.href;
-                                                shareToFacebook(url, storeInfo.store_name || storeInfo.full_name);
-                                                setShowMobileShare(false);
-                                            }}
+                                            onClick={() => { shareToFacebook(window.location.href, storeInfo.store_name || storeInfo.full_name); setShowMobileShare(false); }}
                                             className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-700 dark:text-neutral-300 transition-colors cursor-pointer"
                                         >
                                             <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center text-white shrink-0">
-                                                <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
-                                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                                                </svg>
+                                                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                                             </div>
                                             <span className="text-[11px] font-medium">Facebook</span>
                                         </button>
-
                                         <button
-                                            onClick={() => {
-                                                const url = window.location.href;
-                                                shareToWhatsApp(url, storeInfo.store_name || storeInfo.full_name);
-                                                setShowMobileShare(false);
-                                            }}
+                                            onClick={() => { shareToWhatsApp(window.location.href, storeInfo.store_name || storeInfo.full_name); setShowMobileShare(false); }}
                                             className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-700 dark:text-neutral-300 transition-colors cursor-pointer"
                                         >
                                             <div className="w-7 h-7 bg-green-600 rounded-md flex items-center justify-center text-white shrink-0">
-                                                <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
-                                                    <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967-0.273-0.099-0.471-0.148-0.67.15-0.197.297-0.767.966-0.94 1.164-0.173.199-0.347.223-0.644.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458.13-0.606.134-0.133.298-0.347.446-0.52.149-0.174.198-0.298.298-0.497.099-0.198.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52.074-0.792.372-0.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-0.085 1.758-0.719 2.006-1.413.248-0.694.248-1.289.173-1.413-0.074-0.124-0.272-0.198-0.57-0.347m-5.421 7.403h-0.004a9.27 9.27 0 01-4.723-1.292l-0.339-0.202-3.51.92 1.017-3.65-0.213-0.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
-                                                </svg>
+                                                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.27 9.27 0 01-4.723-1.292l-.339-.202-3.51.92 1.017-3.65-.213-.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" /></svg>
                                             </div>
                                             <span className="text-[11px] font-medium">WhatsApp</span>
                                         </button>
-
                                         <button
-                                            onClick={() => {
-                                                const url = window.location.href;
-                                                shareToTwitter(url, storeInfo.store_name || storeInfo.full_name);
-                                                setShowMobileShare(false);
-                                            }}
+                                            onClick={() => { shareToTwitter(window.location.href, storeInfo.store_name || storeInfo.full_name); setShowMobileShare(false); }}
                                             className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-700 dark:text-neutral-300 transition-colors cursor-pointer"
                                         >
                                             <div className="w-7 h-7 bg-neutral-900 rounded-md flex items-center justify-center text-white shrink-0">
-                                                <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 1200 1227">
-                                                    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
-                                                </svg>
+                                                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 1200 1227"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" /></svg>
                                             </div>
                                             <span className="text-[11px] font-medium">X</span>
                                         </button>
-
                                         <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(window.location.href).then(() => {
-                                                    alert('Bağlantı panoya kopyalandı!');
-                                                });
-                                                setShowMobileShare(false);
-                                            }}
+                                            onClick={() => { navigator.clipboard.writeText(window.location.href).then(() => alert('Bağlantı panoya kopyalandı!')); setShowMobileShare(false); }}
                                             className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-neutral-50 dark:hover:bg-white/5 text-neutral-700 dark:text-neutral-300 transition-colors cursor-pointer"
                                         >
                                             <div className="w-7 h-7 border border-neutral-200 dark:border-neutral-700 rounded-md flex items-center justify-center text-neutral-600 dark:text-neutral-300 shrink-0">
-                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                                </svg>
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
                                             </div>
                                             <span className="text-[11px] font-medium">Linki kopyala</span>
                                         </button>
@@ -447,7 +423,10 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Avatar + name row at bottom of banner */}
                         <div className="w-full flex flex-row items-center md:items-end gap-3 md:gap-6 text-white text-left">
+                            {/* Avatar */}
                             <div className="relative shrink-0">
                                 {(storeInfo.store_logo || storeInfo.avatar_url) ? (
                                     <img
@@ -456,7 +435,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-md border border-white/70 object-cover bg-white dark:bg-neutral-800"
                                     />
                                 ) : (
-                                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-md border border-white/70 bg-white/10"></div>
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-md border border-white/70 bg-white/10" />
                                 )}
                                 {storeInfo.is_pro && (
                                     <div className="absolute -top-1.5 -right-1.5 bg-white text-neutral-900 text-[9px] uppercase tracking-[0.12em] font-medium px-1.5 py-0.5 rounded-sm border border-white">
@@ -465,6 +444,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                 )}
                             </div>
 
+                            {/* Name + meta */}
                             <div className="flex-1 pb-0.5 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
                                     <h1 className="text-lg sm:text-2xl md:text-[28px] font-semibold tracking-tight truncate">
@@ -487,7 +467,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 className="inline-flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
                                             >
                                                 <svg className="w-3.5 h-3.5 text-amber-300 fill-current" viewBox="0 0 24 24">
-                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                                                 </svg>
                                                 <span>{averageRating.average}</span>
                                                 <span className="text-white/55">({averageRating.count})</span>
@@ -497,75 +477,60 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                 </div>
                             </div>
 
+                            {/* Social icons */}
                             <div className="pb-0.5 flex flex-wrap gap-1.5 justify-end">
                                 <div className="flex gap-1.5">
                                     <button
                                         onClick={() => {
                                             const url = storeInfo.facebook_url;
-                                            if (url) {
-                                                const finalUrl = url.includes('facebook.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://facebook.com/${url}`;
-                                                window.open(finalUrl, '_blank');
-                                            } else {
-                                                window.open('https://facebook.com/exvitrin', '_blank');
-                                            }
+                                            const finalUrl = url
+                                                ? (url.includes('facebook.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://facebook.com/${url}`)
+                                                : 'https://facebook.com/exvitrin';
+                                            window.open(finalUrl, '_blank');
                                         }}
                                         className="w-8 h-8 border border-white/35 hover:border-white/70 hover:bg-white/10 rounded-md flex items-center justify-center text-white transition-colors cursor-pointer"
                                         title={storeInfo.facebook_url ? "Facebook Sayfamız" : "Facebook"}
                                     >
-                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 24 24">
-                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                                        </svg>
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                                     </button>
                                     <button
                                         onClick={() => {
                                             const url = storeInfo.instagram_url;
-                                            if (url) {
-                                                const finalUrl = url.includes('instagram.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://instagram.com/${url.replace('@', '')}`;
-                                                window.open(finalUrl, '_blank');
-                                            } else {
-                                                window.open('https://instagram.com/exvitrin', '_blank');
-                                            }
+                                            const finalUrl = url
+                                                ? (url.includes('instagram.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://instagram.com/${url.replace('@', '')}`)
+                                                : 'https://instagram.com/exvitrin';
+                                            window.open(finalUrl, '_blank');
                                         }}
                                         className="w-8 h-8 border border-white/35 hover:border-white/70 hover:bg-white/10 rounded-md flex items-center justify-center text-white transition-colors cursor-pointer"
                                         title={storeInfo.instagram_url ? "Instagram Sayfamız" : "Instagram"}
                                     >
-                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2.163c3.204 0 3.584 0.012 4.85 0.07 3.252 0.148 4.771 1.691 4.919 4.919 0.058 1.265 0.069 1.645 0.069 4.849 0 3.205-0.012 3.584-0.069 4.849-0.149 3.225-1.664 4.771-4.919 4.919-1.266 0.058-1.644 0.07-4.85 0.07-3.204 0-3.584-0.012-4.849-0.07-3.26-0.149-4.771-1.699-4.919-4.92-0.058-1.265-0.07-1.644-0.07-4.849 0-3.204 0.013-3.583 0.07-4.849 0.149-3.227 1.664-4.771 4.919-4.919 1.266-0.057 1.645-0.069 4.849-0.069zm0-2.163c-3.259 0-3.667 0.014-4.947 0.072-4.358 0.2-6.78 2.618-6.98 6.98-0.059 1.281-0.073 1.689-0.073 4.948 0 3.259 0.014 3.668 0.072 4.948 0.2 4.358 2.618 6.78 6.98 6.98 1.281 0.058 1.689 0.072 4.948 0.072 3.259 0 3.668-0.014 4.948-0.072 4.354-0.2 6.782-2.618 6.979-6.98 0.059-1.28 0.073-1.689 0.073-4.948 0-3.259-0.014-3.667-0.072-4.947-0.196-4.354-2.617-6.78-6.979-6.98-1.281-0.059-1.69-0.073-4.949-0.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-0.796 0-1.441 0.645-1.441 1.44s0.645 1.44 1.441 1.44c0.795 0 1.439-0.645 1.439-1.44s-0.644-1.44-1.439-1.44z" />
-                                        </svg>
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>
                                     </button>
                                     <button
                                         onClick={() => {
                                             const url = storeInfo.twitter_url;
-                                            if (url) {
-                                                const finalUrl = (url.includes('twitter.com') || url.includes('x.com')) ? (url.startsWith('http') ? url : `https://${url}`) : `https://x.com/${url}`;
-                                                window.open(finalUrl, '_blank');
-                                            } else {
-                                                window.open('https://x.com/exvitrin', '_blank');
-                                            }
+                                            const finalUrl = url
+                                                ? ((url.includes('twitter.com') || url.includes('x.com')) ? (url.startsWith('http') ? url : `https://${url}`) : `https://x.com/${url}`)
+                                                : 'https://x.com/exvitrin';
+                                            window.open(finalUrl, '_blank');
                                         }}
                                         className="w-8 h-8 border border-white/35 hover:border-white/70 hover:bg-white/10 rounded-md flex items-center justify-center text-white transition-colors cursor-pointer"
                                         title={storeInfo.twitter_url ? "X (Twitter) Sayfamız" : "X (Twitter)"}
                                     >
-                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 1200 1227">
-                                            <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
-                                        </svg>
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-current" viewBox="0 0 1200 1227"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" /></svg>
                                     </button>
                                     <button
                                         onClick={() => {
                                             const url = storeInfo.tiktok_url;
-                                            if (url) {
-                                                const finalUrl = url.includes('tiktok.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://tiktok.com/@${url.replace('@', '')}`;
-                                                window.open(finalUrl, '_blank');
-                                            } else {
-                                                window.open('https://tiktok.com/@exvitrin', '_blank');
-                                            }
+                                            const finalUrl = url
+                                                ? (url.includes('tiktok.com') ? (url.startsWith('http') ? url : `https://${url}`) : `https://tiktok.com/@${url.replace('@', '')}`)
+                                                : 'https://tiktok.com/@exvitrin';
+                                            window.open(finalUrl, '_blank');
                                         }}
                                         className="w-8 h-8 border border-white/35 hover:border-white/70 hover:bg-white/10 rounded-md flex items-center justify-center text-white transition-colors cursor-pointer"
                                         title={storeInfo.tiktok_url ? "TikTok Sayfamız" : "TikTok"}
                                     >
-                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-currentColor" viewBox="0 0 24 24">
-                                            <path d="M12.525.02c1.31-0.02 2.61-0.01 3.91-0.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-0.05-2.89-0.35-4.2-0.97-0.57-0.26-1.1-0.59-1.62-0.93-0.01 2.92.01 5.84-0.02 8.75-0.08 1.4-0.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-0.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-0.02-0.5-0.03-1-0.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-0.04 2.96-0.04 4.44-0.99-0.32-2.15-0.23-3.02.37-0.63.41-1.11 1.04-1.36 1.75-0.21.51-0.15 1.07-0.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-0.01 2.19-0.66 2.77-1.61.19-0.33.4-0.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-0.01-8.05.02-12.07z" />
-                                        </svg>
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" /></svg>
                                     </button>
                                 </div>
                             </div>
@@ -574,235 +539,236 @@ const StorePage = ({ sellerId: propSellerId }) => {
                 </div>
             </div>
 
-            <div className="relative z-20 mt-0 md:mt-3 max-w-[1400px] mx-auto px-0 md:px-4 mb-0 sm:mb-6">
-                <div className="bg-white dark:bg-neutral-950 border-y md:border border-neutral-200 dark:border-neutral-800 md:rounded-md p-4 md:px-5 md:py-4">
-                    <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-8">
-                        <div className="flex flex-wrap items-center gap-6 md:gap-10">
-                            {storeInfo.phone && (
-                                <div className="flex items-center gap-3">
-                                    <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-0.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-0.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                    <div>
-                                        <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em] mb-0.5">Telefon</p>
-                                        <p className="text-sm text-neutral-900 dark:text-neutral-50">{storeInfo.phone}</p>
+            {/* ── INFO BAR (only renders fields that have data) ──────────────── */}
+            {(storeInfo.phone || storeInfo.street || storeInfo.city || storeInfo.website || storeInfo.working_hours) && (
+                <div className="relative z-20 mt-0 md:mt-3 max-w-[1400px] mx-auto px-0 md:px-4 mb-0 sm:mb-6">
+                    <div className="bg-white dark:bg-neutral-950 border-y md:border border-neutral-200 dark:border-neutral-800 md:rounded-md p-4 md:px-5 md:py-4">
+                        <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-8">
+                            <div className="flex flex-wrap items-center gap-6 md:gap-10">
+                                {storeInfo.phone && (
+                                    <div className="flex items-center gap-3">
+                                        <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                        <div>
+                                            <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em] mb-0.5">Telefon</p>
+                                            <p className="text-sm text-neutral-900 dark:text-neutral-50">{storeInfo.phone}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {(storeInfo.street || storeInfo.city) && (
-                                <div className="flex items-center gap-3">
-                                    <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <div>
-                                        <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em] mb-0.5">Adres</p>
-                                        <p className="text-sm text-neutral-900 dark:text-neutral-50">
-                                            {storeInfo.street ? `${storeInfo.street}, ` : ''}
-                                            {storeInfo.city || ''}
-                                        </p>
+                                {(storeInfo.street || storeInfo.city) && (
+                                    <div className="flex items-center gap-3">
+                                        <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <div>
+                                            <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em] mb-0.5">Adres</p>
+                                            <p className="text-sm text-neutral-900 dark:text-neutral-50">
+                                                {storeInfo.street ? `${storeInfo.street}, ` : ''}{storeInfo.city || ''}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {storeInfo.website && (
-                                <div className="flex items-center gap-3">
-                                    <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9-9c1.657 0 3 3.582 3 8s-1.343 8-3 8m0-16c-1.657 0-3 3.582-3 8s1.343 8 3 8m-11-8h11" />
-                                    </svg>
-                                    <div>
-                                        <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em] mb-0.5">Web sitesi</p>
-                                        <a
-                                            href={storeInfo.website.startsWith('http') ? storeInfo.website : `https://${storeInfo.website}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-sm text-neutral-900 dark:text-neutral-50 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors block"
-                                        >
-                                            {storeInfo.website.replace(/^https?:\/\//, '')}
-                                        </a>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex items-center gap-3 relative" ref={hoursDropdownRef}>
-                            <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div className="cursor-pointer" onClick={() => setShowHours(!showHours)}>
-                                <div className="flex items-center gap-2 mb-0.5">
-                                    <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em]">Çalışma saatleri</p>
-                                    <span className={`text-[10px] tracking-[0.12em] uppercase ${isOpen ? 'text-emerald-700 dark:text-emerald-400' : 'text-neutral-500'}`}>
-                                        {isOpen ? 'Açık' : 'Kapalı'}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-sm text-neutral-900 dark:text-neutral-100">
-                                        {(() => {
-                                            if (storeInfo.working_hours?.isAlwaysOpen) return '7/24 Açık';
-                                            const now = currentTime;
-                                            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-                                            const currentDay = days[now.getDay()];
-                                            const schedule = storeInfo.working_hours?.[currentDay];
-
-                                            if (!schedule || !schedule.active) return 'Kapalı';
-                                            if (isOpen) return `${schedule.open} - ${schedule.close}`;
-                                            return 'Kapalı';
-                                        })()}
-                                    </p>
-                                    <svg className={`w-3.5 h-3.5 text-neutral-400 transform transition-transform duration-200 ${showHours ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-
-                                {showHours && (
-                                    <div className="absolute top-full left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[calc(100vw-32px)] bg-white dark:bg-neutral-900 rounded-md shadow-sm border border-neutral-200 dark:border-neutral-800 p-4 z-50">
-                                        <h4 className="text-[10px] font-medium text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-3 uppercase tracking-[0.16em] flex items-center justify-between">
-                                            <span>Haftalık program</span>
-                                            <span className={`${isOpen ? 'text-emerald-700 dark:text-emerald-400' : 'text-neutral-500'} text-[10px] uppercase tracking-[0.12em]`}>
-                                                {isOpen ? 'Açık' : 'Kapalı'}
-                                            </span>
-                                        </h4>
-                                        <div className="space-y-1.5">
-                                            {storeInfo.working_hours?.isAlwaysOpen ? (
-                                                <div className="p-3 border border-neutral-200 dark:border-neutral-800 rounded-md">
-                                                    <p className="text-[12px] font-medium text-neutral-800 dark:text-neutral-200">7/24 sürekli açık</p>
-                                                    <p className="text-[11px] text-neutral-500 mt-1 leading-relaxed">Bu mağaza haftanın her günü kesintisiz hizmet vermektedir.</p>
-                                                </div>
-                                            ) : (
-                                                [
-                                                    { id: 'mon', day: 'Pazartesi' },
-                                                    { id: 'tue', day: 'Salı' },
-                                                    { id: 'wed', day: 'Çarşamba' },
-                                                    { id: 'thu', day: 'Perşembe' },
-                                                    { id: 'fri', day: 'Cuma' },
-                                                    { id: 'sat', day: 'Cumartesi' },
-                                                    { id: 'sun', day: 'Pazar' }
-                                                ].map((item, idx) => {
-                                                    const schedule = storeInfo.working_hours?.[item.id];
-                                                    const dayIndex = [0, 1, 2, 3, 4, 5, 6][(idx + 1) % 7]; // mon=1, sun=0
-                                                    const isToday = new Date().getDay() === dayIndex;
-
-                                                    return (
-                                                        <div key={idx} className={`flex justify-between items-center text-[12px] ${isToday ? 'text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 dark:border-neutral-800 pb-1.5' : 'text-neutral-500 dark:text-neutral-400'}`}>
-                                                            <span>{item.day}</span>
-                                                            <span className={isToday ? 'font-medium' : ''}>
-                                                                {schedule?.active ? `${schedule.open} - ${schedule.close}` : 'Kapalı'}
-                                                            </span>
-                                                        </div>
-                                                    );
-                                                })
-                                            )}
+                                {storeInfo.website && (
+                                    <div className="flex items-center gap-3">
+                                        <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9-9c1.657 0 3 3.582 3 8s-1.343 8-3 8m0-16c-1.657 0-3 3.582-3 8s1.343 8 3 8m-11-8h11" />
+                                        </svg>
+                                        <div>
+                                            <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em] mb-0.5">Web sitesi</p>
+                                            <a
+                                                href={storeInfo.website.startsWith('http') ? storeInfo.website : `https://${storeInfo.website}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-neutral-900 dark:text-neutral-50 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors block"
+                                            >
+                                                {storeInfo.website.replace(/^https?:\/\//, '')}
+                                            </a>
                                         </div>
                                     </div>
                                 )}
                             </div>
+
+                            {/* Working hours dropdown */}
+                            {storeInfo.working_hours && (
+                                <div className="flex items-center gap-3 relative" ref={hoursDropdownRef}>
+                                    <svg className="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <div className="cursor-pointer" onClick={() => setShowHours(!showHours)}>
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-[0.16em]">Çalışma saatleri</p>
+                                            <span className={`text-[10px] tracking-[0.12em] uppercase ${isOpen ? 'text-emerald-700 dark:text-emerald-400' : 'text-neutral-500'}`}>
+                                                {isOpen ? 'Açık' : 'Kapalı'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-sm text-neutral-900 dark:text-neutral-100">
+                                                {(() => {
+                                                    if (storeInfo.working_hours?.isAlwaysOpen) return '7/24 Açık';
+                                                    const now = currentTime;
+                                                    const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+                                                    const currentDay = days[now.getDay()];
+                                                    const schedule = storeInfo.working_hours?.[currentDay];
+                                                    if (!schedule || !schedule.active) return 'Kapalı';
+                                                    if (isOpen) return `${schedule.open} - ${schedule.close}`;
+                                                    return 'Kapalı';
+                                                })()}
+                                            </p>
+                                            <svg className={`w-3.5 h-3.5 text-neutral-400 transform transition-transform duration-200 ${showHours ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+
+                                        {showHours && (
+                                            <div className="absolute top-full left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[calc(100vw-32px)] bg-white dark:bg-neutral-900 rounded-md shadow-sm border border-neutral-200 dark:border-neutral-800 p-4 z-50">
+                                                <h4 className="text-[10px] font-medium text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-3 uppercase tracking-[0.16em] flex items-center justify-between">
+                                                    <span>Haftalık program</span>
+                                                    <span className={`${isOpen ? 'text-emerald-700 dark:text-emerald-400' : 'text-neutral-500'} text-[10px] uppercase tracking-[0.12em]`}>
+                                                        {isOpen ? 'Açık' : 'Kapalı'}
+                                                    </span>
+                                                </h4>
+                                                <div className="space-y-1.5">
+                                                    {storeInfo.working_hours?.isAlwaysOpen ? (
+                                                        <div className="p-3 border border-neutral-200 dark:border-neutral-800 rounded-md">
+                                                            <p className="text-[12px] font-medium text-neutral-800 dark:text-neutral-200">7/24 sürekli açık</p>
+                                                            <p className="text-[11px] text-neutral-500 mt-1 leading-relaxed">Bu mağaza haftanın her günü kesintisiz hizmet vermektedir.</p>
+                                                        </div>
+                                                    ) : (
+                                                        [
+                                                            { key: 'mon', label: 'Pzt' },
+                                                            { key: 'tue', label: 'Sal' },
+                                                            { key: 'wed', label: 'Çar' },
+                                                            { key: 'thu', label: 'Per' },
+                                                            { key: 'fri', label: 'Cum' },
+                                                            { key: 'sat', label: 'Cmt' },
+                                                            { key: 'sun', label: 'Paz' }
+                                                        ].map(({ key, label }) => {
+                                                            const schedule = storeInfo.working_hours?.[key];
+                                                            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+                                                            const todayKey = days[currentTime.getDay()];
+                                                            const isToday = key === todayKey;
+                                                            return (
+                                                                <div key={key} className={`flex items-center justify-between py-1 px-2 rounded-sm ${isToday ? 'bg-neutral-50 dark:bg-white/5' : ''}`}>
+                                                                    <span className={`text-[12px] w-8 ${isToday ? 'font-medium text-neutral-900 dark:text-neutral-100' : 'text-neutral-500'}`}>{label}</span>
+                                                                    <span className={`text-[12px] ${isToday ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-500'}`}>
+                                                                        {schedule?.active && schedule?.open && schedule?.close
+                                                                            ? `${schedule.open} – ${schedule.close}`
+                                                                            : 'Kapalı'}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
+            {/* ── MAIN CONTENT ───────────────────────────────────────────────── */}
             <main className="max-w-[1400px] mx-auto px-4 pt-5 pb-8 sm:py-6">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    <div className="lg:col-span-1 space-y-5">
-                        <div className="hidden lg:block bg-white dark:bg-neutral-950 rounded-md border border-neutral-200 dark:border-neutral-800 p-6">
-                            <div className="flex flex-col items-center">
-                                <div className="relative mb-4">
-                                    <img
-                                        src={storeInfo.store_logo || storeInfo.avatar_url || 'https://i.pravatar.cc/150'}
-                                        alt={storeInfo.store_name}
-                                        className="w-20 h-20 rounded-md border border-neutral-200 dark:border-neutral-800 object-cover bg-white dark:bg-neutral-800"
-                                    />
-                                    {storeInfo.is_pro && (
-                                        <div className="absolute -bottom-1.5 -right-1.5 bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 text-[9px] uppercase tracking-[0.12em] font-medium px-1.5 py-0.5 rounded-sm border border-neutral-200 dark:border-neutral-700">
-                                            Pro
+
+                    {/* ── SIDEBAR ──────────────────────────────────────────── */}
+                    <div className="lg:col-span-1 space-y-4">
+
+                        {/* About card (desktop) – no duplicate avatar/name */}
+                        <div className="hidden lg:block bg-white dark:bg-neutral-950 rounded-md border border-neutral-200 dark:border-neutral-800 p-5">
+
+                            {/* Stats row */}
+                            <div className="flex items-center gap-5 mb-4">
+                                <div className="text-center">
+                                    <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 leading-none">{listings.length}</p>
+                                    <p className="text-[11px] text-neutral-500 mt-1.5 tracking-[0.12em] uppercase">İlan</p>
+                                </div>
+                                <div className="w-px h-8 bg-neutral-200 dark:bg-neutral-800" />
+                                <div
+                                    onClick={() => user?.id === storeInfo.id && navigate('/followers')}
+                                    className={`text-center ${user?.id === storeInfo.id ? 'cursor-pointer hover:opacity-70 transition-opacity' : ''}`}
+                                >
+                                    <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 leading-none">{followersCount}</p>
+                                    <p className="text-[11px] text-neutral-500 mt-1.5 tracking-[0.12em] uppercase">Takipçi</p>
+                                </div>
+                                {averageRating.count > 0 && (
+                                    <>
+                                        <div className="w-px h-8 bg-neutral-200 dark:bg-neutral-800" />
+                                        <div
+                                            className="text-center cursor-pointer hover:opacity-70 transition-opacity"
+                                            onClick={() => setActiveTab('ratings')}
+                                        >
+                                            <div className="flex items-center gap-0.5 justify-center leading-none mb-1">
+                                                <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24">
+                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                                </svg>
+                                                <span className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{averageRating.average}</span>
+                                            </div>
+                                            <p className="text-[11px] text-neutral-500 tracking-[0.12em] uppercase">Puan</p>
                                         </div>
-                                    )}
-                                </div>
+                                    </>
+                                )}
+                            </div>
 
-                                <div className="flex items-center justify-center gap-2 mb-1">
-                                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                                        {storeInfo.store_name || storeInfo.full_name}
-                                    </h3>
-                                    <VerifiedBadge isVerified={storeInfo.is_verified} size="md" />
-                                </div>
+                            {/* Member since */}
+                            <p className="text-[11px] text-neutral-400 border-t border-neutral-100 dark:border-neutral-800/60 pt-3.5 pb-3.5">
+                                <span className="font-medium text-neutral-500">Üyelik:</span>{' '}
+                                {new Date(storeInfo.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
+                            </p>
 
-                                <p className="text-[12px] text-neutral-500 mb-5">
-                                    {new Date(storeInfo.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}'den beri üye
+                            {/* Bio / Store description */}
+                            {(storeInfo.store_description || storeInfo.bio) && (
+                                <p className="text-[12.5px] text-neutral-500 dark:text-neutral-400 leading-relaxed border-t border-neutral-100 dark:border-neutral-800/60 pt-3.5 pb-3.5">
+                                    {storeInfo.store_description || storeInfo.bio}
                                 </p>
+                            )}
 
-                                <div className="flex flex-col items-center mb-5 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setActiveTab('ratings')}>
-                                    <div className="flex items-center gap-0.5 mb-1">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <svg
-                                                key={star}
-                                                className={`w-4 h-4 ${star <= Math.round(averageRating.average) ? 'text-amber-400 fill-current' : 'text-neutral-300 dark:text-neutral-700'}`}
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            {/* Action buttons */}
+                            <div className="space-y-2 border-t border-neutral-100 dark:border-neutral-800/60 pt-3.5">
+                                <button
+                                    onClick={() => setShowMessageModal(true)}
+                                    className="w-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-medium py-2.5 rounded-md hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                    </svg>
+                                    Mesaj Gönder
+                                </button>
+
+                                <button
+                                    onClick={handleFollowToggle}
+                                    className={`w-full font-medium py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 border text-sm cursor-pointer ${isFollowingSeller
+                                        ? 'bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-neutral-400'
+                                        : 'bg-white dark:bg-neutral-950 border-neutral-900 dark:border-neutral-200 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-900'
+                                        }`}
+                                >
+                                    {isFollowingSeller ? (
+                                        <>
+                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                             </svg>
-                                        ))}
-                                    </div>
-                                    <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                                        {averageRating.average}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center gap-6 mb-6">
-                                    <div className="text-center">
-                                        <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 leading-none">{listings.length}</p>
-                                        <p className="text-[11px] text-neutral-500 mt-1.5 tracking-[0.12em] uppercase">İlan</p>
-                                    </div>
-                                    <div className="w-px h-8 bg-neutral-200 dark:bg-neutral-800"></div>
-                                    <div
-                                        onClick={() => user?.id === storeInfo.id && navigate('/followers')}
-                                        className={`text-center ${user?.id === storeInfo.id ? 'cursor-pointer hover:opacity-70 transition-opacity' : ''}`}
-                                    >
-                                        <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 leading-none">{followersCount}</p>
-                                        <p className="text-[11px] text-neutral-500 mt-1.5 tracking-[0.12em] uppercase">Takipçi</p>
-                                    </div>
-                                </div>
-
-                                <div className="w-full space-y-2">
-                                    <button
-                                        onClick={() => setShowMessageModal(true)}
-                                        className="w-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-medium py-2.5 rounded-md hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm"
-                                    >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h0.01M12 10h0.01M16 10h0.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                                        </svg>
-                                        Mesaj Gönder
-                                    </button>
-
-                                    <button
-                                        onClick={handleFollowToggle}
-                                        className={`w-full font-medium py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 border text-sm cursor-pointer ${isFollowingSeller
-                                            ? 'bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-neutral-400'
-                                            : 'bg-white dark:bg-neutral-950 border-neutral-900 dark:border-neutral-200 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-900'
-                                            }`}
-                                    >
-                                        {isFollowingSeller ? (
-                                            <>
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                                Takibi Bırak
-                                            </>
-                                        ) : (
-                                            <>
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                                                </svg>
-                                                Takip Et
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
+                                            Takiptesin
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Takip Et
+                                        </>
+                                    )}
+                                </button>
                             </div>
                         </div>
 
-                        {/* Categories Filter - Only show if Listings tab is active */}
+                        {/* Categories Filter */}
                         {activeTab === 'listings' && (
                             <div className="bg-white dark:bg-neutral-950 rounded-md p-5 border border-neutral-200 dark:border-neutral-800 transition-colors">
                                 <h3 className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 mb-3 tracking-[0.16em] uppercase">Kategoriler</h3>
@@ -815,9 +781,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                             }`}
                                     >
                                         <span className="text-sm">Tüm ilanlar</span>
-                                        <span className="text-[11px] tabular-nums text-neutral-400">
-                                            {listings.length}
-                                        </span>
+                                        <span className="text-[11px] tabular-nums text-neutral-400">{listings.length}</span>
                                     </button>
 
                                     {freeListingsCount > 0 && (
@@ -829,11 +793,10 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 }`}
                                         >
                                             <span className="text-sm">Ücretsiz ilanlar</span>
-                                            <span className="text-[11px] tabular-nums text-neutral-400">
-                                                {freeListingsCount}
-                                            </span>
+                                            <span className="text-[11px] tabular-nums text-neutral-400">{freeListingsCount}</span>
                                         </button>
                                     )}
+
                                     {Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).map(([category, count]) => (
                                         <button
                                             key={category}
@@ -844,17 +807,14 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 }`}
                                         >
                                             <span className="text-sm truncate mr-2">{category}</span>
-                                            <span className="text-[11px] tabular-nums text-neutral-400">
-                                                {count}
-                                            </span>
+                                            <span className="text-[11px] tabular-nums text-neutral-400">{count}</span>
                                         </button>
                                     ))}
                                 </nav>
                             </div>
                         )}
 
-
-
+                        {/* Legal info */}
                         {storeInfo.legal_info && (
                             <div className="hidden lg:block bg-white dark:bg-neutral-950 rounded-md p-5 border border-neutral-200 dark:border-neutral-800 transition-colors">
                                 <h3 className="text-[11px] font-medium text-neutral-500 uppercase tracking-[0.16em] mb-3">Yasal künye</h3>
@@ -863,7 +823,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                         )}
                     </div>
 
-                    {/* Listings Grid or Ratings List */}
+                    {/* ── MAIN PANEL ───────────────────────────────────────── */}
                     <div className="lg:col-span-3">
                         {/* Tabs */}
                         <div className="flex items-center gap-8 mb-6 border-b border-neutral-200 dark:border-neutral-800 transition-colors">
@@ -876,7 +836,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             >
                                 İlanlar ({listings.length})
                                 {activeTab === 'listings' && (
-                                    <div className="absolute bottom-0 left-0 w-full h-px bg-neutral-900 dark:bg-white"></div>
+                                    <div className="absolute bottom-0 left-0 w-full h-px bg-neutral-900 dark:bg-white" />
                                 )}
                             </button>
                             <button
@@ -888,7 +848,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                             >
                                 Değerlendirmeler ({averageRating.count})
                                 {activeTab === 'ratings' && (
-                                    <div className="absolute bottom-0 left-0 w-full h-px bg-neutral-900 dark:bg-white"></div>
+                                    <div className="absolute bottom-0 left-0 w-full h-px bg-neutral-900 dark:bg-white" />
                                 )}
                             </button>
                         </div>
@@ -909,16 +869,13 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                 ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-6">
                                         {sortedListings.map((listing) => (
-                                            <ListingCard
-                                                key={listing.id}
-                                                listing={listing}
-                                            />
+                                            <ListingCard key={listing.id} listing={listing} />
                                         ))}
                                     </div>
                                 )}
                             </>
                         ) : (
-                            /* RATINGS LIST */
+                            /* RATINGS */
                             <div className="bg-white dark:bg-neutral-950 rounded-md border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
                                 <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50 mb-6">Değerlendirmeler</h2>
                                 <div className="flex items-center gap-8 mb-8 border border-neutral-200 dark:border-neutral-800 p-5 rounded-md">
@@ -926,12 +883,8 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         <div className="text-4xl font-semibold text-neutral-900 dark:text-neutral-100 mb-1">{averageRating.average}</div>
                                         <div className="flex items-center gap-0.5 justify-center mb-1">
                                             {[1, 2, 3, 4, 5].map((star) => (
-                                                <svg
-                                                    key={star}
-                                                    className={`w-4 h-4 ${star <= Math.round(averageRating.average) ? 'text-amber-400 fill-current' : 'text-neutral-300 dark:text-neutral-700'}`}
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                                <svg key={star} className={`w-4 h-4 ${star <= Math.round(averageRating.average) ? 'text-amber-400 fill-current' : 'text-neutral-300 dark:text-neutral-700'}`} viewBox="0 0 24 24">
+                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                                                 </svg>
                                             ))}
                                         </div>
@@ -945,10 +898,10 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                 <div key={star} className="flex items-center gap-3 mb-2">
                                                     <div className="flex items-center gap-1 w-12 text-sm text-neutral-600 dark:text-neutral-400">
                                                         <span>{star}</span>
-                                                        <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
+                                                        <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
                                                     </div>
                                                     <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-700 overflow-visible relative">
-                                                        <div className="h-px bg-neutral-800 dark:bg-neutral-200" style={{ width: `${percentage}%` }}></div>
+                                                        <div className="h-px bg-neutral-800 dark:bg-neutral-200" style={{ width: `${percentage}%` }} />
                                                     </div>
                                                     <div className="w-8 text-xs text-neutral-400 text-right tabular-nums">{count}</div>
                                                 </div>
@@ -978,12 +931,8 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                                         </div>
                                                         <div className="flex items-center gap-1 mb-2">
                                                             {[1, 2, 3, 4, 5].map((star) => (
-                                                                <svg
-                                                                    key={star}
-                                                                    className={`w-4 h-4 ${star <= rating.rating ? 'text-amber-400 fill-current' : 'text-neutral-300 dark:text-neutral-700'}`}
-                                                                    viewBox="0 0 24 24"
-                                                                >
-                                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-0.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                                                <svg key={star} className={`w-4 h-4 ${star <= rating.rating ? 'text-amber-400 fill-current' : 'text-neutral-300 dark:text-neutral-700'}`} viewBox="0 0 24 24">
+                                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                                                                 </svg>
                                                             ))}
                                                         </div>
@@ -1010,7 +959,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                 listingTitle={t.sellerProfile.inquiryToSeller}
             />
 
-            {/* Mobile Bottom Bar (Sticky) - Positioned above main MobileBottomNavigation (h-16) */}
+            {/* Mobile Bottom Bar – above main nav (bottom-16) */}
             <div className="lg:hidden fixed bottom-16 left-0 right-0 bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 p-3 z-[9998] flex items-center gap-3 transition-colors">
                 <button
                     onClick={handleFollowToggle}
@@ -1040,12 +989,12 @@ const StorePage = ({ sellerId: propSellerId }) => {
                     className="flex-1 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-medium py-3 rounded-md flex items-center justify-center gap-2 transition-colors text-sm cursor-pointer"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h0.01M12 10h0.01M16 10h0.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
                     Mesaj Gönder
                 </button>
             </div>
-        </div >
+        </div>
     );
 };
 
