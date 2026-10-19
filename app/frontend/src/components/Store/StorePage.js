@@ -624,7 +624,7 @@ const StorePage = ({ sellerId: propSellerId }) => {
                                         </div>
 
                                         {showHours && (
-                                            <div className="absolute top-full left-0 md:left-auto md:right-0 mt-2 w-72 max-w-[calc(100vw-32px)] bg-white dark:bg-neutral-900 rounded-md shadow-sm border border-neutral-200 dark:border-neutral-800 p-4 z-50">
+                                            <div className="absolute top-full right-0 mt-2 w-72 max-w-[calc(100vw-16px)] bg-white dark:bg-neutral-900 rounded-md shadow-sm border border-neutral-200 dark:border-neutral-800 p-4 z-50">
                                                 <h4 className="text-[10px] font-medium text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-3 uppercase tracking-[0.16em] flex items-center justify-between">
                                                     <span>Haftalık program</span>
                                                     <span className={`${isOpen ? 'text-emerald-700 dark:text-emerald-400' : 'text-neutral-500'} text-[10px] uppercase tracking-[0.12em]`}>
