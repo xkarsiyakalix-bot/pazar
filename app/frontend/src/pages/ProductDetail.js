@@ -249,24 +249,9 @@ const extractListingBrandWithFallback = (listing) => {
   return null;
 };
 
-const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors", address = '') => {
+const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors") => {
   const cleanCity = city ? String(city).trim() : '';
-  let cleanDistrict = district ? String(district).trim() : '';
-  const cleanAddress = address ? String(address).trim() : '';
-
-  // Prevent duplicate if district is identical to city
-  if (cleanDistrict && cleanCity && cleanDistrict.toLowerCase() === cleanCity.toLowerCase()) {
-    cleanDistrict = '';
-  }
-
-  // Prevent duplicate if address already begins with or exactly equals district
-  if (cleanAddress && cleanDistrict) {
-    const addrNorm = cleanAddress.toLowerCase();
-    const distNorm = cleanDistrict.toLowerCase();
-    if (addrNorm === distNorm || addrNorm.startsWith(distNorm + ',') || addrNorm.startsWith(distNorm + ' ') || addrNorm.endsWith(', ' + distNorm)) {
-      cleanDistrict = '';
-    }
-  }
+  const cleanDistrict = district ? String(district).trim() : '';
 
   if (!cleanCity && !cleanDistrict) return null;
 
@@ -398,10 +383,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
                       <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common?.location || 'Konum'}</div>
                       <div className="text-[11px] font-bold leading-tight">
                         {listing.show_location && listing.address && <div className="text-gray-900 dark:text-neutral-50 line-clamp-1">{listing.address}</div>}
-                        <div className="text-gray-500 line-clamp-1">
-                          {listing.district && (!listing.city || listing.district.toLowerCase() !== listing.city.toLowerCase()) && (!listing.address || !listing.address.toLowerCase().includes(listing.district.toLowerCase())) ? `${listing.district}, ` : ''}
-                          {listing.city || ''}
-                        </div>
+                        <div className="text-gray-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
                       </div>
                     </div>
                   </div>
@@ -1916,8 +1898,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.location}</span>
                       <div className="text-right">
                         <span className="font-medium text-gray-900 dark:text-neutral-50 block">
-                          {listing.show_location === true && listing.address && !String(listing.address).toLowerCase().includes(String(listing.district || '').toLowerCase()) ? `${listing.address}, ` : ''}
-                          {renderLocationLinks(listing.district, listing.city, undefined, listing.show_location === true ? listing.address : '') || t.common.notAvailable}
+                          {listing.show_location === true && listing.address ? `${listing.address}, ` : ''}
+                          {renderLocationLinks(listing.district, listing.city) || t.common.notAvailable}
                         </span>
                       </div>
                     </div>
@@ -3173,7 +3155,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {t.productDetail.location || 'Konum'}
                     </h2>
                     <p className="text-sm text-gray-600 dark:text-neutral-400 mb-4">
-                      {listing.address && !String(listing.address).toLowerCase().includes(String(listing.district || '').toLowerCase()) ? `${listing.address}, ` : ''}{renderLocationLinks(listing.district, listing.city, undefined, listing.address)}
+                      {listing.address ? `${listing.address}, ` : ''}{renderLocationLinks(listing.district, listing.city)}
                     </p>
                     <LocationMap city={listing.city} district={listing.district} address={listing.address} />
                   </div>
