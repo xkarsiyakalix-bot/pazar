@@ -249,23 +249,13 @@ const extractListingBrandWithFallback = (listing) => {
   return null;
 };
 
-const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors", address = '') => {
+const renderLocationLinks = (district, city, linkClassName = "underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors") => {
   const cleanCity = city ? String(city).trim() : '';
   let cleanDistrict = district ? String(district).trim() : '';
-  const cleanAddress = address ? String(address).trim() : '';
 
-  // Prevent duplicate if district is identical to city
+  // Prevent duplicate link if district is identical to city (e.g. city=İstanbul, district=İstanbul)
   if (cleanDistrict && cleanCity && cleanDistrict.toLowerCase() === cleanCity.toLowerCase()) {
     cleanDistrict = '';
-  }
-
-  // Prevent duplicate if address already begins with or exactly equals district
-  if (cleanAddress && cleanDistrict) {
-    const addrNorm = cleanAddress.toLowerCase();
-    const distNorm = cleanDistrict.toLowerCase();
-    if (addrNorm === distNorm || addrNorm.startsWith(distNorm + ',') || addrNorm.startsWith(distNorm + ' ') || addrNorm.endsWith(', ' + distNorm)) {
-      cleanDistrict = '';
-    }
   }
 
   if (!cleanCity && !cleanDistrict) return null;
@@ -1916,8 +1906,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.location}</span>
                       <div className="text-right">
                         <span className="font-medium text-gray-900 dark:text-neutral-50 block">
-                          {listing.show_location === true && listing.address && !String(listing.address).toLowerCase().includes(String(listing.district || '').toLowerCase()) ? `${listing.address}, ` : ''}
-                          {renderLocationLinks(listing.district, listing.city, undefined, listing.show_location === true ? listing.address : '') || t.common.notAvailable}
+                          {listing.show_location === true && listing.address &&
+                            !String(listing.address).toLowerCase().includes(String(listing.district || '').toLowerCase()) &&
+                            !String(listing.address).toLowerCase().includes(String(listing.city || '').toLowerCase()) ? `${listing.address}, ` : ''}
+                          {renderLocationLinks(listing.district, listing.city) || t.common.notAvailable}
                         </span>
                       </div>
                     </div>
@@ -3173,7 +3165,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {t.productDetail.location || 'Konum'}
                     </h2>
                     <p className="text-sm text-gray-600 dark:text-neutral-400 mb-4">
-                      {listing.address && !String(listing.address).toLowerCase().includes(String(listing.district || '').toLowerCase()) ? `${listing.address}, ` : ''}{renderLocationLinks(listing.district, listing.city, undefined, listing.address)}
+                      {listing.address &&
+                        !String(listing.address).toLowerCase().includes(String(listing.district || '').toLowerCase()) &&
+                        !String(listing.address).toLowerCase().includes(String(listing.city || '').toLowerCase()) ? `${listing.address}, ` : ''}
+                      {renderLocationLinks(listing.district, listing.city)}
                     </p>
                     <LocationMap city={listing.city} district={listing.district} address={listing.address} />
                   </div>
