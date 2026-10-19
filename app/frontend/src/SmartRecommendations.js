@@ -32,6 +32,7 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
     const pageSize = isMobile ? 12 : PAGE_SIZE;
     const [displayedListings, setDisplayedListings] = useState([]);
     const [page, setPage] = useState(1);
+    const [startPage, setStartPage] = useState(null); // randomized start page
     const [inView, setInView] = useState(!isMobile);
     const [loading, setLoading] = useState(!isMobile);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -93,21 +94,20 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
             .map(({ _score, ...l }) => l);
     }, []);
 
-    // Fetch a page of listings
-    const loadPage = useCallback(async (pageNum, isFirst = false) => {
+    // Fetch a page of listings (absolute page number from DB)
+    const loadPage = useCallback(async (absolutePage, isFirst = false) => {
         if (isFirst) setLoading(true);
         else setLoadingMore(true);
 
         try {
             const data = await fetchListings(
-                { page: pageNum, limit: pageSize, select: SELECT_FIELDS },
+                { page: absolutePage, limit: pageSize, select: SELECT_FIELDS },
                 { count: false }
             );
 
             const sorted = scoreListings(data || []);
 
             setDisplayedListings(prev => {
-                // Deduplicate by id
                 const existingIds = new Set(prev.map(l => l.id));
                 const fresh = sorted.filter(l => !existingIds.has(l.id));
                 return [...prev, ...fresh];
@@ -125,12 +125,39 @@ export const SmartRecommendations = ({ toggleFavorite, isFavorite }) => {
         }
     }, [scoreListings, pageSize]);
 
-    // Initial load — desktop loads immediately; mobile loads when inView becomes true
+    // Initial load with randomized start page
     useEffect(() => {
         if (!inView || initialLoad.current) return;
         initialLoad.current = true;
-        loadPage(1, true);
-    }, [inView, loadPage]);
+
+        const init = async () => {
+            setLoading(true);
+            try {
+                // Get total count to pick a random starting offset
+                const { supabase } = await import('./lib/supabase');
+                const { count } = await supabase
+                    .from('listings')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('status', 'active');
+
+                const totalPages = Math.max(1, Math.floor((count || pageSize) / pageSize));
+                // Pick a random page, but leave last ~3 pages so there's still content to scroll
+                const maxStart = Math.max(1, totalPages - 3);
+                const randomPage = Math.floor(Math.random() * maxStart) + 1;
+                setStartPage(randomPage);
+                setPage(randomPage);
+                await loadPage(randomPage, false);
+            } catch (e) {
+                // Fall back to page 1 if count fails
+                setStartPage(1);
+                await loadPage(1, false);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        init();
+    }, [inView, loadPage, pageSize]);
 
     // Infinite scroll — load next page when sentinel is visible
     const handleIntersect = useCallback((entries) => {
