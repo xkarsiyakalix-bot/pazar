@@ -58,15 +58,29 @@ const UserDetailsModal = ({ user: initialUser, onClose }) => {
     const handleSaveStoreInfo = async () => {
         setSaving(true);
         try {
-            const { data, error } = await supabase
+            let updatePayload = { ...editData };
+            let { data, error } = await supabase
                 .from('profiles')
-                .update(editData)
+                .update(updatePayload)
                 .eq('id', user.id)
                 .select()
                 .single();
 
+            // If extra_paid_listings column does not exist in schema, retry without it
+            if (error && error.message && error.message.includes('extra_paid_listings')) {
+                const { extra_paid_listings, ...rest } = updatePayload;
+                const retryResult = await supabase
+                    .from('profiles')
+                    .update(rest)
+                    .eq('id', user.id)
+                    .select()
+                    .single();
+                data = retryResult.data;
+                error = retryResult.error;
+            }
+
             if (error) throw error;
-            setUser(data);
+            setUser(data || { ...user, ...editData });
             alert('Kullanıcı bilgileri başarıyla güncellendi');
         } catch (error) {
             console.error('Error saving user info:', error);
