@@ -15,14 +15,21 @@ export const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3
 export const getOptimizedImageUrl = (url, width, height, resize = 'cover', preferAVIF = true) => {
     if (!url || url === '/placeholder-image.jpg') return PLACEHOLDER_IMAGE;
 
-    // Route legacy Supabase Storage URLs to Cloudflare R2 CDN (images.exvitrin.com)
-    if (url.includes('/storage/v1/object/public/listing-images/')) {
-        const cleanUrl = url.split('?')[0];
-        return cleanUrl.replace(/https?:\/\/[^\/]+\/storage\/v1\/object\/public\/listing-images\//, 'https://images.exvitrin.com/');
+    // R2 CDN henüz tam migrate edilmediğinden images.exvitrin.com URL'lerini Supabase'e yönlendir
+    if (url.includes('images.exvitrin.com/')) {
+        const path = url.replace('https://images.exvitrin.com/', '');
+        return `https://wwzeqleaekdugsnknbbl.supabase.co/storage/v1/object/public/listing-images/${path}`;
     }
+
+    // Supabase render URL'lerini doğrudan public URL'ye çevir (transform paid feature)
     if (url.includes('/storage/v1/render/image/public/listing-images/')) {
         const cleanUrl = url.split('?')[0];
-        return cleanUrl.replace(/https?:\/\/[^\/]+\/storage\/v1\/render\/image\/public\/listing-images\//, 'https://images.exvitrin.com/');
+        return cleanUrl.replace('/storage/v1/render/image/public/', '/storage/v1/object/public/');
+    }
+
+    // Supabase storage URL'lerini olduğu gibi döndür (query param temizle)
+    if (url.includes('/storage/v1/object/public/listing-images/')) {
+        return url.split('?')[0];
     }
 
     return url;
