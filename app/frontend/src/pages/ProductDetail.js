@@ -15,6 +15,7 @@ import ListingCountdown from '../components/ListingCountdown';
 import MessageModal from '../components/MessageModal';
 import GalleryInfoModal from '../components/GalleryInfoModal';
 import { translateVal } from '../utils/amenityTranslations';
+import { formatCondition } from '../utils/conditionUtils';
 import { ProductSEO } from '../SEO';
 import { ImageLightbox } from '../components/ImageLightbox';
 import { ShareModal } from '../components/ShareModal';
@@ -421,7 +422,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
               </h2>
               <div className="grid grid-cols-2 gap-x-12 gap-y-1">
                 {/* Common Fields */}
-                {renderDetailRow(t.productDetail?.condition || 'Durum', listing.condition)}
+                {renderDetailRow(t.productDetail?.condition || 'Durum', formatCondition(listing.condition))}
                 {renderDetailRow(t.addListing?.brand || 'Marka', listing.marke || listing.car_brand || listing.brand || listing.carBrand)}
                 {renderDetailRow(t.productDetail?.model || 'Model', listing.modell || listing.car_model || listing.carModel)}
 
@@ -1879,14 +1880,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-neutral-400">{t.addListing.condition || 'Durum'}</span>
                         <span className="font-medium text-gray-900 dark:text-neutral-50">
-                          {listing.condition === 'defekt' ? (t.addListing?.options?.defective || 'Arızalı') :
-                            listing.condition === 'in_ordnung' ? (t.addListing?.options?.okay || 'İdare Eder') :
-                              listing.condition === 'gut' ? (t.addListing?.options?.good || 'İyi') :
-                                listing.condition === 'sehr_gut' ? (t.addListing?.options?.veryGood || 'Çok İyi') :
-                                  listing.condition === 'neu' || listing.condition === 'Neu' ? (t.addListing?.options?.new || 'Yeni') :
-                                    listing.condition === 'neu_mit_etikett' ? (t.addListing?.options?.newWithTags || 'Yeni (Etiketli)') :
-                                      listing.condition === 'gebraucht' ? (t.addListing?.options?.used || 'İkinci El') :
-                                        listing.condition}
+                          {formatCondition(listing.condition)}
                         </span>
                       </div>
                     )}

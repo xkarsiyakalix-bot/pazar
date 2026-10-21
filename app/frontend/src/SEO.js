@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { CATEGORY_META } from './config/categoryMeta';
+import { formatCondition } from './utils/conditionUtils';
 import { isPetAdoptionListing } from './utils/formatUtils';
 import { getCategoryPath, getSellerUrl } from './utils/slug';
 
@@ -188,8 +189,8 @@ export const ProductSEO = ({ listing, rating = null, reviews = [] }) => {
   const subInfo = [];
   if (listing.city) subInfo.push(listing.city);
   if (listing.condition) {
-    const condTr = listing.condition === 'neu' ? 'Sıfır' : (listing.condition === 'gebraucht' ? 'İkinci El' : (listing.condition === 'defekt' ? 'Arızalı' : listing.condition));
-    subInfo.push(condTr);
+    const condTr = formatCondition(listing.condition);
+    if (condTr) subInfo.push(condTr);
   }
   const titleWithPrice = titleParts.join(' - ') + (subInfo.length > 0 ? ` | ${subInfo.join(' • ')}` : '');
 

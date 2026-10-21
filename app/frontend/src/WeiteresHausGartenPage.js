@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatCondition } from './utils/conditionUtils';
 import GenericCategoryPage from './components/GenericCategoryPage';
 import { getTurkishCities } from './translations';
 
@@ -93,11 +94,7 @@ const WeiteresHausGartenPage = ({ toggleFavorite, isFavorite }) => {
                         <span className="text-sm mr-3">
                             <span className="text-black font-semibold">Durum: </span>
                             <span className="text-gray-600">
-                                {listing.condition === 'neu' ? 'Yeni' :
-                                    listing.condition === 'sehr_gut' ? 'Çok İyi' :
-                                        listing.condition === 'gut' ? 'İyi' :
-                                            listing.condition === 'in_ordnung' ? 'İdare Eder' :
-                                                listing.condition === 'defekt' ? 'Arızalı' : listing.condition}
+                                {formatCondition(listing.condition)}
                             </span>
                         </span>
                     )}
