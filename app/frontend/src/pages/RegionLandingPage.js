@@ -9,6 +9,27 @@ import { slugToCategory, cityToSlug, TOP_SEO_CATEGORIES } from '../utils/cityUti
 import { categories as allCategories } from '../data/categories';
 import { getCategoryTranslation } from '../translations';
 
+// Türkiye plaka kodları eşleştirmesi (01 - 81)
+const PLATE_CODES = {
+  'Adana': '01', 'Adıyaman': '02', 'Afyonkarahisar': '03', 'Ağrı': '04', 'Amasya': '05',
+  'Ankara': '06', 'Antalya': '07', 'Artvin': '08', 'Aydın': '09', 'Balıkesir': '10',
+  'Bilecik': '11', 'Bingöl': '12', 'Bitlis': '13', 'Bolu': '14', 'Burdur': '15',
+  'Bursa': '16', 'Çanakkale': '17', 'Çankırı': '18', 'Çorum': '19', 'Denizli': '20',
+  'Diyarbakır': '21', 'Edirne': '22', 'Elazığ': '23', 'Erzincan': '24', 'Erzurum': '25',
+  'Eskişehir': '26', 'Gaziantep': '27', 'Giresun': '28', 'Gümüşhane': '29', 'Hakkari': '30',
+  'Hatay': '31', 'Isparta': '32', 'Mersin': '33', 'İstanbul': '34', 'İzmir': '35',
+  'Kars': '36', 'Kastamonu': '37', 'Kayseri': '38', 'Kırklareli': '39', 'Kırşehir': '40',
+  'Kocaeli': '41', 'Konya': '42', 'Kütahya': '43', 'Malatya': '44', 'Manisa': '45',
+  'Kahramanmaraş': '46', 'Mardin': '47', 'Muğla': '48', 'Muş': '49', 'Nevşehir': '50',
+  'Niğde': '51', 'Ordu': '52', 'Rize': '53', 'Sakarya': '54', 'Samsun': '55',
+  'Siirt': '56', 'Sinop': '57', 'Sivas': '58', 'Tekirdağ': '59', 'Tokat': '60',
+  'Trabzon': '61', 'Tunceli': '62', 'Şanlıurfa': '63', 'Uşak': '64', 'Van': '65',
+  'Yozgat': '66', 'Zonguldak': '67', 'Aksaray': '68', 'Bayburt': '69', 'Karaman': '70',
+  'Kırıkkale': '71', 'Batman': '72', 'Şırnak': '73', 'Bartın': '74', 'Ardahan': '75',
+  'Iğdır': '76', 'Yalova': '77', 'Karabük': '78', 'Kilis': '79', 'Osmaniye': '80',
+  'Düzce': '81'
+};
+
 export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
   const { regionSlug, categorySlug } = useParams();
   const navigate = useNavigate();
@@ -63,17 +84,27 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
   };
 
   // Breadcrumbs
-  const breadcrumbs = [
-    { name: 'Ana Sayfa', url: '/' },
-    { name: 'Bölgeler', url: '/sehirler' },
-    { name: region ? region.name : (regionSlug || 'Bölge'), url: region ? `/bolge/${region.slug}` : `/bolge/${regionSlug}` }
-  ];
-  if (category && region) {
-    breadcrumbs.push({
-      name: category,
-      url: `/bolge/${region.slug}/${categorySlug}`
-    });
-  }
+  const breadcrumbs = useMemo(() => {
+    const list = [
+      { label: 'Ana Sayfa', path: '/', name: 'Ana Sayfa', url: '/' },
+      { label: 'Bölgeler', path: '/sehirler', name: 'Bölgeler', url: '/sehirler' },
+      { 
+        label: region ? region.name : (regionSlug || 'Bölge'), 
+        path: region ? `/bolge/${region.slug}` : `/bolge/${regionSlug}`,
+        name: region ? region.name : (regionSlug || 'Bölge'), 
+        url: region ? `/bolge/${region.slug}` : `/bolge/${regionSlug}` 
+      }
+    ];
+    if (category && region) {
+      list.push({
+        label: category,
+        path: `/bolge/${region.slug}/${categorySlug}`,
+        name: category,
+        url: `/bolge/${region.slug}/${categorySlug}`
+      });
+    }
+    return list;
+  }, [region, regionSlug, category, categorySlug]);
 
   // Fetch counts
   useEffect(() => {
@@ -209,7 +240,7 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
     : `${region.name} satılık ve kiralık ilanları ExVitrin'de! ${region.cities.slice(0, 5).join(', ')} ve tüm bölge illerinden ikinci el eşya, araba, emlak fırsatları.`;
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 pb-16">
+    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors pb-16">
       <SEO
         title={seoTitle}
         description={seoDesc}
@@ -218,115 +249,315 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
         breadcrumbs={breadcrumbs}
       />
 
-      {/* Hero Header */}
-      <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white py-8 px-4 sm:px-6 lg:px-8 shadow-md">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-4 text-white/80 text-xs sm:text-sm">
-            <Breadcrumb items={breadcrumbs} light />
+      {/* Top Breadcrumb Bar */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-5 pb-2">
+        <Breadcrumb items={breadcrumbs} />
+      </div>
+
+      {/* Editorial Hero Header */}
+      <header className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-2 pb-6 sm:pb-8 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="max-w-3xl">
+            {/* Meta Badges */}
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 text-xs font-medium border border-neutral-200/60 dark:border-neutral-800">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                {region.name}
+              </span>
+              <span className="px-2.5 py-1 rounded-full bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-400 text-xs font-normal border border-neutral-200/50 dark:border-neutral-800">
+                Türkiye Coğrafi Bölgesi
+              </span>
+              {selectedCity && (
+                <span className="px-2.5 py-1 rounded-full bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 text-xs font-medium">
+                  {selectedCity} Filtrelendi
+                </span>
+              )}
+              {category && (
+                <span className="px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-medium border border-red-200/50 dark:border-red-900/40">
+                  {category}
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-neutral-950 dark:text-white leading-tight">
+              {region.name} {category || ''} İlanları
+            </h1>
+            <p className="mt-2 text-sm sm:text-base text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed font-normal">
+              {region.description}
+            </p>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-white/15 px-3 py-1 rounded-full text-xs font-semibold mb-2">
-                <span>{region.icon} {region.name}</span>
-                {category && <span>• {category}</span>}
+          {/* Quick Metrics & Action Button */}
+          <div className="flex flex-wrap items-center gap-4 shrink-0 pt-2 lg:pt-0">
+            <div className="hidden sm:flex items-center gap-5 pr-4 border-r border-neutral-200 dark:border-neutral-800">
+              <div>
+                <p className="text-xl sm:text-2xl font-semibold text-neutral-950 dark:text-white leading-none">
+                  {loading ? '—' : listings.length}
+                </p>
+                <p className="text-[11px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wider font-medium mt-1">
+                  Aktif İlan
+                </p>
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
-                {region.name} {category || ''} İlanları
-              </h1>
-              <p className="mt-2 text-white/90 text-sm sm:text-base max-w-3xl">
-                {region.description}
-              </p>
+              <div>
+                <p className="text-xl sm:text-2xl font-semibold text-neutral-950 dark:text-white leading-none">
+                  {region.cities.length}
+                </p>
+                <p className="text-[11px] text-neutral-400 dark:text-neutral-500 uppercase tracking-wider font-medium mt-1">
+                  Bölge İli
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 self-start md:self-auto">
-              <Link
-                to="/add-listing"
-                className="bg-white text-red-600 hover:bg-neutral-100 font-bold px-5 py-2.5 rounded-xl shadow-md transition-all hover:scale-105 text-sm flex items-center gap-1.5"
-              >
-                <span>+</span>
-                <span>{region.shortName}'de Ücretsiz İlan Ver</span>
-              </Link>
-            </div>
+            <Link
+              to="/add-listing"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 text-xs font-semibold tracking-wide transition-all shadow-xs"
+            >
+              <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+              <span>{region.shortName}'de İlan Ver</span>
+            </Link>
           </div>
+        </div>
 
-          {/* Quick City Filter Pills */}
-          <div className="mt-6 pt-4 border-t border-white/15 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-white/70 font-semibold mr-1">Bölge İlleri:</span>
+        {/* Quick Region Cities Filter Bar */}
+        <div className="mt-5 pt-4 border-t border-neutral-100 dark:border-neutral-800/80">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+            <span className="text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mr-1 shrink-0">
+              İl Seç:
+            </span>
             <button
               onClick={() => setSelectedCity('')}
-              className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
                 !selectedCity
-                  ? 'bg-white text-red-700 font-bold shadow-sm'
-                  : 'bg-white/10 hover:bg-white/20 text-white'
+                  ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs font-semibold'
+                  : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200/70 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
               }`}
             >
-              Tüm Bölge ({region.cities.length} İl)
+              Tüm Bölge ({region.cities.length})
             </button>
             {region.cities.map((c) => {
               const isChecked = selectedCity === c;
               const count = cityCounts[c] || 0;
+              const pCode = PLATE_CODES[c] || '';
               return (
                 <button
                   key={c}
                   onClick={() => setSelectedCity(isChecked ? '' : c)}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                     isChecked
-                      ? 'bg-white text-red-700 font-bold shadow-sm'
-                      : 'bg-white/10 hover:bg-white/20 text-white'
+                      ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs font-semibold'
+                      : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200/70 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
                   }`}
                 >
+                  {pCode && <span className="opacity-50 text-[10px] font-mono">{pCode}</span>}
                   <span>{c}</span>
-                  {count > 0 && <span className="opacity-75 text-[11px]">({count})</span>}
+                  {count > 0 && (
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isChecked ? 'bg-neutral-800 text-white dark:bg-neutral-200 dark:text-neutral-900' : 'bg-neutral-200/60 dark:bg-neutral-800 text-neutral-500'}`}>
+                      {count}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        {/* Mobile Filter Toggle */}
-        <div className="lg:hidden mb-4 flex items-center justify-between bg-white dark:bg-neutral-800 p-3 rounded-xl border border-neutral-200 dark:border-neutral-700">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 text-sm font-semibold text-neutral-800 dark:text-neutral-100"
-          >
-            <span>⚙️</span>
-            <span>Filtreler {category ? `(${category})` : ''}</span>
-          </button>
-          <span className="text-xs text-neutral-500 font-medium">
-            {listings.length} İlan
-          </span>
+      {/* Main Content Area */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-5">
+        {/* Horizontal Category Navigation */}
+        <div className="mb-6 pb-2">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+              {region.shortName} Kategorileri
+            </span>
+            {categorySlug && (
+              <Link
+                to={`/bolge/${region.slug}`}
+                className="text-xs font-medium text-red-600 hover:text-red-700 transition-colors"
+              >
+                Kategori Filtresini Kaldır
+              </Link>
+            )}
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+            <Link
+              to={`/bolge/${region.slug}`}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
+                !categorySlug
+                  ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs'
+                  : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200/70 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
+              }`}
+            >
+              Tüm Kategoriler
+            </Link>
+            {TOP_SEO_CATEGORIES.map((cat) => {
+              const isCatActive = categorySlug === cat.slug;
+              const count = categoryCounts[cat.name] || 0;
+              return (
+                <Link
+                  key={cat.slug}
+                  to={`/bolge/${region.slug}/${cat.slug}`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                    isCatActive
+                      ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs'
+                      : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200/70 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'
+                  }`}
+                >
+                  <span>{cat.name}</span>
+                  {count > 0 && (
+                    <span className="text-[10px] opacity-60">({count})</span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Toolbar: Counter, Mobile Filter Toggle & View Mode */}
+        <div className="flex items-center justify-between gap-3 mb-6 pb-3 border-b border-neutral-100 dark:border-neutral-800">
+          <div className="flex items-center gap-3">
+            {/* Mobile Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="lg:hidden flex items-center gap-2 px-3.5 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl text-xs font-semibold text-neutral-800 dark:text-neutral-200 shadow-xs"
+            >
+              <svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <span>Filtreler</span>
+              {(appliedMinPrice || appliedMaxPrice || condition !== 'all' || selectedCity) && (
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+              )}
+            </button>
+
+            <div className="text-xs text-neutral-500 dark:text-neutral-400">
+              {loading ? (
+                'İlanlar listeleniyor...'
+              ) : (
+                <span>
+                  <strong className="text-neutral-900 dark:text-white font-semibold">{listings.length}</strong> ilan bulundu
+                  {selectedCity && <span className="ml-1 text-neutral-400">({selectedCity} seçili)</span>}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Sort Selector */}
+            <div className="flex items-center gap-1.5">
+              <span className="hidden sm:inline text-xs text-neutral-400 dark:text-neutral-500">Sırala:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="text-xs font-medium bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-400"
+              >
+                <option value="newest">En Yeni İlanlar</option>
+                <option value="price_asc">Fiyat: Düşükten Yükseğe</option>
+                <option value="price_desc">Fiyat: Yüksekten Düşüğe</option>
+              </select>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="hidden sm:flex items-center border border-neutral-200/80 dark:border-neutral-800 rounded-lg overflow-hidden bg-neutral-50 dark:bg-neutral-900 p-0.5">
+              <button
+                onClick={() => setViewMode('horizontal')}
+                className={`p-1.5 rounded-md transition-all ${
+                  viewMode === 'horizontal'
+                    ? 'bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-xs font-medium'
+                    : 'text-neutral-400 hover:text-neutral-600'
+                }`}
+                title="Liste Görünümü"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-md transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-xs font-medium'
+                    : 'text-neutral-400 hover:text-neutral-600'
+                }`}
+                title="Kutu Görünümü"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Layout: Sidebar + Listings */}
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Sidebar Filters */}
-          <div className={`lg:block ${showFilters ? 'block' : 'hidden'} lg:col-span-1`}>
-            <div className="bg-white dark:bg-neutral-800 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-700/80 shadow-sm sticky top-20 space-y-6">
-              {/* Category Filter */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                    Kategori
-                  </label>
-                  {category && (
-                    <Link
-                      to={`/bolge/${region.slug}`}
-                      className="text-[11px] text-red-600 hover:text-red-700 font-semibold"
-                    >
-                      Tümünü Gör
-                    </Link>
-                  )}
-                </div>
-                <div className="space-y-1">
+          <aside
+            className={`
+              fixed inset-0 z-[1002] lg:relative lg:inset-auto lg:z-0 lg:w-[280px] lg:min-w-[280px] lg:block
+              ${showFilters ? 'block' : 'hidden lg:block'}
+            `}
+          >
+            {/* Backdrop for mobile */}
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs lg:hidden"
+              onClick={() => setShowFilters(false)}
+            />
+
+            <div
+              className={`
+                relative w-[85vw] sm:w-[340px] lg:w-full h-full lg:h-auto bg-white dark:bg-neutral-900 lg:rounded-2xl shadow-xl lg:shadow-xs p-5
+                overflow-y-auto sticky top-0 lg:top-6 border border-neutral-200/80 dark:border-neutral-800
+                ${showFilters ? 'animate-in slide-in-from-left duration-250' : ''}
+              `}
+            >
+              {/* Mobile Header */}
+              <div className="flex items-center justify-between lg:hidden mb-5 pb-3 border-b dark:border-neutral-800">
+                <h3 className="font-semibold text-neutral-900 dark:text-white text-base">Filtreler</h3>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="p-1.5 text-neutral-400 hover:text-neutral-700 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Header on Desktop */}
+              <div className="hidden lg:flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-neutral-950 dark:text-white text-sm">Filtreler</h3>
+                {(appliedMinPrice || appliedMaxPrice || condition !== 'all' || selectedCity || categorySlug) && (
+                  <button
+                    onClick={() => {
+                      handleClearPrice();
+                      setCondition('all');
+                      setSelectedCity('');
+                      if (categorySlug) {
+                        navigate(`/bolge/${region.slug}`);
+                      }
+                    }}
+                    className="text-xs text-red-600 hover:text-red-700 font-medium cursor-pointer"
+                  >
+                    Temizle
+                  </button>
+                )}
+              </div>
+
+              {/* Category Filter in Sidebar */}
+              <div className="mb-5 pb-5 border-b border-neutral-100 dark:border-neutral-800">
+                <label className="block text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">
+                  Kategoriler
+                </label>
+                <div className="space-y-0.5">
                   <Link
                     to={`/bolge/${region.slug}`}
-                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between ${
                       !categorySlug
-                        ? 'bg-red-50 dark:bg-red-950/30 text-red-600 font-bold'
-                        : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/50'
+                        ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-950 dark:text-white font-semibold'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'
                     }`}
                   >
                     <span>Tüm Kategoriler</span>
@@ -338,18 +569,17 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
                       <Link
                         key={cat.slug}
                         to={`/bolge/${region.slug}/${cat.slug}`}
-                        className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between group ${
                           isCatActive
-                            ? 'bg-red-50 dark:bg-red-950/30 text-red-600 font-bold'
-                            : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700/50'
+                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-950 dark:text-white font-semibold'
+                            : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'
                         }`}
                       >
-                        <span className="flex items-center gap-1.5 truncate">
-                          <span>{cat.icon}</span>
-                          <span>{cat.name}</span>
-                        </span>
+                        <span className="truncate">{cat.name}</span>
                         {count > 0 && (
-                          <span className="text-[10px] text-neutral-400 font-semibold">{count}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isCatActive ? 'bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-white' : 'text-neutral-400'}`}>
+                            {count}
+                          </span>
                         )}
                       </Link>
                     );
@@ -358,52 +588,53 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
               </div>
 
               {/* City Selection */}
-              <div>
+              <div className="mb-5 pb-5 border-b border-neutral-100 dark:border-neutral-800">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider">
-                    Şehir Filtresi
+                  <label className="block text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                    Bölge İlleri ({region.cities.length})
                   </label>
                   {selectedCity && (
                     <button
                       onClick={() => setSelectedCity('')}
-                      className="text-[11px] text-red-600 hover:text-red-700"
+                      className="text-[11px] text-red-600 hover:text-red-700 font-medium cursor-pointer"
                     >
-                      Temizle
+                      Tümü
                     </button>
                   )}
                 </div>
-                <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
-                  <label className="flex items-center gap-2 px-2 py-1 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700/40 cursor-pointer text-xs">
+                <div className="space-y-0.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                  <label className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50 cursor-pointer text-xs">
                     <input
                       type="radio"
                       name="regionCity"
                       checked={!selectedCity}
                       onChange={() => setSelectedCity('')}
-                      className="text-red-600 focus:ring-red-500"
+                      className="text-neutral-950 dark:text-white focus:ring-0"
                     />
-                    <span className={!selectedCity ? 'font-bold text-red-600' : 'text-neutral-700 dark:text-neutral-300'}>
+                    <span className={!selectedCity ? 'font-semibold text-neutral-950 dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}>
                       Tüm {region.shortName} İlleri
                     </span>
                   </label>
                   {region.cities.map((c) => {
                     const isChecked = selectedCity === c;
                     const count = cityCounts[c] || 0;
+                    const pCode = PLATE_CODES[c] || '';
                     return (
-                      <label key={c} className="flex items-center justify-between px-2 py-1 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700/40 cursor-pointer text-xs">
+                      <label key={c} className="flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50 cursor-pointer text-xs">
                         <span className="flex items-center gap-2">
                           <input
                             type="radio"
                             name="regionCity"
                             checked={isChecked}
                             onChange={() => setSelectedCity(c)}
-                            className="text-red-600 focus:ring-red-500"
+                            className="text-neutral-950 dark:text-white focus:ring-0"
                           />
-                          <span className={isChecked ? 'font-bold text-red-600' : 'text-neutral-700 dark:text-neutral-300'}>
-                            {c}
+                          <span className={isChecked ? 'font-semibold text-neutral-950 dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}>
+                            {pCode ? `${pCode} ${c}` : c}
                           </span>
                         </span>
                         {count > 0 && (
-                          <span className="text-[10px] text-neutral-400 font-semibold">{count}</span>
+                          <span className="text-[10px] text-neutral-400 font-medium">({count})</span>
                         )}
                       </label>
                     );
@@ -412,16 +643,16 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
               </div>
 
               {/* Price Range */}
-              <div>
+              <div className="mb-5 pb-5 border-b border-neutral-100 dark:border-neutral-800">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                  <label className="block text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
                     Fiyat Aralığı (TL)
                   </label>
                   {(minPriceInput || maxPriceInput) && (
                     <button
                       type="button"
                       onClick={handleClearPrice}
-                      className="text-[11px] text-red-600 hover:text-red-700 font-semibold cursor-pointer"
+                      className="text-[11px] text-red-600 hover:text-red-700 font-medium cursor-pointer"
                     >
                       Temizle
                     </button>
@@ -429,96 +660,62 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-[11px] text-neutral-400 dark:text-neutral-500 mb-1">En az</label>
                     <input
                       type="number"
                       min="0"
-                      placeholder="0 TL"
+                      placeholder="Min TL"
                       value={minPriceInput}
                       onChange={(e) => setMinPriceInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
-                      className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-red-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700 rounded-lg px-2.5 py-1.5 text-xs text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-neutral-400 dark:text-neutral-500 mb-1">En çok</label>
                     <input
                       type="number"
                       min="0"
-                      placeholder="∞ TL"
+                      placeholder="Max TL"
                       value={maxPriceInput}
                       onChange={(e) => setMaxPriceInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleApplyPrice()}
-                      className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-red-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700 rounded-lg px-2.5 py-1.5 text-xs text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400"
                     />
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={handleApplyPrice}
-                  className="mt-2.5 w-full py-1.5 px-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-lg text-xs font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  className="mt-2 w-full py-1.5 px-3 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 rounded-lg text-xs font-medium hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors cursor-pointer"
                 >
-                  Filtrele
+                  Uygula
                 </button>
               </div>
+
+              {/* Reset Filters */}
+              <button
+                type="button"
+                onClick={() => {
+                  handleClearPrice();
+                  setCondition('all');
+                  setSelectedCity('');
+                  if (categorySlug) {
+                    navigate(`/bolge/${region.slug}`);
+                  }
+                  setShowFilters(false);
+                }}
+                className="w-full py-2 px-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+              >
+                Filtreleri Sıfırla
+              </button>
             </div>
-          </div>
+          </aside>
 
-          {/* Listings List */}
-          <div className="lg:col-span-3">
-            {/* Top Toolbar */}
-            <div className="bg-white dark:bg-neutral-800 p-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-700/80 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-base font-bold text-neutral-900 dark:text-white">
-                  {selectedCity ? `${selectedCity} İlanları` : `${region.name} Genelindeki İlanlar`}
-                </h2>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Toplam {listings.length} aktif ilan listeleniyor
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-neutral-50 dark:bg-neutral-700 text-xs font-medium border border-neutral-200 dark:border-neutral-600 rounded-xl px-3 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-red-500/20"
-                >
-                  <option value="newest">En Yeni İlanlar</option>
-                  <option value="price_asc">Fiyat: Düşükten Yükseğe</option>
-                  <option value="price_desc">Fiyat: Yüksekten Düşüğe</option>
-                </select>
-
-                <div className="hidden sm:flex items-center border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden p-0.5 bg-neutral-50 dark:bg-neutral-700">
-                  <button
-                    onClick={() => setViewMode('horizontal')}
-                    className={`p-1.5 rounded-lg text-xs transition-colors ${
-                      viewMode === 'horizontal'
-                        ? 'bg-white dark:bg-neutral-800 text-red-600 shadow-xs'
-                        : 'text-neutral-500 dark:text-neutral-400'
-                    }`}
-                    title="Liste Görünümü"
-                  >
-                    ☰
-                  </button>
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-1.5 rounded-lg text-xs transition-colors ${
-                      viewMode === 'grid'
-                        ? 'bg-white dark:bg-neutral-800 text-red-600 shadow-xs'
-                        : 'text-neutral-500 dark:text-neutral-400'
-                    }`}
-                    title="Kutu Görünümü"
-                  >
-                    ⊞
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Results */}
+          {/* Listings List (Flex-1) */}
+          <div className="flex-1 w-full min-w-0">
             {loading ? (
-              <div className="py-20 flex justify-center">
-                <LoadingSpinner />
+              <div className="py-20 flex flex-col items-center justify-center">
+                <LoadingSpinner size="large" />
+                <p className="mt-3 text-xs text-neutral-400">{region.name} ilanları listeleniyor...</p>
               </div>
             ) : listings.length > 0 ? (
               viewMode === 'horizontal' ? (
@@ -533,7 +730,7 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {listings.map((listing) => (
                     <ListingCard
                       key={listing.id}
@@ -545,27 +742,32 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
                 </div>
               )
             ) : (
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-12 text-center border border-neutral-200 dark:border-neutral-700">
-                <div className="text-4xl mb-3">📍</div>
-                <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">
-                  İlan Bulunamadı
+              /* Refined Empty State */
+              <div className="bg-white dark:bg-neutral-900 rounded-2xl p-8 sm:p-12 text-center border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
+                <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <h3 className="text-base sm:text-lg font-semibold text-neutral-950 dark:text-white">
+                  {selectedCity ? `${selectedCity} İlinde` : region.name} İlan Bulunamadı
                 </h3>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-md mx-auto mb-6">
+                <p className="text-neutral-500 dark:text-neutral-400 text-xs sm:text-sm max-w-md mx-auto mt-1.5 mb-6 leading-relaxed">
                   {selectedCity 
-                    ? `${selectedCity} ilinde henüz ilan bulunmuyor. Filtreleri temizleyebilir veya ilk ilanı siz verebilirsiniz!`
-                    : `${region.name} genelinde bu kriterlere uygun ilan bulunamadı. İlk ilanı ücretsiz verebilirsiniz!`}
+                    ? `${selectedCity} ilinde bu filtreye uygun ilan bulunamadı. Filtreleri temizleyebilir veya bölgede ilk ilanı siz verebilirsiniz.`
+                    : `${region.name} genelinde bu kriterlere uygun ilan bulunamadı. İlk ilanı ücretsiz verebilirsiniz.`}
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <Link
                     to="/add-listing"
-                    className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2.5 rounded-xl shadow transition-all text-sm"
+                    className="bg-neutral-950 hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 font-semibold px-5 py-2.5 rounded-xl transition-colors text-xs"
                   >
-                    Hemen Ücretsiz İlan Ver
+                    + İlk İlanı Sen Ver
                   </Link>
                   {selectedCity && (
                     <button
                       onClick={() => setSelectedCity('')}
-                      className="bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 text-neutral-700 dark:text-neutral-200 font-semibold px-5 py-2.5 rounded-xl text-sm"
+                      className="bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium px-4 py-2.5 rounded-xl text-xs border border-neutral-200/80 dark:border-neutral-700"
                     >
                       Tüm {region.shortName} İlanlarına Bak
                     </button>
@@ -576,72 +778,89 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
           </div>
         </div>
 
-        {/* SEO Information Section */}
-        <div className="mt-12 bg-white dark:bg-neutral-800 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-700/80 shadow-sm">
-          <h2 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white mb-3 flex items-center gap-2">
-            <span>ℹ️</span>
-            <span>{region.name} {category || 'İkinci El & Sıfır'} İlan Rehberi</span>
-          </h2>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-6">
-            {region.description} {region.name} bölgesinde aradığınız ürünleri il bazında filtreleyebilir, satıcılarla elden teslimat veya kargo seçenekleriyle doğrudan iletişime geçebilirsiniz.
-          </p>
+        {/* Editorial SEO Information & Guide Section */}
+        <div className="mt-12 bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800">
+          <div className="max-w-2xl">
+            <span className="text-[11px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider block mb-1">
+              Bölgesel Rehber
+            </span>
+            <h2 className="text-lg sm:text-xl font-semibold text-neutral-950 dark:text-white mb-2">
+              {region.name} {category || 'İkinci El & Sıfır'} İlan Pazarı
+            </h2>
+            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+              {region.description} {region.name} genelinde aradığınız ürünleri il bazında filtreleyebilir, satıcılarla güvenli mesajlaşma üzerinden doğrudan iletişime geçebilirsiniz.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-neutral-100 dark:border-neutral-700">
-            <div>
-              <h4 className="font-semibold text-neutral-900 dark:text-white text-sm mb-1.5 flex items-center gap-1.5">
-                <span className="text-red-600">✓</span> Bölgesel Hızlı Alışveriş
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 mt-6 border-t border-neutral-100 dark:border-neutral-800">
+            <div className="space-y-1">
+              <h4 className="font-semibold text-neutral-900 dark:text-white text-xs flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                Bölgesel Alışveriş
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                {region.shortName} bölgesinde size en yakın satıcıları ve alıcıları kolayca bulun.
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
+                {region.shortName} illerinde size en yakın satıcıları ve alıcıları kolayca bulun.
               </p>
             </div>
-            <div>
-              <h4 className="font-semibold text-neutral-900 dark:text-white text-sm mb-1.5 flex items-center gap-1.5">
-                <span className="text-red-600">✓</span> Sıfır Komisyon & Ücretsiz İlan
+            <div className="space-y-1">
+              <h4 className="font-semibold text-neutral-900 dark:text-white text-xs flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                Komisyonsuz & Ücretsiz
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
                 İlan vermek tamamen ücretsizdir, hiçbir gizli ücret veya komisyon ödemezsiniz.
               </p>
             </div>
-            <div>
-              <h4 className="font-semibold text-neutral-900 dark:text-white text-sm mb-1.5 flex items-center gap-1.5">
-                <span className="text-red-600">✓</span> Yüksek Arama Görünürlüğü
+            <div className="space-y-1">
+              <h4 className="font-semibold text-neutral-900 dark:text-white text-xs flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                Geniş Erişim Ağı
               </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                İlanlarınız hem Google arama sonuçlarında hem ExVitrin pazarında anında listelenir.
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
+                İlanlarınız hem Google arama sonuçlarında hem bölgesel vitrinde anında öne çıkar.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Region Cities Link Cloud */}
-        <div className="mt-8 bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-700/80 shadow-sm">
-          <h3 className="text-sm font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2">
-            <span>📍</span>
-            <span>{region.name} Şehir İlanları ({region.cities.length} İl)</span>
-          </h3>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
-            {region.shortName} illerindeki tüm güncel ilanlara tek tıkla ulaşın:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {region.cities.map((city) => (
-              <Link
-                key={city}
-                to={`/sehir/${cityToSlug(city)}`}
-                className="text-xs px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700/50 hover:border-red-500 hover:text-red-600 transition-colors font-medium text-neutral-800 dark:text-neutral-200"
-              >
-                📍 {city} İlanları
-              </Link>
-            ))}
+        {/* Region Cities Internal Links */}
+        <div className="mt-8 bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xs font-semibold text-neutral-950 dark:text-white uppercase tracking-wider">
+              {region.name} Şehir Vitrinleri ({region.cities.length} İl)
+            </h3>
+            <span className="text-[11px] text-neutral-400">
+              Şehir Sayfasına Git
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {region.cities.map((city) => {
+              const pCode = PLATE_CODES[city] || '';
+              return (
+                <Link
+                  key={city}
+                  to={`/sehir/${cityToSlug(city)}`}
+                  className="text-xs px-2.5 py-1 rounded-lg border border-neutral-200/60 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/40 hover:border-neutral-400 transition-colors font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1"
+                >
+                  {pCode && <span className="opacity-50 text-[10px] font-mono">{pCode}</span>}
+                  <span>{city} İlanları</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
         {/* All Other Regions (Internal Link Juice) */}
-        <div className="mt-8 bg-neutral-100 dark:bg-neutral-800/60 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700">
-          <h3 className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mb-3">
-            Türkiye'nin Diğer Bölgelerindeki İlanlar
-          </h3>
-          <div className="flex flex-wrap gap-2">
+        <div className="mt-8 bg-neutral-50 dark:bg-neutral-900/40 rounded-2xl p-6 border border-neutral-200/60 dark:border-neutral-800">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xs font-semibold text-neutral-800 dark:text-neutral-300 uppercase tracking-wider">
+              Türkiye'nin Diğer Coğrafi Bölgeleri
+            </h3>
+            <Link to="/sehirler" className="text-xs font-medium text-red-600 hover:text-red-700">
+              Tüm Bölgeler ve İller ›
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
             {turkeyRegions.map((reg) => {
               const isCurrent = reg.slug === region.slug;
               const targetUrl = categorySlug ? `/bolge/${reg.slug}/${categorySlug}` : `/bolge/${reg.slug}`;
@@ -649,13 +868,13 @@ export const RegionLandingPage = ({ toggleFavorite, isFavorite }) => {
                 <Link
                   key={reg.slug}
                   to={targetUrl}
-                  className={`text-xs px-3.5 py-2 rounded-xl border transition-colors ${
+                  className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${
                     isCurrent
-                      ? 'bg-red-600 text-white border-red-600 font-semibold'
-                      : 'bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border-neutral-200 dark:border-neutral-600 hover:border-red-500'
+                      ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 border-neutral-950 font-semibold'
+                      : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200/60 dark:border-neutral-700 hover:border-neutral-400'
                   }`}
                 >
-                  {reg.icon} {reg.name} {category ? `${category}` : 'İlanları'}
+                  {reg.name} {category ? `${category}` : ''}
                 </Link>
               );
             })}
