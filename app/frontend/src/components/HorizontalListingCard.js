@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { t } from '../translations';
 import { LazyImage } from './LazyImage';
@@ -7,15 +7,80 @@ import { getListingUrl } from '../utils/slug';
 import { getOptimizedImageUrl, PLACEHOLDER_IMAGE } from '../utils/imageUtils';
 import VisibilityPackagesModal from './VisibilityPackagesModal';
 import { isPetAdoptionListing } from '../utils/formatUtils';
+import { getFavoriteCountBatched, updateCachedFavoriteCount, favoritesApi } from '../api/favorites';
 
 export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, compact = false, hidePrice = false, renderCustomFields = null, priority = false, quiet = false }) => {
   const navigate = useNavigate();
   const [showVisibilityModal, setShowVisibilityModal] = useState(false);
   const { user } = useAuth();
 
+  // Favorite count state & batch loader
+  const [favCount, setFavCount] = useState(listing?.favorite_count ?? 0);
+  const [localFavorite, setLocalFavorite] = useState(null);
+
+  useEffect(() => {
+    if (listing?.favorite_count !== undefined) {
+      setFavCount(listing.favorite_count);
+      return;
+    }
+    if (!listing?.id) return;
+
+    let isMounted = true;
+    getFavoriteCountBatched(listing.id, (count) => {
+      if (isMounted) {
+        setFavCount(count);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [listing?.id, listing?.favorite_count]);
+
+  useEffect(() => {
+    setLocalFavorite(null);
+  }, [listing?.id]);
+
   if (!listing) return null;
 
-  const favorite = typeof isFavorite === 'function' ? isFavorite(listing?.id) : Boolean(isFavorite);
+  const favorite = localFavorite !== null
+    ? localFavorite
+    : (typeof isFavorite === 'function'
+        ? Boolean(isFavorite(listing?.id) || isFavorite(String(listing?.id)) || (typeof listing?.id === 'string' && !isNaN(listing?.id) ? isFavorite(Number(listing?.id)) : false))
+        : Boolean(isFavorite));
+
+  const isOwn = isOwnListing || (user && listing?.user_id && user.id === listing.user_id);
+
+  const handleFavoriteClick = async (e) => {
+    e.stopPropagation();
+    if (!listing?.id) return;
+
+    const willBeFavorite = !favorite;
+    setLocalFavorite(willBeFavorite);
+    setFavCount((prev) => Math.max(0, prev + (willBeFavorite ? 1 : -1)));
+    updateCachedFavoriteCount(listing.id, willBeFavorite ? 1 : -1);
+
+    if (toggleFavorite) {
+      toggleFavorite(listing.id);
+    } else {
+      if (!user) {
+        if (window.confirm("Favorilere eklemek için lütfen giriş yapın. Giriş sayfasına yönlendirilsin mi?")) {
+          window.location.href = '/login';
+        }
+        setLocalFavorite(!willBeFavorite);
+        return;
+      }
+      try {
+        if (willBeFavorite) {
+          await favoritesApi.addFavorite(listing.id, user.id);
+        } else {
+          await favoritesApi.removeFavorite(listing.id, user.id);
+        }
+      } catch (err) {
+        console.error('Error toggling favorite:', err);
+        setLocalFavorite(!willBeFavorite);
+      }
+    }
+  };
 
   const handleEdit = (e) => {
     e.stopPropagation();
@@ -212,14 +277,14 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
             {isReserved && (
               <div className={quiet
                 ? 'absolute top-1.5 left-1.5 bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-200 px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-neutral-200 dark:border-neutral-600 z-30'
-                : 'absolute top-1 left-1 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm z-30'
+                : 'absolute top-1.5 left-1.5 bg-yellow-500 text-white px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm z-30'
               }>
                 Rezerve
               </div>
             )}
 
             {isPromoActive && (
-              <div className="absolute top-1.5 right-1.5 flex flex-col gap-1 items-end z-20">
+              <div className={`absolute ${isReserved ? 'top-8' : 'top-1.5'} left-1.5 flex flex-col gap-1 items-start z-20`}>
                 {isVitrin && (
                   <div className={quiet
                     ? 'bg-white/95 dark:bg-neutral-900/90 text-neutral-700 dark:text-neutral-200 px-1.5 py-0.5 rounded-sm text-[10px] font-medium border border-neutral-200 dark:border-neutral-600'
@@ -246,6 +311,49 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
                 )}
               </div>
             )}
+
+            {/* Favorite button with count (Vinted style) */}
+            {!isOwn ? (
+              <button
+                type="button"
+                onClick={handleFavoriteClick}
+                onPointerDown={(e) => e.stopPropagation()}
+                className={`absolute top-1.5 right-1.5 sm:top-2 sm:right-2 h-7 ${
+                  favCount > 0 ? 'px-2 gap-1.5' : 'w-7'
+                } bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white dark:hover:bg-neutral-800 hover:scale-105 active:scale-95 transition-all duration-200 z-30 flex items-center justify-center border border-white/40 dark:border-white/10`}
+                aria-label={favorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+              >
+                {favorite ? (
+                  <svg className="w-3.5 h-3.5 text-red-500 fill-current" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-3.5 h-3.5 text-gray-500 dark:text-neutral-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                )}
+                {favCount > 0 && (
+                  <span className={`text-[11px] font-bold leading-none ${
+                    favorite ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-neutral-200'
+                  }`}>
+                    {favCount}
+                  </span>
+                )}
+              </button>
+            ) : favCount > 0 ? (
+              /* Kendi ilanı ise sadece favori sayısını göster (salt okunur) */
+              <div
+                className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 h-7 px-2 gap-1.5 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm rounded-full shadow-md z-30 flex items-center justify-center border border-white/40 dark:border-white/10"
+                title={`${favCount} kişi favoriledi`}
+              >
+                <svg className="w-3.5 h-3.5 text-red-500 fill-current" viewBox="0 0 24 24">
+                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <span className="text-[11px] font-bold leading-none text-red-600 dark:text-red-400">
+                  {favCount}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           {/* Info Section */}
