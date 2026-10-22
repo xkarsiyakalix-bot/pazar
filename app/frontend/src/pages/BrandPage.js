@@ -25,6 +25,7 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
     const brandName = useMemo(() => formatBrandDisplayName(slug, brandData), [slug, brandData]);
 
     const [listings, setListings] = useState([]);
+    const [fallbackListings, setFallbackListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('newest');
     const [viewMode, setViewMode] = useState('horizontal'); // 'horizontal' or 'grid'
@@ -117,7 +118,32 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                 if (error) throw error;
 
                 if (isMounted) {
-                    setListings(data || []);
+                    const found = data || [];
+                    setListings(found);
+
+                    // Thin Content Önleme: Eğer bu markada henüz ilan yoksa,
+                    // sayfanın Google botları ve kullanıcılar için dopdolu görünmesi için popüler ilanları getir
+                    if (found.length === 0) {
+                        try {
+                            let fbQuery = supabase
+                                .from('listings')
+                                .select('*')
+                                .eq('status', 'active');
+                            if (brandData?.category) {
+                                fbQuery = fbQuery.ilike('category', `%${brandData.category}%`);
+                            }
+                            const { data: fbData } = await fbQuery
+                                .order('created_at', { ascending: false })
+                                .limit(12);
+                            if (isMounted && fbData && fbData.length > 0) {
+                                setFallbackListings(fbData);
+                            }
+                        } catch (fbErr) {
+                            console.error('Error fetching fallback listings:', fbErr);
+                        }
+                    } else {
+                        setFallbackListings([]);
+                    }
                 }
             } catch (err) {
                 console.error('Error fetching brand listings:', err);
@@ -143,12 +169,41 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
     const seoTitle = `${brandName} İkinci El ve Sıfır İlanları | ExVitrin`;
     const seoDesc = `En güncel ${brandName} ilanları, ikinci el ve sıfır fiyatları ExVitrin'de! Güvenli alışveriş ve uygun fiyatlarla hemen keşfedin.`;
 
+    const faqItems = useMemo(() => [
+        {
+            q: `${brandName} ikinci el ürün alırken nelere dikkat edilmeli?`,
+            a: `${brandName} markalı ürün alırken ürünün orijinallik etiketlerini, kullanım durumunu, fatura veya garanti belgesini kontrol etmeniz ve satıcı ile ExVitrin içi güvenli mesajlaşma üzerinden teyit etmeniz önerilir.`
+        },
+        {
+            q: `ExVitrin'de ${brandName} ilanı vermek ücretsiz mi?`,
+            a: `Evet, ExVitrin üzerinde ${brandName} markalı sıfır veya ikinci el ürünleriniz için tamamen ücretsiz ve komisyonsuz ilan oluşturabilirsiniz.`
+        },
+        {
+            q: `${brandName} ürünlerinin fiyatları neye göre belirlenir?`,
+            a: `${brandName} ürün fiyatları; ürünün kondisyonu, kullanım süresi, model yılı, kutu ve aksesuarlarının tam olup olmamasına göre satıcılar tarafından serbest piyasa koşullarında belirlenir.`
+        }
+    ], [brandName]);
+
+    const brandFaqSchema = useMemo(() => ({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': faqItems.map(item => ({
+            '@type': 'Question',
+            'name': item.q,
+            'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': item.a
+            }
+        }))
+    }), [faqItems]);
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 transition-colors">
             <SEO
                 title={seoTitle}
                 description={seoDesc}
                 canonical={`https://www.exvitrin.com/${slug}`}
+                schema={brandFaqSchema}
                 openGraph={{
                     title: seoTitle,
                     description: seoDesc,
@@ -208,7 +263,6 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                             </button>
                             {availableModels.map(m => {
                                 const isMSelected = selectedModel.toLowerCase() === m.name.toLowerCase();
-                                const mLower = m.name.toLowerCase();
                                 const count = listings.filter(l => 
                                     matchesSpecificModel(m.name, l.modell, l.title)
                                 ).length;
@@ -239,7 +293,11 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                 {/* Filter and View Mode Bar */}
                 <div className="bg-white dark:bg-neutral-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-neutral-700 mb-6 flex flex-wrap items-center justify-between gap-4">
                     <div className="text-sm text-gray-600 dark:text-neutral-400 font-medium">
-                        {loading ? 'Yükleniyor...' : `${displayedListings.length} ilan bulundu`}
+                        {loading 
+                            ? 'Yükleniyor...' 
+                            : displayedListings.length > 0 
+                                ? `${displayedListings.length} ilan bulundu` 
+                                : `0 ${brandName} ilanı (Önerilen Popüler İlanlar Gösteriliyor)`}
                         {selectedModel && <span className="ml-2 text-xs text-red-500">({selectedModel} filtrelendi)</span>}
                     </div>
 
@@ -292,58 +350,133 @@ export const BrandPage = ({ slug: propSlug, toggleFavorite, isFavorite }) => {
                     <div className="py-20 flex justify-center">
                         <LoadingSpinner size="large" />
                     </div>
-                ) : displayedListings.length === 0 ? (
-                    <div className="bg-white dark:bg-neutral-800 rounded-2xl p-12 text-center border border-gray-100 dark:border-neutral-700">
-                        <div className="w-16 h-16 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                            </svg>
+                ) : displayedListings.length > 0 ? (
+                    viewMode === 'horizontal' ? (
+                        <div className="space-y-4">
+                            {displayedListings.map((item) => (
+                                <HorizontalListingCard
+                                    key={item.id}
+                                    listing={item}
+                                    toggleFavorite={toggleFavorite}
+                                    isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
+                                />
+                            ))}
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                            {selectedModel ? `${selectedModel} modeline ait ilan bulunamadı` : `Henüz ${brandName} ilanı bulunmuyor`}
-                        </h3>
-                        <p className="text-gray-500 dark:text-neutral-400 max-w-md mx-auto mb-6 text-sm">
-                            {selectedModel ? 'Diğer modelleri inceleyebilir veya filtreyi temizleyebilirsiniz.' : 'Bu markaya ait ilk ilanı siz vererek binlerce alıcıya hemen ulaşabilirsiniz.'}
-                        </p>
-                        {selectedModel ? (
-                            <button
-                                onClick={() => handleSelectModel('')}
-                                className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl shadow-md transition-all text-sm cursor-pointer"
-                            >
-                                Tüm Modelleri Göster
-                            </button>
-                        ) : (
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {displayedListings.map((item) => (
+                                <ListingCard
+                                    key={item.id}
+                                    listing={item}
+                                    toggleFavorite={toggleFavorite}
+                                    isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
+                                />
+                            ))}
+                        </div>
+                    )
+                ) : (
+                    <div className="space-y-8">
+                        {/* Callout Card */}
+                        <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-neutral-800 dark:to-neutral-800/80 rounded-2xl p-6 sm:p-8 border border-red-100 dark:border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <div className="text-center sm:text-left">
+                                <span className="inline-block px-2.5 py-0.5 bg-red-600 text-white rounded-md text-xs font-semibold mb-2">
+                                    Fırsat
+                                </span>
+                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                                    İlk {brandName} İlanını Siz Verin!
+                                </h3>
+                                <p className="text-gray-600 dark:text-neutral-300 text-sm mt-1 max-w-xl">
+                                    Bu markaya ait bir ürün mü satmak istiyorsunuz? Ücretsiz ilanınızı saniyeler içinde oluşturarak ExVitrin'deki binlerce potansiyel alıcıya hemen ulaşın.
+                                </p>
+                            </div>
                             <Link
                                 to="/add-listing"
-                                className="inline-flex items-center justify-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-md transition-all text-sm"
+                                className="inline-flex items-center justify-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-md transition-all text-sm whitespace-nowrap"
                             >
-                                Hemen İlan Ver
+                                + Ücretsiz İlan Ver
                             </Link>
+                        </div>
+
+                        {/* Fallback Listings Section — Ensures page has rich content for SEO and users */}
+                        {fallbackListings.length > 0 && (
+                            <div>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                            İlginizi Çekebilecek Popüler İlanlar
+                                        </h2>
+                                        <p className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
+                                            {brandData?.category ? `${brandData.category} ve ilgili kategorilerde en son eklenenler` : 'ExVitrin vitrinindeki güncel ilanlar'}
+                                        </p>
+                                    </div>
+                                    <Link
+                                        to="/categories"
+                                        className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+                                    >
+                                        Tüm İlanları Gör ›
+                                    </Link>
+                                </div>
+
+                                {viewMode === 'horizontal' ? (
+                                    <div className="space-y-4">
+                                        {fallbackListings.map((item) => (
+                                            <HorizontalListingCard
+                                                key={item.id}
+                                                listing={item}
+                                                toggleFavorite={toggleFavorite}
+                                                isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                        {fallbackListings.map((item) => (
+                                            <ListingCard
+                                                key={item.id}
+                                                listing={item}
+                                                toggleFavorite={toggleFavorite}
+                                                isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
-                ) : viewMode === 'horizontal' ? (
-                    <div className="space-y-4">
-                        {displayedListings.map((item) => (
-                            <HorizontalListingCard
-                                key={item.id}
-                                listing={item}
-                                toggleFavorite={toggleFavorite}
-                                isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {displayedListings.map((item) => (
-                            <ListingCard
-                                key={item.id}
-                                listing={item}
-                                toggleFavorite={toggleFavorite}
-                                isFavorite={typeof isFavorite === 'function' ? isFavorite(item.id) : Boolean(isFavorite)}
-                            />
-                        ))}
-                    </div>
                 )}
+
+                {/* Rich SEO Content & FAQ Section */}
+                <div className="mt-12 bg-white dark:bg-neutral-800 rounded-2xl p-6 sm:p-8 border border-gray-100 dark:border-neutral-700 space-y-6">
+                    <div>
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                            {brandName} Hakkında & İkinci El Alışveriş Rehberi
+                        </h2>
+                        <p className="text-sm text-gray-600 dark:text-neutral-300 leading-relaxed">
+                            ExVitrin {brandName} vitrini, güvenilir ve uygun fiyatlı ikinci el ve sıfır {brandName} ürünlerini alıcı ve satıcılarla buluşturur. 
+                            Geniş ürün yelpazesi, kullanıcı değerlendirmeleri ve anlık mesajlaşma sistemiyle güvenle alışveriş yapabilir, 
+                            kullanmadığınız {brandName} ürünlerinizi hızlıca nakde dönüştürebilirsiniz.
+                        </p>
+                    </div>
+
+                    <div className="border-t border-gray-100 dark:border-neutral-700 pt-6">
+                        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
+                            Sıkça Sorulan Sorular ({brandName})
+                        </h3>
+                        <div className="space-y-3">
+                            {faqItems.map((item, idx) => (
+                                <details key={idx} className="group bg-gray-50 dark:bg-neutral-700/50 rounded-xl p-4 border border-gray-100 dark:border-neutral-700 cursor-pointer">
+                                    <summary className="font-semibold text-sm text-gray-800 dark:text-neutral-200 flex items-center justify-between list-none">
+                                        <span>{item.q}</span>
+                                        <span className="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+                                    </summary>
+                                    <p className="mt-2 text-xs text-gray-600 dark:text-neutral-300 leading-relaxed">
+                                        {item.a}
+                                    </p>
+                                </details>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
