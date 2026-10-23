@@ -2629,7 +2629,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 )}
 
                 {/* Elektronik Details */}
-                {(listing.marke || listing.audio_hifi_art || listing.handy_telefon_art || listing.foto_art ||
+                {(((listing.category?.toLowerCase() === 'elektronik' || listing.category?.toLowerCase() === 'electronics') && (listing.marke || listing.modell)) ||
+                  listing.audio_hifi_art || listing.handy_telefon_art || listing.foto_art ||
                   listing.haushaltsgeraete_art || listing.konsolen_art ||
                   listing.pc_zubehoer_software_art || listing.tablets_reader_art || listing.tv_video_art ||
                   listing.notebooks_art || listing.pcs_art || listing.videospiele_art ||
@@ -2639,13 +2640,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {t.productDetail.details}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
-                        {(listing.marke || listing.handy_telefon_art) && (
+                        {(((listing.category?.toLowerCase() === 'elektronik' || listing.category?.toLowerCase() === 'electronics') && listing.marke) || listing.handy_telefon_art) && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
                             {renderBrandLink(listing.marke || listing.handy_telefon_art, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
-                        {listing.modell && (
+                        {(((listing.category?.toLowerCase() === 'elektronik' || listing.category?.toLowerCase() === 'electronics') && listing.modell) || (listing.handy_telefon_art && listing.modell)) && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail?.model || 'Model'}</span>
                             <Link 
