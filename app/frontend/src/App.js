@@ -1198,6 +1198,20 @@ function App() {
             <Route path="/Ucretsiz-Takas" element={<VerschenkenTauschenPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Egitim-Kurslar" element={<UnterrichtKursePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
             <Route path="/Komsu-Yardimi" element={<NachbarschaftshilfeMainPage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
+
+            {/* Category Aliases & Redirects for Caching / Lowercase */}
+            <Route path="/is-dunyasi" element={<Navigate to="/Is-Ilanlari" replace />} />
+            <Route path="/is-dunyasi/*" element={<Navigate to="/Is-Ilanlari" replace />} />
+            <Route path="/is-ilanlari" element={<Navigate to="/Is-Ilanlari" replace />} />
+            <Route path="/hobi-koleksiyon" element={<Navigate to="/Eglence-Hobi-Mahalle" replace />} />
+            <Route path="/eglence-hobi-mahalle" element={<Navigate to="/Eglence-Hobi-Mahalle" replace />} />
+            <Route path="/otomobil" element={<Navigate to="/Otomobil-Bisiklet-Tekne" replace />} />
+            <Route path="/moda-guzellik" element={<Navigate to="/Moda-Guzellik" replace />} />
+            <Route path="/emlak" element={<Navigate to="/Emlak" replace />} />
+            <Route path="/elektronik" element={<Navigate to="/Elektronik" replace />} />
+            <Route path="/ev-bahce" element={<Navigate to="/Ev-Bahce" replace />} />
+            <Route path="/evcil-hayvanlar" element={<Navigate to="/Evcil-Hayvanlar" replace />} />
+            <Route path="/aile-cocuk-bebek" element={<Navigate to="/Aile-Cocuk-Bebek" replace />} />
             <Route path="/:slug" element={<SmartRoute {...smartRouteProps} />} />
             <Route path="/:slug/:subSlug" element={<SmartRoute {...smartRouteProps} />} />
             <Route path="/Komsu-Yardimi/Komsu-Yardimi" element={<NachbarschaftshilfePage toggleFavorite={toggleFavorite} isFavorite={isFavorite} />} />
