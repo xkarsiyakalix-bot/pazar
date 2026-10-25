@@ -67,6 +67,7 @@ function Register() {
         } catch (err) {
             console.error('Google sign up error:', err);
             setError(err.message || 'Google ile kayıt olunurken bir hata oluştu.');
+        } finally {
             setGoogleLoading(false);
         }
     };

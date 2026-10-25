@@ -21,6 +21,7 @@ function Login() {
         } catch (err) {
             console.error('Google sign in error:', err);
             setError(err.message || 'Google ile giriş yapılırken bir hata oluştu.');
+        } finally {
             setGoogleLoading(false);
         }
     };

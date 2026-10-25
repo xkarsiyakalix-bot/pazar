@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { SocialLogin } from '@capgo/capacitor-social-login';
+
+const GOOGLE_WEB_CLIENT_ID = '766852567940-k83tgcnoj93aef7gp30sggml6tiu1aus.apps.googleusercontent.com';
 
 const AuthContext = createContext({});
 
@@ -188,6 +191,42 @@ export const AuthProvider = ({ children }) => {
             return data;
         },
         signInWithGoogle: async (redirectTo) => {
+            const isNative = typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.();
+
+            if (isNative) {
+                try {
+                    await SocialLogin.initialize({
+                        google: {
+                            webClientId: GOOGLE_WEB_CLIENT_ID,
+                        },
+                    });
+
+                    const res = await SocialLogin.login({
+                        provider: 'google',
+                        options: {
+                            scopes: ['email', 'profile'],
+                        },
+                    });
+
+                    const idToken = res.result?.idToken;
+                    if (!idToken) {
+                        throw new Error('Google oturum belirteci alınamadı.');
+                    }
+
+                    const { data, error } = await supabase.auth.signInWithIdToken({
+                        provider: 'google',
+                        token: idToken,
+                    });
+
+                    if (error) throw error;
+                    return data;
+                } catch (nativeErr) {
+                    console.error('Native Google Sign-In error:', nativeErr);
+                    throw nativeErr;
+                }
+            }
+
+            // Web browser fallback
             const origin = (typeof window !== 'undefined' && window.location?.origin) || 'https://www.exvitrin.com';
             const targetRedirect = redirectTo || (origin.includes('localhost') && !window.location.port ? 'https://www.exvitrin.com' : origin);
             const { data, error } = await supabase.auth.signInWithOAuth({
