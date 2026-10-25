@@ -53,8 +53,9 @@ export const AppDownloadBanner = ({ onVisibilityChange }) => {
                         <div className="font-bold text-white text-xs truncate leading-tight">
                             ExVitrin Mobil Uygulaması
                         </div>
-                        <div className="text-[11px] text-neutral-300 dark:text-neutral-400 truncate leading-tight mt-0.5 font-medium">
-                            Şu an sadece kayıtlı kullanıcılar
+                        <div className="text-[11px] text-emerald-400 truncate leading-tight mt-0.5 font-semibold flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Google Play'de Yayında! Hemen İndir
                         </div>
                     </div>
                 </div>
