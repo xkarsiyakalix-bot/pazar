@@ -187,11 +187,13 @@ export const AuthProvider = ({ children }) => {
             if (error) throw error;
             return data;
         },
-        signInWithGoogle: async (redirectTo = window.location.origin) => {
+        signInWithGoogle: async (redirectTo) => {
+            const origin = (typeof window !== 'undefined' && window.location?.origin) || 'https://www.exvitrin.com';
+            const targetRedirect = redirectTo || (origin.includes('localhost') && !window.location.port ? 'https://www.exvitrin.com' : origin);
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: redirectTo,
+                    redirectTo: targetRedirect,
                     queryParams: {
                         access_type: 'offline',
                         prompt: 'select_account',
