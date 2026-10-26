@@ -562,6 +562,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   // State for listing data - Init from Cache or Router State
   const [listing, setListing] = useState(initialListing);
+
+  // Filter valid images to prevent broken placeholder boxes when DB has null elements
+  const validImages = React.useMemo(() => {
+    if (!listing) return [];
+    const raw = Array.isArray(listing.images) ? listing.images : (listing.image ? [listing.image] : []);
+    return raw.filter(img => typeof img === 'string' && img.trim().length > 0 && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')));
+  }, [listing]);
+
   const [loading, setLoading] = useState(!initialListing);
   const [error, setError] = useState(null);
 
@@ -1583,8 +1591,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       style={{ scrollBehavior: 'smooth' }}
                     >
                       {(() => {
-                        const images = listing.images && listing.images.length > 0 ? listing.images : (listing.image ? [listing.image] : []);
-                        if (images.length === 0) {
+                        if (validImages.length === 0) {
                           return (
                             <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-neutral-500 bg-gray-50 dark:bg-neutral-800">
                               <svg className="w-16 h-16 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1594,7 +1601,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             </div>
                           );
                         }
-                        return images.map((img, index) => (
+                        return validImages.map((img, index) => (
                           <div key={index} className="w-full h-full flex-shrink-0 snap-center">
                             <img
                               src={getOptimizedImageUrl(img, 1000, 750, 'cover')}
@@ -1612,18 +1619,18 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       })()}
                     </div>
 
-                    {listing.images && listing.images.length > 0 && (
+                    {validImages.length > 0 && (
                       <div className="absolute bottom-3 right-3 bg-white/95 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 px-2 py-0.5 rounded-md text-xs font-medium z-20 border border-neutral-200 dark:border-neutral-600">
-                        {t.productDetail.imageCount.replace('{current}', activeImage + 1).replace('{total}', listing.images.length)}
+                        {t.productDetail.imageCount.replace('{current}', activeImage + 1).replace('{total}', validImages.length)}
                       </div>
                     )}
 
                     {/* Navigation Arrows - Hidden on mobile, shown on desktop */}
-                    {listing.images && listing.images.length > 1 && !isMobile && (
+                    {validImages.length > 1 && !isMobile && (
                       <>
                         {/* Previous Button */}
                         <button
-                          onClick={() => setActiveImage(activeImage === 0 ? listing.images.length - 1 : activeImage - 1)}
+                          onClick={() => setActiveImage(activeImage === 0 ? validImages.length - 1 : activeImage - 1)}
                           className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 p-2 rounded-md border border-neutral-200 dark:border-neutral-600 transition-colors duration-200 cursor-pointer"
                           aria-label={t.productDetail.prevImage}
                         >
@@ -1634,7 +1641,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                         {/* Next Button */}
                         <button
-                          onClick={() => setActiveImage(activeImage === listing.images.length - 1 ? 0 : activeImage + 1)}
+                          onClick={() => setActiveImage(activeImage === validImages.length - 1 ? 0 : activeImage + 1)}
                           className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-neutral-900/90 text-neutral-800 dark:text-neutral-100 p-2 rounded-md border border-neutral-200 dark:border-neutral-600 transition-colors duration-200 cursor-pointer"
                           aria-label={t.productDetail.nextImage}
                         >
@@ -1687,10 +1694,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     </div>
                   </div>
                   {/* Gallery Thumbnails */}
-                  {listing.images && listing.images.length > 1 && (
+                  {validImages.length > 1 && (
                     <div className="relative px-3 py-3 border-t border-neutral-200 dark:border-neutral-800 group">
                       {/* Left Arrow */}
-                      {listing.images.length > 5 && (
+                      {validImages.length > 5 && (
                         <button
                           onClick={(e) => { e.stopPropagation(); scrollThumbnails('left'); }}
                           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-md border border-neutral-200 dark:border-neutral-600 opacity-0 group-hover:opacity-100 hover:border-neutral-400 transition-colors duration-200 -ml-3 cursor-pointer"
@@ -1704,7 +1711,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         ref={thumbnailScrollRef}
                         className="flex gap-2 overflow-x-auto pb-2 scrollbar-none scroll-smooth px-1"
                       >
-                        {listing.images.map((img, index) => (
+                        {validImages.map((img, index) => (
                           <button
                             key={index}
                             onClick={() => handleThumbnailClick(index)}
@@ -1724,7 +1731,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       </div>
 
                       {/* Right Arrow */}
-                      {listing.images.length > 5 && (
+                      {validImages.length > 5 && (
                         <button
                           onClick={(e) => { e.stopPropagation(); scrollThumbnails('right'); }}
                           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-md border border-neutral-200 dark:border-neutral-600 opacity-0 group-hover:opacity-100 hover:border-neutral-400 transition-colors duration-200 -mr-3 cursor-pointer"
@@ -1779,9 +1786,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               <ImageLightbox
                 isOpen={showLightbox}
                 onClose={() => setShowLightbox(false)}
-                imageSrc={listing.image}
+                imageSrc={validImages[0] || listing.image || ''}
                 altText={listing.title}
-                images={listing.images}
+                images={validImages}
                 currentIndex={activeImage}
                 onNavigate={setActiveImage}
               />

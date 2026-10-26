@@ -1,6 +1,17 @@
 import { processImagesForUpload } from '../utils/imageOptimization';
 
 /**
+ * Get full API endpoint URL, handling Capacitor native app and localhost
+ */
+const getApiEndpoint = (endpoint) => {
+    const clean = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    if (typeof window !== 'undefined' && (window.Capacitor?.isNativePlatform() || window.location.origin.includes('localhost'))) {
+        return `https://www.exvitrin.com${clean}`;
+    }
+    return clean;
+};
+
+/**
  * Convert Blob or File to Base64 string
  */
 const blobToBase64 = (blob) => {
@@ -17,7 +28,7 @@ const blobToBase64 = (blob) => {
  */
 export const uploadToR2 = async (fileOrBlob, filePath) => {
     const base64 = await blobToBase64(fileOrBlob);
-    const response = await fetch('/api/upload-image', {
+    const response = await fetch(getApiEndpoint('/api/upload-image'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -105,7 +116,7 @@ export const deleteListingImages = async (imageUrls) => {
                 ? url.replace(/https?:\/\/[^\/]+\/storage\/v1\/object\/public\/listing-images\//, 'https://images.exvitrin.com/')
                 : url;
 
-            await fetch('/api/delete-image', {
+            await fetch(getApiEndpoint('/api/delete-image'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: targetUrl })

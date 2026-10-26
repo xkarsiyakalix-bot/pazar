@@ -1003,12 +1003,18 @@ module.exports = async (req, res) => {
 
             description = `${data.title} ${locationPrefix}${pricePrefix}ExVitrin'de! ${catPrefix}${cleanDesc}`.substring(0, 160).trim();
 
-            // Use the listing's first image — ensure JPEG format for Facebook compatibility
-            let rawImage = (data.images && data.images.length > 0) ? data.images[0] : LOGO_URL;
+            // Extract valid non-null images from listing data
+            const validListingImages = (Array.isArray(data.images) ? data.images : [])
+              .filter(img => typeof img === 'string' && img.trim().length > 0 && (img.startsWith('http') || img.startsWith('/')));
+
+            let rawImage = validListingImages.length > 0
+              ? validListingImages[0]
+              : (typeof data.image === 'string' && data.image.startsWith('http') ? data.image : LOGO_URL);
+
             if (rawImage && rawImage.startsWith('http') && rawImage !== LOGO_URL) {
               image = `https://wsrv.nl/?url=${encodeURIComponent(rawImage)}&w=1200&h=630&fit=cover&output=jpg&q=85`;
             } else {
-              image = rawImage;
+              image = rawImage || LOGO_URL;
             }
             imageWidth = '1200';
             imageHeight = '630';
@@ -1118,8 +1124,10 @@ module.exports = async (req, res) => {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
-  const isJpeg = image.includes('output=jpg') || image.endsWith('.jpg') || image.endsWith('.jpeg');
-  const imageMimeType = isJpeg ? 'image/jpeg' : (image.endsWith('.png') ? 'image/png' : 'image/jpeg');
+  // Ensure image is always a valid non-empty string fallback
+  const safeImage = (typeof image === 'string' && image.trim().length > 0) ? image : LOGO_URL;
+  const isJpeg = safeImage.includes('output=jpg') || safeImage.endsWith('.jpg') || safeImage.endsWith('.jpeg');
+  const imageMimeType = isJpeg ? 'image/jpeg' : (safeImage.endsWith('.png') ? 'image/png' : 'image/jpeg');
 
   const html = `<!DOCTYPE html>
 <html lang="tr" prefix="og: https://ogp.me/ns#">
@@ -1135,8 +1143,8 @@ module.exports = async (req, res) => {
   <meta property="og:url" content="${esc(pageUrl)}" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
-  <meta property="og:image" content="${esc(image)}" />
-  <meta property="og:image:secure_url" content="${esc(image)}" />
+  <meta property="og:image" content="${esc(safeImage)}" />
+  <meta property="og:image:secure_url" content="${esc(safeImage)}" />
   <meta property="og:image:type" content="${esc(imageMimeType)}" />
   <meta property="og:image:width" content="${imageWidth}" />
   <meta property="og:image:height" content="${imageHeight}" />
@@ -1148,7 +1156,7 @@ module.exports = async (req, res) => {
   <meta name="twitter:url" content="${esc(pageUrl)}" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(description)}" />
-  <meta name="twitter:image" content="${esc(image)}" />
+  <meta name="twitter:image" content="${esc(safeImage)}" />
 
   <link rel="canonical" href="${esc(pageUrl)}" />
 
@@ -1162,7 +1170,7 @@ module.exports = async (req, res) => {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; text-align: center;">
   <h2>${esc(title)}</h2>
   <p>${esc(description)}</p>
-  <p><img src="${esc(image)}" alt="${esc(title)}" style="max-width: 100%; max-height: 400px; border-radius: 8px;" /></p>
+  <p><img src="${esc(safeImage)}" alt="${esc(title)}" style="max-width: 100%; max-height: 400px; border-radius: 8px;" /></p>
   <p><a href="${esc(pageUrl)}" style="color: #dc2626; font-weight: bold; font-size: 16px;">ExVitrin'de İlanı Görüntüle &rarr;</a></p>
 </body>
 </html>`;

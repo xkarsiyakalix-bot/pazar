@@ -24,6 +24,14 @@ import { isPetAdoptionCategory } from '../utils/formatUtils';
 import { getListingUrl } from '../utils/slug';
 import { shareToFacebook, shareToWhatsApp, copyShareLink } from '../utils/shareUtils';
 
+const getApiUrl = (endpoint) => {
+  const clean = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  if (typeof window !== 'undefined' && (window.Capacitor?.isNativePlatform() || window.location.origin.includes('localhost'))) {
+    return `https://www.exvitrin.com${clean}`;
+  }
+  return clean;
+};
+
 export const AddListing = () => {
   // Debug logging
   const [debugLog, setDebugLog] = React.useState(null);
@@ -130,7 +138,7 @@ export const AddListing = () => {
     
     setIsGeneratingDescription(true);
     try {
-      const response = await fetch('/api/generate-description', {
+      const response = await fetch(getApiUrl('/api/generate-description'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -173,7 +181,7 @@ export const AddListing = () => {
       reader.onloadend = async () => {
         const base64data = reader.result;
         try {
-          const response = await fetch('/api/detect-category', {
+          const response = await fetch(getApiUrl('/api/detect-category'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ imageBase64: base64data })
@@ -1009,7 +1017,13 @@ export const AddListing = () => {
       const imageUrls = imageFiles.map(file => {
         if (typeof file === 'string') return file;
         return uploadedUrls[uploadedIdx++];
-      });
+      }).filter(url => typeof url === 'string' && url.trim().length > 0 && (url.startsWith('http') || url.startsWith('/')));
+
+      if (newFiles.length > 0 && uploadedUrls.length === 0) {
+        setLoading(false);
+        alert(t.addListing?.imageUploadError || 'Fotoğraflar yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.');
+        return;
+      }
 
       const unformatPrice = (val) => {
         if (!val) return '';

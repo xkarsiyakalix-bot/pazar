@@ -85,6 +85,10 @@ export const SEO = ({
     };
   }
 
+  const safeImage = (typeof image === 'string' && image.trim().length > 0 && image !== 'null' && (image.startsWith('http') || image.startsWith('/')))
+    ? image
+    : `${SITE_URL}/logo_exvitrin_2026_cropped.png`;
+
   return (
     <Helmet>
       {/* Basic Meta Tags */}
@@ -98,14 +102,14 @@ export const SEO = ({
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonicalUrl} />
-      {image && <meta property="og:image" content={image} />}
+      <meta property="og:image" content={safeImage} />
       <meta property="og:site_name" content={siteName} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      {image && <meta name="twitter:image" content={image} />}
+      <meta name="twitter:image" content={safeImage} />
 
       {/* Structured Data */}
       <script type="application/ld+json">
