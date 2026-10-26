@@ -12,7 +12,13 @@ const LONG_PRESS_MS = 450;
 
 export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing = false, hidePrice = false, priority = false, variant = 'default' }) => {
   const navigate = useNavigate();
-  const hasNoImage = (!listing?.images || listing.images.length === 0) && (!listing?.image || listing.image === '/placeholder-image.jpg' || listing.image === PLACEHOLDER_IMAGE);
+
+  // Safely extract valid images (filter out null/undefined/empty)
+  const validImages = (Array.isArray(listing?.images) ? listing.images : (listing?.image ? [listing.image] : []))
+    .filter(img => typeof img === 'string' && img.trim().length > 0 && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')));
+  const imagesCount = validImages.length;
+  const hasNoImage = imagesCount === 0;
+
   const [imageLoaded, setImageLoaded] = React.useState(priority || hasNoImage);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
 
@@ -55,13 +61,8 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
     }
   };
 
-  // Get first image from images array, fallback to placeholder
-  const rawImageUrl = hasNoImage
-    ? PLACEHOLDER_IMAGE
-    : (listing?.images && listing.images.length > 0
-        ? listing.images[0]
-        : listing?.image || PLACEHOLDER_IMAGE);
-
+  // Get first valid image, fallback to placeholder
+  const rawImageUrl = validImages.length > 0 ? validImages[0] : PLACEHOLDER_IMAGE;
   const imageUrl = getOptimizedImageUrl(rawImageUrl, 400, 280, 'cover');
 
   const isReserved = Boolean(listing?.reserved_by || listing?.is_reserved);
@@ -98,8 +99,6 @@ export const ListingCard = ({ listing, toggleFavorite, isFavorite, isOwnListing 
       cardClasses += "border-gray-100 dark:border-white/[0.06] hover:border-red-200 dark:hover:border-red-800/40 ";
     }
   }
-
-  const imagesCount = listing?.images?.length || (listing?.image ? 1 : 0);
 
   // Long-press handling
   const cancelLongPress = useCallback(() => {

@@ -4,9 +4,8 @@ import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { isPetAdoptionListing } from '../utils/formatUtils';
 
 export const QuickPhotoViewer = ({ listing, initialIndex = 0, onClose }) => {
-  const images = (listing?.images && listing.images.length > 0)
-    ? listing.images
-    : [listing?.image].filter(Boolean);
+  const images = (Array.isArray(listing?.images) ? listing.images : [listing?.image])
+    .filter(img => typeof img === 'string' && img.trim().length > 0 && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')));
 
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isVisible, setIsVisible] = useState(false);

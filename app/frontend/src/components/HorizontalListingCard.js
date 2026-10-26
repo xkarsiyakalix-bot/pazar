@@ -257,9 +257,11 @@ export const HorizontalListingCard = ({ listing, toggleFavorite, isFavorite, isO
           }>
             <img
               src={getOptimizedImageUrl(
-                Array.isArray(listing?.images) && listing.images.length > 0
-                  ? listing.images[0]
-                  : listing?.image || PLACEHOLDER_IMAGE,
+                (() => {
+                  const valid = (Array.isArray(listing?.images) ? listing.images : (listing?.image ? [listing.image] : []))
+                    .filter(img => typeof img === 'string' && img.trim().length > 0 && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')));
+                  return valid.length > 0 ? valid[0] : PLACEHOLDER_IMAGE;
+                })(),
                 300, 200, 'cover'
               )}
               alt={listing?.title || 'İlan Resmi'}
