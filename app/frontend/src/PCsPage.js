@@ -8,7 +8,14 @@ const PCsPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                'Apple', 'Acer', 'Asus', 'Dell', 'HP', 'Lenovo', 'Medion', 'MSI',
+                'Oyun Bilgisayarı (Gaming PC)',
+                'Kasa (Tower / Masaüstü)',
+                'Hepsi Bir Arada (All-in-One)',
+                'Mini PC',
+                'İş & Ofis Bilgisayarı',
+                'İş İstasyonu (Workstation)',
+                'iMac / Mac Mini / Mac Studio',
+                'Sunucu (Server)',
                 { value: 'Diğer Bilgisayarlar', label: 'Diğer Bilgisayarlar' }
             ],
             field: 'pcs_art'

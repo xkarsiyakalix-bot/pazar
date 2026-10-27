@@ -8,7 +8,13 @@ const NotebooksPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
-                'Apple', 'Acer', 'Asus', 'Dell', 'HP', 'Lenovo', 'Microsoft', 'MSI', 'Sony', 'Toshiba',
+                'Oyun Bilgisayarı (Gaming)',
+                'İş & Ofis Bilgisayarı',
+                'Ultrabook & İnce Hafif',
+                'Günlük & Ev Kullanımı',
+                "2'si 1 Arada (Dokunmatik / Katlanabilir)",
+                'MacBook',
+                'İş İstasyonu (Workstation)',
                 { value: 'Diğer Dizüstü Bilgisayarlar', label: 'Diğer Dizüstü Bilgisayarlar' }
             ],
             field: 'notebooks_art'

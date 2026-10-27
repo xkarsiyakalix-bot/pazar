@@ -319,17 +319,14 @@ export const ElectronicFields = ({
                         className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
-                        <option value="Apple">{t.addListing.electronics.types.macbook}</option>
-                        <option value="Acer">Acer</option>
-                        <option value="Asus">Asus</option>
-                        <option value="Dell">Dell</option>
-                        <option value="HP">HP</option>
-                        <option value="Lenovo">Lenovo</option>
-                        <option value="Microsoft">Microsoft</option>
-                        <option value="MSI">MSI</option>
-                        <option value="Sony">Sony</option>
-                        <option value="Toshiba">Toshiba</option>
-                        <option value="Diğer Dizüstü Bilgisayarlar">{t.addListing.electronics.types.otherNotebook}</option>
+                        <option value="Oyun Bilgisayarı (Gaming)">Oyun Bilgisayarı (Gaming)</option>
+                        <option value="İş & Ofis Bilgisayarı">İş & Ofis Bilgisayarı</option>
+                        <option value="Ultrabook & İnce Hafif">Ultrabook & İnce Hafif</option>
+                        <option value="Günlük & Ev Kullanımı">Günlük & Ev Kullanımı</option>
+                        <option value="2'si 1 Arada (Dokunmatik / Katlanabilir)">2'si 1 Arada (Dokunmatik / Katlanabilir)</option>
+                        <option value="MacBook">MacBook</option>
+                        <option value="İş İstasyonu (Workstation)">İş İstasyonu (Workstation)</option>
+                        <option value="Diğer Dizüstü Bilgisayarlar">Diğer Dizüstü Bilgisayarlar</option>
                     </select>
                 </div>
             )}
@@ -342,15 +339,15 @@ export const ElectronicFields = ({
                         className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                     >
                         <option value="">{t.productDetail.pleaseChoose}</option>
-                        <option value="Apple">{t.addListing.electronics.types.pc}</option>
-                        <option value="Acer">Acer</option>
-                        <option value="Asus">Asus</option>
-                        <option value="Dell">Dell</option>
-                        <option value="HP">HP</option>
-                        <option value="Lenovo">Lenovo</option>
-                        <option value="Medion">Medion</option>
-                        <option value="MSI">MSI</option>
-                        <option value="Diğer Bilgisayarlar">{t.addListing.electronics.types.otherPCDesktop}</option>
+                        <option value="Oyun Bilgisayarı (Gaming PC)">Oyun Bilgisayarı (Gaming PC)</option>
+                        <option value="Kasa (Tower / Masaüstü)">Kasa (Tower / Masaüstü)</option>
+                        <option value="Hepsi Bir Arada (All-in-One)">Hepsi Bir Arada (All-in-One)</option>
+                        <option value="Mini PC">Mini PC</option>
+                        <option value="İş & Ofis Bilgisayarı">İş & Ofis Bilgisayarı</option>
+                        <option value="İş İstasyonu (Workstation)">İş İstasyonu (Workstation)</option>
+                        <option value="iMac / Mac Mini / Mac Studio">iMac / Mac Mini / Mac Studio</option>
+                        <option value="Sunucu (Server)">Sunucu (Server)</option>
+                        <option value="Diğer Bilgisayarlar">Diğer Bilgisayarlar</option>
                     </select>
                 </div>
             )}
