@@ -808,6 +808,9 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
     if (id || slug) {
       loadListing();
+    } else {
+      setLoading(false);
+      setError('İlan bulunamadı');
     }
   }, [id, slug, user?.id]);
 

@@ -30,12 +30,21 @@ export const getListingUrl = (listing) => {
         return `/${listing}`;
     }
 
-    if (listing.slug) {
+    const reservedSlugs = [
+        'ilan', 'product', 'seller', 'store', 'categories', 'add-listing', 'ilan-ver',
+        'login', 'register', 'admin', 'settings', 'profile', 'search', 'packages',
+        'privacy', 'terms', 'contact', 'hakkimizda', 'iletisim', 'sitemap', 'robots'
+    ];
+
+    if (listing.slug && !reservedSlugs.includes(listing.slug.toLowerCase().trim())) {
         return `/${listing.slug}`;
     }
 
-    if (listing.title) {
-        return `/${createSlug(listing.title)}`;
+    if (listing.title && listing.title.trim().length > 0) {
+        const slugified = createSlug(listing.title);
+        if (slugified && !reservedSlugs.includes(slugified.toLowerCase())) {
+            return `/${slugified}`;
+        }
     }
 
     if (listing.id) {

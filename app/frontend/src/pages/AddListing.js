@@ -984,6 +984,21 @@ export const AddListing = () => {
       return;
     }
 
+    if (!title || !title.trim()) {
+      alert(t.addListing?.titleRequired || 'Lütfen bir ilan başlığı girin.');
+      return;
+    }
+
+    if (!category || !category.trim()) {
+      alert(t.addListing?.categoryRequired || 'Lütfen bir kategori seçin.');
+      return;
+    }
+
+    if (!city || !city.trim()) {
+      alert(t.addListing?.cityRequired || 'Lütfen bir şehir seçin.');
+      return;
+    }
+
     if (!limitState.canAdd && !isEditMode) {
       setShowLimitModal(true);
       return;
