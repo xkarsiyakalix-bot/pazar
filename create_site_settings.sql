@@ -26,8 +26,12 @@ DROP POLICY IF EXISTS "Admin insert site_settings" ON public.site_settings;
 
 -- Politikaları oluşturma (Herkes okuyabilir, adminler ekleyebilir/güncelleyebilir)
 CREATE POLICY "Public read site_settings" ON public.site_settings FOR SELECT USING (true);
-CREATE POLICY "Admin update site_settings" ON public.site_settings FOR UPDATE USING (true);
-CREATE POLICY "Admin insert site_settings" ON public.site_settings FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admin update site_settings" ON public.site_settings FOR UPDATE USING (
+  EXISTS (SELECT 1 FROM public.profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true)
+);
+CREATE POLICY "Admin insert site_settings" ON public.site_settings FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM public.profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true)
+);
 
 -- PostgREST API şema önbelleğini (cache) yenileme
 NOTIFY pgrst, 'reload schema';
