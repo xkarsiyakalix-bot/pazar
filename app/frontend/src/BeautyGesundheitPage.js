@@ -8,6 +8,7 @@ const BeautyGesundheitPage = ({ toggleFavorite, isFavorite }) => {
             label: 'Tür',
             type: 'multiselect',
             options: [
+                { value: 'Parfüm & Deodorant', label: 'Parfüm & Deodorant' },
                 { value: 'Makyaj & Cilt Bakımı', label: 'Makyaj & Cilt Bakımı' },
                 { value: 'Saç Bakımı', label: 'Saç Bakımı' },
                 { value: 'Vücut Bakımı', label: 'Vücut Bakımı' },
@@ -16,6 +17,16 @@ const BeautyGesundheitPage = ({ toggleFavorite, isFavorite }) => {
                 { value: 'Diğer Güzellik & Sağlık', label: 'Diğer Güzellik & Sağlık' }
             ],
             field: 'beauty_gesundheit_art'
+        },
+        marke: {
+            label: 'Marka',
+            type: 'multiselect',
+            options: [
+                'Yves Saint Laurent', 'YSL', 'Chanel', 'Dior', 'Gucci', 'Prada',
+                'Armani', 'Tom Ford', 'Lancôme', 'Calvin Klein', 'Versace',
+                'Burberry', 'Hermès', 'Jo Malone', 'Diğer'
+            ],
+            field: 'marke'
         },
         versand: {
             label: 'Kargo',

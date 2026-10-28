@@ -12678,5 +12678,30 @@
     "name": "Playmobil",
     "slug": "playmobil",
     "category": "Oyuncak"
+  },
+  "yves-saint-laurent": {
+    "name": "Yves Saint Laurent",
+    "slug": "yves-saint-laurent",
+    "category": "Moda & Giyim"
+  },
+  "ysl": {
+    "name": "YSL",
+    "slug": "ysl",
+    "category": "Moda & Giyim"
+  },
+  "dior": {
+    "name": "Dior",
+    "slug": "dior",
+    "category": "Moda & Giyim"
+  },
+  "lancome": {
+    "name": "Lancôme",
+    "slug": "lancome",
+    "category": "Moda & Giyim"
+  },
+  "jo-malone": {
+    "name": "Jo Malone",
+    "slug": "jo-malone",
+    "category": "Moda & Giyim"
   }
 }

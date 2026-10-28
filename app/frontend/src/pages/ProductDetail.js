@@ -258,6 +258,16 @@ const extractListingBrandWithFallback = (listing) => {
     if (tLower.includes('philips avent') || tLower.includes('avent')) return 'Philips Avent';
     if (tLower.includes('stokke')) return 'Stokke';
     if (tLower.includes('graco')) return 'Graco';
+    if (tLower.includes('ysl') || tLower.includes('yves saint laurent')) return 'Yves Saint Laurent';
+    if (tLower.includes('chanel')) return 'Chanel';
+    if (tLower.includes('dior')) return 'Dior';
+    if (tLower.includes('gucci')) return 'Gucci';
+    if (tLower.includes('prada')) return 'Prada';
+    if (tLower.includes('armani')) return 'Armani';
+    if (tLower.includes('versace')) return 'Versace';
+    if (tLower.includes('tom ford')) return 'Tom Ford';
+    if (tLower.includes('lancome') || tLower.includes('lancôme')) return 'Lancôme';
+    if (tLower.includes('jo malone')) return 'Jo Malone';
   }
 
   return null;
@@ -2643,16 +2653,24 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 )}
 
                 {/* Beauty & Gesundheit Details */}
-                {listing.beauty_gesundheit_art && (
+                {(listing.beauty_gesundheit_art || ((listing.sub_category === 'Güzellik & Sağlık' || listing.sub_category === 'Kişisel Bakım & Sağlık') && extractListingBrandWithFallback(listing))) && (
                   <div className="mb-8">
                     <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.beauty_gesundheit_art}</span>
-                      </div>
+                      {extractListingBrandWithFallback(listing) && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
+                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                        </div>
+                      )}
+                      {listing.beauty_gesundheit_art && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.productDetail.art}</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.beauty_gesundheit_art}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

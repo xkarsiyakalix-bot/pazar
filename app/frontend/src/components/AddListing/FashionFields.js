@@ -59,21 +59,37 @@ export const FashionFields = ({
         <>
             {/* Beauty & Gesundheit Specific Fields */}
             {(subCategory === 'Güzellik & Sağlık' || subCategory === 'Kişisel Bakım & Sağlık') && (
-                <div className="mt-4">
-                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
-                    <select
-                        value={selectedBeautyGesundheitArt}
-                        onChange={(e) => setSelectedBeautyGesundheitArt(e.target.value)}
-                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
-                    >
-                        <option value="">{t.productDetail.pleaseChoose}</option>
-                        <option value="Makyaj & Cilt Bakımı">{t.addListing.fashion.beauty.makeup}</option>
-                        <option value="Saç Bakımı">{t.addListing.fashion.beauty.hair}</option>
-                        <option value="Vücut Bakımı">{t.addListing.fashion.beauty.body}</option>
-                        <option value="El & Tırnak Bakımı">{t.addListing.fashion.beauty.nails}</option>
-                        <option value="Sağlık">{t.addListing.fashion.beauty.health}</option>
-                        <option value="Diğer Güzellik & Sağlık">{t.addListing.fashion.beauty.other}</option>
-                    </select>
+                <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
+                    <h3 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6 flex items-center gap-3">{t.productDetail.details}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
+                            <select
+                                value={selectedBeautyGesundheitArt}
+                                onChange={(e) => setSelectedBeautyGesundheitArt(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
+                            >
+                                <option value="">{t.productDetail.pleaseChoose}</option>
+                                <option value="Parfüm & Deodorant">Parfüm & Deodorant</option>
+                                <option value="Makyaj & Cilt Bakımı">{t.addListing.fashion.beauty.makeup}</option>
+                                <option value="Saç Bakımı">{t.addListing.fashion.beauty.hair}</option>
+                                <option value="Vücut Bakımı">{t.addListing.fashion.beauty.body}</option>
+                                <option value="El & Tırnak Bakımı">{t.addListing.fashion.beauty.nails}</option>
+                                <option value="Sağlık">{t.addListing.fashion.beauty.health}</option>
+                                <option value="Diğer Güzellik & Sağlık">{t.addListing.fashion.beauty.other}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <BrandAutocomplete
+                                value={brand}
+                                onChange={(val) => {
+                                    if (setBrand) setBrand(val);
+                                }}
+                                placeholder="Marka yazın veya arayın (örn. YSL, Yves Saint Laurent, Chanel, Dior, Lancôme...)"
+                                label={t.addListing.brand}
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -419,6 +435,23 @@ export const FashionFields = ({
                                 label={t.addListing.brand}
                             />
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Brand Selection for Diğer Moda & Güzellik */}
+            {(subCategory === 'Diğer Moda & Güzellik' || subCategory === 'Diğer Moda') && (
+                <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
+                    <h3 className="text-xl font-extrabold text-neutral-900 dark:text-neutral-50 mb-6 flex items-center gap-3">{t.productDetail.details}</h3>
+                    <div>
+                        <BrandAutocomplete
+                            value={brand}
+                            onChange={(val) => {
+                                if (setBrand) setBrand(val);
+                            }}
+                            placeholder="Marka yazın veya arayın (örn. YSL, Yves Saint Laurent, Chanel, Dior, Zara...)"
+                            label={t.addListing.brand}
+                        />
                     </div>
                 </div>
             )}

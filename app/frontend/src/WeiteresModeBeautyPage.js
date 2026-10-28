@@ -4,6 +4,16 @@ import { getTurkishCities } from './translations';
 
 const WeiteresModeBeautyPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
+        marke: {
+            label: 'Marka',
+            type: 'multiselect',
+            options: [
+                'Yves Saint Laurent', 'YSL', 'Chanel', 'Dior', 'Gucci', 'Prada',
+                'Armani', 'Tom Ford', 'Lancôme', 'Calvin Klein', 'Versace',
+                'Zara', 'Mango', 'Nike', 'Adidas', 'Diğer'
+            ],
+            field: 'marke'
+        },
         versand: {
             label: 'Kargo',
             type: 'multiselect',
