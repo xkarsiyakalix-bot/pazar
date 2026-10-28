@@ -13,6 +13,16 @@ const KinderwagenBuggysPage = ({ toggleFavorite, isFavorite }) => {
             ],
             field: 'kinderwagen_buggys_art'
         },
+        marke: {
+            label: 'Marka',
+            type: 'multiselect',
+            options: [
+                'Pierre Cardin', 'Chicco', 'Joie', 'Maxi-Cosi', 'Peg Perego',
+                'Cybex', 'Bugaboo', 'Quinny', 'Kraft', 'Prego', 'Hauck',
+                'Silver Cross', 'Graco', 'Mamas & Papas', 'iCandy', 'Baby Trend', 'Diğer'
+            ],
+            field: 'marke'
+        },
         color: {
             label: 'Renk',
             type: 'multiselect',

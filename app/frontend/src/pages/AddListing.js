@@ -339,6 +339,7 @@ export const AddListing = () => {
   const [babyschalenKindersitzeColor, setBabyschalenKindersitzeColor] = useState(''); // Bebek Arabaları
   const [kinderwagenBuggysArt, setKinderwagenBuggysArt] = useState('');
   const [kinderwagenBuggysColor, setKinderwagenBuggysColor] = useState('');
+  const [kinderwagenBuggysMarke, setKinderwagenBuggysMarke] = useState('');
 
   // Herrenschuhe
   const [selectedHerrenschuheArt, setSelectedHerrenschuheArt] = useState('');
@@ -1198,6 +1199,7 @@ export const AddListing = () => {
                damenschuheMarke ||
                herrenbekleidungMarke ||
                selectedHerrenschuheMarke ||
+               kinderwagenBuggysMarke ||
                brand || null,
         modell: selectedCarModel || selectedPhoneModel || null,
         kilometerstand: mileage ? parseInt(mileage.toString().replace(/\D/g, '')) : null,
@@ -1621,6 +1623,8 @@ export const AddListing = () => {
                 setKinderwagenBuggysArt={setKinderwagenBuggysArt}
                 kinderwagenBuggysColor={kinderwagenBuggysColor}
                 setKinderwagenBuggysColor={setKinderwagenBuggysColor}
+                kinderwagenBuggysMarke={kinderwagenBuggysMarke}
+                setKinderwagenBuggysMarke={setKinderwagenBuggysMarke}
                 babyschalenKindersitzeColor={babyschalenKindersitzeColor}
                 setBabyschalenKindersitzeColor={setBabyschalenKindersitzeColor}
                 selectedKinderzimmermobelArt={selectedKinderzimmermobelArt}

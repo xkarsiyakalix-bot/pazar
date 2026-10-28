@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrandAutocomplete } from './BrandAutocomplete';
 
 export const FamilyFields = ({
     subCategory,
@@ -21,6 +22,8 @@ export const FamilyFields = ({
     setKinderwagenBuggysArt,
     kinderwagenBuggysColor,
     setKinderwagenBuggysColor,
+    kinderwagenBuggysMarke,
+    setKinderwagenBuggysMarke,
     babyschalenKindersitzeColor,
     setBabyschalenKindersitzeColor,
     selectedKinderzimmermobelArt,
@@ -180,30 +183,99 @@ export const FamilyFields = ({
 
             {/* Bebek Arabaları & Pusetler */}
             {subCategory === 'Bebek Arabaları & Pusetler' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
+                            <select
+                                value={kinderwagenBuggysArt}
+                                onChange={(e) => setKinderwagenBuggysArt(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
+                            >
+                                <option value="">{t.productDetail.pleaseChoose}</option>
+                                {[
+                                    { val: 'Kombi Bebek Arabası', label: t.addListing.family.strollers.combi },
+                                    { val: 'Puset', label: t.addListing.family.strollers.buggy },
+                                    { val: 'Jogger', label: t.addListing.family.strollers.jogger },
+                                    { val: 'İkiz & Kardeş Arabası', label: t.addListing.family.strollers.twin },
+                                    { val: 'Aksesuar', label: t.addListing.family.strollers.accessory },
+                                    { val: 'Diğer', label: t.addListing.family.strollers.other }
+                                ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.color}</label>
+                            <select
+                                value={kinderwagenBuggysColor}
+                                onChange={(e) => setKinderwagenBuggysColor(e.target.value)}
+                                className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
+                            >
+                                <option value="">{t.productDetail.pleaseChoose}</option>
+                                {[
+                                    { val: 'Bej', label: t.addListing.colors.beige },
+                                    { val: 'Mavi', label: t.addListing.colors.blue },
+                                    { val: 'Kahverengi', label: t.addListing.colors.brown },
+                                    { val: 'Renkli', label: t.addListing.colors.multicolor },
+                                    { val: 'Krem', label: t.addListing.colors.cream },
+                                    { val: 'Sarı', label: t.addListing.colors.yellow },
+                                    { val: 'Altın', label: t.addListing.colors.gold },
+                                    { val: 'Gri', label: t.addListing.colors.gray },
+                                    { val: 'Yeşil', label: t.addListing.colors.green },
+                                    { val: 'Haki', label: t.addListing.colors.khaki },
+                                    { val: 'Lavanta', label: t.addListing.colors.lavender },
+                                    { val: 'Mor', label: t.addListing.colors.purple },
+                                    { val: 'Turuncu', label: t.addListing.colors.orange },
+                                    { val: 'Pembe', label: t.addListing.colors.pink },
+                                    { val: 'Desenli', label: t.addListing.colors.print },
+                                    { val: 'Kırmızı', label: t.addListing.colors.red },
+                                    { val: 'Siyah', label: t.addListing.colors.black },
+                                    { val: 'Gümüş', label: t.addListing.colors.silver },
+                                    { val: 'Turkuaz', label: t.addListing.colors.turquoise },
+                                    { val: 'Beyaz', label: t.addListing.colors.white },
+                                    { val: 'Diğer Renkler', label: t.addListing.colors.other }
+                                ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
+                            </select>
+                        </div>
+                    </div>
                     <div>
-                        <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.art}</label>
-                        <select
-                            value={kinderwagenBuggysArt}
-                            onChange={(e) => setKinderwagenBuggysArt(e.target.value)}
-                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
-                        >
-                            <option value="">{t.productDetail.pleaseChoose}</option>
-                            {[
-                                { val: 'Kombi Bebek Arabası', label: t.addListing.family.strollers.combi },
-                                { val: 'Puset', label: t.addListing.family.strollers.buggy },
-                                { val: 'Jogger', label: t.addListing.family.strollers.jogger },
-                                { val: 'İkiz & Kardeş Arabası', label: t.addListing.family.strollers.twin },
-                                { val: 'Aksesuar', label: t.addListing.family.strollers.accessory },
-                                { val: 'Diğer', label: t.addListing.family.strollers.other }
-                            ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
-                        </select>
+                        <BrandAutocomplete
+                            value={kinderwagenBuggysMarke}
+                            onChange={(val) => setKinderwagenBuggysMarke(val)}
+                            label="Marka"
+                            placeholder="Marka yazın veya arayın (örn. Pierre Cardin, Chicco, Joie, Maxi-Cosi, Peg Perego...)"
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Bebek Ekipmanları */}
+            {subCategory === 'Bebek Ekipmanları' && (
+                <div>
+                    <BrandAutocomplete
+                        value={kinderwagenBuggysMarke}
+                        onChange={(val) => setKinderwagenBuggysMarke(val)}
+                        label="Marka"
+                        placeholder="Marka yazın veya arayın (örn. Pierre Cardin, Chicco, Philips Avent, Kraft...)"
+                    />
+                </div>
+            )}
+
+            {/* Bebek Koltuğu & Oto Koltukları */}
+            {subCategory === 'Bebek Koltuğu & Oto Koltukları' && (
+                <div className="space-y-4">
+                    <div>
+                        <BrandAutocomplete
+                            value={kinderwagenBuggysMarke}
+                            onChange={(val) => setKinderwagenBuggysMarke(val)}
+                            label="Marka"
+                            placeholder="Marka yazın veya arayın (örn. Maxi-Cosi, Cybex, Britax Römer, Chicco...)"
+                        />
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.color}</label>
                         <select
-                            value={kinderwagenBuggysColor}
-                            onChange={(e) => setKinderwagenBuggysColor(e.target.value)}
+                            value={babyschalenKindersitzeColor}
+                            onChange={(e) => setBabyschalenKindersitzeColor(e.target.value)}
                             className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
                         >
                             <option value="">{t.productDetail.pleaseChoose}</option>
@@ -232,43 +304,6 @@ export const FamilyFields = ({
                             ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
                         </select>
                     </div>
-                </div>
-            )}
-
-            {/* Bebek Koltuğu & Oto Koltukları */}
-            {subCategory === 'Bebek Koltuğu & Oto Koltukları' && (
-                <div>
-                    <label className="block text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 uppercase tracking-wider">{t.addListing.color}</label>
-                    <select
-                        value={babyschalenKindersitzeColor}
-                        onChange={(e) => setBabyschalenKindersitzeColor(e.target.value)}
-                        className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all appearance-none"
-                    >
-                        <option value="">{t.productDetail.pleaseChoose}</option>
-                        {[
-                            { val: 'Bej', label: t.addListing.colors.beige },
-                            { val: 'Mavi', label: t.addListing.colors.blue },
-                            { val: 'Kahverengi', label: t.addListing.colors.brown },
-                            { val: 'Renkli', label: t.addListing.colors.multicolor },
-                            { val: 'Krem', label: t.addListing.colors.cream },
-                            { val: 'Sarı', label: t.addListing.colors.yellow },
-                            { val: 'Altın', label: t.addListing.colors.gold },
-                            { val: 'Gri', label: t.addListing.colors.gray },
-                            { val: 'Yeşil', label: t.addListing.colors.green },
-                            { val: 'Haki', label: t.addListing.colors.khaki },
-                            { val: 'Lavanta', label: t.addListing.colors.lavender },
-                            { val: 'Mor', label: t.addListing.colors.purple },
-                            { val: 'Turuncu', label: t.addListing.colors.orange },
-                            { val: 'Pembe', label: t.addListing.colors.pink },
-                            { val: 'Desenli', label: t.addListing.colors.print },
-                            { val: 'Kırmızı', label: t.addListing.colors.red },
-                            { val: 'Siyah', label: t.addListing.colors.black },
-                            { val: 'Gümüş', label: t.addListing.colors.silver },
-                            { val: 'Turkuaz', label: t.addListing.colors.turquoise },
-                            { val: 'Beyaz', label: t.addListing.colors.white },
-                            { val: 'Diğer Renkler', label: t.addListing.colors.other }
-                        ].map(item => <option key={item.val} value={item.val}>{item.label}</option>)}
-                    </select>
                 </div>
             )}
 

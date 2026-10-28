@@ -4,6 +4,16 @@ import { getTurkishCities } from './translations';
 
 const BabyAusstattungPage = ({ toggleFavorite, isFavorite }) => {
     const filterConfig = {
+        marke: {
+            label: 'Marka',
+            type: 'multiselect',
+            options: [
+                'Pierre Cardin', 'Chicco', 'Philips Avent', 'Kraft', 'Prego',
+                'Joie', 'Maxi-Cosi', 'Fisher-Price', 'Lansinoh', 'Medela',
+                'Wee Baby', 'Babyjem', 'Tiny Love', 'Stokke', 'Diğer'
+            ],
+            field: 'marke'
+        },
         versand: {
             label: 'Kargo',
             type: 'multiselect',

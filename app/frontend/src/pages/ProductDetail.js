@@ -245,6 +245,19 @@ const extractListingBrandWithFallback = (listing) => {
   if (listing.title && typeof listing.title === 'string') {
     const tLower = listing.title.trim().toLowerCase();
     if (tLower.includes('astral london')) return 'Astral London';
+    if (tLower.includes('pierre cardin')) return 'Pierre Cardin';
+    if (tLower.includes('chicco')) return 'Chicco';
+    if (tLower.includes('maxi-cosi') || tLower.includes('maxi cosi')) return 'Maxi-Cosi';
+    if (tLower.includes('cybex')) return 'Cybex';
+    if (tLower.includes('bugaboo')) return 'Bugaboo';
+    if (tLower.includes('kraft')) return 'Kraft';
+    if (tLower.includes('prego')) return 'Prego';
+    if (tLower.includes('joie')) return 'Joie';
+    if (tLower.includes('peg perego')) return 'Peg Perego';
+    if (tLower.includes('quinny')) return 'Quinny';
+    if (tLower.includes('philips avent') || tLower.includes('avent')) return 'Philips Avent';
+    if (tLower.includes('stokke')) return 'Stokke';
+    if (tLower.includes('graco')) return 'Graco';
   }
 
   return null;
@@ -2235,13 +2248,19 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
                 )}
 
-                {/* Kinderwagen & Buggys Details */}
-                {(listing.kinderwagen_buggys_color || listing.kinderwagen_buggys_art) && (
+                {/* Kinderwagen & Buggys / Baby Equipment Details */}
+                {(listing.kinderwagen_buggys_color || listing.kinderwagen_buggys_art || ((listing.category === 'Aile, Çocuk & Bebek' || listing.category === 'Familie, Kind & Baby') && (listing.marke || extractListingBrandWithFallback(listing)))) && (
                   <div className="mb-8">
                     <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      {(listing.marke || extractListingBrandWithFallback(listing)) && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
+                          {renderBrandLink(listing.marke || extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                        </div>
+                      )}
                       {listing.kinderwagen_buggys_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
