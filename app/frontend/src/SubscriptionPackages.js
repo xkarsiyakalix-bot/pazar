@@ -41,8 +41,8 @@ const SubscriptionPackages = () => {
             price: '0',
             annualPrice: '0',
             features: [
-                'Her ay 20 Ücretsiz İlan',
-                'İlan başına 9,90 TL ek ücret',
+                'Sınırsız & Ücretsiz İlan Verme',
+                'Ek ücret veya komisyon yok',
                 'Temel istatistikler',
                 'Mesajlaşma özelliği'
             ],
@@ -145,6 +145,28 @@ const SubscriptionPackages = () => {
             <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[800px] h-[800px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-[120px] opacity-40"></div>
 
             <div className="max-w-7xl mx-auto relative z-10 font-sans">
+                {/* Free / Demo Notice Banner */}
+                <div className="mb-12 max-w-4xl mx-auto">
+                    <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 border-2 border-emerald-500/30 dark:border-emerald-500/40 rounded-3xl p-6 md:p-8 text-center backdrop-blur-sm shadow-xl shadow-emerald-500/5">
+                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-500 text-white mb-4 shadow-lg shadow-emerald-500/30">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-neutral-50 mb-3 tracking-tight">
+                            Platformumuz Şu Anda Tamamen Ücretsizdir!
+                        </h2>
+                        <p className="text-base md:text-lg text-gray-600 dark:text-neutral-300 font-medium leading-relaxed max-w-2xl mx-auto">
+                            Aşağıda yer alan fiyatlar ve paketler <span className="font-bold text-emerald-600 dark:text-emerald-400">temsilidir</span>. 
+                            Şu anda platformumuzdaki tüm ilan verme, mağaza ve kurumsal özellikler için <span className="font-bold text-gray-900 dark:text-white underline decoration-emerald-500 decoration-2">kesinlikle hiçbir ücret veya komisyon alınmamaktadır</span>.
+                        </p>
+                        <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-xs md:text-sm font-bold">
+                            <span>✨</span>
+                            <span>Tüm özellikleri hiçbir kredi kartı veya ödeme gerekmeden hemen deneyimleyebilirsiniz.</span>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Header */}
                 <div className="text-center mb-20">
                     <span className="inline-block px-4 py-1.5 mb-6 text-sm font-black tracking-[0.2em] text-rose-600 uppercase bg-rose-50 dark:bg-rose-900/20 rounded-full">
@@ -204,6 +226,11 @@ const SubscriptionPackages = () => {
                                             </span>
                                             <span className="text-xl font-bold text-gray-400 dark:text-neutral-500"> TL{isAnnual ? '/yıl' : '/ay'}</span>
                                         </div>
+                                        {pkg.id !== 'free' && (
+                                            <span className="inline-block mt-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded w-fit">
+                                                Temsili Fiyat (Şu an Ücretsiz)
+                                            </span>
+                                        )}
                                         {isAnnual && pkg.id !== 'free' && (
                                             <p className="text-sm font-bold text-rose-600 mt-1">
                                                 (Aylık {Math.round(pkg.annualPrice / 12)} TL)
@@ -246,25 +273,24 @@ const SubscriptionPackages = () => {
                 </div>
 
                 {/* Info Box */}
-                {/* Info Box */}
                 <div className="mt-32 relative overflow-hidden rounded-[3rem] bg-white dark:bg-neutral-900 p-12 md:p-20 text-gray-900 dark:text-white text-left border border-gray-100 dark:border-white/5 shadow-2xl shadow-gray-200/50 dark:shadow-none">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-rose-50 dark:bg-rose-900/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2"></div>
 
                     <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
                         <div>
-                            <span className="text-rose-500 font-black tracking-[0.3em] text-[10px] mb-4 block uppercase leading-none">EKSTRA KAPASİTE</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-black tracking-[0.3em] text-[10px] mb-4 block uppercase leading-none">ÜCRETSİZ İLAN VERME</span>
                             <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight tracking-tighter text-gray-900 dark:text-neutral-50">İlanlarınız Sınırlara <br /> Takılmasın.</h2>
                             <p className="text-xl text-gray-500 dark:text-neutral-400 font-medium leading-relaxed max-w-xl">
-                                Paketinizin limitini aştığınızda endişelenmeyin! İlan başına sadece <span className="text-gray-900 dark:text-white font-black underline decoration-rose-500">9,90 TL</span> ödeyerek sınırsızca yeni ilanlar eklemeye devam edebilir, hiçbir satış fırsatını kaçırmazsınız.
+                                Platformumuzda şu an tüm kullanıcılarımız <span className="text-emerald-600 dark:text-emerald-400 font-black">tamamen ücretsiz</span> ve sınırsızca ilan verebilir. Hiçbir ilan veya listeleme ücreti alınmamaktadır.
                             </p>
                         </div>
                         <div className="flex justify-start lg:justify-end gap-6 items-center">
                             <button
                                 onClick={() => navigate('/add-listing')}
-                                className="group px-12 py-5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-[2rem] font-black text-xl hover:bg-rose-600 dark:hover:bg-rose-500 hover:text-white dark:hover:text-white transition-all shadow-xl shadow-gray-200 dark:shadow-none flex items-center gap-3"
+                                className="group px-12 py-5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-[2rem] font-black text-xl hover:bg-emerald-600 dark:hover:bg-emerald-500 hover:text-white dark:hover:text-white transition-all shadow-xl shadow-gray-200 dark:shadow-none flex items-center gap-3"
                             >
-                                HEMEN İLAN VER
+                                HEMEN ÜCRETSİZ İLAN VER
                                 <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
@@ -275,7 +301,7 @@ const SubscriptionPackages = () => {
 
                 {/* FAQ Style Footer */}
                 <div className="mt-24 text-center">
-                    <p className="text-gray-400 font-bold text-sm tracking-widest uppercase">Güvenli Ödeme • 7/24 Teknik Destek • Kurumsal Çözümler</p>
+                    <p className="text-gray-400 font-bold text-sm tracking-widest uppercase">Tamamen Ücretsiz • Güvenli Platform • Kurumsal Çözümler</p>
                 </div>
             </div>
         </div>

@@ -106,11 +106,15 @@ const PaymentPage = () => {
         <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 pt-24 pb-12 px-4 transition-colors duration-300">
             <div className="max-w-xl mx-auto bg-white dark:bg-neutral-900 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-white/5">
                 <div className="bg-gray-900 dark:bg-neutral-950 p-6 text-white text-center border-b border-white/5">
-                    <h2 className="text-2xl font-bold mb-2">Güvenli Ödeme</h2>
-                    <p className="text-gray-400 dark:text-neutral-400 text-sm">Paket aktivasyonu için ödeme bilgilerinizi giriniz.</p>
+                    <h2 className="text-2xl font-bold mb-2">Paket Aktivasyonu (Ücretsiz / Demo)</h2>
+                    <p className="text-emerald-400 text-sm font-semibold">Temsili işlem: Kartınızdan herhangi bir ücret çekilmez.</p>
                 </div>
 
                 <div className="p-8">
+                    <div className="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs leading-relaxed">
+                        <strong>Bilgilendirme:</strong> Platformumuz tanıtım sürecinde tamamen ücretsizdir. Fiyatlar temsili olup ödeme adımında test amacıyla kart bilgilerini rastgele girebilirsiniz, hiçbir ücret tahsil edilmez.
+                    </div>
+
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-8 flex justify-between items-center border border-blue-100 dark:border-blue-900/30">
                         <div>
                             <div className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">Seçilen Paket</div>
