@@ -77,6 +77,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
   const [selectedDistrict, setSelectedDistrict] = useState(parsedDistrict || '');
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
+  const [districtCounts, setDistrictCounts] = useState({});
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState('horizontal'); // 'horizontal' or 'grid'
 
@@ -116,28 +117,75 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
       const activeCity = city || citySlug;
       if (!activeCity) return;
       try {
-        const variants = getCityVariants(activeCity);
+        // Use simplified OR filter: just ilike on city column with a few key variants
+        // This avoids Supabase OR filter complexity issues with many variants
+        const canonicalCityName = city || slugToCity(citySlug) || citySlug;
         let query = supabase.from('listings').select('category, district').eq('status', 'active');
-        if (variants.length > 0) {
-          const orFilter = variants.map(v => `city.ilike.%${v}%,federal_state.ilike.%${v}%`).join(',');
-          query = query.or(orFilter);
-        }
+
+        // Build a simple but effective OR filter covering Turkish İ variants
+        const cityLower = canonicalCityName.toLowerCase();
+        const cityUpper = canonicalCityName.toUpperCase();
+        // Handle Turkish İ/i specifically
+        const cityTurkish = canonicalCityName; // e.g. "İzmir"
+        const cityAscii = canonicalCityName
+          .replace(/İ/g, 'I').replace(/ı/g, 'i')
+          .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
+          .replace(/Ş/g, 'S').replace(/ş/g, 's')
+          .replace(/Ö/g, 'O').replace(/ö/g, 'o')
+          .replace(/Ü/g, 'U').replace(/ü/g, 'u')
+          .replace(/Ç/g, 'C').replace(/ç/g, 'c');
+        
+        const filterVariants = [...new Set([cityTurkish, cityLower, cityUpper, cityAscii, cityAscii.toLowerCase()])];
+        const orParts = filterVariants.flatMap(v => [`city.ilike.%${v}%`, `federal_state.ilike.%${v}%`]);
+        query = query.or(orParts.join(','));
+
         const { data, error } = await query;
         if (error) throw error;
 
-        const distSet = new Set();
         const targetDist = (selectedDistrict || parsedDistrict || '').toLowerCase().trim();
 
-        // Always include all official districts for this city
-        (turkeyDistricts[activeCity] || []).forEach(d => distSet.add(d));
-
+        // Build district deduplication map: slug → canonical Turkish name
+        const distSlugMap = {}; // slug → best (Turkish) name
+        // First add official districts
+        (turkeyDistricts[activeCity] || []).forEach(d => {
+          const slug = cityToSlug(d);
+          distSlugMap[slug] = d;
+        });
+        // Then add from data (prefer Turkish chars: keep whichever has more special chars)
         (data || []).forEach(item => {
           if (item.district && item.district.trim()) {
-            distSet.add(item.district.trim());
+            const d = item.district.trim();
+            const slug = cityToSlug(d);
+            if (!distSlugMap[slug]) {
+              distSlugMap[slug] = d;
+            } else {
+              // Keep the one with more Turkish characters (more specific)
+              const current = distSlugMap[slug];
+              const currentTurkishCount = (current.match(/[İıĞğŞşÖöÜüÇç]/g) || []).length;
+              const newTurkishCount = (d.match(/[İıĞğŞşÖöÜüÇç]/g) || []).length;
+              if (newTurkishCount > currentTurkishCount) distSlugMap[slug] = d;
+            }
           }
         });
 
-        const rawDistList = Array.from(distSet).sort((a, b) => a.localeCompare(b, 'tr-TR'));
+        // Build district count map (grouped by slug)
+        const distCountMap = {}; // slug → count
+        (data || []).forEach(item => {
+          if (item.district && item.district.trim()) {
+            const slug = cityToSlug(item.district.trim());
+            distCountMap[slug] = (distCountMap[slug] || 0) + 1;
+          }
+        });
+
+        // Convert to district name → count
+        const namedDistCounts = {};
+        Object.entries(distCountMap).forEach(([slug, count]) => {
+          const name = distSlugMap[slug] || slug;
+          namedDistCounts[name] = (namedDistCounts[name] || 0) + count;
+        });
+        setDistrictCounts(namedDistCounts);
+
+        const rawDistList = Object.values(distSlugMap).sort((a, b) => a.localeCompare(b, 'tr-TR'));
         setAvailableDistricts(rawDistList);
 
         // If parsedDistrict or selectedDistrict is an ASCII slug (e.g. "Sehitlik"),
@@ -195,14 +243,20 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
           .select('*')
           .eq('status', 'active');
 
-        // Filter by city with all case & Turkish character variations (checking both city and federal_state)
+        // Filter by city with Turkish character variants (simplified for Supabase OR filter compatibility)
         const activeCity = city || citySlug;
         if (activeCity) {
-          const variants = getCityVariants(activeCity);
-          if (variants.length > 0) {
-            const orFilter = variants.map(v => `city.ilike.%${v}%,federal_state.ilike.%${v}%`).join(',');
-            query = query.or(orFilter);
-          }
+          const canonicalCityName = city || slugToCity(citySlug) || citySlug;
+          const cityAscii = canonicalCityName
+            .replace(/İ/g, 'I').replace(/ı/g, 'i')
+            .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
+            .replace(/Ş/g, 'S').replace(/ş/g, 's')
+            .replace(/Ö/g, 'O').replace(/ö/g, 'o')
+            .replace(/Ü/g, 'U').replace(/ü/g, 'u')
+            .replace(/Ç/g, 'C').replace(/ç/g, 'c');
+          const filterVariants = [...new Set([canonicalCityName, canonicalCityName.toLowerCase(), canonicalCityName.toUpperCase(), cityAscii, cityAscii.toLowerCase()])];
+          const orParts = filterVariants.flatMap(v => [`city.ilike.%${v}%`, `federal_state.ilike.%${v}%`]);
+          query = query.or(orParts.join(','));
         }
 
         // Filter by category
@@ -248,7 +302,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
           query = query.order('created_at', { ascending: false });
         }
 
-        query = query.limit(50);
+        query = query.limit(200);
 
         const { data, error } = await query;
         if (error) throw error;
@@ -688,6 +742,7 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                       const distSlug = cityToSlug(dist);
                       const baseCitySlug = cityToSlug(city || citySlug);
                       const targetDistUrl = `/sehir/${baseCitySlug}-${distSlug}${categorySlug ? `/${categorySlug}` : ''}`;
+                      const distCount = districtCounts[dist] || 0;
 
                       return (
                         <label key={dist} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50 cursor-pointer text-xs">
@@ -701,9 +756,12 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
                             }}
                             className="text-neutral-950 dark:text-white focus:ring-0"
                           />
-                          <span className={isDistChecked ? 'font-semibold text-neutral-950 dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}>
+                          <span className={isDistChecked ? 'font-semibold text-neutral-950 dark:text-white flex-1' : 'text-neutral-600 dark:text-neutral-400 flex-1'}>
                             {dist}
                           </span>
+                          {distCount > 0 && (
+                            <span className="text-[10px] text-neutral-400 dark:text-neutral-500 ml-auto">{distCount}</span>
+                          )}
                         </label>
                       );
                     })}
