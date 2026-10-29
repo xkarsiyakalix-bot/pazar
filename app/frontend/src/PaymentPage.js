@@ -36,12 +36,12 @@ const PaymentPage = () => {
     }, [pkg, navigate]);
 
     const handlePayment = async (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
         setLoading(true);
 
         try {
-            // 1. Simulate Payment Gateway Delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // 1. Brief visual delay
+            await new Promise(resolve => setTimeout(resolve, 800));
 
             // 2. Data Preparation
             const expiryDate = new Date();
@@ -127,10 +127,13 @@ const PaymentPage = () => {
                     </div>
 
                     <form onSubmit={handlePayment} className="space-y-6">
+                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-neutral-800/50 border border-gray-100 dark:border-white/5 text-xs text-gray-500 dark:text-neutral-400">
+                            Kart bilgisi girmeniz gerekmez. Doğrudan aşağıdaki butona basarak paketi hesabınızda anında aktifleştirebilirsiniz.
+                        </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Kart Sahibi Ad Soyad</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Kart Sahibi Ad Soyad <span className="text-xs text-gray-400 font-normal">(İsteğe Bağlı)</span></label>
                             <input
-                                required
                                 type="text"
                                 className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all"
                                 placeholder="Örn: Ahmet Yılmaz"
@@ -140,10 +143,9 @@ const PaymentPage = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Kart Numarası</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Kart Numarası <span className="text-xs text-gray-400 font-normal">(İsteğe Bağlı)</span></label>
                             <div className="relative">
                                 <input
-                                    required
                                     type="text"
                                     maxLength="19"
                                     className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all pl-12 font-mono"
@@ -157,9 +159,8 @@ const PaymentPage = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Son Kullanma Tarihi</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">Son Kullanma Tarihi <span className="text-xs text-gray-400 font-normal">(İsteğe Bağlı)</span></label>
                                 <input
-                                    required
                                     type="text"
                                     maxLength="5"
                                     className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all text-center"
@@ -169,9 +170,8 @@ const PaymentPage = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">CVC / CVV</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">CVC / CVV <span className="text-xs text-gray-400 font-normal">(İsteğe Bağlı)</span></label>
                                 <input
-                                    required
                                     type="text"
                                     maxLength="3"
                                     className="w-full border border-gray-300 dark:border-white/10 bg-white dark:bg-neutral-800 text-gray-900 dark:text-neutral-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-red-500 transition-all text-center"
@@ -185,20 +185,20 @@ const PaymentPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-red-600 dark:bg-red-700 text-white font-bold py-4 rounded-xl hover:bg-red-700 dark:hover:bg-red-800 transition-colors shadow-lg shadow-red-200 dark:shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-emerald-200 dark:shadow-emerald-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {loading ? (
                                 <>
                                     <LoadingSpinner size="small" />
-                                    <span>Ödeme İşleniyor...</span>
+                                    <span>Paket Aktifleştiriliyor...</span>
                                 </>
                             ) : (
-                                <span>{pkg.price} TL Öde ve Aktifleştir</span>
+                                <span>Ücretsiz Olarak Hemen Aktifleştir</span>
                             )}
                         </button>
 
                         <p className="text-xs text-center text-gray-400 dark:text-neutral-500 mt-4">
-                            Bu işlem güvenli bir şekilde şifrelenmektedir. Demo amaçlı kart bilgilerini rastgele girebilirsiniz.
+                            Kredi kartı bilgisi girmek zorunlu değildir. Herhangi bir ödeme yapmadan doğrudan aktifleştirebilirsiniz.
                         </p>
                     </form>
                 </div>
