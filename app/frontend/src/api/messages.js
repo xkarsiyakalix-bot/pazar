@@ -67,7 +67,7 @@ export const getConversations = async () => {
         .from('messages')
         .select('*')
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
         .limit(500); // Limit to last 500 messages for speed
 
     // Filter out deleted messages
@@ -187,6 +187,8 @@ export const getConversations = async () => {
 
         const conversation = conversationsMap.get(conversationKey);
         conversation.messages.push(message);
+        // Update lastMessage to always be the newest (last in ascending order)
+        conversation.lastMessage = message;
 
         // Count unread messages (messages sent to current user that are unread)
         if (message.receiver_id === user.id && !message.read) {
@@ -214,7 +216,7 @@ export const getConversation = async (userId) => {
         .from('messages')
         .select('*')
         .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id})`)
-        .order('created_at', { ascending: false }); // Newest first
+        .order('created_at', { ascending: true }); // Oldest first → correct chat order
 
     // Filter out deleted messages
     const activeMessages = messages?.filter(msg => {
