@@ -437,18 +437,20 @@ function MessagesPage() {
 
     if (!user) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 pt-20 pb-12 flex items-center justify-center px-4">
-                <div className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-3xl p-10 text-center max-w-md shadow-sm">
-                    <div className="w-16 h-16 bg-rose-50 dark:bg-rose-950/40 text-rose-600 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
-                        🔒
+            <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-20 pb-12 flex items-center justify-center px-4">
+                <div className="w-full max-w-sm bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 text-center">
+                    <div className="w-10 h-10 mx-auto mb-4 border border-neutral-200 dark:border-neutral-700 rounded-md flex items-center justify-center text-neutral-500">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                        </svg>
                     </div>
-                    <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">Giriş Yapmalısınız</h2>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
-                        Mesajlarınızı görüntülemek ve alıcı/satıcılarla konuşabilmek için lütfen hesabınıza giriş yapın.
+                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-1.5">Giriş yapın</h2>
+                    <p className="text-[13px] leading-relaxed text-neutral-500 dark:text-neutral-400 mb-6">
+                        Mesajlarınızı görüntülemek ve alıcı veya satıcılarla yazışmak için hesabınıza giriş yapın.
                     </p>
                     <button
                         onClick={() => navigate('/login', { state: { from: '/messages' } })}
-                        className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm transition-all shadow-md active:scale-95"
+                        className="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-900 font-medium rounded-md text-sm transition-colors"
                     >
                         Giriş Yap
                     </button>
@@ -458,51 +460,44 @@ function MessagesPage() {
     }
 
     return (
-        <div className="min-h-screen md:min-h-0 bg-neutral-100 dark:bg-neutral-950 md:bg-transparent md:pt-24 md:pb-12">
+        <div className="min-h-screen md:min-h-0 bg-neutral-50 dark:bg-neutral-950 md:bg-transparent md:pt-24 md:pb-12">
             <div className="max-w-7xl mx-auto md:px-4">
-                
-                {/* Kleinanzeigen Mobil ve Masaüstü Sabit Çerçeve */}
                 <div
                     data-chat-active={Boolean(selectedConversation)}
-                    className={`${selectedConversation ? "fixed inset-0 z-[10000] h-[100dvh]" : "fixed inset-0 top-16 bottom-16 h-[calc(100dvh-128px)] z-20"} md:relative md:top-0 md:bottom-auto md:inset-auto md:h-[750px] md:z-20 w-full bg-white dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-white/10 md:rounded-3xl shadow-none md:shadow-sm overflow-hidden flex flex-col md:flex-row`}
+                    className={`${selectedConversation ? "fixed inset-0 z-[10000] h-[100dvh]" : "fixed inset-0 top-16 bottom-16 h-[calc(100dvh-128px)] z-20"} md:relative md:top-0 md:bottom-auto md:inset-auto md:h-[720px] md:z-20 w-full bg-white dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-neutral-800 md:rounded-lg overflow-hidden flex flex-col md:flex-row`}
                 >
-                    
-                    {/* SOL SÜTUN / GELEN MESAJLAR LİSTESİ (Sadece liste yukarı-aşağı kayar, sayfa sabit) */}
-                    <div className={`w-full md:w-[380px] lg:w-[420px] flex-shrink-0 flex-col border-r border-neutral-200 dark:border-white/10 bg-neutral-50/70 dark:bg-neutral-900/70 h-full overflow-hidden ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
-                        
-                        {/* Sabit Liste Başlığı */}
-                        <div className="p-3.5 sm:p-4 border-b border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 flex-shrink-0">
-                            <div className="flex items-center justify-between mb-2.5">
-                                <h1 className="text-lg sm:text-xl font-black text-neutral-900 dark:text-white tracking-tight flex items-center gap-2">
-                                    <span>Nachrichten</span>
-                                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
-                                        {conversations.length}
-                                    </span>
+                    <div className={`w-full md:w-[340px] lg:w-[380px] flex-shrink-0 flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 h-full overflow-hidden ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
+                        <div className="px-4 pt-4 pb-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex-shrink-0">
+                            <div className="flex items-baseline justify-between mb-3">
+                                <h1 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 tracking-tight">
+                                    Mesajlar
                                 </h1>
+                                <span className="text-[12px] text-neutral-400 tabular-nums">
+                                    {conversations.length}
+                                </span>
                             </div>
-
-                            {/* Arama Kutusu */}
                             <div className="relative">
+                                <svg className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
                                 <input
                                     type="text"
-                                    placeholder="Sohbetlerde veya ilanlarda ara..."
+                                    placeholder="Ara"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-xl text-xs sm:text-sm border-none focus:ring-2 focus:ring-rose-500 transition-all placeholder:text-neutral-400"
+                                    className="w-full h-9 pl-8 pr-3 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-md text-[13px] border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400"
                                 />
-                                <svg className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
                             </div>
                         </div>
 
-                        {/* SADECE AŞAĞI-YUKARI KAYAN LİSTE ALANI */}
-                        <div className="flex-1 overflow-y-auto overscroll-contain divide-y divide-neutral-100 dark:divide-white/5 pb-20 md:pb-4">
+                        <div className="flex-1 overflow-y-auto overscroll-contain divide-y divide-neutral-100 dark:divide-neutral-800 pb-20 md:pb-0">
                             {filteredConversations.length === 0 ? (
-                                <div className="py-20 text-center text-neutral-400 px-4">
-                                    <p className="text-4xl mb-2">💬</p>
-                                    <p className="font-bold text-sm text-neutral-700 dark:text-neutral-300">Henüz mesajınız yok</p>
-                                    <p className="text-xs text-neutral-400 mt-1 max-w-xs mx-auto">
+                                <div className="py-16 text-center px-6">
+                                    <svg className="w-8 h-8 mx-auto mb-3 text-neutral-300 dark:text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.25">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                    </svg>
+                                    <p className="text-[13px] font-medium text-neutral-700 dark:text-neutral-300">Henüz mesajınız yok</p>
+                                    <p className="text-[12px] leading-relaxed text-neutral-400 mt-1 max-w-[220px] mx-auto">
                                         İlanlara mesaj gönderdiğinizde veya mesaj aldığınızda burada listelenir.
                                     </p>
                                 </div>
@@ -517,14 +512,13 @@ function MessagesPage() {
                                         <div
                                             key={`${conv.user.id}-${conv.listing?.id || 'general'}`}
                                             onClick={() => handleSelectConversation(conv)}
-                                            className={`p-3.5 sm:p-4 flex gap-3 cursor-pointer transition-colors relative active:bg-neutral-100 dark:active:bg-neutral-800/80 ${
+                                            className={`px-4 py-3 flex gap-3 cursor-pointer transition-colors ${
                                                 isSelected
-                                                    ? 'bg-rose-50/80 dark:bg-rose-950/20'
-                                                    : 'hover:bg-white dark:hover:bg-neutral-800/60 bg-transparent'
+                                                    ? 'bg-neutral-50 dark:bg-neutral-800/70'
+                                                    : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/40 bg-white dark:bg-neutral-900'
                                             }`}
                                         >
-                                            {/* İlan Fotoğrafı veya Avatar */}
-                                            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-neutral-200 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200/60 dark:border-white/5">
+                                            <div className="relative w-11 h-11 rounded-md overflow-hidden bg-neutral-100 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200 dark:border-neutral-700">
                                                 {conv.listing?.images?.[0] ? (
                                                     <img
                                                         src={conv.listing.images[0]}
@@ -538,43 +532,41 @@ function MessagesPage() {
                                                         className="w-full h-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center font-black text-rose-500 bg-rose-50 dark:bg-rose-950/30 text-lg">
+                                                    <div className="w-full h-full flex items-center justify-center text-[13px] font-medium text-neutral-500 bg-neutral-100 dark:bg-neutral-800">
                                                         {(conv.user.full_name || 'U').charAt(0).toUpperCase()}
                                                     </div>
                                                 )}
-
                                                 {unread && (
-                                                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-600 rounded-full ring-2 ring-white dark:ring-neutral-900 animate-pulse" />
+                                                    <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-rose-600 rounded-full" />
                                                 )}
                                             </div>
 
-                                            {/* Konuşma Bilgisi */}
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between mb-0.5">
-                                                    <h3 className={`text-sm truncate pr-2 ${unread ? 'font-black text-neutral-900 dark:text-white' : 'font-bold text-neutral-800 dark:text-neutral-200'}`}>
+                                                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                                                    <h3 className={`text-[13px] truncate ${unread ? 'font-semibold text-neutral-900 dark:text-white' : 'font-medium text-neutral-800 dark:text-neutral-200'}`}>
                                                         {conv.user.full_name || 'Kullanıcı'}
                                                     </h3>
-                                                    <span className="text-[11px] text-neutral-400 whitespace-nowrap">
+                                                    <span className="text-[11px] text-neutral-400 whitespace-nowrap shrink-0">
                                                         {conv.lastMessage?.created_at ? new Date(conv.lastMessage.created_at).toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : ''}
                                                     </span>
                                                 </div>
 
                                                 {conv.listing && (
-                                                    <div className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-300 font-semibold truncate mb-1">
+                                                    <div className="flex items-center gap-1.5 text-[12px] text-neutral-500 dark:text-neutral-400 truncate mb-0.5">
                                                         {isDeleted ? (
-                                                            <span className="text-red-500 text-[10px] bg-red-50 dark:bg-red-950/30 px-1 rounded font-bold">Silindi</span>
+                                                            <span className="text-neutral-500 text-[10px] border border-neutral-200 dark:border-neutral-700 px-1 py-px rounded-sm shrink-0">Silindi</span>
                                                         ) : null}
                                                         <span className="truncate">{conv.listing.title}</span>
                                                         {conv.listing.price && (
-                                                            <span className="text-rose-600 dark:text-rose-400 font-bold shrink-0">
+                                                            <span className="text-neutral-800 dark:text-neutral-200 font-medium shrink-0 tabular-nums">
                                                                 {Number(conv.listing.price).toLocaleString('tr-TR')} TL
                                                             </span>
                                                         )}
                                                     </div>
                                                 )}
 
-                                                <p className={`text-xs truncate ${unread ? 'font-bold text-neutral-900 dark:text-white' : 'text-neutral-400 dark:text-neutral-500'}`}>
-                                                    {conv.lastMessage?.sender_id === user?.id && <span className="text-neutral-500">Siz: </span>}
+                                                <p className={`text-[12px] truncate ${unread ? 'text-neutral-700 dark:text-neutral-200' : 'text-neutral-400 dark:text-neutral-500'}`}>
+                                                    {conv.lastMessage?.sender_id === user?.id && <span>Siz: </span>}
                                                     {conv.lastMessage?.content || 'Konuşma başlatıldı'}
                                                 </p>
                                             </div>
@@ -585,107 +577,98 @@ function MessagesPage() {
                         </div>
                     </div>
 
-                    {/* SAĞ SÜTUN / SOHBET DETAYI (Mesaj yazma alani daima sabit ve gorunur) */}
                     <div className={`flex-1 flex-col bg-white dark:bg-neutral-900 h-full overflow-hidden ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
                         {selectedConversation && selectedConversation.user ? (
                             <div className="flex flex-col h-full w-full">
-                                
-                                {/* 1. SABİT CHAT HEADER */}
-                                <div className="p-3 sm:p-4 border-b border-neutral-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-neutral-900 flex-shrink-0 z-10 shadow-sm">
-                                    <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="h-14 px-3 sm:px-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between bg-white dark:bg-neutral-900 flex-shrink-0 z-10">
+                                    <div className="flex items-center gap-2 min-w-0">
                                         <button
                                             onClick={handleBackToList}
-                                            className="md:hidden flex items-center gap-1 px-2.5 py-1.5 text-rose-600 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/40 rounded-xl active:scale-95 transition-all font-bold text-xs shrink-0"
+                                            className="md:hidden flex items-center justify-center w-9 h-9 -ml-1 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-md transition-colors shrink-0"
                                             aria-label="Gelen Kutusu"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                                             </svg>
-                                            <span>Gelenler</span>
                                         </button>
 
                                         <div
                                             onClick={() => navigate(getSellerUrl(selectedConversation.user), { state: { seller: selectedConversation.user } })}
                                             className="cursor-pointer flex items-center gap-2.5 min-w-0"
                                         >
-                                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-800 flex-shrink-0">
+                                            <div className="w-8 h-8 rounded-full overflow-hidden bg-neutral-100 dark:bg-neutral-800 flex-shrink-0 border border-neutral-200 dark:border-neutral-700">
                                                 <img
-                                                    src={selectedConversation.user.store_logo || selectedConversation.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedConversation.user.full_name || 'U')}&background=e11d48&color=fff`}
+                                                    src={selectedConversation.user.store_logo || selectedConversation.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedConversation.user.full_name || 'U')}&background=e5e5e5&color=525252`}
                                                     alt=""
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
                                             <div className="min-w-0">
-                                                <h2 className="text-sm sm:text-base font-bold text-neutral-900 dark:text-white truncate hover:text-rose-600 transition-colors">
+                                                <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-100 truncate hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors">
                                                     {selectedConversation.user.full_name || 'Kullanıcı'}
                                                 </h2>
-                                                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                                                    ● Çevrimiçi
+                                                <p className="text-[11px] text-neutral-400">
+                                                    Profili görüntüle
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Menü */}
-                                    <div className="flex items-center gap-2 relative flex-shrink-0">
+                                    <div className="flex items-center gap-1 relative flex-shrink-0">
                                         {canRateUser && !hasRated && (
                                             <button
                                                 onClick={() => setIsRatingModalOpen(true)}
-                                                className="hidden sm:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40 rounded-full hover:bg-amber-100 transition-colors"
+                                                className="hidden sm:flex items-center h-8 px-2.5 text-[12px] font-medium text-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                                             >
-                                                <span>⭐</span>
-                                                <span>Değerlendir</span>
+                                                Değerlendir
                                             </button>
                                         )}
 
                                         <button
                                             onClick={() => setMenuOpen(!menuOpen)}
-                                            className="p-2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
+                                            className="w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-md transition-colors"
                                             aria-label="Diğer İşlemler"
                                         >
-                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                                             </svg>
                                         </button>
 
                                         {menuOpen && (
-                                            <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-neutral-800 rounded-2xl shadow-xl border border-neutral-100 dark:border-white/10 py-1.5 z-50 text-xs font-semibold animate-fadeIn">
+                                            <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-neutral-900 rounded-md shadow-sm border border-neutral-200 dark:border-neutral-700 py-1 z-50 text-[13px]">
                                                 <button
                                                     onClick={() => handleToggleBlockUser(selectedConversation.user.id)}
-                                                    className="w-full text-left px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700/50 flex items-center gap-2 text-neutral-700 dark:text-neutral-200"
+                                                    className="w-full text-left px-3 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
                                                 >
-                                                    <span>🚫</span>
-                                                    <span>{isUserBlocked(selectedConversation.user.id) ? 'Engeli Kaldır' : 'Kullanıcıyı Engelle'}</span>
+                                                    {isUserBlocked(selectedConversation.user.id) ? 'Engeli kaldır' : 'Kullanıcıyı engelle'}
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteConversation(selectedConversation)}
-                                                    className="w-full text-left px-4 py-2 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2 text-red-600 dark:text-red-400"
+                                                    className="w-full text-left px-3 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
                                                 >
-                                                    <span>🗑️</span>
-                                                    <span>Sohbeti Sil</span>
+                                                    Sohbeti sil
                                                 </button>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* 2. SABİT İLAN KARTI */}
                                 {selectedConversation.listing && (
-                                    <div className="p-2.5 sm:p-3 bg-neutral-50 dark:bg-neutral-800/60 border-b border-neutral-200/70 dark:border-white/5 flex items-center justify-between gap-3 flex-shrink-0">
+                                    <div className="px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between gap-3 flex-shrink-0">
                                         <div className="flex items-center gap-2.5 min-w-0">
                                             {selectedConversation.listing.images?.[0] && (
                                                 <img
                                                     src={selectedConversation.listing.images[0]}
                                                     alt=""
-                                                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg object-cover border border-neutral-200 dark:border-white/10 flex-shrink-0"
+                                                    className="w-9 h-9 rounded-md object-cover border border-neutral-200 dark:border-neutral-700 flex-shrink-0"
                                                 />
                                             )}
                                             <div className="min-w-0">
-                                                <h4 className="text-xs sm:text-sm font-bold text-neutral-900 dark:text-white truncate">
+                                                <h4 className="text-[12px] font-medium text-neutral-900 dark:text-neutral-100 truncate">
                                                     {selectedConversation.listing.title}
                                                 </h4>
                                                 {selectedConversation.listing.price && (
-                                                    <p className="text-xs sm:text-sm font-black text-rose-600 dark:text-rose-400 mt-0.5">
+                                                    <p className="text-[12px] text-neutral-600 dark:text-neutral-300 mt-px tabular-nums">
                                                         {Number(selectedConversation.listing.price).toLocaleString('tr-TR')} TL
                                                     </p>
                                                 )}
@@ -695,21 +678,18 @@ function MessagesPage() {
                                         {!selectedConversation.listing.is_deleted && (
                                             <button
                                                 onClick={() => navigate(`/${selectedConversation.listing.slug || selectedConversation.listing.id}`)}
-                                                className="px-3 py-1.5 bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-white/10 rounded-xl text-xs font-bold text-neutral-800 dark:text-neutral-100 hover:bg-neutral-100 transition-colors shrink-0 shadow-sm"
+                                                className="text-[12px] font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-white shrink-0 underline-offset-2 hover:underline"
                                             >
-                                                İlana Git →
+                                                İlana git
                                             </button>
                                         )}
                                     </div>
                                 )}
 
-                                {/* 3. SADECE MESAJLARIN KAYDIĞI İÇ ALAN */}
-                                <div className="flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4 space-y-3 bg-[#f8fafc] dark:bg-[#0b0f17]">
-                                    <div className="text-center my-1">
-                                        <span className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 bg-white/80 dark:bg-neutral-800/80 px-3 py-1 rounded-full border border-neutral-200/50 dark:border-white/5">
-                                            Güvenlik Uyarısı: Şifrenizi veya hesap bilgilerinizi paylaşmayın.
-                                        </span>
-                                    </div>
+                                <div className="flex-1 overflow-y-auto overscroll-contain px-3 sm:px-5 py-4 space-y-2.5 bg-neutral-50 dark:bg-neutral-950">
+                                    <p className="text-center text-[11px] text-neutral-400 py-1">
+                                        Şifrenizi veya hesap bilgilerinizi paylaşmayın.
+                                    </p>
 
                                     {(selectedConversation.messages || []).map((msg) => {
                                         const isMe = msg.sender_id === user?.id || msg.sender === 'me';
@@ -719,13 +699,13 @@ function MessagesPage() {
                                                 key={msg.id}
                                                 className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                                             >
-                                                <div className={`max-w-[82%] sm:max-w-[70%] rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-sm text-sm break-words ${
+                                                <div className={`max-w-[82%] sm:max-w-[68%] rounded-md px-3 py-2 text-sm break-words ${
                                                     isMe
-                                                        ? 'bg-rose-600 text-white rounded-br-sm'
-                                                        : 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-bl-sm border border-neutral-200/60 dark:border-white/5'
+                                                        ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
+                                                        : 'bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 border border-neutral-200 dark:border-neutral-800'
                                                 }`}>
-                                                    <p className="leading-relaxed whitespace-pre-wrap text-[13px] sm:text-sm">{msg.content}</p>
-                                                    <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${isMe ? 'text-rose-100' : 'text-neutral-400'}`}>
+                                                    <p className="leading-relaxed whitespace-pre-wrap text-[13px]">{msg.content}</p>
+                                                    <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${isMe ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-400'}`}>
                                                         <span>{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                         {isMe && <span>{msg.read ? '✓✓' : '✓'}</span>}
                                                     </div>
@@ -736,38 +716,34 @@ function MessagesPage() {
                                     <div ref={messagesEndRef} />
                                 </div>
 
-                                {/* 4. HIZLI CEVAP BUTONLARI */}
-                                <div className="px-3 pt-2 bg-white dark:bg-neutral-900 flex gap-2 overflow-x-auto no-scrollbar flex-shrink-0 border-t border-neutral-100 dark:border-white/5">
+                                <div className="px-3 pt-2 pb-1 bg-white dark:bg-neutral-900 flex gap-1.5 overflow-x-auto no-scrollbar flex-shrink-0 border-t border-neutral-200 dark:border-neutral-800">
                                     {quickReplies.map((reply, i) => (
                                         <button
                                             key={i}
                                             onClick={() => handleSendMessage(null, reply)}
-                                            className="text-[11px] font-medium bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 px-3 py-1.5 rounded-full whitespace-nowrap transition-colors border border-neutral-200/50 dark:border-white/5 shrink-0"
+                                            className="text-[11px] text-neutral-600 dark:text-neutral-300 px-2.5 py-1 rounded-md whitespace-nowrap transition-colors border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800 shrink-0"
                                         >
                                             {reply}
                                         </button>
                                     ))}
                                 </div>
 
-                                {/* 5. SABİT VE DAİMA GÖRÜNÜR MESAJ YAZMA ALANI */}
-                                <div style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))" }} className="p-2.5 sm:p-3 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-white/10 flex-shrink-0 z-30 pb-safe">
+                                <div style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom, 12px))" }} className="px-3 py-2.5 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 flex-shrink-0 z-30">
                                     <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                                         <input
                                             type="text"
                                             value={messageText}
                                             onChange={(e) => setMessageText(e.target.value)}
-                                            placeholder="Mesajınızı yazın..."
-                                            className="flex-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-full px-4 py-2.5 text-sm border-none focus:ring-2 focus:ring-rose-500 placeholder:text-neutral-400"
+                                            placeholder="Mesaj yazın"
+                                            className="flex-1 h-10 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-md px-3 text-[13px] border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400"
                                         />
                                         <button
                                             type="submit"
                                             disabled={!messageText.trim()}
-                                            className="w-10 h-10 rounded-full bg-rose-600 text-white flex items-center justify-center hover:bg-rose-500 active:scale-95 transition-all disabled:opacity-40 disabled:scale-100 shadow-md shadow-rose-600/20 shrink-0"
+                                            className="h-10 px-3.5 rounded-md bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-[13px] font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-35 disabled:pointer-events-none shrink-0"
                                             aria-label="Gönder"
                                         >
-                                            <svg className="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                            </svg>
+                                            Gönder
                                         </button>
                                     </form>
                                 </div>
@@ -786,12 +762,12 @@ function MessagesPage() {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 text-neutral-400">
-                                <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-3xl mb-3">
-                                    💬
-                                </div>
-                                <h3 className="font-bold text-base text-neutral-800 dark:text-neutral-200">Bir sohbet seçin</h3>
-                                <p className="text-xs text-neutral-400 mt-1 max-w-xs">
+                            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+                                <svg className="w-8 h-8 mb-3 text-neutral-300 dark:text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.25">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                                <h3 className="text-[13px] font-medium text-neutral-800 dark:text-neutral-200">Bir sohbet seçin</h3>
+                                <p className="text-[12px] leading-relaxed text-neutral-400 mt-1 max-w-[240px]">
                                     Mesajlaşmaya başlamak için soldaki listeden bir konuşmaya tıklayın.
                                 </p>
                             </div>
