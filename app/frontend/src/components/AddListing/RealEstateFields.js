@@ -3,6 +3,10 @@ import React from 'react';
 export const RealEstateFields = ({
     subCategory,
     t,
+    realEstateFrom,
+    setRealEstateFrom,
+    authorityCertNo,
+    setAuthorityCertNo,
     selectedObjektart,
     setSelectedObjektart,
     selectedGrundstuecksart,
@@ -52,6 +56,59 @@ export const RealEstateFields = ({
 }) => {
     return (
         <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
+            {/* EİDS ve İlan Sahibi / Yetki Belgesi Bilgisi */}
+            <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/60 space-y-4">
+                <div>
+                    <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2 uppercase tracking-wider">
+                        İlan Sahibi (Kimden)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {[
+                            { id: 'Sahibinden', label: 'Sahibinden' },
+                            { id: 'Emlak Ofisinden', label: 'Emlak Ofisinden' },
+                            { id: 'İnşaat Firmasından', label: 'Müteahhit / İnşaat' },
+                            { id: 'Bankadan', label: 'Bankadan' }
+                        ].map(opt => (
+                            <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => setRealEstateFrom(opt.id)}
+                                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border transition-all ${
+                                    realEstateFrom === opt.id
+                                        ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-600/20'
+                                        : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-neutral-400'
+                                }`}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {realEstateFrom === 'Emlak Ofisinden' && (
+                    <div className="pt-2 border-t border-neutral-200/60 dark:border-neutral-700/60 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
+                                Taşınmaz Ticareti Yetki Belgesi / EİDS No
+                            </label>
+                            <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                                Ticaret Bakanlığı EİDS Uyumlu
+                            </span>
+                        </div>
+                        <input
+                            type="text"
+                            value={authorityCertNo || ''}
+                            onChange={(e) => setAuthorityCertNo(e.target.value)}
+                            placeholder="Örn: 3500123 (Yetki Belge Numarası)"
+                            className="w-full bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-mono"
+                        />
+                        <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                            Taşınmaz Ticareti Hakkında Yönetmelik gereğince emlak işletmelerinin yetki belge numarasını belirtmesi gerekmektedir. İlanınızda <strong>“Yetki Belgeli İlan”</strong> güven rozeti görüntülenecektir.
+                        </p>
+                    </div>
+                )}
+            </div>
+
             {/* Specific Art Selectors */}
             {['Konteyner', 'Tatil Evi & Yurt Dışı Emlak', 'Ticari Emlak', 'Arsa & Bahçe', 'Kiralık Müstakil Ev', 'Satılık Müstakil Ev', 'Kiralık Daire', 'Satılık Daire', 'Satılık Yazlık'].includes(subCategory) && (
                 <div className="space-y-4 mb-4">

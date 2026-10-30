@@ -2958,10 +2958,51 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 )}
 
                 {/* Immobilien Details Section */}
-                {(listing.category === 'Emlak' || listing.living_space || listing.rooms || listing.auf_zeit_wg_art || listing.wohnungstyp || listing.haustyp || listing.objektart || listing.grundstuecksart || listing.garage_type) && (
+                {(listing.category === 'Emlak' || listing.living_space || listing.rooms || listing.auf_zeit_wg_art || listing.wohnungstyp || listing.haustyp || listing.objektart || listing.grundstuecksart || listing.garage_type || listing.real_estate_from) && (
                   <div className="mb-8">
 
+                    {/* EİDS / Taşınmaz Ticareti Yetki Belgesi Rozeti */}
+                    {(listing.authority_cert_no || listing.eids_number) && (
+                      <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-start sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-600/20">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-sm text-emerald-900 dark:text-emerald-100">
+                                Yetki Belgeli Emlak Ofisi
+                              </span>
+                              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-2 py-0.5 rounded-full">
+                                EİDS Doğrulama
+                              </span>
+                            </div>
+                            <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
+                              Taşınmaz Ticareti Yetki Belgesi No: <strong className="font-mono text-emerald-950 dark:text-emerald-50 font-bold">{listing.authority_cert_no || listing.eids_number}</strong>
+                            </p>
+                          </div>
+                        </div>
+                        <span className="hidden sm:inline-block text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                          Ticaret Bakanlığı Uyumlu ✓
+                        </span>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm mt-4 pb-8 mb-8">
+                      {listing.real_estate_from && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 dark:text-neutral-400">Kimden</span>
+                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.real_estate_from}</span>
+                        </div>
+                      )}
+                      {(listing.authority_cert_no || listing.eids_number) && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 dark:text-neutral-400">Yetki Belge / EİDS No</span>
+                          <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">{listing.authority_cert_no || listing.eids_number}</span>
+                        </div>
+                      )}
                       {listing.angebotsart && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.offerType}</span>

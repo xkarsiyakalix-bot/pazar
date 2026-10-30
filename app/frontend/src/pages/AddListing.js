@@ -425,6 +425,8 @@ export const AddListing = () => {
   const [selectedGeneralFeatures, setSelectedGeneralFeatures] = useState([]);
 
   // New Immobilien States
+  const [realEstateFrom, setRealEstateFrom] = useState('Sahibinden');
+  const [authorityCertNo, setAuthorityCertNo] = useState('');
   const [selectedWohnungstyp, setSelectedWohnungstyp] = useState('');
   const [selectedHaustyp, setSelectedHaustyp] = useState('');
   const [selectedGrundstuecksart, setSelectedGrundstuecksart] = useState('');
@@ -929,6 +931,8 @@ export const AddListing = () => {
           if (data.kraftstoff) setFuel(data.kraftstoff);
 
           // Load Immobilien & Auf Zeit & WG fields
+          if (data.real_estate_from) setRealEstateFrom(data.real_estate_from);
+          if (data.authority_cert_no || data.eids_number) setAuthorityCertNo(data.authority_cert_no || data.eids_number || '');
           if (data.auf_zeit_wg_art) setSelectedAufZeitWGArt(data.auf_zeit_wg_art);
           if (data.rental_type) setSelectedRentalType(data.rental_type);
           if (data.living_space) setLivingSpace(data.living_space.toString());
@@ -1165,6 +1169,9 @@ export const AddListing = () => {
         videospiele_art: selectedVideospieleArt || null,
         weitere_elektronik_art: selectedWeitereElektronikArt || null,
         dienstleistungen_elektronik_art: selectedDienstleistungenElektronikArt || null,
+        real_estate_from: category === 'Emlak' ? (realEstateFrom || 'Sahibinden') : null,
+        authority_cert_no: (category === 'Emlak' && realEstateFrom === 'Emlak Ofisinden') ? (authorityCertNo || null) : null,
+        eids_number: (category === 'Emlak' && realEstateFrom === 'Emlak Ofisinden') ? (authorityCertNo || null) : null,
         auf_zeit_wg_art: selectedAufZeitWGArt || null,
         rental_type: selectedRentalType || null,
         living_space: livingSpace ? parseFloat(livingSpace) : null,
@@ -1770,6 +1777,10 @@ export const AddListing = () => {
               <RealEstateFields
                 subCategory={subCategory}
                 t={t}
+                realEstateFrom={realEstateFrom}
+                setRealEstateFrom={setRealEstateFrom}
+                authorityCertNo={authorityCertNo}
+                setAuthorityCertNo={setAuthorityCertNo}
                 selectedObjektart={selectedObjektart}
                 setSelectedObjektart={setSelectedObjektart}
                 selectedGrundstuecksart={selectedGrundstuecksart}
