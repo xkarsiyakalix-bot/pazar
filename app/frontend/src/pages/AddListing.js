@@ -1169,9 +1169,6 @@ export const AddListing = () => {
         videospiele_art: selectedVideospieleArt || null,
         weitere_elektronik_art: selectedWeitereElektronikArt || null,
         dienstleistungen_elektronik_art: selectedDienstleistungenElektronikArt || null,
-        real_estate_from: category === 'Emlak' ? (realEstateFrom || 'Sahibinden') : null,
-        authority_cert_no: (category === 'Emlak' && realEstateFrom === 'Emlak Ofisinden') ? (authorityCertNo || null) : null,
-        eids_number: (category === 'Emlak' && realEstateFrom === 'Emlak Ofisinden') ? (authorityCertNo || null) : null,
         auf_zeit_wg_art: selectedAufZeitWGArt || null,
         rental_type: selectedRentalType || null,
         living_space: livingSpace ? parseFloat(livingSpace) : null,
@@ -1234,9 +1231,26 @@ export const AddListing = () => {
         seller_type: sellerType || null
       };
 
+      // Only attach Emlak specific new fields if category is Emlak and values exist
+      if (category === 'Emlak') {
+        if (realEstateFrom) listingData.real_estate_from = realEstateFrom;
+        if (realEstateFrom === 'Emlak Ofisinden' && authorityCertNo) {
+          listingData.authority_cert_no = authorityCertNo;
+          listingData.eids_number = authorityCertNo;
+        }
+      }
+
       if (isEditMode && editId) {
         const { supabase } = await import('../lib/supabase');
-        const { error } = await supabase.from('listings').update(listingData).eq('id', editId);
+        let { error } = await supabase.from('listings').update(listingData).eq('id', editId);
+        if (error && error.message && error.message.includes('schema cache')) {
+          const safeData = { ...listingData };
+          delete safeData.real_estate_from;
+          delete safeData.authority_cert_no;
+          delete safeData.eids_number;
+          const retry = await supabase.from('listings').update(safeData).eq('id', editId);
+          error = retry.error;
+        }
         if (error) throw error;
         try {
           const { notifyIndexNow } = await import('../utils/indexnow');
@@ -1248,7 +1262,20 @@ export const AddListing = () => {
         navigate('/profile?tab=listings');
       } else {
         const { createListing } = await import('../api/listings');
-        const created = await createListing(listingData);
+        let created;
+        try {
+          created = await createListing(listingData);
+        } catch (err) {
+          if (err && err.message && err.message.includes('schema cache')) {
+            const safeData = { ...listingData };
+            delete safeData.real_estate_from;
+            delete safeData.authority_cert_no;
+            delete safeData.eids_number;
+            created = await createListing(safeData);
+          } else {
+            throw err;
+          }
+        }
         if (created && created.id) {
           try {
             const { notifyIndexNow } = await import('../utils/indexnow');

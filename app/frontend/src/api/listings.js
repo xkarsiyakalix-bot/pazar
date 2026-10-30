@@ -495,11 +495,25 @@ export const createListing = async (listingData) => {
         expiry_date: listingData.expiry_date || expiryDate.toISOString()
     };
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
         .from('listings')
         .insert([finalListingData])
         .select()
         .single();
+
+    if (error && error.message && error.message.includes('schema cache')) {
+        const safeData = { ...finalListingData };
+        delete safeData.real_estate_from;
+        delete safeData.authority_cert_no;
+        delete safeData.eids_number;
+        const retry = await supabase
+            .from('listings')
+            .insert([safeData])
+            .select()
+            .single();
+        data = retry.data;
+        error = retry.error;
+    }
 
     if (error) {
         console.error('Error creating listing:', error);
