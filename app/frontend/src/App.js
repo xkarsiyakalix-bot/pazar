@@ -506,6 +506,12 @@ function App() {
   const [deferNonCritical, setDeferNonCritical] = useState(false);
   
   useEffect(() => {
+    // Clear chunk error reload locks once app successfully mounts
+    try {
+      sessionStorage.removeItem('chunk_reload_attempted');
+      sessionStorage.removeItem('chunk_err_reload');
+    } catch (_) {}
+
     // Delay non-critical components (PWA banner, PresenceTracker, etc.) 
     // by 2.5 seconds so they don't block Main Thread during LCP/FCP.
     const timer = setTimeout(() => {

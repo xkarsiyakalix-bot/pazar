@@ -119,12 +119,13 @@
     <script>
         window.addEventListener('error', function(e) {
             var src = (e.target && e.target.src) || '';
-            var isChunk = /\.chunk\.js$/.test(src) || /ChunkLoadError/.test(String(e.message));
+            var isChunk = /\.chunk\.js$/.test(src) || /ChunkLoadError/i.test(String(e.message || ''));
             if (isChunk) {
-                var key = 'chunk_err_reload';
-                if (!sessionStorage.getItem(key)) {
-                    sessionStorage.setItem(key, '1');
-                    window.location.reload(true);
+                var now = Date.now();
+                var last = parseInt(sessionStorage.getItem('chunk_err_reload_ts') || '0', 10);
+                if (now - last > 6000) {
+                    sessionStorage.setItem('chunk_err_reload_ts', String(now));
+                    window.location.reload();
                 }
             }
         }, true);
