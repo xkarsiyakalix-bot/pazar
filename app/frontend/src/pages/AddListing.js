@@ -1916,6 +1916,8 @@ export const AddListing = () => {
                 setSelectedWohnzimmerArt={setSelectedWohnzimmerArt}
                 selectedDienstleistungenHausGartenArt={selectedDienstleistungenHausGartenArt}
                 setSelectedDienstleistungenHausGartenArt={setSelectedDienstleistungenHausGartenArt}
+                brand={brand}
+                setBrand={setBrand}
               />
             )}
 

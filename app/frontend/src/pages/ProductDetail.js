@@ -329,33 +329,32 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
   const renderDetailRow = (label, value) => {
     if (value === undefined || value === null || value === '') return null;
     return (
-      <div className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-white/5 last:border-0">
-        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{label}</span>
-        <span className="text-sm font-black text-gray-900 dark:text-neutral-50 text-right ml-2">{value}</span>
+      <div className="flex justify-between items-baseline py-1.5 border-b border-neutral-200 last:border-0">
+        <span className="text-[11px] text-neutral-500">{label}</span>
+        <span className="text-[13px] font-medium text-neutral-900 text-right ml-2">{value}</span>
       </div>
     );
   };
 
   return (
-    <div className="hidden print:block print-flyer bg-white text-gray-900 dark:text-neutral-50 font-sans relative overflow-visible box-border border-0 p-0 max-w-[21cm] mx-auto">
+    <div className="hidden print:block print-flyer bg-white text-neutral-900 font-sans relative overflow-visible box-border border-0 p-0 max-w-[21cm] mx-auto">
       <div className="flex-grow">
-        {/* Header with Title and Price - Compact */}
-        <div className="flex justify-between items-start border-b-4 border-red-600 pb-4 mb-6 pt-1">
+        <div className="flex justify-between items-start border-b border-neutral-300 pb-4 mb-5 pt-1 gap-6">
           <div className="flex-1 pr-4">
-            <h1 className="text-2xl font-black uppercase tracking-tight leading-tight mb-1">
+            <h1 className="text-xl font-medium tracking-tight leading-snug mb-1">
               {listing.title}
             </h1>
-            <div className="text-[12px] text-gray-500 font-bold uppercase tracking-widest">
-              No: {listing.id ? listing.id.toString().split('-')[0] : '---'} | {new Date().toLocaleDateString('tr-TR')}
+            <div className="text-[11px] text-neutral-500">
+              No: {listing.id ? listing.id.toString().split('-')[0] : '---'} · {new Date().toLocaleDateString('tr-TR')}
             </div>
           </div>
-          <div className={`${isPetAdoptionListing(listing) ? 'bg-emerald-600' : 'bg-red-600'} text-white px-6 py-4 rounded-xl text-center shadow-lg flex-shrink-0 min-w-[150px]`}>
-            <div className="text-[12px] font-bold uppercase tracking-widest leading-none mb-2 opacity-90">
+          <div className="text-right flex-shrink-0">
+            <div className="text-[11px] text-neutral-500 mb-1">
               {isPetAdoptionListing(listing) ? 'Durum' : 'Fiyat'}
             </div>
-            <div className={`${isPetAdoptionListing(listing) ? 'text-2xl sm:text-3xl' : 'text-5xl'} font-black tabular-nums leading-none`}>
+            <div className={`${isPetAdoptionListing(listing) ? 'text-lg' : 'text-2xl'} font-medium tabular-nums leading-none`}>
               {isPetAdoptionListing(listing) ? (
-                '🐾 Sahiplendirme'
+                'Sahiplendirme'
               ) : (
                 listing.category !== 'Jobs' && listing.category !== 'İş İlanları' && (
                   listing.price_type === 'giveaway' || listing.price === 0
@@ -366,7 +365,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
                 )
               )}
             </div>
-            {!isPetAdoptionListing(listing) && listing.price && listing.price_type === 'negotiable' && <div className="text-[10px] font-black uppercase mt-1">Pazarlıklı</div>}
+            {!isPetAdoptionListing(listing) && listing.price && listing.price_type === 'negotiable' && <div className="text-[11px] text-neutral-500 mt-1">Pazarlıklı</div>}
           </div>
         </div>
 
@@ -375,59 +374,54 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
           <div className="col-span-12">
             <div className="grid grid-cols-12 gap-8 mb-6">
               <div className="col-span-7">
-                <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-sm max-h-[400px]">
+                <div className="overflow-hidden border border-neutral-200 max-h-[400px]">
                   <img src={displayImage} alt={listing.title} className="w-full h-full object-cover" />
                 </div>
               </div>
-              <div className="col-span-5 flex flex-col gap-4">
-                {/* Kontakt Section */}
-                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
-                  <h3 className="text-sm font-black uppercase tracking-tight mb-3 flex items-center gap-2">
-                    <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+              <div className="col-span-5 flex flex-col gap-3">
+                <div className="p-3 border border-neutral-200">
+                  <h3 className="text-[13px] font-medium mb-3">
                     {t.common?.contact || 'İletişim'}
                   </h3>
                   <div className="space-y-2.5">
                     <div>
-                      <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{t.productDetail?.seller || 'Satıcı'}</div>
-                      <div className="text-sm font-black truncate">{sellerProfile?.username || listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common?.privateSeller}</div>
+                      <div className="text-[11px] text-neutral-500">{t.productDetail?.seller || 'Satıcı'}</div>
+                      <div className="text-[13px] font-medium truncate">{sellerProfile?.username || listing.contact_name || sellerProfile?.full_name || listing.sellerName || t.common?.privateSeller}</div>
                     </div>
 
                     {!hideContact && (
                       <div>
-                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common?.phone || 'Telefon'}</div>
-                        <div className="text-lg font-black text-red-600">
+                        <div className="text-[11px] text-neutral-500">{t.common?.phone || 'Telefon'}</div>
+                        <div className="text-[15px] font-medium">
                           {listing.show_phone_number && (listing.contact_phone || sellerProfile?.phone) ? (listing.contact_phone || sellerProfile?.phone) : (t.common?.notSpecified || 'Belirtilmemiş')}
                         </div>
                       </div>
                     )}
 
                     <div>
-                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.common?.location || 'Konum'}</div>
-                      <div className="text-[11px] font-bold leading-tight">
-                        {listing.show_location && listing.address && <div className="text-gray-900 dark:text-neutral-50 line-clamp-1">{listing.address}</div>}
-                        <div className="text-gray-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
+                      <div className="text-[11px] text-neutral-500">{t.common?.location || 'Konum'}</div>
+                      <div className="text-[12px] leading-snug">
+                        {listing.show_location && listing.address && <div className="text-neutral-900 line-clamp-1">{listing.address}</div>}
+                        <div className="text-neutral-500 line-clamp-1">{listing.district ? listing.district + ', ' : ''}{listing.city || ''}</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* QR Code Section */}
                 {!hideContact && (
-                  <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-center">
-                    <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mb-1">Detaylı Bilgi İçin Tara</div>
-                    <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center p-1">
+                  <div className="p-3 border border-neutral-200 flex flex-col items-center justify-center gap-1.5 text-center">
+                    <div className="text-[11px] text-neutral-500">Detaylı bilgi için tarayın</div>
+                    <div className="w-20 h-20 flex items-center justify-center">
                       <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
                     </div>
-                    <div className="text-[8px] font-black text-red-600 uppercase">exvitrin.com</div>
+                    <div className="text-[11px] text-neutral-500">exvitrin.com</div>
                   </div>
                 )}
               </div>
             </div>
 
             <div className="mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/5 pb-1 mb-2">
+              <h2 className="text-[13px] font-medium border-b border-neutral-200 pb-1.5 mb-2">
                 {t.productDetail?.description || 'Açıklama'}
               </h2>
 
@@ -440,7 +434,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
 
             {/* Technical Details Grid */}
             <div className="mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/5 pb-1 mb-3">
+              <h2 className="text-[13px] font-medium border-b border-neutral-200 pb-1.5 mb-3">
                 {t.productDetail?.details || 'Detaylar'}
               </h2>
               <div className="grid grid-cols-2 gap-x-12 gap-y-1">
@@ -483,14 +477,14 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
             {/* Amenities & Features */}
             {(listing.car_amenities?.length > 0 || listing.amenities?.length > 0 || listing.general_features?.length > 0) && (
               <div className="mb-6">
-                <h2 className="text-lg font-black uppercase tracking-tight border-b border-gray-100 dark:border-white/5 pb-1 mb-3">
+                <h2 className="text-[13px] font-medium border-b border-neutral-200 pb-1.5 mb-3">
                   {(t.productDetail?.amenities || 'Donanımlar')} & {(t.productDetail?.features || 'Özellikler')}
                 </h2>
-                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                <div className="flex flex-wrap gap-x-5 gap-y-1.5">
                   {[...(listing.car_amenities || []), ...(listing.amenities || []), ...(listing.general_features || [])].map((item, i) => (
-                    <div key={`feat-${i}`} className="flex items-center gap-1.5 text-[11px] font-bold text-gray-700">
-                      <svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    <div key={`feat-${i}`} className="flex items-center gap-1.5 text-[12px] text-neutral-700">
+                      <svg className="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                       </svg>
                       {item}
                     </div>
@@ -499,10 +493,9 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
               </div>
             )}
 
-            {/* Internal Branding */}
-            <div className="border-t border-gray-100 dark:border-white/5 pt-3 flex justify-between items-center text-gray-300 font-bold uppercase tracking-widest text-[8px] w-full mt-4">
-              <div className="flex items-center gap-1">
-                <span className="text-red-600 text-[10px] font-black">ExVitrin</span>
+            <div className="border-t border-neutral-200 pt-3 flex justify-between items-center text-neutral-400 text-[11px] w-full mt-4">
+              <div className="flex items-center gap-1.5">
+                <span className="text-neutral-800 font-medium">ExVitrin</span>
                 <span>{t.common?.onlineMarketplace || 'Online Pazaryeri'}</span>
               </div>
               <div>www.exvitrin.com</div>
@@ -523,7 +516,7 @@ const PrintFlyer = ({ listing, sellerProfile, hideContact = false }) => {
 
           {[...Array(10)].map((_, i) => (
             <div key={`tab-${i}`} className="flex-1 flex flex-col items-center justify-center py-2 z-10 overflow-hidden">
-              <div className="[writing-mode:vertical-rl] rotate-180 text-base font-black text-gray-900 dark:text-neutral-50 whitespace-nowrap tracking-tight">
+              <div className="[writing-mode:vertical-rl] rotate-180 text-[13px] font-medium text-neutral-800 whitespace-nowrap tracking-tight">
                 {listing.contact_phone || sellerProfile?.phone}
               </div>
             </div>
@@ -1510,10 +1503,10 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     className="w-full bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 p-3.5 rounded-lg border border-neutral-200 dark:border-neutral-700 flex items-center justify-between cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="bg-red-500 text-white p-2 rounded-lg">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <span className="w-8 h-8 border border-neutral-200 dark:border-neutral-700 rounded-md flex items-center justify-center text-neutral-500">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </span>
                       <div className="text-left">
@@ -1521,28 +1514,23 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         <div className="text-xs text-neutral-500">Ayarlar, istatistikler ve paketler</div>
                       </div>
                     </div>
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                    <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
 
                   {showMobileStats && (
                     <div className="fixed inset-0 z-[200] bg-gray-100 dark:bg-neutral-950 overflow-y-auto">
-                      <div className="sticky top-0 z-[210] bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-white/10 px-4 py-3 flex justify-between items-center shadow-sm">
+                      <div className="sticky top-0 z-[210] bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex justify-between items-center">
                         <div className="flex items-center gap-2">
-                          <span className="bg-red-500 text-white p-1 rounded-lg">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-0.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-0.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-0.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-0.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-0.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-0.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            </svg>
-                          </span>
-                          <h2 className="text-sm font-medium text-gray-900 dark:text-neutral-50">İlan Yönetimi</h2>
+                          <h2 className="text-sm font-medium text-neutral-900 dark:text-neutral-50">İlan Yönetimi</h2>
                         </div>
                         <button
                           onClick={() => setShowMobileStats(false)}
-                          className="bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-neutral-400 p-1.5 rounded-full transition-colors"
+                          className="w-8 h-8 flex items-center justify-center text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-md transition-colors"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </button>
                       </div>
@@ -1605,8 +1593,8 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         className="absolute left-2 top-2 z-30 text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] active:scale-90 transition-all no-print"
                         aria-label="Geri"
                       >
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
                         </svg>
                       </button>
                     )}
@@ -1770,7 +1758,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   )}
                 </div>
                 {/* Üst Araçlar - Mobil Paylaş ve Favori */}
-                <div className="absolute top-6 right-6 z-30 flex items-center gap-1.5">
+                <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5">
                   {/* Paylaş Butonu */}
                   <button
                     onClick={(e) => {
@@ -1801,7 +1789,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                       )}
-                      <span className={`text-xs font-bold leading-none ${favorite ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-neutral-200'}`}>
+                      <span className={`text-xs font-medium leading-none ${favorite ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-600 dark:text-neutral-300'}`}>
                         {displayFavoriteCount}
                       </span>
                     </button>
@@ -1820,15 +1808,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
               />
 
               {/* Birleştirilmiş İlan Bilgileri Paneli */}
-              <div className="bg-white dark:bg-neutral-900 px-4 sm:p-6 py-6 border-y sm:border border-neutral-200 dark:border-neutral-800 sm:rounded-md">
-                {/* Ürün Başlığı ve Bilgileri */}
-                <div className="space-y-6">
-                  {/* Başlık ve Fiyat - Üst Kısım - Back to top per user request */}
-                  <div className="pb-5 border-b border-neutral-200 dark:border-neutral-800">
+              <div className="bg-white dark:bg-neutral-900 px-4 sm:px-5 py-5 border-y sm:border border-neutral-200 dark:border-neutral-800 sm:rounded-md">
+                <div className="space-y-5">
+                  <div className="pb-4 border-b border-neutral-200 dark:border-neutral-800">
                     {/* Fiyat - En Üstte */}
                     {listing.sub_category !== 'Ausbildung' && listing.sub_category !== 'Bau, Handwerk & Produktion' && listing.category !== 'Jobs' && (
                       <div className="mb-4">
-                        <div className="text-2xl sm:text-[28px] font-semibold text-neutral-900 dark:text-neutral-50 mb-1 tracking-tight">
+                        <div className="text-xl sm:text-2xl font-medium text-neutral-900 dark:text-neutral-50 mb-1 tracking-tight tabular-nums">
                           {isPetAdoptionListing(listing) ? (
                             <span className="text-neutral-900 dark:text-neutral-100">
                               Sahiplendirme
@@ -1867,7 +1853,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                     {/* Başlık */}
                     <div>
-                      <h1 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-neutral-50 leading-snug tracking-tight">
+                      <h1 className="text-[17px] sm:text-lg font-medium text-neutral-900 dark:text-neutral-50 leading-snug tracking-tight">
                         {(listing?.offer_type === 'Aranıyor' || listing?.offer_type === 'Gesuche') && (
                           <span className="inline-block text-xs sm:text-sm font-medium mr-2 align-middle text-neutral-500 dark:text-neutral-400">
                             Aranıyor
@@ -1902,42 +1888,42 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   </div>
 
                   {/* General Info Grid - Below Title/Price */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 text-sm pb-5 border-b border-neutral-200 dark:border-neutral-800 mb-6">
-                    <div className="hidden md:flex justify-between">
-                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.postedOn}</span>
-                      <span className="font-medium text-gray-900 dark:text-neutral-50">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 text-[13px] mb-5">
+                    <div className="hidden md:flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-800">
+                      <span className="text-neutral-500 dark:text-neutral-400">{t.productDetail.postedOn}</span>
+                      <span className="font-medium text-neutral-900 dark:text-neutral-100">
                         {listing.created_at ? new Date(listing.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
                       </span>
                     </div>
                     {listing.condition && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-500 dark:text-neutral-400">{t.addListing.condition || 'Durum'}</span>
-                        <span className="font-medium text-gray-900 dark:text-neutral-50">
+                      <div className="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-800">
+                        <span className="text-neutral-500 dark:text-neutral-400">{t.addListing.condition || 'Durum'}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">
                           {formatCondition(listing.condition)}
                         </span>
                       </div>
                     )}
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.listingId}</span>
-                      <span className="font-medium text-gray-900 dark:text-neutral-50">{generateListingNumber(listing)}</span>
+                    <div className="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-800">
+                      <span className="text-neutral-500 dark:text-neutral-400">{t.productDetail.listingId}</span>
+                      <span className="font-medium text-neutral-900 dark:text-neutral-100">{generateListingNumber(listing)}</span>
                     </div>
-                    <div className="hidden md:flex justify-between">
-                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.location}</span>
+                    <div className="hidden md:flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-800">
+                      <span className="text-neutral-500 dark:text-neutral-400">{t.productDetail.location}</span>
                       <div className="text-right">
-                        <span className="font-medium text-gray-900 dark:text-neutral-50 block">
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100 block">
                           {listing.show_location === true && listing.address ? `${listing.address}, ` : ''}
                           {renderLocationLinks(listing.district, listing.city) || t.common.notAvailable}
                         </span>
                       </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.views}</span>
-                      <span className="font-medium text-gray-900 dark:text-neutral-50">{(listing.views || 0).toLocaleString('tr-TR')}</span>
+                    <div className="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-800">
+                      <span className="text-neutral-500 dark:text-neutral-400">{t.productDetail.views}</span>
+                      <span className="font-medium text-neutral-900 dark:text-neutral-100">{(listing.views || 0).toLocaleString('tr-TR')}</span>
                     </div>
                     {listing.versand_art && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-500 dark:text-neutral-400">{t.addListing.shipping}</span>
-                        <span className="font-medium text-gray-900 dark:text-neutral-50">
+                      <div className="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-800">
+                        <span className="text-neutral-500 dark:text-neutral-400">{t.addListing.shipping}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">
                           {listing.versand_art === 'Kargo Mümkün' || listing.versand_art === 'Versand möglich' ? t.addListing.options.shipping :
                             listing.versand_art === 'Sadece Elden Teslim' || listing.versand_art === 'Nur Abholung' ? t.addListing.options.noShipping :
                               listing.versand_art}
@@ -1955,18 +1941,18 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       <div className="flex items-center border border-neutral-200 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-800 overflow-hidden">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="px-4 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-400 font-bold transition-colors"
+                          className="px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium transition-colors"
                           type="button"
                         >−</button>
-                        <div className="w-16 text-center font-bold text-gray-900 dark:text-neutral-50 border-x border-gray-300 dark:border-white/20 py-2">{quantity}</div>
+                        <div className="w-16 text-center font-medium text-neutral-900 dark:text-neutral-50 border-x border-neutral-200 dark:border-neutral-700 py-2">{quantity}</div>
                         <button
                           onClick={() => setQuantity(Math.min(currentStock, quantity + 1))}
-                          className="px-4 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-700 dark:text-neutral-400 font-bold transition-colors"
+                          className="px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium transition-colors"
                           type="button"
                         >+</button>
                       </div>
                       <span className="text-sm text-gray-600 dark:text-neutral-400">
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{currentStock}</span> adet mevcut
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{currentStock}</span> adet mevcut
                       </span>
                     </div>
                   )}
@@ -1994,7 +1980,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <div className="mb-6">
                       <div className="pb-4 mb-4">
                         <div className="mb-4 pb-2 border-b border-neutral-200 dark:border-neutral-800">
-                          <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
+                          <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50">
                             {t.productDetail.vehicleDetails}
                           </h2>
                         </div>
@@ -2135,14 +2121,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Wohnzimmer Details */}
                 {listing.wohnzimmer_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.wohnzimmer_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.wohnzimmer_art}</span>
                       </div>
+                      {listing.marke && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
+                          {renderBrandLink(listing.marke, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -2150,34 +2142,63 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Schlafzimmer, Küche, Heimwerken & Beleuchtung Details */}
                 {(listing.schlafzimmer_art || listing.kueche_esszimmer_art || listing.heimwerken_art || listing.lamba_aydinlatma_art) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.schlafzimmer_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.schlafzimmer_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.schlafzimmer_art}</span>
                         </div>
                       )}
                       {listing.kueche_esszimmer_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kueche_esszimmer_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.kueche_esszimmer_art}</span>
                         </div>
                       )}
                       {listing.heimwerken_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.heimwerken_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.heimwerken_art}</span>
                         </div>
                       )}
                       {listing.lamba_aydinlatma_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.lamba_aydinlatma_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.lamba_aydinlatma_art}</span>
                         </div>
                       )}
+                      {listing.marke && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
+                          {renderBrandLink(listing.marke, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Ev & Bahçe Genel Marka Detayı (alt kategori _art yoksa) */}
+                {(listing.category === 'Ev & Bahçe' || listing.category === 'Haus & Garten') && 
+                  listing.marke && 
+                  !listing.wohnzimmer_art && 
+                  !listing.schlafzimmer_art && 
+                  !listing.kueche_esszimmer_art && 
+                  !listing.heimwerken_art && 
+                  !listing.lamba_aydinlatma_art && 
+                  !listing.gartenzubehoer_art && 
+                  !listing.weiteres_haus_garten_art && (
+                  <div className="mb-8">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
+                      {t.productDetail.details}
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
+                        {renderBrandLink(listing.marke, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2185,20 +2206,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Fahrräder & Zubehör Details */}
                 {(listing.bike_type || listing.art_type) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.art_type && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.art_type}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.art_type}</span>
                         </div>
                       )}
                       {listing.bike_type && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.bike_type}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.bike_type}</span>
                         </div>
                       )}
                     </div>
@@ -2208,50 +2229,50 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Baby & Kinderkleidung / Kinderschuhe Details */}
                 {(listing.baby_kinderkleidung_art || listing.baby_kinderkleidung_size || listing.baby_kinderkleidung_color || listing.baby_kinderkleidung_gender || listing.baby_kinderschuhe_art || listing.baby_kinderschuhe_size || listing.baby_kinderschuhe_color) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.baby_kinderkleidung_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.baby_kinderkleidung_art}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_size && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.size}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_size}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.baby_kinderkleidung_size}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_color}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.baby_kinderkleidung_color}</span>
                         </div>
                       )}
                       {listing.baby_kinderkleidung_gender && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.gender}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderkleidung_gender}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.baby_kinderkleidung_gender}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderschuhe_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.baby_kinderschuhe_art}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_size && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.size}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderschuhe_size}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.baby_kinderschuhe_size}</span>
                         </div>
                       )}
                       {listing.baby_kinderschuhe_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.baby_kinderschuhe_color}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.baby_kinderschuhe_color}</span>
                         </div>
                       )}
                     </div>
@@ -2261,26 +2282,26 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kinderwagen & Buggys / Baby Equipment Details */}
                 {(listing.kinderwagen_buggys_color || listing.kinderwagen_buggys_art || ((listing.category === 'Aile, Çocuk & Bebek' || listing.category === 'Familie, Kind & Baby') && (listing.marke || extractListingBrandWithFallback(listing)))) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {(listing.marke || extractListingBrandWithFallback(listing)) && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
-                          {renderBrandLink(listing.marke || extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                          {renderBrandLink(listing.marke || extractListingBrandWithFallback(listing), "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                         </div>
                       )}
                       {listing.kinderwagen_buggys_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kinderwagen_buggys_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.kinderwagen_buggys_art}</span>
                         </div>
                       )}
                       {listing.kinderwagen_buggys_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing.color}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kinderwagen_buggys_color}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.kinderwagen_buggys_color}</span>
                         </div>
                       )}
                     </div>
@@ -2292,33 +2313,33 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   listing.herrenbekleidung_color || listing.herrenbekleidung_art || listing.herrenbekleidung_size || listing.herrenbekleidung_marke ||
                   listing.herrenschuhe_color || listing.herrenschuhe_art || listing.herrenschuhe_size || listing.herrenschuhe_marke) && (
                     <div className="mb-8">
-                      <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                      <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                         {t.productDetail.details}
                       </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                         {/* Damenschuhe */}
                         {listing.damenschuhe_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.damenschuhe_art)}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.damenschuhe_art)}</span>
                           </div>
                         )}
                         {listing.damenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            {renderBrandLink(listing.damenschuhe_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.damenschuhe_marke, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {listing.damenschuhe_size && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_size}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.damenschuhe_size}</span>
                           </div>
                         )}
                         {listing.damenschuhe_color && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenschuhe_color}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.damenschuhe_color}</span>
                           </div>
                         )}
 
@@ -2326,25 +2347,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenbekleidung_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.herrenbekleidung_art)}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.herrenbekleidung_art)}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            {renderBrandLink(listing.herrenbekleidung_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.herrenbekleidung_marke, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {listing.herrenbekleidung_size && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_size}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.herrenbekleidung_size}</span>
                           </div>
                         )}
                         {listing.herrenbekleidung_color && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenbekleidung_color}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.herrenbekleidung_color}</span>
                           </div>
                         )}
 
@@ -2352,25 +2373,25 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.herrenschuhe_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.herrenschuhe_art)}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.herrenschuhe_art)}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_marke && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.brand}</span>
-                            {renderBrandLink(listing.herrenschuhe_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.herrenschuhe_marke, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {listing.herrenschuhe_size && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.size}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_size}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.herrenschuhe_size}</span>
                           </div>
                         )}
                         {listing.herrenschuhe_color && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">{t.addListing.color}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.herrenschuhe_color}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.herrenschuhe_color}</span>
                           </div>
                         )}
                       </div>
@@ -2380,13 +2401,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Babyschalen & Kindersitze Details */}
                 {listing.babyschalen_kindersitze_color && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.addListing.color}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.babyschalen_kindersitze_color}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.babyschalen_kindersitze_color}</span>
                       </div>
                     </div>
                   </div>
@@ -2395,13 +2416,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kinderzimmermöbel Details */}
                 {listing.kinderzimmermobel_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kinderzimmermobel_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.kinderzimmermobel_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2410,13 +2431,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Spielzeug Details */}
                 {listing.spielzeug_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.spielzeug_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.spielzeug_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2424,13 +2445,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.fische_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.fische_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.fische_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2439,13 +2460,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.haustier_zubehoer_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.haustier_zubehoer_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.haustier_zubehoer_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2454,32 +2475,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Hunde Details */}
                 {(listing.hunde_art || listing.hunde_alter || listing.hunde_geimpft || listing.hunde_erlaubnis) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.hunde_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.hunde_art}</span>
                         </div>
                       )}
                       {listing.hunde_alter && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.age}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_alter}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.hunde_alter}</span>
                         </div>
                       )}
                       {listing.hunde_geimpft && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.vaccinatedAndChipped}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_geimpft}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.hunde_geimpft}</span>
                         </div>
                       )}
                       {listing.hunde_erlaubnis && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.officialPermission}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.hunde_erlaubnis}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.hunde_erlaubnis}</span>
                         </div>
                       )}
                     </div>
@@ -2489,32 +2510,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Katzen Details */}
                 {(listing.katzen_art || listing.katzen_alter || listing.katzen_geimpft || listing.katzen_erlaubnis) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.katzen_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.katzen_art}</span>
                         </div>
                       )}
                       {listing.katzen_alter && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.age}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_alter}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.katzen_alter}</span>
                         </div>
                       )}
                       {listing.katzen_geimpft && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.vaccinatedAndChipped}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_geimpft}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.katzen_geimpft}</span>
                         </div>
                       )}
                       {listing.katzen_erlaubnis && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.officialPermission}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.katzen_erlaubnis}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.katzen_erlaubnis}</span>
                         </div>
                       )}
                     </div>
@@ -2524,14 +2545,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kleintiere Details */}
                 {(listing.kleintiere_art) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.kleintiere_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kleintiere_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.kleintiere_art}</span>
                         </div>
                       )}
                     </div>
@@ -2541,14 +2562,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Nutztiere Details */}
                 {(listing.nutztiere_art) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.nutztiere_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.nutztiere_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.nutztiere_art}</span>
                         </div>
                       )}
                     </div>
@@ -2558,14 +2579,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Pferde Details */}
                 {(listing.pferde_art) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.pferde_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.pferde_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.pferde_art}</span>
                         </div>
                       )}
                     </div>
@@ -2575,14 +2596,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Vermisste Tiere Details */}
                 {(listing.vermisste_tiere_status) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.vermisste_tiere_status && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.status}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.vermisste_tiere_status}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.vermisste_tiere_status}</span>
                         </div>
                       )}
                     </div>
@@ -2592,14 +2613,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Vögel Details */}
                 {(listing.voegel_art) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.voegel_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.voegel_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.voegel_art}</span>
                         </div>
                       )}
                     </div>
@@ -2609,20 +2630,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Taschen & Accessoires Details */}
                 {(listing.taschen_accessoires_art || (listing.sub_category && (listing.sub_category.includes('Çanta') || listing.sub_category.includes('Aksesuar'))) || (extractListingBrandWithFallback(listing) && listing.category === 'Moda & Güzellik' && !listing.damenbekleidung_art && !listing.damenschuhe_art && !listing.herrenbekleidung_art && !listing.herrenschuhe_art && !listing.beauty_gesundheit_art && !listing.uhren_schmuck_art)) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {extractListingBrandWithFallback(listing) && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
-                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                         </div>
                       )}
                       {listing.taschen_accessoires_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.taschen_accessoires_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.taschen_accessoires_art}</span>
                         </div>
                       )}
                     </div>
@@ -2632,20 +2653,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Uhren & Schmuck Details */}
                 {(listing.uhren_schmuck_art || (listing.sub_category === 'Saat & Takı')) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {extractListingBrandWithFallback(listing) && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
-                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                         </div>
                       )}
                       {listing.uhren_schmuck_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.uhren_schmuck_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.uhren_schmuck_art}</span>
                         </div>
                       )}
                     </div>
@@ -2655,20 +2676,20 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Beauty & Gesundheit Details */}
                 {(listing.beauty_gesundheit_art || ((listing.sub_category === 'Güzellik & Sağlık' || listing.sub_category === 'Kişisel Bakım & Sağlık') && extractListingBrandWithFallback(listing))) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {extractListingBrandWithFallback(listing) && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.addListing?.brand || 'Marka'}</span>
-                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                          {renderBrandLink(extractListingBrandWithFallback(listing), "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                         </div>
                       )}
                       {listing.beauty_gesundheit_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.beauty_gesundheit_art}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.beauty_gesundheit_art}</span>
                         </div>
                       )}
                     </div>
@@ -2683,14 +2704,14 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                   listing.notebooks_art || listing.pcs_art || listing.videospiele_art ||
                   listing.weitere_elektronik_art || listing.dienstleistungen_elektronik_art) && (
                     <div className="mb-8">
-                      <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                      <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                         {t.productDetail.details}
                       </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                         {(((listing.category?.toLowerCase() === 'elektronik' || listing.category?.toLowerCase() === 'electronics') && listing.marke) || listing.handy_telefon_art) && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.addListing?.brand || 'Marka'}</span>
-                            {renderBrandLink(listing.marke || listing.handy_telefon_art, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                            {renderBrandLink(listing.marke || listing.handy_telefon_art, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                           </div>
                         )}
                         {(((listing.category?.toLowerCase() === 'elektronik' || listing.category?.toLowerCase() === 'electronics') && listing.modell) || (listing.handy_telefon_art && listing.modell)) && (
@@ -2698,7 +2719,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail?.model || 'Model'}</span>
                             <Link 
                               to={`/Elektronik/Cep-Telefonu-Telefon?${(listing.marke || listing.handy_telefon_art) ? `brand=${encodeURIComponent(listing.marke || listing.handy_telefon_art)}&` : ''}model=${encodeURIComponent(listing.modell)}`}
-                              className="font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors"
+                              className="font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors"
                             >
                               {listing.modell}
                             </Link>
@@ -2707,79 +2728,79 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                         {listing.audio_hifi_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.audio_hifi_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.audio_hifi_art}</span>
                           </div>
                         )}
                         {listing.handy_telefon_art && !['apple', 'samsung', 'xiaomi', 'huawei', 'google', 'oneplus', 'sony', 'lg', 'motorola', 'nokia', 'oppo', 'realme', 'vivo'].includes(listing.handy_telefon_art.toLowerCase()) && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.handy_telefon_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.handy_telefon_art}</span>
                           </div>
                         )}
                         {listing.foto_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.foto_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.foto_art}</span>
                           </div>
                         )}
                         {listing.haushaltsgeraete_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.haushaltsgeraete_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.haushaltsgeraete_art}</span>
                           </div>
                         )}
                         {listing.konsolen_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.konsolen_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.konsolen_art}</span>
                           </div>
                         )}
                         {listing.pc_zubehoer_software_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.pc_zubehoer_software_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.pc_zubehoer_software_art}</span>
                           </div>
                         )}
                         {listing.tablets_reader_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.tablets_reader_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.tablets_reader_art}</span>
                           </div>
                         )}
                         {listing.tv_video_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.tv_video_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.tv_video_art}</span>
                           </div>
                         )}
                         {listing.notebooks_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.notebooks_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.notebooks_art}</span>
                           </div>
                         )}
                         {listing.pcs_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.pcs_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.pcs_art}</span>
                           </div>
                         )}
                         {listing.videospiele_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.videospiele_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.videospiele_art}</span>
                           </div>
                         )}
                         {listing.weitere_elektronik_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.weitere_elektronik_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.weitere_elektronik_art}</span>
                           </div>
                         )}
                         {listing.dienstleistungen_elektronik_art && (
                           <div className="flex justify-between">
                             <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.art}</span>
-                            <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.dienstleistungen_elektronik_art}</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.dienstleistungen_elektronik_art}</span>
                           </div>
                         )}
                       </div>
@@ -2790,13 +2811,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {listing.altenpflege_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.altenpflege_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.altenpflege_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2805,13 +2826,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Sprachkurse Details */}
                 {listing.sprachkurse_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.sprachkurse_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.sprachkurse_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2820,13 +2841,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Kunst & Gestaltung Details */}
                 {listing.kunst_gestaltung_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kunst_gestaltung_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.kunst_gestaltung_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2835,13 +2856,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Weiteres Haus & Garten Details */}
                 {listing.weiteres_haus_garten_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.weiteres_haus_garten_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.weiteres_haus_garten_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2850,13 +2871,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Küche & Esszimmer Details */}
                 {listing.kueche_esszimmer_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.kueche_esszimmer_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.kueche_esszimmer_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2865,13 +2886,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Heimwerken (Ev Tadilatı) Details */}
                 {listing.heimwerken_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.heimwerken_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.heimwerken_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2880,13 +2901,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Gartenzubehör & Pflanzen Details */}
                 {listing.gartenzubehoer_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.gartenzubehoer_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.gartenzubehoer_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2895,13 +2916,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Modellbau Details */}
                 {listing.modellbau_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.modellbau_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.modellbau_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2910,13 +2931,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Handarbeit & Basteln Details */}
                 {listing.handarbeit_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.handarbeit_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.handarbeit_art}</span>
                       </div>
                     </div>
                   </div>
@@ -2925,32 +2946,32 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Damenbekleidung / Kadın Giyimi Details */}
                 {(listing.damenbekleidung_art || listing.damenbekleidung_marke || listing.damenbekleidung_size || listing.damenbekleidung_color) && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2 text-[13px] pb-4 mb-4">
                       {listing.damenbekleidung_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">{t.productDetail.art}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.damenbekleidung_art)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.damenbekleidung_art)}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_marke && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Marka</span>
-                          {renderBrandLink(listing.damenbekleidung_marke, "font-semibold text-gray-900 dark:text-neutral-50 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
+                          {renderBrandLink(listing.damenbekleidung_marke, "font-medium text-neutral-900 dark:text-neutral-100 underline decoration-gray-900 dark:decoration-neutral-50 underline-offset-2 hover:decoration-2 transition-colors")}
                         </div>
                       )}
                       {listing.damenbekleidung_size && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Beden</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_size}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.damenbekleidung_size}</span>
                         </div>
                       )}
                       {listing.damenbekleidung_color && (
                         <div className="flex justify-between">
                           <span className="text-gray-500">Renk</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.damenbekleidung_color}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.damenbekleidung_color}</span>
                         </div>
                       )}
                     </div>
@@ -2963,29 +2984,29 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                     {/* EİDS / Taşınmaz Ticareti Yetki Belgesi Rozeti */}
                     {(listing.authority_cert_no || listing.eids_number) && (
-                      <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-start sm:items-center justify-between gap-4">
+                      <div className="mb-5 p-3 border border-neutral-200 dark:border-neutral-800 rounded-md flex items-start sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-600/20">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <div className="w-8 h-8 rounded-md border border-neutral-200 dark:border-neutral-700 text-neutral-500 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-black text-sm text-emerald-900 dark:text-emerald-100">
+                              <span className="text-[13px] font-medium text-neutral-900 dark:text-neutral-100">
                                 Yetki Belgeli Emlak Ofisi
                               </span>
-                              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-2 py-0.5 rounded-full">
-                                EİDS Doğrulama
+                              <span className="text-[11px] text-neutral-500 border border-neutral-200 dark:border-neutral-700 px-1.5 py-0.5 rounded-sm">
+                                EİDS
                               </span>
                             </div>
-                            <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
-                              Taşınmaz Ticareti Yetki Belgesi No: <strong className="font-mono text-emerald-950 dark:text-emerald-50 font-bold">{listing.authority_cert_no || listing.eids_number}</strong>
+                            <p className="text-[12px] text-neutral-500 mt-0.5">
+                              Taşınmaz Ticareti Yetki Belgesi No: <span className="font-mono text-neutral-800 dark:text-neutral-200">{listing.authority_cert_no || listing.eids_number}</span>
                             </p>
                           </div>
                         </div>
-                        <span className="hidden sm:inline-block text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                          Ticaret Bakanlığı Uyumlu ✓
+                        <span className="hidden sm:inline-block text-[11px] text-neutral-500">
+                          Ticaret Bakanlığı uyumlu
                         </span>
                       </div>
                     )}
@@ -2994,73 +3015,73 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.real_estate_from && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">Kimden</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.real_estate_from}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.real_estate_from}</span>
                         </div>
                       )}
                       {(listing.authority_cert_no || listing.eids_number) && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">Yetki Belge / EİDS No</span>
-                          <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">{listing.authority_cert_no || listing.eids_number}</span>
+                          <span className="font-mono font-medium text-neutral-900 dark:text-neutral-100">{listing.authority_cert_no || listing.eids_number}</span>
                         </div>
                       )}
                       {listing.angebotsart && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.offerType}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.angebotsart)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.angebotsart)}</span>
                         </div>
                       )}
                       {listing.auf_zeit_wg_art && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.offerType}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.auf_zeit_wg_art)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.auf_zeit_wg_art)}</span>
                         </div>
                       )}
                       {listing.wohnungstyp && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.propertyType}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.wohnungstyp)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.wohnungstyp)}</span>
                         </div>
                       )}
                       {listing.haustyp && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.propertyType}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.haustyp)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.haustyp)}</span>
                         </div>
                       )}
                       {listing.living_space && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{['Ticari Emlak', 'Konteyner', 'Arsa & Bahçe'].includes(listing.sub_category) ? t.productDetail.totalArea : t.productDetail.livingSpace}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.living_space} m²</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.living_space} m²</span>
                         </div>
                       )}
                       {listing.rooms && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.rooms}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.rooms}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.rooms}</span>
                         </div>
                       )}
                       {listing.floor !== undefined && listing.floor !== null && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.floor}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.floor}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.floor}</span>
                         </div>
                       )}
                       {listing.roommates && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.roommates}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.roommates}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.roommates}</span>
                         </div>
                       )}
                       {listing.construction_year && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.constructionYear}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.construction_year}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.construction_year}</span>
                         </div>
                       )}
                       {listing.available_from && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.availableFrom}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">
                             {listing.available_from.length === 7
                               ? new Date(listing.available_from + '-01').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
                               : new Date(listing.available_from).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
@@ -3070,61 +3091,61 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                       {listing.warm_rent && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.warmRent}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.warm_rent.toLocaleString('tr-TR')} TL</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.warm_rent.toLocaleString('tr-TR')} TL</span>
                         </div>
                       )}
                       {listing.price_per_sqm && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.pricePerSqm}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.price_per_sqm.toLocaleString('tr-TR')} TL/m²</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.price_per_sqm.toLocaleString('tr-TR')} TL/m²</span>
                         </div>
                       )}
                       {listing.plot_area && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.plotArea}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.plot_area} m²</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.plot_area} m²</span>
                         </div>
                       )}
                       {listing.grundstuecksart && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.plotType}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.grundstuecksart)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.grundstuecksart)}</span>
                         </div>
                       )}
                       {listing.objektart && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.objectType}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.objektart)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.objektart)}</span>
                         </div>
                       )}
                       {listing.garage_type && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.garage}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.garage_type)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.garage_type)}</span>
                         </div>
                       )}
                       {listing.rental_type && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.rentalType}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.rental_type)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.rental_type)}</span>
                         </div>
                       )}
                       {listing.online_viewing && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.onlineViewing}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.online_viewing)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.online_viewing)}</span>
                         </div>
                       )}
                       {listing.commission && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.commission}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.commission)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.commission)}</span>
                         </div>
                       )}
                       {listing.lage && (
                         <div className="flex justify-between">
                           <span className="text-gray-500 dark:text-neutral-400">{t.productDetail.location}</span>
-                          <span className="font-semibold text-gray-900 dark:text-neutral-50">{translateVal(listing.lage)}</span>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">{translateVal(listing.lage)}</span>
                         </div>
                       )}
                     </div>
@@ -3140,7 +3161,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             {listing.amenities.map((item, i) => (
                               <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
                               </span>
@@ -3157,7 +3178,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             {listing.general_features.map((item, i) => (
                               <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
                               </span>
@@ -3174,7 +3195,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             {listing.apartment_features.map((item, i) => (
                               <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
                               </span>
@@ -3191,7 +3212,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             {listing.house_features.map((item, i) => (
                               <span key={i} className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                                 </svg>
                                 {translateVal(item)}
                               </span>
@@ -3206,13 +3227,13 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Reise & Eventservices Details */}
                 {listing.reise_eventservices_art && (
                   <div className="mb-8">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 pb-1.5 border-b border-neutral-200 dark:border-neutral-800">
                       {t.productDetail.details}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm pb-6 border-b border-neutral-200 dark:border-neutral-800 mb-6">
                       <div className="flex justify-between">
                         <span className="text-gray-500">{t.productDetail.art}</span>
-                        <span className="font-semibold text-gray-900 dark:text-neutral-50">{listing.reise_eventservices_art}</span>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">{listing.reise_eventservices_art}</span>
                       </div>
                     </div>
                   </div>
@@ -3221,7 +3242,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {/* Ürün Açıklaması */}
                 <div>
-                  <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3">{t.productDetail.description}</h2>
+                  <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2">{t.productDetail.description}</h2>
                   <p className="text-sm text-neutral-600 dark:text-neutral-300 whitespace-pre-line leading-relaxed">
                     {description}
                   </p>
@@ -3230,7 +3251,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                 {/* Konum Haritası */}
                 {(listing.city || listing.address) && (
                   <div className="mt-6 border-t border-neutral-200 dark:border-neutral-800 pt-6">
-                    <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-3 flex items-center gap-2">
+                    <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-2 flex items-center gap-2">
                       <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -3288,7 +3309,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 return (
                   <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg p-5">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-50 mb-4">
+                    <h2 className="text-xl font-medium text-neutral-900 dark:text-neutral-100 mb-4">
                       {seller.name}'in Diğer İlanları
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -3323,7 +3344,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                             <h3 className="text-xs font-medium text-neutral-800 dark:text-neutral-200 mb-1 line-clamp-2 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors">
                               {otherListing.title}
                             </h3>
-                            <div className="text-sm font-semibold text-gray-900 dark:text-neutral-50 mb-1">
+                            <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
                               {isPetAdoptionListing(otherListing) ? (
                                 <span className="font-medium">Sahiplendirme</span>
                               ) : (
@@ -3369,15 +3390,15 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
             {/* Sağ Taraf - Satıcı Profili */}
             <div className="lg:col-span-1">
               <div className={`bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 sm:rounded-md p-4 sm:p-5 sticky top-4 ${isMobile ? 'pb-24 mt-2' : ''}`}>
-                <div className="flex flex-row items-start gap-4 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-700 text-left">
-                  <div className="flex flex-col items-center gap-2.5 flex-shrink-0">
+                <div className="flex flex-row items-start gap-3.5 mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-800 text-left">
+                  <div className="flex flex-col items-center gap-2 flex-shrink-0">
                     <div className="relative inline-block">
                       <Link to={sellerPath} state={{ sellerProfile }}>
                         <img
                           key={seller.store_logo || seller.avatar_url || 'default-avatar'}
                           src={seller.store_logo || seller.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(seller.username || seller.full_name || 'User') + '&background=e5e5e5&color=404040&size=200'}
                           alt={seller.username || seller.full_name}
-                          className="w-20 h-20 rounded-full object-cover cursor-pointer border border-neutral-200 dark:border-neutral-600"
+                          className="w-14 h-14 rounded-full object-cover cursor-pointer border border-neutral-200 dark:border-neutral-700"
                         />
                       </Link>
                       {seller.is_pro && (
@@ -3414,7 +3435,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
                     <Link
                       to={sellerPath} state={{ seller }}
                       state={{ sellerProfile }}
-                      className="font-medium text-base sm:text-lg text-neutral-900 dark:text-neutral-50 cursor-pointer hover:underline mb-1.5 flex items-center gap-1.5 min-w-0"
+                      className="font-medium text-[15px] text-neutral-900 dark:text-neutral-50 cursor-pointer hover:underline mb-1 flex items-center gap-1.5 min-w-0"
                     >
                       <span className="truncate">{seller.username || listing.contact_name || seller.full_name || t.productDetail.unknownSeller}</span>
                       <VerifiedBadge isVerified={seller.is_verified} size="sm" />
@@ -3501,95 +3522,88 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
 
                 {/* Satıcının Diğer İlanlarına Hızlı Erişim */}
                 {sellerListingsCount > 0 && (
-                  <div className="mb-4 p-3 border border-neutral-200 dark:border-neutral-800 rounded-md">
-                    <span className="text-neutral-900 dark:text-neutral-50 block mb-1 text-sm">
+                  <div className="mb-4 py-3 border-y border-neutral-200 dark:border-neutral-800">
+                    <span className="text-neutral-800 dark:text-neutral-200 block mb-0.5 text-[13px]">
                       {t.productDetail.moreListingsFrom.replace('{name}', seller.username || seller.full_name || seller.name || t.productDetail.unknownSeller)}
                     </span>
                     <Link
                       to={sellerPath} state={{ seller }}
                       state={{ sellerProfile }}
-                      className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium block"
+                      className="text-[13px] text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium"
                     >
-                      {t.productDetail.allListings.replace('{count}', '')} →
+                      {t.productDetail.allListings.replace('{count}', '')}
                     </Link>
                   </div>
                 )}
 
                 {/* Warenkorb Section Removed as per request for Autos & Wohnwagen */}                {/* Teilen & Drucken - Hidden on mobile */}
-                <div className="mt-4 space-y-2 pt-4 border-t border-neutral-200 dark:border-neutral-800 no-print hidden sm:block">
-                  <div className="pt-1">
-                    <p className="text-[11px] font-medium text-neutral-500 mb-2">{t.productDetail.share}</p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => shareToFacebook(canonicalShareUrl, listing?.title)}
-                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
-                        title="Facebook"
-                      >
-                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => shareToWhatsApp(canonicalShareUrl, listing?.title)}
-                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
-                        title="WhatsApp"
-                      >
-                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                          <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967-0.273-0.099-0.471-0.148-0.67.15-0.197.297-0.767.966-0.94 1.164-0.173.199-0.347.223-0.644.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458.13-0.606.134-0.133.298-0.347.446-0.52.149-0.174.198-0.298.298-0.497.099-0.198.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52.074-0.792.372-0.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-0.085 1.758-0.719 2.006-1.413.248-0.694.248-1.289.173-1.413-0.074-0.124-0.272-0.198-0.57-0.347m-5.421 7.403h-0.004a9.27 9.27 0 01-4.723-1.292l-0.339-0.202-3.51.92 1.017-3.65-0.213-0.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => shareToTwitter(canonicalShareUrl, listing?.title)}
-                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
-                        title="X"
-                      >
-                        <svg className="w-4 h-4 fill-current" viewBox="0 0 1200 1227">
-                          <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={async () => {
-                          const ok = await copyShareLink(canonicalShareUrl);
-                          if (ok) alert('Bağlantı panoya kopyalandı!');
-                        }}
-                        className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 py-2 rounded-md flex items-center justify-center hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors cursor-pointer"
-                        title="Bağlantıyı Kopyala"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                      </button>
-                    </div>
+                <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800 no-print hidden sm:block">
+                  <p className="text-[11px] text-neutral-400 mb-1.5">{t.productDetail.share}</p>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => shareToFacebook(canonicalShareUrl, listing?.title)}
+                      className="w-8 h-8 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 flex items-center justify-center rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                      title="Facebook"
+                    >
+                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-0.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => shareToWhatsApp(canonicalShareUrl, listing?.title)}
+                      className="w-8 h-8 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 flex items-center justify-center rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                      title="WhatsApp"
+                    >
+                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967-0.273-0.099-0.471-0.148-0.67.15-0.197.297-0.767.966-0.94 1.164-0.173.199-0.347.223-0.644.075-0.297-0.15-1.255-0.463-2.39-1.475-0.883-0.788-1.48-1.761-1.653-2.059-0.173-0.297-0.018-0.458.13-0.606.134-0.133.298-0.347.446-0.52.149-0.174.198-0.298.298-0.497.099-0.198.05-0.371-0.025-0.52-0.075-0.149-0.669-1.612-0.916-2.207-0.242-0.579-0.487-0.5-0.669-0.51-0.173-0.008-0.371-0.01-0.57-0.01-0.198 0-0.52.074-0.792.372-0.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-0.085 1.758-0.719 2.006-1.413.248-0.694.248-1.289.173-1.413-0.074-0.124-0.272-0.198-0.57-0.347m-5.421 7.403h-0.004a9.27 9.27 0 01-4.723-1.292l-0.339-0.202-3.51.92 1.017-3.65-0.213-0.339a9.204 9.204 0 01-1.513-5.07c0-5.116 4.158-9.273 9.274-9.273 2.479 0 4.808.966 6.557 2.715a9.192 9.192 0 012.711 6.56c0 5.117-4.158 9.275-9.276 9.275m8.211-17.487A11.026 11.026 0 0012.048 1.177c-6.115 0-11.09 4.974-11.09 11.088 0 2.112.553 4.135 1.611 5.922L.787 23l4.981-1.304c1.722.94 3.655 1.437 5.626 1.437h.005c6.114 0 11.089-4.975 11.089-11.088 0-2.937-1.144-5.698-3.235-7.791z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => shareToTwitter(canonicalShareUrl, listing?.title)}
+                      className="w-8 h-8 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 flex items-center justify-center rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                      title="X"
+                    >
+                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 1200 1227">
+                        <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const ok = await copyShareLink(canonicalShareUrl);
+                        if (ok) alert('Bağlantı panoya kopyalandı!');
+                      }}
+                      className="w-8 h-8 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 flex items-center justify-center rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                      title="Bağlantıyı Kopyala"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                      </svg>
+                    </button>
                   </div>
-                  <button
-                    onClick={() => {
-                      setPrintHideContact(false);
-                      setTimeout(() => window.print(), 100);
-                    }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-neutral-200 dark:border-neutral-700 rounded-md hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors text-neutral-700 dark:text-neutral-300 cursor-pointer"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9V2h12v7M6 18H5a2 2 0 01-2-2v-5h18v5a2 2 0 01-2 2h-1m-12 0h12v4H6v-4z" />
-                    </svg>
-                    {t.productDetail.printFlyer}
-                  </button>
-                  <button
-                    onClick={() => setShowReportModal(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-neutral-200 dark:border-neutral-700 rounded-md hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors text-neutral-700 dark:text-neutral-300 cursor-pointer"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h0.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-0.77-1.333-2.694-1.333-3.464 0L3.34 16c-0.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    {t.productDetail.report}
-                  </button>
+                  <div className="mt-2 flex items-center gap-4 text-[12px]">
+                    <button
+                      onClick={() => {
+                        setPrintHideContact(false);
+                        setTimeout(() => window.print(), 100);
+                      }}
+                      className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 cursor-pointer"
+                    >
+                      {t.productDetail.printFlyer}
+                    </button>
+                    <button
+                      onClick={() => setShowReportModal(true)}
+                      className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 cursor-pointer"
+                    >
+                      {t.productDetail.report}
+                    </button>
+                  </div>
                 </div>
 
-                {/* Sicherheitstipps - Moved back into the panel per user request */}
-                <div className="mt-5 pt-0 md:pt-5 border-t-0 md:border-t border-neutral-200 dark:border-neutral-800">
-                  <div className="flex items-start gap-2 mb-3">
-                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">{t.productDetail.safetyTips}:</h3>
+                <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                  <div className="mb-2">
+                    <h3 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50">{t.productDetail.safetyTips}</h3>
                   </div>
-                  <ul className="space-y-1.5 text-sm text-neutral-600 dark:text-neutral-400">
+                  <ul className="space-y-1 text-[12px] text-neutral-500 dark:text-neutral-400">
                     <li className="flex items-start gap-2">
                       <span className="text-neutral-400 mt-0.5">–</span>
                       <span>{t.productDetail.safetyTip1}</span>
@@ -3632,7 +3646,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           {sellerRecentListings.length > 0 && (
             <div className="mt-8">
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-200 dark:border-neutral-800">
-                <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
+                <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50">
                   Bu Satıcının Diğer İlanları
                 </h2>
                 <Link
@@ -3663,7 +3677,7 @@ export const ProductDetail = ({ addToCart, toggleFavorite, isFavorite, toggleFol
           {/* Category Related Listings */}
           {categoryListings.length > 0 && (
             <div className="mt-8 mb-10">
-              <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-50 mb-4 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+              <h2 className="text-[13px] font-medium text-neutral-900 dark:text-neutral-50 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">
                 {listing?.category} Kategorisindeki Benzer İlanlar
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrandAutocomplete } from './BrandAutocomplete';
 
 export const HomeGardenFields = ({
     subCategory,
@@ -24,8 +25,14 @@ export const HomeGardenFields = ({
     setSelectedWohnzimmerArt,
     // Dienstleistungen Haus & Garten
     selectedDienstleistungenHausGartenArt,
-    setSelectedDienstleistungenHausGartenArt
+    setSelectedDienstleistungenHausGartenArt,
+    // Brand
+    brand,
+    setBrand,
 }) => {
+    // Hizmet alt kategorilerinde marka gösterme
+    const isServiceSubcat = subCategory === 'Ev & Bahçe Hizmetleri' || subCategory === 'Ev & Bahçe';
+    const showBrand = category === 'Ev & Bahçe' && !isServiceSubcat;
     return (
         <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-white/10">
             {/* Wohnzimmer */}
@@ -178,6 +185,17 @@ export const HomeGardenFields = ({
                         </select>
                     </div>
                 )}
+
+            {/* Marka - Ev & Bahçe kategorisinde (hizmet alt kategorileri hariç) */}
+            {showBrand && (
+                <BrandAutocomplete
+                    value={brand}
+                    onChange={setBrand}
+                    category="Ev & Bahçe"
+                    label="Marka"
+                    placeholder="Marka ara veya yazın (örn. IKEA, Bellona, Arçelik...)"
+                />
+            )}
         </div>
     );
 };
