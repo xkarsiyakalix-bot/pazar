@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { searchBrandsAsync } from '../../utils/brandUtils';
+import { searchBrandsAsync, registerCustomBrand } from '../../utils/brandUtils';
 
 export const BrandAutocomplete = ({
     value = '',
@@ -69,9 +69,19 @@ export const BrandAutocomplete = ({
         performSearch(inputValue);
     };
 
+    const handleBlur = () => {
+        const trimmed = (inputValue || '').trim();
+        if (trimmed && trimmed.length >= 2) {
+            registerCustomBrand(trimmed, category);
+        }
+    };
+
     const selectBrand = (brandName) => {
         const trimmed = (brandName || '').trim();
         setInputValue(trimmed);
+        if (trimmed) {
+            registerCustomBrand(trimmed, category);
+        }
         if (onChange) onChange(trimmed);
         setIsOpen(false);
         setHighlightedIndex(-1);
@@ -137,6 +147,7 @@ export const BrandAutocomplete = ({
                     value={inputValue}
                     onChange={handleInputChange}
                     onFocus={handleFocus}
+                    onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
                     autoComplete="off"

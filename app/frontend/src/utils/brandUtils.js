@@ -56,28 +56,77 @@ export const POPULAR_BRANDS = [
     { name: 'Chanel', slug: 'chanel', category: 'Moda' },
     { name: 'Louis Vuitton', slug: 'louis-vuitton', category: 'Moda' },
 
-    // Teknoloji & Elektronik
-    { name: 'Apple', slug: 'apple', aliases: ['iphone', 'ipad', 'macbook'], category: 'Elektronik' },
-    { name: 'Samsung', slug: 'samsung', category: 'Elektronik' },
+    // Teknoloji & Elektronik & Bilgisayar
+    { name: 'Apple', slug: 'apple', aliases: ['iphone', 'ipad', 'macbook', 'mac', 'imac'], category: 'Elektronik' },
+    { name: 'Samsung', slug: 'samsung', aliases: ['galaxy'], category: 'Elektronik' },
     { name: 'Xiaomi', slug: 'xiaomi', aliases: ['redmi', 'poco'], category: 'Elektronik' },
-    { name: 'Huawei', slug: 'huawei', category: 'Elektronik' },
-    { name: 'Sony', slug: 'sony', aliases: ['playstation', 'ps4', 'ps5'], category: 'Elektronik' },
-    { name: 'LG', slug: 'lg', category: 'Elektronik' },
+    { name: 'Huawei', slug: 'huawei', aliases: ['matebook', 'honor'], category: 'Elektronik' },
+    { name: 'Sony', slug: 'sony', aliases: ['playstation', 'ps4', 'ps5', 'bravia', 'vaio'], category: 'Elektronik' },
+    { name: 'LG', slug: 'lg', aliases: ['gram'], category: 'Elektronik' },
     { name: 'Philips', slug: 'philips', category: 'Elektronik' },
-    { name: 'Asus', slug: 'asus', category: 'Elektronik' },
-    { name: 'Lenovo', slug: 'lenovo', category: 'Elektronik' },
-    { name: 'Dell', slug: 'dell', category: 'Elektronik' },
-    { name: 'HP', slug: 'hp', category: 'Elektronik' },
-    { name: 'Acer', slug: 'acer', category: 'Elektronik' },
-    { name: 'MSI', slug: 'msi', category: 'Elektronik' },
-    { name: 'Monster', slug: 'monster', category: 'Elektronik' },
-    { name: 'Casper', slug: 'casper', category: 'Elektronik' },
+    { name: 'Asus', slug: 'asus', aliases: ['rog', 'tuf', 'zenbook', 'vivobook'], category: 'Bilgisayar' },
+    { name: 'Lenovo', slug: 'lenovo', aliases: ['thinkpad', 'legion', 'ideapad', 'yoga'], category: 'Bilgisayar' },
+    { name: 'Dell', slug: 'dell', aliases: ['alienware', 'xps', 'inspiron', 'latitude', 'g15'], category: 'Bilgisayar' },
+    { name: 'HP', slug: 'hp', aliases: ['omen', 'victus', 'pavilion', 'envy', 'spectre'], category: 'Bilgisayar' },
+    { name: 'Acer', slug: 'acer', aliases: ['predator', 'nitro', 'swift', 'aspire'], category: 'Bilgisayar' },
+    { name: 'MSI', slug: 'msi', aliases: ['stealth', 'raider', 'katana', 'cyborg', 'mag'], category: 'Bilgisayar' },
+    { name: 'Monster', slug: 'monster', aliases: ['abra', 'tulpar', 'semruk', 'huma'], category: 'Bilgisayar' },
+    { name: 'Casper', slug: 'casper', aliases: ['excalibur', 'nirvana'], category: 'Bilgisayar' },
+    { name: 'Razer', slug: 'razer', aliases: ['blade'], category: 'Bilgisayar' },
+    { name: 'Corsair', slug: 'corsair', aliases: ['vengeance', 'elgato'], category: 'Bilgisayar' },
+    { name: 'Logitech', slug: 'logitech', aliases: ['logi', 'g-pro'], category: 'Bilgisayar' },
+    { name: 'Gigabyte', slug: 'gigabyte', aliases: ['aorus'], category: 'Bilgisayar' },
+    { name: 'GameGaraj', slug: 'gamegaraj', aliases: ['slayer'], category: 'Bilgisayar' },
+    { name: 'ViewSonic', slug: 'viewsonic', category: 'Bilgisayar' },
+    { name: 'AOC', slug: 'aoc', aliases: ['agon'], category: 'Bilgisayar' },
+    { name: 'BenQ', slug: 'benq', aliases: ['zowie'], category: 'Bilgisayar' },
+    { name: 'SteelSeries', slug: 'steelseries', category: 'Bilgisayar' },
+    { name: 'Kingston', slug: 'kingston', aliases: ['fury', 'hyperx'], category: 'Bilgisayar' },
+    { name: 'SanDisk', slug: 'sandisk', category: 'Bilgisayar' },
+    { name: 'Seagate', slug: 'seagate', category: 'Bilgisayar' },
+    { name: 'Western Digital', slug: 'western-digital', aliases: ['wd'], category: 'Bilgisayar' },
+    { name: 'Intel', slug: 'intel', category: 'Bilgisayar' },
+    { name: 'AMD', slug: 'amd', aliases: ['ryzen', 'radeon'], category: 'Bilgisayar' },
+    { name: 'Nvidia', slug: 'nvidia', aliases: ['geforce', 'rtx', 'gtx'], category: 'Bilgisayar' },
+    { name: 'Crucial', slug: 'crucial', aliases: ['ballistix'], category: 'Bilgisayar' },
+    { name: 'G.Skill', slug: 'g-skill', aliases: ['trident-z', 'ripjaws'], category: 'Bilgisayar' },
+    { name: 'Thermaltake', slug: 'thermaltake', category: 'Bilgisayar' },
+    { name: 'Cooler Master', slug: 'cooler-master', category: 'Bilgisayar' },
+    { name: 'EVGA', slug: 'evga', category: 'Bilgisayar' },
+    { name: 'Zotac', slug: 'zotac', category: 'Bilgisayar' },
+    { name: 'Palit', slug: 'palit', category: 'Bilgisayar' },
+    { name: 'Sapphire', slug: 'sapphire', aliases: ['nitro+'], category: 'Bilgisayar' },
+    { name: 'AsRock', slug: 'asrock', category: 'Bilgisayar' },
+    { name: 'TP-Link', slug: 'tp-link', category: 'Bilgisayar' },
+    { name: 'Keenetic', slug: 'keenetic', category: 'Bilgisayar' },
+    { name: 'Anker', slug: 'anker', aliases: ['soundcore', 'eufy'], category: 'Elektronik' },
+    { name: 'Baseus', slug: 'baseus', category: 'Elektronik' },
+    { name: 'Ugreen', slug: 'ugreen', category: 'Elektronik' },
+    { name: 'Toshiba', slug: 'toshiba', category: 'Elektronik' },
+    { name: 'Fujitsu', slug: 'fujitsu', category: 'Bilgisayar' },
+    { name: 'Bose', slug: 'bose', category: 'Elektronik' },
+    { name: 'Sennheiser', slug: 'sennheiser', category: 'Elektronik' },
+    { name: 'Marshall', slug: 'marshall', category: 'Elektronik' },
+    { name: 'JBL', slug: 'jbl', category: 'Elektronik' },
     { name: 'Canon', slug: 'canon', category: 'Elektronik' },
     { name: 'Nikon', slug: 'nikon', category: 'Elektronik' },
-    { name: 'Microsoft', slug: 'microsoft', aliases: ['xbox'], category: 'Elektronik' },
-    { name: 'Nintendo', slug: 'nintendo', category: 'Elektronik' },
-    { name: 'JBL', slug: 'jbl', category: 'Elektronik' },
+    { name: 'Fujifilm', slug: 'fujifilm', category: 'Elektronik' },
+    { name: 'GoPro', slug: 'gopro', category: 'Elektronik' },
+    { name: 'DJI', slug: 'dji', category: 'Elektronik' },
+    { name: 'Microsoft', slug: 'microsoft', aliases: ['xbox', 'surface'], category: 'Elektronik' },
+    { name: 'Nintendo', slug: 'nintendo', aliases: ['switch'], category: 'Elektronik' },
     { name: 'Dyson', slug: 'dyson', category: 'Elektronik' },
+    { name: 'Oppo', slug: 'oppo', category: 'Elektronik' },
+    { name: 'Realme', slug: 'realme', category: 'Elektronik' },
+    { name: 'Vivo', slug: 'vivo', category: 'Elektronik' },
+    { name: 'OnePlus', slug: 'oneplus', category: 'Elektronik' },
+    { name: 'Nothing', slug: 'nothing', aliases: ['cmf'], category: 'Elektronik' },
+    { name: 'Honor', slug: 'honor', category: 'Elektronik' },
+    { name: 'Infinix', slug: 'infinix', category: 'Elektronik' },
+    { name: 'Tecno', slug: 'tecno', category: 'Elektronik' },
+    { name: 'TCL', slug: 'tcl', category: 'Elektronik' },
+    { name: 'Roborock', slug: 'roborock', category: 'Ev Aletleri' },
+    { name: 'Dreame', slug: 'dreame', category: 'Ev Aletleri' },
 
     // Beyaz Eşya & Ev Aletleri
     { name: 'Bosch', slug: 'bosch', category: 'Beyaz Eşya' },
@@ -125,10 +174,84 @@ export const POPULAR_BRANDS = [
 // It is loaded on-demand via dynamic import and cached after first load.
 let _allBrandsCache = null;
 
+const CUSTOM_BRANDS_STORAGE_KEY = 'exvitrin_custom_brands_cache';
+
+/**
+ * Get user-added custom brands from localStorage
+ */
+export const getCustomBrandsFromStorage = () => {
+    try {
+        if (typeof window === 'undefined') return [];
+        const raw = localStorage.getItem(CUSTOM_BRANDS_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch (_) {
+        return [];
+    }
+};
+
+/**
+ * Register a new custom brand into in-memory cache and localStorage so it immediately
+ * appears in brand searches, the /markalar directory, and brand pages.
+ */
+export const registerCustomBrand = (brandName, category = 'Markalar') => {
+    if (!brandName || typeof brandName !== 'string') return null;
+    const trimmed = brandName.trim();
+    if (!trimmed || ['diğer', 'diger', 'andere', 'other'].includes(trimmed.toLowerCase())) return null;
+
+    const slug = slugifyBrand(trimmed);
+    if (!slug) return null;
+
+    const newBrand = {
+        name: trimmed,
+        slug,
+        category: category || 'Markalar'
+    };
+
+    // 1. Add to localStorage
+    try {
+        if (typeof window !== 'undefined') {
+            const list = getCustomBrandsFromStorage();
+            if (!list.some(b => b.slug === slug)) {
+                list.push(newBrand);
+                localStorage.setItem(CUSTOM_BRANDS_STORAGE_KEY, JSON.stringify(list));
+            }
+        }
+    } catch (_) {}
+
+    // 2. Add to in-memory cache if initialized
+    if (_allBrandsCache) {
+        _allBrandsCache[slug] = newBrand;
+    }
+
+    // 3. Add to POPULAR_BRANDS if not present
+    if (!POPULAR_BRANDS.some(b => b.slug === slug)) {
+        POPULAR_BRANDS.unshift(newBrand);
+    }
+
+    return newBrand;
+};
+
 const loadAllBrands = async () => {
     if (!_allBrandsCache) {
         const mod = await import('../data/allBrands.json');
-        _allBrandsCache = mod.default;
+        _allBrandsCache = { ...mod.default };
+
+        // Merge built-in POPULAR_BRANDS so all technology & furniture brands are always searchable
+        POPULAR_BRANDS.forEach(b => {
+            if (!_allBrandsCache[b.slug]) {
+                _allBrandsCache[b.slug] = b;
+            } else if (!b.category && _allBrandsCache[b.slug]?.category) {
+                // keep existing
+            } else if (b.category) {
+                _allBrandsCache[b.slug] = { ..._allBrandsCache[b.slug], ...b };
+            }
+        });
+
+        // Merge custom brands from localStorage
+        const customList = getCustomBrandsFromStorage();
+        customList.forEach(b => {
+            _allBrandsCache[b.slug] = b;
+        });
     }
     return _allBrandsCache;
 };
@@ -215,36 +338,98 @@ export const findBrandBySlugAsync = async (slug) => {
 export const getAllBrandsList = async () => {
     const allBrandsData = await loadAllBrands();
     const list = Object.values(allBrandsData);
+    const existingSlugs = new Set(list.map(b => b.slug));
+
+    // Merge custom brands from localStorage first
+    const customStored = getCustomBrandsFromStorage();
+    customStored.forEach(b => {
+        if (b && b.slug && !existingSlugs.has(b.slug)) {
+            existingSlugs.add(b.slug);
+            list.push(b);
+        }
+    });
 
     try {
         const { supabase } = await import('../lib/supabase');
         const { data } = await supabase
             .from('listings')
-            .select('marke')
+            .select('marke, category')
             .eq('status', 'active')
             .not('marke', 'is', null)
             .neq('marke', '')
-            .limit(200);
+            .limit(1000);
 
         if (data && data.length > 0) {
-            const existingSlugs = new Set(list.map(b => b.slug));
             data.forEach(item => {
                 const bName = item.marke?.trim();
                 if (!bName || ['diğer', 'diger', 'andere', 'other'].includes(bName.toLowerCase())) return;
                 const bSlug = slugifyBrand(bName);
                 if (bSlug && !existingSlugs.has(bSlug)) {
                     existingSlugs.add(bSlug);
-                    list.push({
+                    const brandObj = {
                         name: bName,
                         slug: bSlug,
-                        category: 'Markalar'
-                    });
+                        category: item.category || 'Markalar'
+                    };
+                    list.push(brandObj);
+                    // Also cache it
+                    if (_allBrandsCache) {
+                        _allBrandsCache[bSlug] = brandObj;
+                    }
                 }
             });
         }
     } catch (_) {}
 
     return list;
+};
+
+/**
+ * Check if a brand's category is compatible with the active form category filter.
+ * Prevents clothing/fashion brands from appearing in Electronics/Computers searches.
+ */
+export const isCategoryCompatible = (brandCategory, categoryFilter) => {
+    if (!categoryFilter) return true;
+    const catLower = categoryFilter.toLowerCase();
+    const bCat = (brandCategory || '').toLowerCase();
+
+    // Elektronik & Bilgisayar kategorisi filtre kuralları
+    if (catLower.includes('elektronik') || catLower.includes('electronic') || catLower.includes('bilgisayar')) {
+        // Kesinlikle elenmesi gereken diğer sektörler (Kıyafet, Moda, Ayakkabı, Otomotiv vb.)
+        const forbidden = [
+            'moda', 'giyim', 'ayakkabı', 'ayakkabi', 'çanta', 'canta',
+            'kozmetik', 'parfüm', 'parfum', 'otomobil', 'motosiklet', 'emlak'
+        ];
+        if (forbidden.some(f => bCat.includes(f))) return false;
+
+        // İlgili kabul edilen kategoriler
+        const allowed = ['elektronik', 'bilgisayar', 'telefon', 'beyaz eşya', 'ev aletleri', 'ses', 'teknoloji', 'foto', 'kamera', 'donanım', 'oyun', 'konsol', 'markalar'];
+        if (bCat && !allowed.some(a => bCat.includes(a))) {
+            return false;
+        }
+        return true;
+    }
+
+    // Moda & Güzellik için filtre
+    if (catLower.includes('moda') || catLower.includes('giyim') || catLower.includes('beauty')) {
+        const forbidden = ['elektronik', 'bilgisayar', 'otomobil', 'motosiklet', 'beyaz eşya', 'ev aletleri', 'emlak'];
+        if (forbidden.some(f => bCat.includes(f))) return false;
+        return true;
+    }
+
+    // Ev & Bahçe için filtre
+    if (catLower.includes('ev & bahçe') || catLower.includes('haus & garten') || catLower.includes('mobilya')) {
+        const forbidden = ['otomobil', 'motosiklet', 'moda', 'giyim', 'ayakkabı'];
+        if (forbidden.some(f => bCat.includes(f))) return false;
+        return true;
+    }
+
+    // Genel filtre: doğrudan eşleşme
+    if (bCat && !bCat.includes(catLower) && !bCat.includes('markalar')) {
+        return false;
+    }
+
+    return true;
 };
 
 /**
@@ -256,11 +441,10 @@ export const searchBrandsAsync = async (query, categoryFilter = null, limit = 15
     const allBrandsData = await loadAllBrands();
     const allList = Object.values(allBrandsData);
 
-    // If query is empty, return popular / category-specific brands
+    // If query is empty, return popular category-specific brands
     if (!cleanQuery) {
         if (categoryFilter) {
-            const catLower = categoryFilter.toLowerCase();
-            const catMatches = allList.filter(b => b.category && b.category.toLowerCase().includes(catLower));
+            const catMatches = allList.filter(b => isCategoryCompatible(b.category, categoryFilter));
             if (catMatches.length > 0) return catMatches.slice(0, limit);
         }
         return POPULAR_BRANDS.slice(0, limit);
@@ -272,6 +456,12 @@ export const searchBrandsAsync = async (query, categoryFilter = null, limit = 15
     const scored = [];
     for (const b of allList) {
         if (!b || !b.name) continue;
+
+        // Apply strict category compatibility check when a categoryFilter is given
+        if (categoryFilter && !isCategoryCompatible(b.category, categoryFilter)) {
+            continue;
+        }
+
         const nameLower = b.name.toLocaleLowerCase('tr-TR');
         const slugLower = (b.slug || '').toLowerCase();
 
@@ -291,8 +481,8 @@ export const searchBrandsAsync = async (query, categoryFilter = null, limit = 15
         }
 
         if (score > 0) {
-            if (categoryFilter && b.category && b.category.toLowerCase().includes(categoryFilter.toLowerCase())) {
-                score += 15; // Category relevance boost
+            if (categoryFilter && b.category && isCategoryCompatible(b.category, categoryFilter)) {
+                score += 25; // Category relevance boost
             }
             scored.push({ brand: b, score });
         }
