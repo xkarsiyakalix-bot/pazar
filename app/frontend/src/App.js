@@ -3,6 +3,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
+import { startBadgeRealtimeSync, syncAppBadge } from './utils/badgeSync';
+import { initPushNotifications } from './utils/capacitorBridge';
 import DemoWarningModal from './components/DemoWarningModal';
 const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
 const SellerPage = React.lazy(() => import('./pages/SellerPage'));
@@ -654,21 +656,45 @@ function App() {
 
   }, []);
 
-  // Setup push notifications when user logs in
+  // Setup push notifications and app icon badge when user logs in
   useEffect(() => {
     if (user) {
-      // Subscribe to push notifications
+      // 1. Start App Icon Badge Realtime Sync (Android & PWA)
+      const cleanupBadgeSync = startBadgeRealtimeSync(user);
+
+      // 2. Setup Native Android & Web push notifications
       const setupNotifications = async () => {
+        // Native Android Push Notifications Listener
+        try {
+          await initPushNotifications(
+            (token) => {
+              console.log('[Native Push] Token registered:', token);
+            },
+            () => {
+              // Notification received or clicked -> update app icon badge count
+              syncAppBadge(user.id);
+            }
+          );
+        } catch (e) {
+          console.warn('[Native Push] Init error:', e);
+        }
+
+        // PWA Push Notifications
         const hasPermission = await pwaManager.requestNotificationPermission();
         if (hasPermission) {
           await pwaManager.subscribeToPushNotifications(user.id);
-
-          // Register periodic sync for new messages
-          await pwaManager.registerPeriodicSync('check-new-messages', 15 * 60 * 1000); // Every 15 minutes
+          await pwaManager.registerPeriodicSync('check-new-messages', 15 * 60 * 1000);
         }
       };
 
       setupNotifications();
+
+      return () => {
+        if (cleanupBadgeSync) cleanupBadgeSync();
+      };
+    } else {
+      // User logged out -> clear badge
+      syncAppBadge(null);
     }
   }, [user]);
 

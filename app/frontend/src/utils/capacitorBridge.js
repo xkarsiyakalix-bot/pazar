@@ -137,3 +137,67 @@ export const setStatusBar = async (backgroundColor = "#EF4444", style = "LIGHT")
     console.error("[Bridge] StatusBar hatası:", error);
   }
 };
+
+// APP ICON BADGE (Uygulama İkonu Rozet Sayısı - Android & PWA)
+let BadgePluginInstance = null;
+
+const getBadgePlugin = async () => {
+  if (BadgePluginInstance) return BadgePluginInstance;
+  if (isNative()) {
+    try {
+      const { registerPlugin } = await import("@capacitor/core");
+      BadgePluginInstance = registerPlugin("Badge");
+      return BadgePluginInstance;
+    } catch (e) {
+      console.warn("[Bridge] Native Badge plugin bulunamadı:", e);
+    }
+  }
+  return null;
+};
+
+/**
+ * Android ana ekranındaki ve PWA ikonundaki okunmamış mesaj/bildirim sayısını günceller.
+ * @param {number} count - Okunmamış mesaj veya bildirim sayısı
+ */
+export const setAppBadge = async (count) => {
+  const num = Math.max(0, parseInt(count, 10) || 0);
+
+  // 1. Native Android Badge (Samsung, Xiaomi, Huawei, Pixel vb. Launcher'lar)
+  if (isNative()) {
+    try {
+      const Badge = await getBadgePlugin();
+      if (Badge) {
+        if (num === 0) {
+          await Badge.clear();
+        } else {
+          await Badge.set({ count: num });
+        }
+        return true;
+      }
+    } catch (e) {
+      console.warn("[Bridge] Native Badge güncellenemedi:", e);
+    }
+  }
+
+  // 2. Standart Web / PWA App Badge API (Android Chrome, Edge, Safari vb.)
+  if (typeof navigator !== "undefined") {
+    try {
+      if (num === 0 && typeof navigator.clearAppBadge === "function") {
+        await navigator.clearAppBadge();
+        return true;
+      } else if (num > 0 && typeof navigator.setAppBadge === "function") {
+        await navigator.setAppBadge(num);
+        return true;
+      }
+    } catch (_) {}
+  }
+
+  return false;
+};
+
+/**
+ * Uygulama ikonundaki rozet sayısını temizler.
+ */
+export const clearAppBadge = async () => {
+  return setAppBadge(0);
+};

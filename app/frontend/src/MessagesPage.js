@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { getConversations, sendMessage, markConversationAsRead } from './api/messages';
+import { syncAppBadge } from './utils/badgeSync';
 import { supabase } from './lib/supabase';
 import { checkRatingEligibility, hasUserRated } from './api/ratings';
 import RatingModal from './components/RatingModal';
@@ -299,7 +300,9 @@ function MessagesPage() {
                 }
                 return conv;
             }));
-            markConversationAsRead(partnerId);
+            markConversationAsRead(partnerId).then(() => {
+                syncAppBadge(user.id);
+            }).catch(() => {});
         }
     }, [selectedConversation?.user?.id, user?.id]);
 
