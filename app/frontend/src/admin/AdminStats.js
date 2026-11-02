@@ -56,6 +56,9 @@ const AdminStats = () => {
                 dailyVisitsResult,
                 monthlyVisitsResult,
                 yearlyVisitsResult,
+                dailyActiveProfilesResult,
+                monthlyActiveProfilesResult,
+                yearlyActiveProfilesResult,
                 trendPromosResult,
                 trendListingsResult
             ] = await Promise.all([
@@ -73,6 +76,9 @@ const AdminStats = () => {
                 supabase.from('page_visits').select('user_id, session_id, user_agent').gte('created_at', startOfDay),
                 supabase.from('page_visits').select('user_id, session_id, user_agent').gte('created_at', startOfMonth),
                 supabase.from('page_visits').select('user_id, session_id, user_agent').gte('created_at', startOfYear),
+                supabase.from('profiles').select('id').gte('last_seen', startOfDay),
+                supabase.from('profiles').select('id').gte('last_seen', startOfMonth),
+                supabase.from('profiles').select('id').gte('last_seen', startOfYear),
                 supabase.from('promotions').select('price, created_at, status').gte('created_at', sevenDaysAgo),
                 supabase.from('listings').select('created_at').gte('created_at', sevenDaysAgo)
             ]);
@@ -88,6 +94,9 @@ const AdminStats = () => {
             const dailyVisits = dailyVisitsResult.data;
             const monthlyVisits = monthlyVisitsResult.data;
             const yearlyVisits = yearlyVisitsResult.data;
+            const dailyActiveProfiles = dailyActiveProfilesResult.data;
+            const monthlyActiveProfiles = monthlyActiveProfilesResult.data;
+            const yearlyActiveProfiles = yearlyActiveProfilesResult.data;
             const trendPromos = trendPromosResult.data;
             const trendListings = trendListingsResult.data;
 
@@ -122,7 +131,7 @@ const AdminStats = () => {
                 listingTrend: formatTrendData(trendListings, 'created_at')
             });
 
-            const calculatePeriodStats = (profiles, promos, visits) => {
+            const calculatePeriodStats = (profiles, promos, visits, activeProfiles) => {
                 const regs = profiles?.length || 0;
                 const paidPromos = promos?.filter(p => p.status === 'active' || p.status === 'paid' || p.status === 'expired') || [];
                 const salesCount = paidPromos.length;
@@ -130,8 +139,12 @@ const AdminStats = () => {
 
                 // Exclude crawlers and web bots from visitor statistics
                 const humanVisits = (visits || []).filter(v => !isBotUserAgent(v.user_agent));
-                const uniqueSessions = new Set(humanVisits.map(v => v.session_id));
-                const loggedInUsers = new Set(humanVisits.filter(v => v.user_id).map(v => v.user_id));
+                // Registered users: combine user_ids recorded in page_visits and profiles active in period (last_seen)
+                const loggedInUsers = new Set([
+                    ...humanVisits.filter(v => v.user_id).map(v => v.user_id),
+                    ...(activeProfiles || []).map(p => p.id)
+                ]);
+                // Guest visitors counted by unique session_id
                 const guestsCount = new Set(humanVisits.filter(v => !v.user_id).map(v => v.session_id)).size;
 
                 return {
@@ -148,9 +161,9 @@ const AdminStats = () => {
                 activeListings: activeListingsCount,
                 totalUsers: usersCount,
                 onlineUsers: realtimeOnlineCount,
-                daily: calculatePeriodStats(dailyProfiles, dailyPromos, dailyVisits),
-                monthly: calculatePeriodStats(monthlyProfiles, monthlyPromos, monthlyVisits),
-                yearly: calculatePeriodStats(yearlyProfiles, yearlyPromos, yearlyVisits)
+                daily: calculatePeriodStats(dailyProfiles, dailyPromos, dailyVisits, dailyActiveProfiles),
+                monthly: calculatePeriodStats(monthlyProfiles, monthlyPromos, monthlyVisits, monthlyActiveProfiles),
+                yearly: calculatePeriodStats(yearlyProfiles, yearlyPromos, yearlyVisits, yearlyActiveProfiles)
             });
 
             setHasLoadedInitialData(true);

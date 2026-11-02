@@ -23,12 +23,12 @@ export const isBotUserAgent = (ua) => {
     return botRegex.test(userAgent);
 };
 
-// Helper to get or create a session ID
+// Helper to get or create a session ID (persisted in localStorage so it survives tab closes)
 const getSessionId = () => {
-    let sessionId = sessionStorage.getItem('analytics_session_id');
+    let sessionId = localStorage.getItem('analytics_session_id');
     if (!sessionId) {
         sessionId = crypto.randomUUID?.() || Math.random().toString(36).substring(2) + Date.now().toString(36);
-        sessionStorage.setItem('analytics_session_id', sessionId);
+        localStorage.setItem('analytics_session_id', sessionId);
     }
     return sessionId;
 };
@@ -40,12 +40,24 @@ export const trackVisit = async (pagePath) => {
             return;
         }
 
-        const { data: { user } } = await supabase.auth.getUser();
+        // Fast & reliable: read session from localStorage first, fallback to getUser
+        let userId = null;
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            userId = session?.user?.id || null;
+            if (!userId) {
+                const { data } = await supabase.auth.getUser();
+                userId = data?.user?.id || null;
+            }
+        } catch (_) {
+            // Ignore auth lookup errors
+        }
+
         const sessionId = getSessionId();
 
         await supabase.from('page_visits').insert({
             page_path: pagePath || window.location.pathname,
-            user_id: user?.id || null,
+            user_id: userId,
             session_id: sessionId,
             user_agent: navigator.userAgent
         });
@@ -59,27 +71,45 @@ export const getVisitStats = async () => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        const startOfTodayIso = today.toISOString();
 
-        const { data, error } = await supabase
-            .from('page_visits')
-            .select('user_id, session_id, user_agent')
-            .gte('created_at', today.toISOString());
+        // Query both page_visits AND profiles with last_seen today (ground truth for registered users)
+        const [visitsRes, activeProfilesRes] = await Promise.all([
+            supabase
+                .from('page_visits')
+                .select('user_id, session_id, user_agent')
+                .gte('created_at', startOfTodayIso),
+            supabase
+                .from('profiles')
+                .select('id')
+                .gte('last_seen', startOfTodayIso)
+        ]);
 
-        if (error) throw error;
+        if (visitsRes.error) throw visitsRes.error;
+
+        const data = visitsRes.data || [];
 
         // Filter out bot visits (both historical and any uncaught)
-        const humanVisits = (data || []).filter(v => !isBotUserAgent(v.user_agent));
+        const humanVisits = data.filter(v => !isBotUserAgent(v.user_agent));
 
-        // Calculate unique guest sessions and logged-in users from real human visits
-        const uniqueSessions = new Set(humanVisits.map(v => v.session_id));
-        const loggedInUsers = new Set(humanVisits.filter(v => v.user_id).map(v => v.user_id));
+        // Registered users: combine user_ids recorded in page_visits and profiles active today (last_seen)
+        const loggedInUserSet = new Set([
+            ...humanVisits.filter(v => v.user_id).map(v => v.user_id),
+            ...(activeProfilesRes.data || []).map(p => p.id)
+        ]);
+
+        // Guest visitors counted by unique session_id (no user_id)
         const guestSessions = humanVisits.filter(v => !v.user_id);
         const uniqueGuestSessions = new Set(guestSessions.map(v => v.session_id));
 
+        const loggedInUsersToday = loggedInUserSet.size;
+        const guestsToday = uniqueGuestSessions.size;
+        const totalVisitorsToday = loggedInUsersToday + guestsToday;
+
         return {
-            totalVisitorsToday: uniqueSessions.size,
-            loggedInUsersToday: loggedInUsers.size,
-            guestsToday: uniqueGuestSessions.size
+            totalVisitorsToday,
+            loggedInUsersToday,
+            guestsToday
         };
     } catch (error) {
         console.error('Error fetching visit stats:', error);
