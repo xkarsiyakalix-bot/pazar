@@ -16,6 +16,8 @@ const MobileBottomNavigation = () => {
                     const { getUnreadCount } = await import('../api/messages');
                     const count = await getUnreadCount();
                     setUnreadCount(count);
+                    const { syncAppBadge } = await import('../utils/badgeSync');
+                    syncAppBadge(user.id);
                 } catch (error) {
                     console.error('Error fetching unread count:', error);
                 }

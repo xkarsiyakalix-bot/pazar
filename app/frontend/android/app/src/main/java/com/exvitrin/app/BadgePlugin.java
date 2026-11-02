@@ -28,6 +28,10 @@ public class BadgePlugin extends Plugin {
             // 1. Apply count via ShortcutBadger for manufacturer launchers (Samsung, Xiaomi, Huawei, etc.)
             if (count <= 0) {
                 ShortcutBadger.removeCount(context);
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                if (notificationManager != null) {
+                    notificationManager.cancelAll();
+                }
             } else {
                 ShortcutBadger.applyCount(context, count);
             }
@@ -56,6 +60,10 @@ public class BadgePlugin extends Plugin {
         try {
             Context context = getContext();
             ShortcutBadger.removeCount(context);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.cancelAll();
+            }
             JSObject ret = new JSObject();
             ret.put("count", 0);
             call.resolve(ret);

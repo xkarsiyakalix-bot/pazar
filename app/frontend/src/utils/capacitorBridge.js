@@ -174,8 +174,16 @@ export const setAppBadge = async (count) => {
         } else {
           await Badge.set({ count: num }).catch(() => {});
         }
-        return true;
       }
+
+      // Sayaç 0 olduğunda Android bildirim çubuğundaki bildirimleri de temizle
+      if (num === 0) {
+        try {
+          const { PushNotifications } = await import("@capacitor/push-notifications");
+          await PushNotifications.removeAllDeliveredNotifications().catch(() => {});
+        } catch (_) {}
+      }
+      return true;
     } catch (e) {
       console.warn("[Bridge] Native Badge güncellenemedi:", e);
     }

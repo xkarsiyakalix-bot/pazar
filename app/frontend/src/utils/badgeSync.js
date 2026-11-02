@@ -26,24 +26,16 @@ export const syncAppBadge = async (userId) => {
 
         if (msgErr) console.warn('[BadgeSync] Mesaj sayısı hatası:', msgErr.message);
 
-        // 2. Okunmamış bildirim sayısını sorgula
-        let unreadNotifs = 0;
-        try {
-            const { count: notifCount, error: notifErr } = await supabase
-                .from('notifications')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', userId)
-                .eq('read', false);
-
-            if (!notifErr && typeof notifCount === 'number') {
-                unreadNotifs = notifCount;
-            }
-        } catch (_) {}
-
-        const total = (unreadMessages || 0) + (unreadNotifs || 0);
+        // Kleinanzeigen gibi ana simge sayacı okunmamış mesaj sayısıdır.
+        // Bildirimler tablosundaki eski birikmelerin mesaj sayısını bozmasını önlüyoruz.
+        const total = Math.max(0, unreadMessages || 0);
         lastUnreadTotal = total;
 
-        await setAppBadge(total);
+        if (total === 0) {
+            await clearAppBadge();
+        } else {
+            await setAppBadge(total);
+        }
         return total;
     } catch (error) {
         console.warn('[BadgeSync] Senkronizasyon hatası:', error);
