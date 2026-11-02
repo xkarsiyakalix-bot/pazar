@@ -39,3 +39,5 @@ app/frontend/android/app/build/
 app/frontend/android/build/
 *.jks
 *.keystore
+*firebase-adminsdk*.json
+firebase-service-account.json

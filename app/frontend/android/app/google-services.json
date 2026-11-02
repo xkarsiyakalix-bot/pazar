@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "551924663826",
+    "project_id": "exvitrin-c21c0",
+    "storage_bucket": "exvitrin-c21c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:551924663826:android:861b0da9d973cdcb73bacb",
+        "android_client_info": {
+          "package_name": "com.exvitrin.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKtHwDDvIkGSl6ymX7sRTSzzF1xoyeo-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

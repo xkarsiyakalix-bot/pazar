@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendFcmPushNotification } from './fcm.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
@@ -74,35 +75,87 @@ serve(async (req) => {
         `
 
         // Send email using Resend
-        const res = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${RESEND_API_KEY}`,
-            },
-            body: JSON.stringify({
-                from: 'ExVitrin <info@exvitrin.com>',
-                to: [receiverEmail],
-                subject: subject,
-                html: html,
-            }),
-        })
-
-        const result = await res.json()
-        
-        if (!res.ok) {
-            console.error('Resend API error:', result)
-            // Handle Sandbox restriction gracefully so it doesn't crash the DB webhook
-            if (res.status === 403 && result.name === 'validation_error') {
-                console.warn('Sandbox restriction hit. Email not sent, but proceeding.', result)
-            }
-            return new Response(JSON.stringify(result), {
-                headers: { "Content-Type": "application/json" },
-                status: res.status === 403 ? 200 : res.status // return 200 for sandbox to not fail webhook
+        let emailResult = null
+        try {
+            const res = await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${RESEND_API_KEY}`,
+                },
+                body: JSON.stringify({
+                    from: 'ExVitrin <info@exvitrin.com>',
+                    to: [receiverEmail],
+                    subject: subject,
+                    html: html,
+                }),
             })
+            emailResult = await res.json()
+            if (!res.ok) {
+                console.warn('Resend email failed:', emailResult)
+            }
+        } catch (mailErr) {
+            console.warn('Resend email error:', mailErr)
         }
 
-        return new Response(JSON.stringify(result), {
+        // 4. Send Android Push Notification (FCM) & Badge Count
+        try {
+            const { data: pushTokens } = await supabaseAdmin
+                .from('user_push_tokens')
+                .select('token')
+                .eq('user_id', record.receiver_id)
+
+            const { data: receiverProf } = await supabaseAdmin
+                .from('profiles')
+                .select('fcm_token')
+                .eq('id', record.receiver_id)
+                .single()
+
+            const allTokens = new Set<string>()
+            if (receiverProf?.fcm_token) allTokens.add(receiverProf.fcm_token)
+            if (pushTokens) {
+                pushTokens.forEach((pt: any) => {
+                    if (pt?.token) allTokens.add(pt.token)
+                })
+            }
+
+            if (allTokens.size > 0) {
+                const { count: unreadCount } = await supabaseAdmin
+                    .from('messages')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('receiver_id', record.receiver_id)
+                    .eq('read', false)
+
+                const serviceAccountRaw = Deno.env.get('FIREBASE_SERVICE_ACCOUNT')
+                let serviceAccount = null
+                if (serviceAccountRaw) {
+                    try {
+                        serviceAccount = JSON.parse(serviceAccountRaw)
+                    } catch (_) {}
+                }
+
+                if (serviceAccount) {
+                    for (const fcmToken of allTokens) {
+                        await sendFcmPushNotification({
+                            serviceAccount,
+                            token: fcmToken,
+                            title: `ExVitrin: ${senderName}`,
+                            body: record.content,
+                            badgeCount: (unreadCount || 0) + 1,
+                            data: {
+                                type: 'new_message',
+                                sender_id: record.sender_id,
+                                conversation_id: record.conversation_id || ''
+                            }
+                        })
+                    }
+                }
+            }
+        } catch (fcmErr) {
+            console.error('FCM Push notification error:', fcmErr)
+        }
+
+        return new Response(JSON.stringify({ success: true, email: emailResult }), {
             headers: { "Content-Type": "application/json" },
             status: 200
         })

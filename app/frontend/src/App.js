@@ -4,6 +4,7 @@ import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
 import { startBadgeRealtimeSync, syncAppBadge } from './utils/badgeSync';
+import { initPushNotifications } from './utils/capacitorBridge';
 import DemoWarningModal from './components/DemoWarningModal';
 const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
 const SellerPage = React.lazy(() => import('./pages/SellerPage'));
@@ -666,7 +667,40 @@ function App() {
         console.warn('[BadgeSync] Başlatma hatası:', e);
       }
 
-      // 2. Setup Web push notifications (PWA)
+      // 2. Setup Native Android FCM Push Notifications
+      const setupNativePush = async () => {
+        try {
+          await initPushNotifications(
+            async (fcmToken) => {
+              console.log('[Native Push] FCM Token alındı, Supabase kaydediliyor:', fcmToken);
+              try {
+                // Save to profiles
+                await supabase
+                  .from('profiles')
+                  .update({ fcm_token: fcmToken })
+                  .eq('id', user.id);
+
+                // Save to user_push_tokens
+                await supabase
+                  .from('user_push_tokens')
+                  .upsert({ user_id: user.id, token: fcmToken, platform: 'android', updated_at: new Date().toISOString() }, { onConflict: 'token' });
+              } catch (saveErr) {
+                console.warn('[Native Push] Token kaydetme hatası:', saveErr);
+              }
+            },
+            () => {
+              // Notification received or clicked -> update app icon badge
+              syncAppBadge(user.id);
+            }
+          );
+        } catch (e) {
+          console.warn('[Native Push] Başlatma hatası:', e);
+        }
+      };
+
+      setupNativePush();
+
+      // 3. Setup Web push notifications (PWA)
       const setupNotifications = async () => {
         try {
           const hasPermission = await pwaManager.requestNotificationPermission();

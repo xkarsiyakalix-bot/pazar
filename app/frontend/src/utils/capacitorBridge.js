@@ -14,19 +14,60 @@ export const isAndroid = () => {
   return isNative() && window.Capacitor?.getPlatform() === "android";
 };
 
-// PUSH BİLDİRİMLER
-let PushNotifications = null;
+// PUSH BİLDİRİMLER (Google Firebase FCM)
+let PushNotificationsInstance = null;
 
 export const initPushNotifications = async (onToken, onNotification) => {
-  // Push bildirimleri native Firebase entegrasyonu (google-services.json) gerektirir.
-  // google-services.json olmadan register() çağrılırsa Android sistem seviyesinde IllegalStateException fırlatarak çöker.
-  console.log("[Bridge] Native Push notifications devre dışı (google-services.json tanımlı değil, PWA push kullanılıyor).");
-  return;
+  if (!isNative()) {
+    console.log("[Bridge] Push notifications sadece native Android ortamında çalışır.");
+    return;
+  }
+
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    PushNotificationsInstance = PushNotifications;
+
+    let permStatus = await PushNotifications.checkPermissions();
+
+    if (permStatus.receive === "prompt") {
+      permStatus = await PushNotifications.requestPermissions();
+    }
+
+    if (permStatus.receive !== "granted") {
+      console.warn("[Bridge] Push bildirim izni verilmedi.");
+      return;
+    }
+
+    await PushNotifications.register();
+
+    PushNotifications.addListener("registration", (token) => {
+      console.log("[Bridge] FCM Push token başarıyla alındı:", token.value);
+      if (onToken) onToken(token.value);
+    });
+
+    PushNotifications.addListener("registrationError", (err) => {
+      console.error("[Bridge] Push registration error:", JSON.stringify(err));
+    });
+
+    PushNotifications.addListener("pushNotificationReceived", (notification) => {
+      console.log("[Bridge] Bildirim alındı:", notification);
+      if (onNotification) onNotification(notification);
+    });
+
+    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+      console.log("[Bridge] Bildirime tıklandı:", action.notification);
+      if (onNotification) onNotification(action.notification, true);
+    });
+  } catch (error) {
+    console.error("[Bridge] Push notifications yüklenemedi:", error);
+  }
 };
 
 export const removePushListeners = async () => {
-  if (PushNotifications) {
-    await PushNotifications.removeAllListeners();
+  if (PushNotificationsInstance) {
+    try {
+      await PushNotificationsInstance.removeAllListeners();
+    } catch (_) {}
   }
 };
 
