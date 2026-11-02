@@ -4,7 +4,6 @@ import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import { trackVisit } from './api/analytics';
 import pwaManager from './utils/pwaManager';
 import { startBadgeRealtimeSync, syncAppBadge } from './utils/badgeSync';
-import { initPushNotifications } from './utils/capacitorBridge';
 import DemoWarningModal from './components/DemoWarningModal';
 const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
 const SellerPage = React.lazy(() => import('./pages/SellerPage'));
@@ -660,41 +659,40 @@ function App() {
   useEffect(() => {
     if (user) {
       // 1. Start App Icon Badge Realtime Sync (Android & PWA)
-      const cleanupBadgeSync = startBadgeRealtimeSync(user);
+      let cleanupBadgeSync = null;
+      try {
+        cleanupBadgeSync = startBadgeRealtimeSync(user);
+      } catch (e) {
+        console.warn('[BadgeSync] Başlatma hatası:', e);
+      }
 
-      // 2. Setup Native Android & Web push notifications
+      // 2. Setup Web push notifications (PWA)
       const setupNotifications = async () => {
-        // Native Android Push Notifications Listener
         try {
-          await initPushNotifications(
-            (token) => {
-              console.log('[Native Push] Token registered:', token);
-            },
-            () => {
-              // Notification received or clicked -> update app icon badge count
-              syncAppBadge(user.id);
-            }
-          );
-        } catch (e) {
-          console.warn('[Native Push] Init error:', e);
-        }
-
-        // PWA Push Notifications
-        const hasPermission = await pwaManager.requestNotificationPermission();
-        if (hasPermission) {
-          await pwaManager.subscribeToPushNotifications(user.id);
-          await pwaManager.registerPeriodicSync('check-new-messages', 15 * 60 * 1000);
+          const hasPermission = await pwaManager.requestNotificationPermission();
+          if (hasPermission) {
+            await pwaManager.subscribeToPushNotifications(user.id);
+            await pwaManager.registerPeriodicSync('check-new-messages', 15 * 60 * 1000);
+          }
+        } catch (err) {
+          console.warn('[PWA Push] Bildirim kurulum hatası:', err);
         }
       };
 
       setupNotifications();
 
       return () => {
-        if (cleanupBadgeSync) cleanupBadgeSync();
+        if (cleanupBadgeSync) {
+          try {
+            cleanupBadgeSync();
+          } catch (_) {}
+        }
       };
     } else {
       // User logged out -> clear badge
-      syncAppBadge(null);
+      try {
+        syncAppBadge(null);
+      } catch (_) {}
     }
   }, [user]);
 

@@ -46,8 +46,8 @@ public class BadgePlugin extends Plugin {
             JSObject ret = new JSObject();
             ret.put("count", Math.max(0, count));
             call.resolve(ret);
-        } catch (Exception e) {
-            call.reject("Failed to set badge: " + e.getMessage());
+        } catch (Throwable t) {
+            call.reject("Failed to set badge: " + t.getMessage());
         }
     }
 
@@ -59,8 +59,8 @@ public class BadgePlugin extends Plugin {
             JSObject ret = new JSObject();
             ret.put("count", 0);
             call.resolve(ret);
-        } catch (Exception e) {
-            call.reject("Failed to clear badge: " + e.getMessage());
+        } catch (Throwable t) {
+            call.reject("Failed to clear badge: " + t.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class BadgePlugin extends Plugin {
             JSObject ret = new JSObject();
             ret.put("isSupported", supported);
             call.resolve(ret);
-        } catch (Exception e) {
+        } catch (Throwable t) {
             JSObject ret = new JSObject();
             ret.put("isSupported", false);
             call.resolve(ret);

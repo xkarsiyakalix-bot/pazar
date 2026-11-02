@@ -7,7 +7,9 @@ import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
 public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        registerPlugin(BadgePlugin.class);
+        try {
+            registerPlugin(BadgePlugin.class);
+        } catch (Throwable ignored) {}
         super.onCreate(savedInstanceState);
     }
 
