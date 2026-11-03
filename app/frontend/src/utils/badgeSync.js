@@ -93,11 +93,9 @@ export const startBadgeRealtimeSync = (user) => {
         syncAppBadge(user.id);
     }, 60000);
 
-    // 3. Uygulama arka plandan ön plana geldiğinde anında güncelle
-    listenAppState((isActive) => {
-        if (isActive) {
-            syncAppBadge(user.id);
-        }
+    // 3. Uygulama durumu değiştiğinde (ön plan veya arka plan) anında güncelle
+    listenAppState((_isActive) => {
+        syncAppBadge(user.id);
     });
 
     return () => {

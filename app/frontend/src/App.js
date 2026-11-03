@@ -688,9 +688,18 @@ function App() {
                 console.warn('[Native Push] Token kaydetme hatası:', saveErr);
               }
             },
-            () => {
+            async (notification, isClicked) => {
               // Notification received or clicked -> update app icon badge
               syncAppBadge(user.id);
+              if (isClicked) {
+                try {
+                  const { PushNotifications } = await import('@capacitor/push-notifications');
+                  await PushNotifications.removeAllDeliveredNotifications().catch(() => {});
+                } catch (_) {}
+                if (window.location.pathname !== '/messages') {
+                  window.location.href = '/messages';
+                }
+              }
             }
           );
         } catch (e) {

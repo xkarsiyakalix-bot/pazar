@@ -182,6 +182,7 @@ function MessagesPage() {
                 if (isMounted) {
                     const validData = (data || []).filter(c => c && c.user && c.user.id);
                     setConversations(validData);
+                    syncAppBadge(user.id);
                 }
             } catch (error) {
                 console.error('Error loading conversations:', error);
@@ -302,9 +303,11 @@ function MessagesPage() {
             }));
             markConversationAsRead(partnerId).then(() => {
                 syncAppBadge(user.id);
+                // Also trigger delayed sync to guarantee Supabase write is visible to select queries
+                setTimeout(() => syncAppBadge(user.id), 400);
             }).catch(() => {});
         }
-    }, [selectedConversation?.user?.id, user?.id]);
+    }, [selectedConversation?.user?.id, selectedConversation?.messages?.length, user?.id]);
 
     // Cache to sessionStorage
     useEffect(() => {

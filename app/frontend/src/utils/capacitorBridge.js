@@ -167,6 +167,14 @@ export const setAppBadge = async (count) => {
   // 1. Native Android Badge (Samsung, Xiaomi, Huawei, Pixel vb. Launcher'lar)
   if (isNative()) {
     try {
+      // Sayaç 0 olduğunda Android bildirim çubuğundaki bildirimleri temizle
+      if (num === 0) {
+        try {
+          const { PushNotifications } = await import("@capacitor/push-notifications");
+          await PushNotifications.removeAllDeliveredNotifications().catch(() => {});
+        } catch (_) {}
+      }
+
       const Badge = await getBadgePlugin();
       if (Badge) {
         if (num === 0) {
@@ -174,14 +182,6 @@ export const setAppBadge = async (count) => {
         } else {
           await Badge.set({ count: num }).catch(() => {});
         }
-      }
-
-      // Sayaç 0 olduğunda Android bildirim çubuğundaki bildirimleri de temizle
-      if (num === 0) {
-        try {
-          const { PushNotifications } = await import("@capacitor/push-notifications");
-          await PushNotifications.removeAllDeliveredNotifications().catch(() => {});
-        } catch (_) {}
       }
       return true;
     } catch (e) {

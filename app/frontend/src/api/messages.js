@@ -274,14 +274,23 @@ export const getConversation = async (userId) => {
  * @returns {Promise<boolean>} Success status
  */
 export const markAsRead = async (messageId) => {
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from('messages')
         .update({ read: true })
-        .eq('id', messageId);
+        .eq('id', messageId)
+        .select('receiver_id')
+        .single();
 
     if (error) {
         console.error('Error marking message as read:', error);
         return false;
+    }
+
+    if (data?.receiver_id) {
+        try {
+            const { syncAppBadge } = await import('../utils/badgeSync');
+            syncAppBadge(data.receiver_id);
+        } catch (_) {}
     }
 
     return true;
@@ -307,6 +316,11 @@ export const markConversationAsRead = async (senderId) => {
         console.error('Error marking conversation as read:', error);
         return false;
     }
+
+    try {
+        const { syncAppBadge } = await import('../utils/badgeSync');
+        syncAppBadge(user.id);
+    } catch (_) {}
 
     return true;
 };
