@@ -77,11 +77,24 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH $(security list-keychains -d user | tr -d '"')
 
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+          UUID=$(grep -aA1 "UUID" $PP_PATH | grep -E -o "[a-f0-9-]{36}" | head -n 1)
+          echo "Provisioning Profile UUID: $UUID"
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
+
+          # Setup App Store Connect API Key for xcodebuild
+          if [ -n "$API_KEY_P8" ]; then
+            mkdir -p ~/.appstoreconnect/private_keys
+            echo "$API_KEY_P8" > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
+          fi
 
       - name: Build and Archive iOS App
         working-directory: app/frontend/ios/App
         run: |
+          AUTH_FLAGS=""
+          if [ -n "$API_KEY_P8" ]; then
+            AUTH_FLAGS="-allowProvisioningUpdates -authenticationKeyPath /Users/runner/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8 -authenticationKeyID $KEY_ID -authenticationKeyIssuerID $ISSUER_ID"
+          fi
+
           xcodebuild \
             -project App.xcodeproj \
             -scheme App \
@@ -90,16 +103,22 @@ jobs:
             -archivePath $RUNNER_TEMP/App.xcarchive \
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            $AUTH_FLAGS \
             clean archive
 
       - name: Export IPA
         working-directory: app/frontend/ios/App
         run: |
+          AUTH_FLAGS=""
+          if [ -n "$API_KEY_P8" ]; then
+            AUTH_FLAGS="-allowProvisioningUpdates -authenticationKeyPath /Users/runner/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8 -authenticationKeyID $KEY_ID -authenticationKeyIssuerID $ISSUER_ID"
+          fi
+
           xcodebuild -exportArchive \
             -archivePath $RUNNER_TEMP/App.xcarchive \
             -exportPath $RUNNER_TEMP/export \
             -exportOptionsPlist ../ExportOptions.plist \
-            -allowProvisioningUpdates
+            $AUTH_FLAGS
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
