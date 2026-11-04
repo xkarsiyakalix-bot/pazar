@@ -639,10 +639,10 @@ function App() {
         // Listen for install prompt
         pwaManager.listenForInstallPrompt();
 
-        // Listen for PWA events
-        window.addEventListener('pwa-install-available', () => {
-          setShowInstallBanner(true);
-        });
+        // PWA install banner devre dışı (native Android app mevcut)
+        // window.addEventListener('pwa-install-available', () => {
+        //   setShowInstallBanner(true);
+        // });
 
         window.addEventListener('pwa-install-completed', () => {
           setShowInstallBanner(false);

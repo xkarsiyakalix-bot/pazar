@@ -1,7 +1,12 @@
 import React from 'react';
 import pwaManager from '../utils/pwaManager';
 
+// PWA install banner devre dışı bırakıldı.
+// Uygulama Google Play'de native Android app olarak mevcut.
 export const PWAInstallBanner = ({ onClose }) => {
+  return null;
+
+  // eslint-disable-next-line no-unreachable
   const handleInstall = async () => {
     const installed = await pwaManager.promptInstall();
     if (installed) {
