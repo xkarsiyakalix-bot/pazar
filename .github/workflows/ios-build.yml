@@ -81,7 +81,6 @@ jobs:
           echo "Provisioning Profile UUID: $UUID"
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
 
-          # Setup App Store Connect API Key for xcodebuild
           if [ -n "$API_KEY_P8" ]; then
             mkdir -p ~/.appstoreconnect/private_keys
             echo "$API_KEY_P8" > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
@@ -90,35 +89,25 @@ jobs:
       - name: Build and Archive iOS App
         working-directory: app/frontend/ios/App
         run: |
-          AUTH_FLAGS=""
-          if [ -n "$API_KEY_P8" ]; then
-            AUTH_FLAGS="-allowProvisioningUpdates -authenticationKeyPath /Users/runner/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8 -authenticationKeyID $KEY_ID -authenticationKeyIssuerID $ISSUER_ID"
-          fi
-
           xcodebuild \
             -project App.xcodeproj \
             -scheme App \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/App.xcarchive \
-            CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            $AUTH_FLAGS \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="ExVitrin AppStore Profile" \
             clean archive
 
       - name: Export IPA
         working-directory: app/frontend/ios/App
         run: |
-          AUTH_FLAGS=""
-          if [ -n "$API_KEY_P8" ]; then
-            AUTH_FLAGS="-allowProvisioningUpdates -authenticationKeyPath /Users/runner/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8 -authenticationKeyID $KEY_ID -authenticationKeyIssuerID $ISSUER_ID"
-          fi
-
           xcodebuild -exportArchive \
             -archivePath $RUNNER_TEMP/App.xcarchive \
             -exportPath $RUNNER_TEMP/export \
-            -exportOptionsPlist ../ExportOptions.plist \
-            $AUTH_FLAGS
+            -exportOptionsPlist ../ExportOptions.plist
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
