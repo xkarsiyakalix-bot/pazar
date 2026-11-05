@@ -29,7 +29,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "postinstall": "node -e \"const fs=require('fs'); ['splash-screen','status-bar','share','push-notifications','app'].forEach(p=>{const f='./node_modules/@capacitor/'+p+'/Package.swift'; if(fs.existsSync(f)){let c=fs.readFileSync(f,'utf8'); c=c.replace(/swift-tools-version: 6.0/g, 'swift-tools-version: 5.9'); if(!c.includes('enableExperimentalFeature')){c=c.replace(/(path:\\s*\\\"ios\\/Sources\\/[^\\\"]+\\\")/g, '$1,\\n            swiftSettings: [.enableExperimentalFeature(\\\"NonescapableTypes\\\")]');} fs.writeFileSync(f, c);}})\"",
+    "postinstall": "node scripts/patch-ios-plugins.js",
     "start": "react-scripts start",
     "prebuild": "node scripts/generate-sitemap.js",
     "build": "react-scripts build",
