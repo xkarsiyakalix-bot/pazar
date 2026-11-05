@@ -8,13 +8,6 @@
     "captureInput": true,
     "webContentsDebuggingEnabled": false
   },
-  "experimental": {
-    "ios": {
-      "spm": {
-        "swiftToolsVersion": "6.0"
-      }
-    }
-  },
   "plugins": {
     "PushNotifications": {
       "presentationOptions": [
