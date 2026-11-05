@@ -31,8 +31,7 @@ let package = Package(
                 .product(name: "CapacitorSplashScreen", package: "CapacitorSplashScreen"),
                 .product(name: "CapacitorStatusBar", package: "CapacitorStatusBar"),
                 .product(name: "CapgoCapacitorSocialLogin", package: "CapgoCapacitorSocialLogin")
-            ],
-            swiftSettings: [.enableExperimentalFeature("NonescapableTypes")]
+            ]
         )
     ]
 )
