@@ -29,6 +29,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "postinstall": "node -e \"const fs=require('fs'); ['splash-screen','status-bar','share','push-notifications','app'].forEach(p=>{const f='./node_modules/@capacitor/'+p+'/Package.swift'; if(fs.existsSync(f)){let c=fs.readFileSync(f,'utf8'); if(c.includes('swift-tools-version: 5.9')){fs.writeFileSync(f, c.replace('swift-tools-version: 5.9','swift-tools-version: 6.0'));}}})\"",
     "start": "react-scripts start",
     "prebuild": "node scripts/generate-sitemap.js",
     "build": "react-scripts build",
