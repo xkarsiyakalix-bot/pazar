@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../SEO';
-import { Breadcrumb, HorizontalListingCard, ListingCard } from '../components';
+import { Breadcrumb, HorizontalListingCard, ListingCard, RelatedSearches } from '../components';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { 
   TURKISH_CITIES,
@@ -1026,6 +1026,9 @@ export const CityCategoryLandingPage = ({ toggleFavorite, isFavorite }) => {
             </div>
           </div>
         )}
+
+        {/* İlgili Aramalar / Popüler Seçenekler */}
+        <RelatedSearches category={category} subCategory={subCategory} city={city} />
 
         {/* Other Major Cities */}
         <div className="mt-8 bg-neutral-50 dark:bg-neutral-900/40 rounded-2xl p-6 border border-neutral-200/60 dark:border-neutral-800">

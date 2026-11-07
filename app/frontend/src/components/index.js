@@ -35,3 +35,4 @@ export { VisibilityPackagesModal } from './VisibilityPackagesModal';
 export { LazyImage } from './LazyImage';
 export { ReportModal } from './ReportModal';
 export { normalizeSubcategoryName } from '../utils/slug';
+export { default as RelatedSearches } from './RelatedSearches';

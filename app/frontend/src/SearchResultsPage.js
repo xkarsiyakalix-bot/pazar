@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchApi } from './api/search';
-import { HorizontalListingCard, ListingCard, Breadcrumb } from './components';
+import { HorizontalListingCard, ListingCard, Breadcrumb, RelatedSearches } from './components';
 import LoadingSpinner from './components/LoadingSpinner';
 import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from './api/savedSearches';
 import { useAuth } from './contexts/AuthContext';
@@ -310,12 +310,21 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
         { label: query ? `"${query}" Arama Sonuçları` : 'Tüm İlanlar', isActive: true }
     ];
 
+    const seoTitle = query 
+        ? `${query.charAt(0).toUpperCase() + query.slice(1)} İlanları ve İkinci El Fiyatları | ExVitrin`
+        : (category && category !== 'Tüm Kategoriler' ? `${category} İlanları | ExVitrin` : 'Tüm İlanlar | ExVitrin');
+    
+    const seoDescription = query
+        ? `En güncel ${query} ilanları ve ikinci el fiyatları ExVitrin'de! ${location && location !== 'Türkiye' ? `${location} bölgesinde ` : ''}sahibinden sıfır ve temiz ikinci el seçenekleri inceleyin.`
+        : 'Türkiye genelinde yüz binlerce satılık ve kiralık ilan ExVitrin\'de sizi bekliyor.';
+
     return (
         <div className="min-h-screen bg-gray-50 dark:!bg-neutral-950 pb-12 transition-colors">
             <Helmet>
-                <title>{query ? `"${query}" Arama Sonuçları | ExVitrin` : 'İlan Ara | ExVitrin'}</title>
-                <meta name="robots" content="noindex, follow" />
-                <link rel="canonical" href="https://www.exvitrin.com/search" />
+                <title>{seoTitle}</title>
+                <meta name="description" content={seoDescription} />
+                <meta name="robots" content={query ? "index, follow" : "noindex, follow"} />
+                <link rel="canonical" href={`https://www.exvitrin.com/search${query ? `?q=${encodeURIComponent(query)}` : ''}`} />
             </Helmet>
             <div className="max-w-[1400px] mx-auto px-2 sm:px-4 pt-0 sm:pt-6 pb-2 sm:pb-6">
 
@@ -716,6 +725,9 @@ const SearchResultsPage = ({ toggleFavorite, isFavorite }) => {
                                 </div>
                             </div>
                         )}
+
+                        {/* İlgili Aramalar / Popüler Seçenekler */}
+                        <RelatedSearches query={query} category={category} city={location} />
                     </div>
                 </div>
             </div >

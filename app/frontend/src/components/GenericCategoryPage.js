@@ -12,6 +12,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { createSavedSearch, checkIfSearchIsSaved, deleteSavedSearchByUrl } from '../api/savedSearches';
 import { CategorySEO } from '../SEO';
 import { slugifyBrand } from '../utils/brandUtils';
+import RelatedSearches from './RelatedSearches';
 
 const GenericCategoryPage = ({
     category,
@@ -1005,6 +1006,9 @@ const GenericCategoryPage = ({
                                 </div>
                             </>
                         )}
+
+                        {/* İlgili Aramalar / Popüler Seçenekler */}
+                        <RelatedSearches category={category} subCategory={subCategory} />
                     </div>
                 </div>
             </div>
