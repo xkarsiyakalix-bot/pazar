@@ -101,7 +101,13 @@ function MobileAppsPage() {
                             </p>
 
                             <div className="flex flex-wrap gap-4">
-                                <button className="flex items-center gap-3 bg-gray-900 text-white px-8 py-4 rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 group">
+                                <a
+                                    href="https://apps.apple.com/app/exvitrin/id6830856408"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 bg-gray-900 text-white px-8 py-4 rounded-2xl hover:bg-black transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 group"
+                                    title="App Store'dan İndir"
+                                >
                                     <svg className="w-8 h-8 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M18.71 19.5c-0.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-0.79-3.29-0.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-0.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-0.91.65.03 2.47.26 3.64 1.98-0.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-0.03.07-0.42 1.44-1.38 2.83M13 3.5c.73-0.83 1.94-1.46 2.94-1.5.13 1.17-0.34 2.35-1.04 3.19-0.69.85-1.83 1.51-2.95 1.42-0.15-1.15.41-2.35 1.05-3.11z" />
                                     </svg>
@@ -109,7 +115,7 @@ function MobileAppsPage() {
                                         <div className="text-[10px] uppercase font-bold opacity-70 leading-none">Download on the</div>
                                         <div className="text-xl font-bold leading-none mt-1 uppercase tracking-tight">App Store</div>
                                     </div>
-                                </button>
+                                </a>
 
                                 <a
                                     href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
@@ -288,8 +294,16 @@ function MobileAppsPage() {
                         <h2 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-neutral-50 mb-8 tracking-tighter">İndirmeye Hazır Mısın?</h2>
                         <p className="text-xl text-gray-600 dark:text-neutral-400 mb-12 max-w-2xl mx-auto font-medium">Binlerce kullanıcı arasına katıl, alışverişin keyfini ExVitrin mobil hızıyla çıkar.</p>
 
-                        <div className="flex flex-wrap justify-center gap-6">
-                            <img src="/images/mobile_ios.png" className="h-16 w-auto grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" alt="App Store" />
+                        <div className="flex flex-wrap justify-center items-center gap-6">
+                            <a
+                                href="https://apps.apple.com/app/exvitrin/id6830856408"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block transition-transform hover:scale-105 active:scale-95"
+                                title="App Store'dan İndir"
+                            >
+                                <img src="/images/mobile_ios.png" className="h-16 w-auto hover:opacity-90 transition-all duration-300 cursor-pointer rounded-xl shadow-md" alt="App Store'dan İndir" />
+                            </a>
                             <a
                                 href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
                                 target="_blank"
@@ -297,7 +311,7 @@ function MobileAppsPage() {
                                 className="inline-block transition-transform hover:scale-105 active:scale-95"
                                 title="Google Play'den İndir"
                             >
-                                <img src="/images/mobile_android.png" className="h-16 w-auto hover:opacity-90 transition-all duration-300 cursor-pointer" alt="Google Play'den İndir" />
+                                <img src="/images/mobile_android.png" className="h-16 w-auto hover:opacity-90 transition-all duration-300 cursor-pointer rounded-xl shadow-md" alt="Google Play'den İndir" />
                             </a>
                         </div>
                     </div>

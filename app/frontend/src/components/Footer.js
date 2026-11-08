@@ -52,26 +52,45 @@ export const Footer = () => {
                             </span>
                         </div>
 
-                        {/* Google Play Indirme Butonu */}
+                        {/* Mobil Uygulama İndirme Butonları */}
                         <div className="flex flex-col items-center md:items-start gap-2">
                             <span className="text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">Mobil Uygulamamız</span>
-                            <a
-                                href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block transition-transform hover:scale-105 active:scale-95"
-                                title="Google Play Store'dan Indirin"
-                            >
-                                <img
-                                    src="/images/mobile_android.png"
-                                    alt="Google Play'den Indirin"
-                                    width="135"
-                                    height="40"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="h-10 w-auto object-contain rounded-lg shadow-sm"
-                                />
-                            </a>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <a
+                                    href="https://apps.apple.com/app/exvitrin/id6830856408"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block transition-transform hover:scale-105 active:scale-95"
+                                    title="App Store'dan İndirin"
+                                >
+                                    <img
+                                        src="/images/mobile_ios.png"
+                                        alt="App Store'dan İndirin"
+                                        width="135"
+                                        height="40"
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="h-10 w-auto object-contain rounded-lg shadow-sm"
+                                    />
+                                </a>
+                                <a
+                                    href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block transition-transform hover:scale-105 active:scale-95"
+                                    title="Google Play Store'dan İndirin"
+                                >
+                                    <img
+                                        src="/images/mobile_android.png"
+                                        alt="Google Play'den İndirin"
+                                        width="135"
+                                        height="40"
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="h-10 w-auto object-contain rounded-lg shadow-sm"
+                                    />
+                                </a>
+                            </div>
                         </div>
 
                         {/* Social Media Icons */}
