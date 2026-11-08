@@ -68,6 +68,17 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.766852567940-1upfsc1263gvfrpd2s69h6n95u58ra3c</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>İlanlarınıza fotoğraf eklemek ve profil resmi çekmek için kamera erişimi gereklidir.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

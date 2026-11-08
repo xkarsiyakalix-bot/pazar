@@ -4,6 +4,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 
 const GOOGLE_WEB_CLIENT_ID = '766852567940-k83tgcnoj93aef7gp30sggml6tiu1aus.apps.googleusercontent.com';
+const GOOGLE_IOS_CLIENT_ID = '766852567940-1upfsc1263gvfrpd2s69h6n95u58ra3c.apps.googleusercontent.com';
 
 const AuthContext = createContext({});
 
@@ -198,6 +199,7 @@ export const AuthProvider = ({ children }) => {
                     await SocialLogin.initialize({
                         google: {
                             webClientId: GOOGLE_WEB_CLIENT_ID,
+                            iOSClientId: GOOGLE_IOS_CLIENT_ID,
                         },
                     });
 
@@ -221,8 +223,22 @@ export const AuthProvider = ({ children }) => {
                     if (error) throw error;
                     return data;
                 } catch (nativeErr) {
-                    console.error('Native Google Sign-In error:', nativeErr);
-                    throw nativeErr;
+                    console.error('Native Google Sign-In error, attempting fallback:', nativeErr);
+                    // Fallback to web OAuth if native fails
+                    const origin = 'https://www.exvitrin.com';
+                    const targetRedirect = redirectTo || origin;
+                    const { data, error } = await supabase.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: targetRedirect,
+                            queryParams: {
+                                access_type: 'offline',
+                                prompt: 'select_account',
+                            },
+                        },
+                    });
+                    if (error) throw nativeErr || error;
+                    return data;
                 }
             }
 
