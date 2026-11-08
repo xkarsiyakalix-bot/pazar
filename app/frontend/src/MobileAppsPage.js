@@ -169,7 +169,7 @@ function MobileAppsPage() {
                 </div>
             </div>
 
-            {/* Android Section - Dark Style */}
+            {/* iOS & Android Section - Dark Style */}
             <div className="py-24 bg-gray-900 overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-500 to-transparent opacity-50"></div>
 
@@ -186,24 +186,38 @@ function MobileAppsPage() {
 
                         <div className="order-1 lg:order-2 text-left">
                             <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-8">
-                                Android Dünyasına <br />
-                                <span className="text-rose-500 uppercase tracking-widest text-3xl">Tam Entegrasyon.</span>
+                                Her Platforma <br />
+                                <span className="text-rose-500 uppercase tracking-widest text-3xl">Tam Uyum.</span>
                             </h2>
                             <p className="text-xl text-gray-400 leading-relaxed mb-10">
-                                Google Play üzerinden anında erişin. Gelişmiş Android API'ları ile en akıcı ilan verme deneyimini yaşayın.
+                                İster iPhone ister Android kullan, ExVitrin her iki platformda da mükemmel çalışır. Hemen indir, saniyeler içinde başla.
                             </p>
-                            <a
-                                href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-4 bg-white text-gray-900 px-10 py-5 rounded-3xl font-black hover:bg-rose-500 hover:text-white transition-all shadow-xl group"
-                                title="Google Play Store'dan İndir"
-                            >
-                                PLAY STORE'DAN İNDİR
-                                <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                </svg>
-                            </a>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <a
+                                    href="https://apps.apple.com/app/exvitrin/id6830856408"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-4 bg-white text-gray-900 px-8 py-5 rounded-3xl font-black hover:bg-rose-500 hover:text-white transition-all shadow-xl group"
+                                    title="App Store'dan İndir"
+                                >
+                                    <svg className="w-7 h-7 flex-shrink-0 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18.71 19.5c-0.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-0.79-3.29-0.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-0.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-0.91.65.03 2.47.26 3.64 1.98-0.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-0.03.07-0.42 1.44-1.38 2.83M13 3.5c.73-0.83 1.94-1.46 2.94-1.5.13 1.17-0.34 2.35-1.04 3.19-0.69.85-1.83 1.51-2.95 1.42-0.15-1.15.41-2.35 1.05-3.11z" />
+                                    </svg>
+                                    APP STORE'DAN İNDİR
+                                </a>
+                                <a
+                                    href="https://play.google.com/store/apps/details?id=com.exvitrin.app"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-4 bg-white/10 border border-white/20 text-white px-8 py-5 rounded-3xl font-black hover:bg-rose-500 hover:border-rose-500 transition-all shadow-xl group"
+                                    title="Google Play Store'dan İndir"
+                                >
+                                    <svg className="w-7 h-7 flex-shrink-0 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
+                                    </svg>
+                                    GOOGLE PLAY'DEN İNDİR
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
