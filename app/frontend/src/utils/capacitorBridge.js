@@ -140,15 +140,15 @@ export const setStatusBar = async (backgroundColor = "#EF4444", style = "LIGHT")
   }
 };
 
-// APP ICON BADGE (Uygulama İkonu Rozet Sayısı - Android & PWA)
+// APP ICON BADGE (Uygulama İkonu Rozet Sayısı - iOS, Android & PWA)
 let BadgePluginInstance = null;
 
 const getBadgePlugin = async () => {
   if (BadgePluginInstance) return BadgePluginInstance;
   if (isNative()) {
     try {
-      const { registerPlugin } = await import("@capacitor/core");
-      BadgePluginInstance = registerPlugin("Badge");
+      const { Badge } = await import("@capawesome/capacitor-badge");
+      BadgePluginInstance = Badge;
       return BadgePluginInstance;
     } catch (e) {
       console.warn("[Bridge] Native Badge plugin bulunamadı:", e);
@@ -158,16 +158,15 @@ const getBadgePlugin = async () => {
 };
 
 /**
- * Android ana ekranındaki ve PWA ikonundaki okunmamış mesaj/bildirim sayısını günceller.
+ * iOS & Android ana ekranındaki ve PWA ikonundaki okunmamış mesaj/bildirim sayısını günceller.
  * @param {number} count - Okunmamış mesaj veya bildirim sayısı
  */
 export const setAppBadge = async (count) => {
   const num = Math.max(0, parseInt(count, 10) || 0);
 
-  // 1. Native Android Badge (Samsung, Xiaomi, Huawei, Pixel vb. Launcher'lar)
+  // 1. Native iOS & Android Badge (@capawesome/capacitor-badge)
   if (isNative()) {
     try {
-      // Sayaç 0 olduğunda Android bildirim çubuğundaki bildirimleri temizle
       if (num === 0) {
         try {
           const { PushNotifications } = await import("@capacitor/push-notifications");
@@ -180,10 +179,18 @@ export const setAppBadge = async (count) => {
         if (num === 0) {
           await Badge.clear().catch(() => {});
         } else {
+          // iOS için rozet gösterme iznini kontrol et ve gerekirse iste
+          try {
+            const perm = await Badge.checkPermissions();
+            if (perm.display !== 'granted') {
+              await Badge.requestPermissions();
+            }
+          } catch (_) {}
+
           await Badge.set({ count: num }).catch(() => {});
         }
+        return true;
       }
-      return true;
     } catch (e) {
       console.warn("[Bridge] Native Badge güncellenemedi:", e);
     }

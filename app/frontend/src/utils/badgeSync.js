@@ -6,7 +6,7 @@ let lastUnreadTotal = 0;
 
 /**
  * Kullanıcının okunmamış mesaj ve bildirim toplamını hesaplayıp
- * Android uygulama ikonundaki ve PWA'daki rozet sayısını günceller.
+ * iOS, Android uygulama ikonundaki ve PWA'daki rozet sayısını günceller.
  */
 export const syncAppBadge = async (userId) => {
     if (!userId) {
@@ -26,15 +26,25 @@ export const syncAppBadge = async (userId) => {
 
         if (msgErr) console.warn('[BadgeSync] Mesaj sayısı hatası:', msgErr.message);
 
-        // Kleinanzeigen gibi ana simge sayacı okunmamış mesaj sayısıdır.
-        // Bildirimler tablosundaki eski birikmelerin mesaj sayısını bozmasını önlüyoruz.
-        const total = Math.max(0, unreadMessages || 0);
+        // 2. Okunmamış bildirim sayısını sorgula
+        const { count: unreadNotifications, error: notifErr } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('is_read', false);
+
+        if (notifErr) console.warn('[BadgeSync] Bildirim sayısı hatası:', notifErr.message);
+
+        // Mesajlar + Bildirimler toplamı
+        const total = Math.max(0, (unreadMessages || 0) + (unreadNotifications || 0));
         lastUnreadTotal = total;
 
-        // Kullanıcı tercihi doğrultusunda ana ekran uygulama ikonu (app logosu)
-        // üzerinde sayı rozeti çıkmaması için rozeti her zaman temizliyoruz.
-        await clearAppBadge();
-        return Math.max(0, unreadMessages || 0);
+        if (total === 0) {
+            await clearAppBadge();
+        } else {
+            await setAppBadge(total);
+        }
+        return total;
     } catch (error) {
         console.warn('[BadgeSync] Senkronizasyon hatası:', error);
         return lastUnreadTotal;
