@@ -223,22 +223,10 @@ export const AuthProvider = ({ children }) => {
                     if (error) throw error;
                     return data;
                 } catch (nativeErr) {
-                    console.error('Native Google Sign-In error, attempting fallback:', nativeErr);
-                    // Fallback to web OAuth if native fails
-                    const origin = 'https://www.exvitrin.com';
-                    const targetRedirect = redirectTo || origin;
-                    const { data, error } = await supabase.auth.signInWithOAuth({
-                        provider: 'google',
-                        options: {
-                            redirectTo: targetRedirect,
-                            queryParams: {
-                                access_type: 'offline',
-                                prompt: 'select_account',
-                            },
-                        },
-                    });
-                    if (error) throw nativeErr || error;
-                    return data;
+                    console.error('Native Google Sign-In error:', nativeErr);
+                    // On native iOS, do NOT fall back to Safari OAuth (it won't return to the app)
+                    // Instead, throw the error so the UI can display it
+                    throw nativeErr;
                 }
             }
 

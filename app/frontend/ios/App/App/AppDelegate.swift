@@ -1,6 +1,10 @@
 import UIKit
 import Capacitor
 
+#if canImport(GoogleSignIn)
+import GoogleSignIn
+#endif
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -9,6 +13,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         return true
+    }
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        #if canImport(GoogleSignIn)
+        if GIDSignIn.sharedInstance.handle(url) {
+            return true
+        }
+        #endif
+        return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
