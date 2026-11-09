@@ -200,6 +200,7 @@ export const AuthProvider = ({ children }) => {
                         google: {
                             webClientId: GOOGLE_WEB_CLIENT_ID,
                             iOSClientId: GOOGLE_IOS_CLIENT_ID,
+                            iOSServerClientId: GOOGLE_WEB_CLIENT_ID,
                         },
                     });
 
