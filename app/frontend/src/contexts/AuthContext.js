@@ -208,6 +208,7 @@ export const AuthProvider = ({ children }) => {
                         provider: 'google',
                         options: {
                             scopes: ['email', 'profile'],
+                            forcePrompt: true,
                         },
                     });
 
@@ -268,6 +269,14 @@ export const AuthProvider = ({ children }) => {
             }
         },
         signOut: async () => {
+            try {
+                const isNative = typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.();
+                if (isNative) {
+                    await SocialLogin.logout({ provider: 'google' }).catch(() => {});
+                }
+            } catch (e) {
+                // ignore social logout failure
+            }
             const { error } = await supabase.auth.signOut();
             setUser(null);
             localStorage.removeItem('user');
