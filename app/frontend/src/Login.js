@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 
 function Login() {
     const navigate = useNavigate();
-    const { signIn, signInWithGoogle } = useAuth();
+    const { user, signIn, signInWithGoogle } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -13,11 +13,18 @@ function Login() {
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
 
+    useEffect(() => {
+        if (user) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
+
     const handleGoogleSignIn = async () => {
         setError('');
         setGoogleLoading(true);
         try {
             await signInWithGoogle();
+            navigate('/', { replace: true });
         } catch (err) {
             console.error('Google sign in error:', err);
             setError(err.message || 'Google ile giriş yapılırken bir hata oluştu.');

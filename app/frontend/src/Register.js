@@ -6,7 +6,7 @@ import { checkUsernameAvailability } from './api/profile';
 
 function Register() {
     const navigate = useNavigate();
-    const { signUp, signInWithGoogle } = useAuth();
+    const { user, signUp, signInWithGoogle } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         username: '',
@@ -20,6 +20,12 @@ function Register() {
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
 
     useEffect(() => {
         const rawUsername = formData.username.trim();
@@ -64,6 +70,7 @@ function Register() {
         setGoogleLoading(true);
         try {
             await signInWithGoogle();
+            navigate('/', { replace: true });
         } catch (err) {
             console.error('Google sign up error:', err);
             setError(err.message || 'Google ile kayıt olunurken bir hata oluştu.');
