@@ -31,12 +31,10 @@ export const syncAppBadge = async (userId) => {
         const total = Math.max(0, unreadMessages || 0);
         lastUnreadTotal = total;
 
-        if (total === 0) {
-            await clearAppBadge();
-        } else {
-            await setAppBadge(total);
-        }
-        return total;
+        // Kullanıcı tercihi doğrultusunda ana ekran uygulama ikonu (app logosu)
+        // üzerinde sayı rozeti çıkmaması için rozeti her zaman temizliyoruz.
+        await clearAppBadge();
+        return Math.max(0, unreadMessages || 0);
     } catch (error) {
         console.warn('[BadgeSync] Senkronizasyon hatası:', error);
         return lastUnreadTotal;

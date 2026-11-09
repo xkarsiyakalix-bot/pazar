@@ -132,7 +132,10 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
 
     return (
         <>
-            <header className="glass fixed w-full top-0 z-50 border-b border-neutral-200/50 dark:border-white/10 shadow-lg overflow-visible">
+            <header 
+                className="glass fixed w-full top-0 z-50 border-b border-neutral-200/50 dark:border-white/10 shadow-lg overflow-visible pt-safe"
+                style={{ paddingTop: 'max(0px, env(safe-area-inset-top, 0px))' }}
+            >
                 <AppDownloadBanner onVisibilityChange={setIsBannerVisible} />
                 <div className="max-w-[1400px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4 overflow-visible">
                     {/* Mobile Back Button */}
@@ -140,7 +143,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                     {isMobile && location.pathname !== '/' && !location.pathname.startsWith('/product/') && (
                         <button
                             onClick={() => navigate(-1)}
-                            className="p-2 -ml-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                            className="p-2 -ml-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors flex-shrink-0 active:scale-95"
                             aria-label="Geri"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,17 +174,17 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                             navigate('/');
                             setMobileMenuOpen(false);
                         }}
-                        className="cursor-pointer flex-shrink-0 px-2 sm:px-4 py-2 rounded-xl flex items-center gap-2 group"
+                        className="cursor-pointer flex-shrink-0 px-1 sm:px-4 py-2 rounded-xl flex items-center gap-1.5 sm:gap-2 group"
                     >
                         <img
                             src="/logo_exvitrin_2026_small.png"
                             alt="ExVitrin Logo"
                             width="120"
                             height="48"
-                            className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110 dark:brightness-110"
+                            className="h-8 sm:h-12 w-auto object-contain transition-transform group-hover:scale-110 dark:brightness-110 flex-shrink-0"
                             decoding="async"
                         />
-                        <span className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent tracking-tight">
+                        <span className="text-xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent tracking-tight">
                             exvitrin
                         </span>
                     </div>
@@ -191,7 +194,7 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                         {/* Search items would go here or be passed as children if needed, but in Header component they are usually integrated */}
                     </div>
 
-                    <div className="flex items-center gap-1 sm:gap-4">
+                    <div className="flex items-center gap-1 sm:gap-4 flex-shrink-0">
                         {/* Theme Toggle Button */}
                         <button
                             onClick={toggleDarkMode}
@@ -520,7 +523,14 @@ export const Header = ({ followedSellers = [], setSelectedCategory }) => {
                 )}
 
             </header >
-            <div className={`${isBannerVisible ? 'h-[114px] sm:h-20' : 'h-16 sm:h-20'} no-print transition-all duration-200`}></div>
+            <div 
+                style={{ 
+                    height: isBannerVisible 
+                        ? 'calc(114px + env(safe-area-inset-top, 0px))' 
+                        : 'calc(4rem + env(safe-area-inset-top, 0px))' 
+                }} 
+                className="no-print transition-all duration-200"
+            ></div>
         </>
     );
 };

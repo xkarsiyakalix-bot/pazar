@@ -730,6 +730,10 @@ button:not(:disabled):active {
 /* =====================================================
    MESSAGING / MOBILE SAFE AREA & CHAT OPEN STYLES
    ===================================================== */
+.pt-safe {
+    padding-top: max(0px, env(safe-area-inset-top, 0px)) !important;
+}
+
 .pb-safe {
     padding-bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
 }

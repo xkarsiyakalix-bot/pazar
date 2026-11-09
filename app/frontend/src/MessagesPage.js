@@ -470,7 +470,12 @@ function MessagesPage() {
             <div className="max-w-7xl mx-auto md:px-4">
                 <div
                     data-chat-active={Boolean(selectedConversation)}
-                    className={`${selectedConversation ? "fixed inset-0 z-[10000] h-[100dvh]" : "fixed inset-0 top-16 bottom-16 h-[calc(100dvh-128px)] z-20"} md:relative md:top-0 md:bottom-auto md:inset-auto md:h-[720px] md:z-20 w-full bg-white dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-neutral-800 md:rounded-lg overflow-hidden flex flex-col md:flex-row`}
+                    style={!selectedConversation ? {
+                        top: 'calc(4rem + env(safe-area-inset-top, 0px))',
+                        bottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))',
+                        height: 'calc(100dvh - 8rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))'
+                    } : undefined}
+                    className={`${selectedConversation ? "fixed inset-0 z-[10000] h-[100dvh]" : "fixed inset-0 md:top-0 md:bottom-auto md:inset-auto md:h-[720px] z-20"} md:relative w-full bg-white dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-neutral-800 md:rounded-lg overflow-hidden flex flex-col md:flex-row`}
                 >
                     <div className={`w-full md:w-[340px] lg:w-[380px] flex-shrink-0 flex-col border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 h-full overflow-hidden ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
                         <div className="px-4 pt-4 pb-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex-shrink-0">
@@ -586,7 +591,13 @@ function MessagesPage() {
                     <div className={`flex-1 flex-col bg-white dark:bg-neutral-900 h-full overflow-hidden ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
                         {selectedConversation && selectedConversation.user ? (
                             <div className="flex flex-col h-full w-full">
-                                <div className="h-14 px-3 sm:px-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between bg-white dark:bg-neutral-900 flex-shrink-0 z-10">
+                                <div 
+                                    style={{ 
+                                        paddingTop: 'max(0px, env(safe-area-inset-top, 0px))',
+                                        height: 'calc(3.5rem + env(safe-area-inset-top, 0px))'
+                                    }} 
+                                    className="px-3 sm:px-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between bg-white dark:bg-neutral-900 flex-shrink-0 z-10"
+                                >
                                     <div className="flex items-center gap-2 min-w-0">
                                         <button
                                             onClick={handleBackToList}
