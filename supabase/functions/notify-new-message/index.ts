@@ -5,39 +5,21 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 // 1. APPLE PUSH NOTIFICATION SERVICE (APNs) DIRECT HTTP/2 SENDER (iOS)
 // =========================================================================
 
-// Apple .p8 dosyası SEC1/PKCS1 formatında ise PKCS#8 formatına çevirir
-function ensurePkcs8(rawB64: string): ArrayBuffer {
-    const raw = atob(rawB64);
+function pemToBinary(pem: string): ArrayBuffer {
+    const cleanB64 = pem
+        .replace(/-----BEGIN[ A-Z0-9_-]+-----/gi, "")
+        .replace(/-----END[ A-Z0-9_-]+-----/gi, "")
+        .replace(/\\n/g, "")
+        .replace(/\\r/g, "")
+        .replace(/["']/g, "")
+        .replace(/[^A-Za-z0-9+/=]/g, "")
+        .trim();
+
+    const raw = atob(cleanB64);
     const arr = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) {
         arr[i] = raw.charCodeAt(i);
     }
-
-    // Zaten PKCS#8 ise (uzunluğu genelde 120+ bayttır ve 0x30 ile başlar)
-    // SEC1 EC key (uzunluğu ~64 bayttır) ise PKCS#8 sarmalaması gerekir:
-    // PKCS#8 wrapper for prime256v1/P-256:
-    // 30 81 87 02 01 00 30 13 06 07 2a 86 48 ce 3d 02 01 06 08 2a 86 48 ce 3d 03 01 07 04 6d ...
-    if (arr.length <= 80) {
-        // SEC1 -> PKCS#8 Header ekle (P-256 / prime256v1)
-        const pkcs8Header = new Uint8Array([
-            0x30, 0x81, 0x77, // SEQUENCE
-            0x02, 0x01, 0x00, // version 0
-            0x30, 0x13,       // AlgorithmIdentifier
-            0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, // id-ecPublicKey
-            0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, // prime256v1 (P-256)
-            0x04, 0x5d,       // OCTET STRING (SEC1 içeriği)
-        ]);
-        
-        // Eğer uzunluk tam uymazsa esnek sarıcı:
-        const fullKey = new Uint8Array(pkcs8Header.length + arr.length);
-        // Header'daki uzunluk baytını güncelle
-        pkcs8Header[2] = (19 + 2 + arr.length + 3);
-        pkcs8Header[pkcs8Header.length - 1] = arr.length;
-        fullKey.set(pkcs8Header);
-        fullKey.set(arr, pkcs8Header.length);
-        return fullKey.buffer;
-    }
-
     return arr.buffer;
 }
 
@@ -60,42 +42,14 @@ async function createApnsJwt(keyId: string, teamId: string, p8Key: string): Prom
     const encClaims = base64UrlEncode(JSON.stringify(claims));
     const message = `${encHeader}.${encClaims}`;
 
-    // Anahtardaki tüm istenmeyen karakterleri temizle
-    const cleanB64 = p8Key
-        .replace(/-----BEGIN[ A-Z0-9_-]+-----/gi, "")
-        .replace(/-----END[ A-Z0-9_-]+-----/gi, "")
-        .replace(/\\n/g, "")
-        .replace(/\\r/g, "")
-        .replace(/["']/g, "")
-        .replace(/[^A-Za-z0-9+/=]/g, "")
-        .trim();
-
-    // Önce doğrudan PKCS#8 olarak içe aktarmayı dene
-    let key: CryptoKey | null = null;
-    const rawBinary = atob(cleanB64);
-    const directBuf = new Uint8Array(rawBinary.length);
-    for (let i = 0; i < rawBinary.length; i++) directBuf[i] = rawBinary.charCodeAt(i);
-
-    try {
-        key = await crypto.subtle.importKey(
-            "pkcs8",
-            directBuf.buffer,
-            { name: "ECDSA", namedCurve: "P-256" },
-            false,
-            ["sign"]
-        );
-    } catch {
-        // Doğrudan PKCS#8 başarısız olduysa SEC1 sarmalaması ile dene
-        console.log("[APNs] Doğrudan PKCS#8 uymadı, SEC1/PKCS#8 sarmalama deneniyor...");
-        const wrappedBuf = ensurePkcs8(cleanB64);
-        key = await crypto.subtle.importKey(
-            "pkcs8",
-            wrappedBuf,
-            { name: "ECDSA", namedCurve: "P-256" },
-            false,
-            ["sign"]
-        );
-    }
+    const keyData = pemToBinary(p8Key);
+    const key = await crypto.subtle.importKey(
+        "pkcs8",
+        keyData,
+        { name: "ECDSA", namedCurve: "P-256" },
+        false,
+        ["sign"]
+    );
 
     const encoder = new TextEncoder();
     const signatureBuffer = await crypto.subtle.sign(
@@ -157,7 +111,7 @@ async function sendApnsNotification({
                 : "api.push.apple.com";
             const url = `https://${apnsHost}/3/device/${deviceToken.toLowerCase()}`;
 
-            console.log(`[APNs] ${useSandbox ? "Sandbox" : "Production"} APNs deneniyor...`);
+            console.log(`[APNs] ${useSandbox ? "Sandbox" : "Production"} APNs deneniyor... (${url})`);
 
             const response = await fetch(url, {
                 method: "POST",
@@ -197,21 +151,6 @@ async function sendApnsNotification({
 // =========================================================================
 // 2. FIREBASE CLOUD MESSAGING (FCM) HELPER (Sadece Android İçin)
 // =========================================================================
-function pemToBinaryRaw(pem: string): ArrayBuffer {
-    const cleanB64 = pem
-        .replace(/-----BEGIN[ A-Z0-9_-]+-----/gi, "")
-        .replace(/-----END[ A-Z0-9_-]+-----/gi, "")
-        .replace(/\\n/g, "")
-        .replace(/\\r/g, "")
-        .replace(/["']/g, "")
-        .replace(/[^A-Za-z0-9+/=]/g, "")
-        .trim();
-    const raw = atob(cleanB64);
-    const arr = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-    return arr.buffer;
-}
-
 async function createFcmJwt(serviceAccount: any): Promise<string> {
     const now = Math.floor(Date.now() / 1000);
     const header = { alg: "RS256", typ: "JWT" };
@@ -229,7 +168,7 @@ async function createFcmJwt(serviceAccount: any): Promise<string> {
 
     const key = await crypto.subtle.importKey(
         "pkcs8",
-        pemToBinaryRaw(serviceAccount.private_key),
+        pemToBinary(serviceAccount.private_key),
         { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
         false,
         ["sign"]
@@ -445,7 +384,6 @@ serve(async (req) => {
             console.log(`[Push] Alıcı için bulunan cihaz token sayısı: ${allTokens.size}`)
 
             if (allTokens.size > 0) {
-                // Okunmamış mesaj sayısını hesapla (App Rozeti için)
                 const { count: unreadCount } = await supabaseAdmin
                     .from('messages')
                     .select('*', { count: 'exact', head: true })
@@ -455,7 +393,6 @@ serve(async (req) => {
 
                 const badgeNumber = Math.max(1, unreadCount || 1)
 
-                // Android FCM için service account
                 const serviceAccountRaw = Deno.env.get('FIREBASE_SERVICE_ACCOUNT')
                 let serviceAccount = null
                 if (serviceAccountRaw) {
@@ -468,7 +405,6 @@ serve(async (req) => {
 
                 for (const token of allTokens) {
                     if (isApnsHexToken(token)) {
-                        // 🍎 iOS: Doğrudan Apple APNs HTTP/2
                         console.log(`[Push] iOS APNs Token tespit edildi: ${token.substring(0, 16)}...`)
                         if (!APNS_P8_KEY) {
                             console.error('[APNs] ❌ APNS_P8_KEY secret tanımlı değil! Supabase Dashboard > Settings > Edge Functions üzerinden eklenmeli.')
@@ -492,7 +428,6 @@ serve(async (req) => {
                         })
                         console.log('[APNs] Sonuç:', result)
                     } else {
-                        // 🤖 Android: Firebase FCM
                         console.log(`[Push] Android FCM Token tespit edildi: ${token.substring(0, 16)}...`)
                         if (serviceAccount) {
                             await sendFcmPushNotification({
