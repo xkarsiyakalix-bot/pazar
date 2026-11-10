@@ -5,11 +5,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 // 1. APPLE PUSH NOTIFICATION SERVICE (APNs) DIRECT HTTP/2 SENDER (iOS)
 // =========================================================================
 function pemToBinary(pem: string): ArrayBuffer {
-    const b64 = pem
-        .replace(/-----BEGIN PRIVATE KEY-----/, "")
-        .replace(/-----END PRIVATE KEY-----/, "")
-        .replace(/[\r\n\s]/g, "");
-    const raw = atob(b64);
+    // Tüm başlıkları, boşlukları, satır sonlarını (\r, \n), tırnakları temizle
+    const cleanB64 = pem
+        .replace(/-----BEGIN[ A-Z0-9_-]+-----/gi, "")
+        .replace(/-----END[ A-Z0-9_-]+-----/gi, "")
+        .replace(/\\n/g, "")
+        .replace(/\\r/g, "")
+        .replace(/["']/g, "")
+        .replace(/[^A-Za-z0-9+/=]/g, "")
+        .trim();
+
+    const raw = atob(cleanB64);
     const arr = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) {
         arr[i] = raw.charCodeAt(i);
@@ -98,7 +104,7 @@ async function sendApnsNotification({
             ...data,
         };
 
-        // Önce production sonra sandbox dene (TestFlight apps genelde sandbox veya production olabilir)
+        // Önce production sonra sandbox dene (TestFlight / Development ayrımı için)
         for (const useSandbox of [false, true]) {
             const apnsHost = useSandbox
                 ? "api.sandbox.push.apple.com"
@@ -404,7 +410,7 @@ serve(async (req) => {
                         // 🍎 iOS: Doğrudan Apple APNs HTTP/2
                         console.log(`[Push] iOS APNs Token tespit edildi: ${token.substring(0, 16)}...`)
                         if (!APNS_P8_KEY) {
-                            console.error('[APNs] ❌ APNS_P8_KEY secret tanımlı değil! Supabase Dashboard > Settings > Vault üzerinden eklenmeli.')
+                            console.error('[APNs] ❌ APNS_P8_KEY secret tanımlı değil! Supabase Dashboard > Settings > Edge Functions üzerinden eklenmeli.')
                             continue
                         }
 
