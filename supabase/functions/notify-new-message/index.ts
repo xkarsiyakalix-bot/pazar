@@ -1,8 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendApnsNotification } from './apns.ts'
 
 // ==========================================
 // 1. FIREBASE CLOUD MESSAGING (FCM) HELPER
+//    (sadece Android için kullanılır)
 // ==========================================
 function pemToBinary(pem: string): ArrayBuffer {
     const b64 = pem
@@ -67,35 +69,9 @@ async function getFcmAccessToken(serviceAccount: any): Promise<string | null> {
     }
 }
 
-async function convertApnsToFcmToken(accessToken: string, apnsToken: string): Promise<string> {
-    if (!apnsToken || apnsToken.includes(":") || apnsToken.length > 70) {
-        return apnsToken;
-    }
-    for (const sandbox of [false, true]) {
-        try {
-            const res = await fetch("https://iid.googleapis.com/iid/v1:batchImport", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                    "access_token_auth": "true",
-                },
-                body: JSON.stringify({
-                    application: "com.exvitrin.app",
-                    sandbox: sandbox,
-                    apns_tokens: [apnsToken],
-                }),
-            });
-            const data = await res.json();
-            if (data?.results?.[0]?.status === "OK" && data?.results?.[0]?.registration_token) {
-                console.log(`[FCM] APNs token başarıyla FCM token'a dönüştürüldü (sandbox: ${sandbox})`);
-                return data.results[0].registration_token;
-            }
-        } catch (e) {
-            console.warn(`[FCM] APNs dönüştürme hatası (sandbox: ${sandbox}):`, e);
-        }
-    }
-    return apnsToken;
+// Token tipini belirle: APNs hex token mu, FCM token mu?
+function isApnsHexToken(token: string): boolean {
+    return /^[0-9a-fA-F]{64}$/.test(token);
 }
 
 async function sendFcmPushNotification({
@@ -120,11 +96,10 @@ async function sendFcmPushNotification({
             return false;
         }
 
-        const targetToken = await convertApnsToFcmToken(accessToken, token);
         const projectId = serviceAccount.project_id;
         const payload: any = {
             message: {
-                token: targetToken,
+                token: token,
                 notification: {
                     title: title,
                     body: body,
@@ -136,21 +111,6 @@ async function sendFcmPushNotification({
                         channel_id: "default",
                         sound: "default",
                         notification_count: badgeCount ?? 1,
-                    },
-                },
-                apns: {
-                    headers: {
-                        "apns-priority": "10",
-                    },
-                    payload: {
-                        aps: {
-                            alert: {
-                                title: title,
-                                body: body,
-                            },
-                            badge: badgeCount ?? 1,
-                            sound: "default",
-                        },
                     },
                 },
             },
@@ -171,7 +131,7 @@ async function sendFcmPushNotification({
             return false;
         }
 
-        console.log("[FCM] Push başarıyla iletildi:", resData.name);
+        console.log("[FCM] Android push başarıyla iletildi:", resData.name);
         return true;
     } catch (e) {
         console.error("[FCM] Push gönderme exception:", e);
@@ -185,6 +145,12 @@ async function sendFcmPushNotification({
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+// APNs configuration (Supabase secrets olarak tanımlanmalı)
+const APNS_KEY_ID = Deno.env.get('APNS_KEY_ID') || '2YR4C9MR9P'
+const APNS_TEAM_ID = Deno.env.get('APNS_TEAM_ID') || 'SD3U69B447'
+const APNS_BUNDLE_ID = Deno.env.get('APNS_BUNDLE_ID') || 'com.exvitrin.app'
+const APNS_P8_KEY = Deno.env.get('APNS_P8_KEY') || '' // .p8 dosyasının içeriği
 
 serve(async (req) => {
     try {
@@ -280,7 +246,7 @@ serve(async (req) => {
             console.warn('Resend email error:', mailErr)
         }
 
-        // 4. Send Android Push Notification (FCM) & App Icon Badge Count
+        // 4. Push Notification Gönder (iOS için APNs, Android için FCM)
         try {
             const { data: pushTokens } = await supabaseAdmin
                 .from('user_push_tokens')
@@ -304,7 +270,7 @@ serve(async (req) => {
             console.log(`[Push] Alıcı için bulunan cihaz token sayısı: ${allTokens.size}`)
 
             if (allTokens.size > 0) {
-                // Calculate unread message count for badge (exact unread messages)
+                // Okunmamış mesaj sayısını hesapla (rozet için)
                 const { count: unreadCount } = await supabaseAdmin
                     .from('messages')
                     .select('*', { count: 'exact', head: true })
@@ -314,6 +280,7 @@ serve(async (req) => {
 
                 const badgeNumber = Math.max(1, unreadCount || 1)
 
+                // Firebase service account (Android FCM için)
                 const serviceAccountRaw = Deno.env.get('FIREBASE_SERVICE_ACCOUNT')
                 let serviceAccount = null
                 if (serviceAccountRaw) {
@@ -326,25 +293,65 @@ serve(async (req) => {
                     console.warn('[FCM] FIREBASE_SERVICE_ACCOUNT secret tanımlı değil!')
                 }
 
-                if (serviceAccount) {
-                    for (const fcmToken of allTokens) {
-                        await sendFcmPushNotification({
-                            serviceAccount,
-                            token: fcmToken,
-                            title: `ExVitrin: ${senderName}`,
+                for (const token of allTokens) {
+                    console.log(`[Push] Token işleniyor: ${token.substring(0, 20)}...`)
+
+                    if (isApnsHexToken(token)) {
+                        // ✅ iOS APNs Token → Doğrudan APNs HTTP/2'ye gönder
+                        console.log(`[Push] iOS APNs token tespit edildi, APNs'e gönderiliyor...`)
+                        
+                        if (!APNS_P8_KEY) {
+                            console.error('[APNs] APNS_P8_KEY secret tanımlı değil! iOS push gönderilemez.')
+                            continue
+                        }
+
+                        const apnsResult = await sendApnsNotification({
+                            deviceToken: token,
+                            bundleId: APNS_BUNDLE_ID,
+                            keyId: APNS_KEY_ID,
+                            teamId: APNS_TEAM_ID,
+                            p8Key: APNS_P8_KEY,
+                            title: `${senderName}`,
                             body: record.content,
                             badgeCount: badgeNumber,
                             data: {
                                 type: 'new_message',
                                 sender_id: record.sender_id,
-                                conversation_id: record.conversation_id || ''
-                            }
+                                conversation_id: record.conversation_id || '',
+                            },
+                        })
+
+                        if (apnsResult.success) {
+                            console.log('[APNs] ✅ iOS push başarıyla iletildi!')
+                        } else {
+                            console.error('[APNs] ❌ iOS push başarısız:', apnsResult.error)
+                        }
+                    } else {
+                        // ✅ Android FCM Token → Firebase FCM'e gönder
+                        console.log(`[Push] Android FCM token tespit edildi, FCM'e gönderiliyor...`)
+                        
+                        if (!serviceAccount) {
+                            console.error('[FCM] Service account yok, Android push gönderilemez.')
+                            continue
+                        }
+
+                        await sendFcmPushNotification({
+                            serviceAccount,
+                            token: token,
+                            title: `${senderName}`,
+                            body: record.content,
+                            badgeCount: badgeNumber,
+                            data: {
+                                type: 'new_message',
+                                sender_id: record.sender_id,
+                                conversation_id: record.conversation_id || '',
+                            },
                         })
                     }
                 }
             }
-        } catch (fcmErr) {
-            console.error('FCM Push notification error:', fcmErr)
+        } catch (pushErr) {
+            console.error('Push notification error:', pushErr)
         }
 
         return new Response(JSON.stringify({ success: true, email: emailResult }), {
