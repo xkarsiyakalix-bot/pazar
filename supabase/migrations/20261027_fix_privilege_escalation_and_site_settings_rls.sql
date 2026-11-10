@@ -125,3 +125,4 @@ SET site_name = 'ExVitrin',
     site_description = 'Türkiye''nin En Büyük İlan Pazaryeri',
     updated_at = NOW()
 WHERE id = 1;
+

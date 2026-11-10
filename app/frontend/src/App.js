@@ -667,12 +667,12 @@ function App() {
         console.warn('[BadgeSync] Başlatma hatası:', e);
       }
 
-      // 2. Setup Native Android FCM Push Notifications
+      // 2. Setup Native iOS & Android Push Notifications
       const setupNativePush = async () => {
         try {
           await initPushNotifications(
             async (fcmToken) => {
-              console.log('[Native Push] FCM Token alındı, Supabase kaydediliyor:', fcmToken);
+              console.log('[Native Push] Push Token alındı, Supabase kaydediliyor:', fcmToken);
               try {
                 // Save to profiles
                 await supabase
@@ -680,10 +680,14 @@ function App() {
                   .update({ fcm_token: fcmToken })
                   .eq('id', user.id);
 
+                const currentPlatform = (typeof window !== 'undefined' && window.Capacitor?.getPlatform)
+                  ? window.Capacitor.getPlatform()
+                  : 'android';
+
                 // Save to user_push_tokens
                 await supabase
                   .from('user_push_tokens')
-                  .upsert({ user_id: user.id, token: fcmToken, platform: 'android', updated_at: new Date().toISOString() }, { onConflict: 'token' });
+                  .upsert({ user_id: user.id, token: fcmToken, platform: currentPlatform, updated_at: new Date().toISOString() }, { onConflict: 'token' });
               } catch (saveErr) {
                 console.warn('[Native Push] Token kaydetme hatası:', saveErr);
               }

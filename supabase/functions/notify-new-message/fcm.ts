@@ -102,6 +102,21 @@ export async function sendFcmPushNotification({
                         notification_count: badgeCount ?? 1,
                     },
                 },
+                apns: {
+                    headers: {
+                        "apns-priority": "10",
+                    },
+                    payload: {
+                        aps: {
+                            alert: {
+                                title: title,
+                                body: body,
+                            },
+                            badge: badgeCount ?? 1,
+                            sound: "default",
+                        },
+                    },
+                },
             },
         };
 

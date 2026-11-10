@@ -14,12 +14,23 @@ export const isAndroid = () => {
   return isNative() && window.Capacitor?.getPlatform() === "android";
 };
 
-// PUSH BİLDİRİMLER (Google Firebase FCM)
+export const isIOS = () => {
+  return isNative() && window.Capacitor?.getPlatform() === "ios";
+};
+
+export const getPlatform = () => {
+  if (typeof window !== "undefined" && window.Capacitor?.getPlatform) {
+    return window.Capacitor.getPlatform();
+  }
+  return "web";
+};
+
+// PUSH BİLDİRİMLER (Google Firebase FCM & Apple APNs)
 let PushNotificationsInstance = null;
 
 export const initPushNotifications = async (onToken, onNotification) => {
   if (!isNative()) {
-    console.log("[Bridge] Push notifications sadece native Android ortamında çalışır.");
+    console.log("[Bridge] Push notifications sadece native iOS/Android ortamında çalışır.");
     return;
   }
 
