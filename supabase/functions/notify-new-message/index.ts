@@ -67,6 +67,37 @@ async function getFcmAccessToken(serviceAccount: any): Promise<string | null> {
     }
 }
 
+async function convertApnsToFcmToken(accessToken: string, apnsToken: string): Promise<string> {
+    if (!apnsToken || apnsToken.includes(":") || apnsToken.length > 70) {
+        return apnsToken;
+    }
+    for (const sandbox of [false, true]) {
+        try {
+            const res = await fetch("https://iid.googleapis.com/iid/v1:batchImport", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                    "access_token_auth": "true",
+                },
+                body: JSON.stringify({
+                    application: "com.exvitrin.app",
+                    sandbox: sandbox,
+                    apns_tokens: [apnsToken],
+                }),
+            });
+            const data = await res.json();
+            if (data?.results?.[0]?.status === "OK" && data?.results?.[0]?.registration_token) {
+                console.log(`[FCM] APNs token başarıyla FCM token'a dönüştürüldü (sandbox: ${sandbox})`);
+                return data.results[0].registration_token;
+            }
+        } catch (e) {
+            console.warn(`[FCM] APNs dönüştürme hatası (sandbox: ${sandbox}):`, e);
+        }
+    }
+    return apnsToken;
+}
+
 async function sendFcmPushNotification({
     serviceAccount,
     token,
@@ -89,10 +120,11 @@ async function sendFcmPushNotification({
             return false;
         }
 
+        const targetToken = await convertApnsToFcmToken(accessToken, token);
         const projectId = serviceAccount.project_id;
         const payload: any = {
             message: {
-                token: token,
+                token: targetToken,
                 notification: {
                     title: title,
                     body: body,

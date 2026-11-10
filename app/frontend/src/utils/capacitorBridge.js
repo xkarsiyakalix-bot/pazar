@@ -38,6 +38,29 @@ export const initPushNotifications = async (onToken, onNotification) => {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     PushNotificationsInstance = PushNotifications;
 
+    // 1. ÖNCE Dinleyicileri ekle (iOS'ta register çağrılınca listener hazır olmalı!)
+    await PushNotifications.removeAllListeners().catch(() => {});
+
+    await PushNotifications.addListener("registration", (token) => {
+      console.log("[Bridge] Push token başarıyla alındı:", token.value);
+      if (onToken) onToken(token.value);
+    });
+
+    await PushNotifications.addListener("registrationError", (err) => {
+      console.error("[Bridge] Push registration error:", JSON.stringify(err));
+    });
+
+    await PushNotifications.addListener("pushNotificationReceived", (notification) => {
+      console.log("[Bridge] Bildirim alındı:", notification);
+      if (onNotification) onNotification(notification);
+    });
+
+    await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+      console.log("[Bridge] Bildirime tıklandı:", action.notification);
+      if (onNotification) onNotification(action.notification, true);
+    });
+
+    // 2. İzinleri kontrol et ve iste
     let permStatus = await PushNotifications.checkPermissions();
 
     if (permStatus.receive === "prompt") {
@@ -49,26 +72,8 @@ export const initPushNotifications = async (onToken, onNotification) => {
       return;
     }
 
+    // 3. Apple APNs / Google FCM servisine kaydol
     await PushNotifications.register();
-
-    PushNotifications.addListener("registration", (token) => {
-      console.log("[Bridge] FCM Push token başarıyla alındı:", token.value);
-      if (onToken) onToken(token.value);
-    });
-
-    PushNotifications.addListener("registrationError", (err) => {
-      console.error("[Bridge] Push registration error:", JSON.stringify(err));
-    });
-
-    PushNotifications.addListener("pushNotificationReceived", (notification) => {
-      console.log("[Bridge] Bildirim alındı:", notification);
-      if (onNotification) onNotification(notification);
-    });
-
-    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
-      console.log("[Bridge] Bildirime tıklandı:", action.notification);
-      if (onNotification) onNotification(action.notification, true);
-    });
   } catch (error) {
     console.error("[Bridge] Push notifications yüklenemedi:", error);
   }
